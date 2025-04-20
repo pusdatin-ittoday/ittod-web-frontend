@@ -24,6 +24,10 @@
   .custom-button-bg {
     background: linear-gradient(to right, #F97283, #B247B4, #9323C2);
   }
+
+  .input-text-glow {
+    text-shadow: 0px 4px 15px #AC6871;
+  }
 }
 
 
