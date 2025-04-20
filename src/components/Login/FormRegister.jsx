@@ -3,6 +3,8 @@ import Button from "./Button";
 import Input from "./Input";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { MdEmail } from "react-icons/md";
+import { MdKey } from "react-icons/md";
 
 const FormRegisterWithoutRouter = (props) => { 
     const navigate = useNavigate();
@@ -73,19 +75,22 @@ class FormRegister extends React.Component {
     render() {
         return (
             <form className="w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
-                <Input
-                    type="email"
-                    placeholder="email"
-                    value={this.state.email}
-                    onChange={this.onEmailChangeHandler}
-                />
+                <div className="relative">
+                    <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
+                    <Input
+                        type="email"
+                        placeholder="email"
+                        value={this.state.email}
+                        onChange={this.onEmailChangeHandler}
+                    />
+                </div>
                 <div className="relative flex items-center">
+                    <MdKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl"/>
                     <Input
                         type={this.state.showPassword ? "text" : "password"}    
                         placeholder="password"
                         value={this.state.password}
                         onChange={this.onPasswordChangeHandler}
-                        className="pr-10"
                     />
                     <button
                         type="button"
@@ -97,6 +102,7 @@ class FormRegister extends React.Component {
                 </div>
 
                 <div className="relative flex items-center">
+                    <MdKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
                     <Input
                         type={this.state.showConfirmPassword ? "text" : "password"}
                         placeholder="confirm password"

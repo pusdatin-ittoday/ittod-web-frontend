@@ -7,11 +7,10 @@ const Input = ({ type, placeholder, value, onChange }) => {
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className=" bg-[#F8F5F6] text-[#40274E] placeholder:text-[#40274E] placeholder:opacity-50 rounded-md p-2 w-full focus:outline-none"
+        className ="font-dm-sans pl-10 py-2 w-full rounded-md text-[#3D2357] focus:outline-none focus:ring-2 focus:ring-[#AC6871] bg-[#F4F0F8]"
         />
     );
 }
 
 export default Input;
 
-// #40274E

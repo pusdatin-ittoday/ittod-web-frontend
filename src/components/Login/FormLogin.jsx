@@ -3,6 +3,8 @@ import Button from "./Button";
 import Input from "./Input";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { MdEmail } from "react-icons/md";
+import { MdKey } from "react-icons/md";
 
 const FormLoginWithRouter = (props) => {
     const navigate = useNavigate();
@@ -23,6 +25,7 @@ class FormLogin extends React.Component {
         this.onPasswordChangeHandler = this.onPasswordChangeHandler.bind(this);
         this.handleRegisterClick = this.handleRegisterClick.bind(this);
         this.showPasswordHandler = this.showPasswordHandler.bind(this);
+        this.forgetPasswordHandler = this.forgetPasswordHandler.bind(this);
     }
     onEmailChangeHandler(event) {
         this.setState(() => {
@@ -52,22 +55,31 @@ class FormLogin extends React.Component {
         this.props.navigate('/register');
     }
 
+    forgetPasswordHandler() {  
+        this.props.navigate('/forget-password');
+     }
+
+
     render() {
         return (
             <form className="w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
-                <Input
-                    type="email"
-                    placeholder="email"
-                    value={this.state.email}
-                    onChange={this.onEmailChangeHandler}
-                />
+                <div className="relative">
+                    <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
+                    <Input
+                        type="email"
+                        placeholder="email"
+                        value={this.state.email}
+                        onChange={this.onEmailChangeHandler}
+                    />
+                </div>
+
                 <div className="relative flex items-center">
+                    <MdKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
                     <Input
                         type= {this.state.showPassword ? "text" : "password"}
                         placeholder="password"
                         value={this.state.password}
                         onChange={this.onPasswordChangeHandler}
-                        className = "pr-10"
                     />
                     <button
                         type="button"
@@ -78,7 +90,7 @@ class FormLogin extends React.Component {
                     </button>
 
                 </div>
-                <Button classname="text-xs text-left cursor-pointer hover:underline" type="button" text="Lupa Password?" />
+                <Button classname="text-xs text-left cursor-pointer hover:underline" type="button" text="Lupa Password?" onClick={this.forgetPasswordHandler}/>
                 <div className="w-full flex flex-col gap-4">
                     <Button
                         classname=" w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 hover:shadow-[0_0_10px_5px_rgba(209,107,165,0.2)] hover:brightness-110 cursor-pointer"
