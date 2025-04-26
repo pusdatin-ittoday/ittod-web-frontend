@@ -22,15 +22,22 @@ class FormNewPassword extends React.Component {
             errorMessage: ""
         };
 
-        this.onEmailChangeHandler = this.onEmailChangeHandler.bind(this);
-        this.onPasswordChangeHandler = this.onPasswordChangeHandler.bind(this);
-        this.onConfirmPasswordChangeHandler = this.onConfirmPasswordChangeHandler.bind(this);
-        this.handleLoginClick = this.handleLoginClick.bind(this);
-        this.showPasswordHandler = this.showPasswordHandler.bind(this);
-        this.showConfirmPasswordHandler = this.showConfirmPasswordHandler.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+constructor(props) {
+    super(props);
+    this.state = {
+        password: "",
+        confirmPassword: "",
+        showPassword: false,
+        showConfirmPassword: false,
+        errorMessage: ""
+    };
 
-    }
+    this.onPasswordChangeHandler = this.onPasswordChangeHandler.bind(this);
+    this.onConfirmPasswordChangeHandler = this.onConfirmPasswordChangeHandler.bind(this);
+    this.showPasswordHandler = this.showPasswordHandler.bind(this);
+    this.showConfirmPasswordHandler = this.showConfirmPasswordHandler.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+}
     onEmailChangeHandler(event) {
         this.setState(() => {
             return {
