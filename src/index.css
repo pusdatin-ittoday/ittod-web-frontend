@@ -10,13 +10,29 @@
   --font-playfair: 'Playfair Display', serif;
   --font-dm-sans: 'DM Sans', sans-serif;
 }
+
 @layer utilities {
   .white-text-glow {
     text-shadow: 0px 4px 10px #ac6871;
   }
+
   .custom-button-shadow {
     box-shadow: 0px 0px 20px 1px rgba(12, 16, 29, 0.5), 0px 0px 15px 1px rgba(12, 16, 29, 0.5) inset;
   }
+
+
+  .custom-button-bg {
+    background: linear-gradient(to right, #F97283, #B247B4, #9323C2);
+  }
+
+  .input-text-glow {
+    text-shadow: 0px 4px 15px #AC6871;
+  }
+
+  .back-button-glow {
+    text-shadow: 0px 8px 15px #e3e3e3;
+  } /*for back button on hover*/
+
   .timeline-circle-glow {
     box-shadow: 0px 0px 15px 10px #ac6871 inset;
     filter: drop-shadow(0px 0px 15px #ac6871);
@@ -27,6 +43,7 @@
     filter: drop-shadow(0px 0px 5px #ac6871);
   }
 }
+
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
