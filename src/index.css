@@ -3,32 +3,47 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
 @import "tailwindcss";
-
-
-
-
+@tailwind utilities;
 
 /* for tailwind */
-
+@theme {
+  --font-playfair: 'Playfair Display', serif;
+  --font-dm-sans: 'DM Sans', sans-serif;
+}
 
 @layer utilities {
   .white-text-glow {
-    text-shadow: 0px 4px 10px #AC6871
+    text-shadow: 0px 4px 10px #ac6871;
   }
+
   .custom-button-shadow {
     box-shadow: 0px 0px 20px 1px rgba(12, 16, 29, 0.5), 0px 0px 15px 1px rgba(12, 16, 29, 0.5) inset;
   }
+
+
+  .custom-button-bg {
+    background: linear-gradient(to right, #F97283, #B247B4, #9323C2);
+  }
+
+  .input-text-glow {
+    text-shadow: 0px 4px 15px #AC6871;
+  }
+
+  .back-button-glow {
+    text-shadow: 0px 8px 15px #e3e3e3;
+  } /*for back button on hover*/
+
   .timeline-circle-glow {
-    box-shadow: 0px 0px 15px 10px #AC6871 inset;
-    filter: drop-shadow(0px 0px 15px #AC6871);
+    box-shadow: 0px 0px 15px 10px #ac6871 inset;
+    filter: drop-shadow(0px 0px 15px #ac6871);
   }
 
   .timeline-line-glow {
-    box-shadow: 0px 0px 5px 1px #AC6871 inset;
-    filter: drop-shadow(0px 0px 5px #AC6871);
+    box-shadow: 0px 0px 5px 1px #ac6871 inset;
+    filter: drop-shadow(0px 0px 5px #ac6871);
   }
-
 }
+
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -44,8 +59,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-
 
 .white-text-glow {
   color: #FFF;
@@ -82,6 +95,7 @@
     }
   }
 }
+
 /* Root styling untuk seluruh body */
 body {
   margin: 0;
@@ -320,14 +334,10 @@ body {
   font-weight: 700;
   line-height: normal;
  
-
   text-shadow:
     0px 1px 6.5px #FF9BA8,
     0px 5px 10px rgba(172, 104, 113, 0.7);
 }
-
-
-
 
 .glow-text {
   width: 123px;
