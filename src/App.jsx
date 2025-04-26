@@ -4,6 +4,8 @@ import Home from './pages/Home';
 import Login from './pages/LoginPage/Login';
 import Register from './pages/LoginPage/Register';
 import ForgetPassword from './pages/LoginPage/ForgetPassword';
+import VerifyPassword from './pages/LoginPage/VerifyPassword';
+import NewPassword from './pages/LoginPage/NewPassword';
 
 const App = () => {
   return (
@@ -16,6 +18,9 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forget-password" element={<ForgetPassword />} />
+          <Route path="/verify-password" element={<VerifyPassword />} />
+          <Route path="/new-password" element={<NewPassword />} />
+
         </Routes>
       </BrowserRouter>
     </>

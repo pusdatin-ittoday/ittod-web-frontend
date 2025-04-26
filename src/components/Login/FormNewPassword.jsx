@@ -7,16 +7,15 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { MdEmail } from "react-icons/md";
 import { MdKey } from "react-icons/md";
 
-const FormRegisterWithoutRouter = (props) => {
+const FormNewPasswordWithRouter = (props) => {
     const navigate = useNavigate();
-    return <FormRegister {...props} navigate={navigate} />;
+    return <FormNewPassword {...props} navigate={navigate} />;
 }
 
-class FormRegister extends React.Component {
+class FormNewPassword extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: "",
             password: "",
             confirmPassword: "",
             showPassword: false,
@@ -83,7 +82,7 @@ class FormRegister extends React.Component {
         const { email, password } = this.state;
 
         if (!email || !password) {
-            this.setState({ errorMessage: "Email dan Password harus diisi!" });
+            this.setState({ errorMessage: "Password harus diisi!" });
         } else {
             this.setState({ errorMessage: "" });
         }
@@ -96,20 +95,14 @@ class FormRegister extends React.Component {
         return (
             <form onSubmit = {this.handleSubmit} className="w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
                 <Alert message={this.state.errorMessage} />
-                <div className="relative">
-                    <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
-                    <Input
-                        type="email"
-                        placeholder="email"
-                        value={this.state.email}
-                        onChange={this.onEmailChangeHandler}
-                    />
-                </div>
+                <h2 className="text-[#E4CCCF] text-xl font-semibold text-center font-playfair input-text-glow transition-all duration-300 hover:back-button-glow hover:brightness-110" >
+                        Buat password baru
+                </h2>
                 <div className="relative flex items-center">
                     <MdKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
                     <Input
                         type={this.state.showPassword ? "text" : "password"}
-                        placeholder="password"
+                        placeholder="password baru"
                         value={this.state.password}
                         onChange={this.onPasswordChangeHandler}
                     />
@@ -141,24 +134,11 @@ class FormRegister extends React.Component {
                     <Button
                         classname=" w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 hover:shadow-[0_0_10px_5px_rgba(209,107,165,0.2)] hover:brightness-110 cursor-pointer"
                         type="submit"
-                        text="Registrasi" />
-
-                    <p className="text-center">or</p>
-
-                    <button
-                        type="button"
-                        className="w-full p-[2px] rounded-md bg-[length:200%_200%] bg-gradient-to-r from-[#F97283] via-[#B247B4] to-[#9323C2] cursor-pointer transition-all duration-300 ease-in-out hover:bg-[position:100%_0] hover:shadow-[0_0_10px_5px_rgba(209,107,165,0.2)] hover:brightness-110"
-                    >
-                        <div className="flex items-center justify-center gap-2 w-full h-full bg-[#3D2357] text-white rounded-md p-2">
-                            <img src="/google.svg" alt="Google Logo" className="w-5 h-5" />
-                            Login dengan Google
-                        </div>
-                    </button>
-                    <p className="text-center text-xs">Sudah punya akun? <span className="text-xs text-[#F97283] hover:underline font-bold cursor-pointer" onClick={this.handleLoginClick}>Login</span></p>
+                        text="Buat password baru" />
                 </div>
             </form>
         );
     }
 }
 
-export default FormRegisterWithoutRouter;
+export default FormNewPasswordWithRouter;

@@ -1,10 +1,15 @@
 import React from "react";
 
-const Button = ({ classname, text, onClick }) => {
+const Button = ({ classname, text, onClick, disabled }) => {
     return (
         <button
             className={classname}
             onClick={onClick}
+            disabled={disabled}
+            style={{
+                cursor: disabled ? "not-allowed" : "pointer",
+                opacity: disabled ? 0.5 : 1,
+            }}
         >
             {text}
         </button>
