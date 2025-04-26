@@ -86,6 +86,9 @@ constructor(props) {
 
         if (!password || !confirmPassword) {
             this.setState({ errorMessage: "Password harus diisi!" });
+            this.errorTimeout = setTimeout(() => {
+                this.setState({ errorMessage: "" });
+            }, 3000);
         } else if (password !== confirmPassword) {
             this.setState({ errorMessage: "Password tidak cocok!" });
             this.errorTimeout = setTimeout(() => {
