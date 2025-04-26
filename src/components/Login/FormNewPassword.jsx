@@ -12,16 +12,6 @@ const FormNewPasswordWithRouter = (props) => {
 }
 
 class FormNewPassword extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            password: "",
-            confirmPassword: "",
-            showPassword: false,
-            showConfirmPassword: false,
-            errorMessage: ""
-        };
-
 constructor(props) {
     super(props);
     this.state = {
