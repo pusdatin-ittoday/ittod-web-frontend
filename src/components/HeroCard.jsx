@@ -9,7 +9,7 @@ const HeroCard = ({ Logo }) => {
         alt="IT-TODAY Logo"
         className="mx-auto w-60 "
       />
-      <p className="mt-6 text-lg italic text-pink-200 drop-shadow-[0_0_10px_#ffffff77]">“Exploring Harmonious Connections In The Digital Universe”</p>
+      <p className="font-dm-sans mt-6 text-lg italic text-pink-200 drop-shadow-[0_0_10px_#ffffff77]">“Exploring Harmonious Connections In The Digital Universe”</p>
     </div>
   );
 };
