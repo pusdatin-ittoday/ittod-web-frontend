@@ -58,12 +58,18 @@ class FormLogin extends React.Component {
 
         if (!email || !password) {
             this.setState({ errorMessage: "Email dan Password harus diisi!" });
+            this.errorTimeout = setTimeout(() => {
+                this.setState({ errorMessage: "" });
+            }, 3000);
         } else {
             this.setState({ errorMessage: "" });
         }
-        setTimeout(() => {
-            this.setState({ errorMessage: "" });
-        }, 3000);
+    }
+
+    componentWillUnmount() {
+        if (this.errorTimeout) {
+            clearTimeout(this.errorTimeout);
+        }
     }
 
     render() {
