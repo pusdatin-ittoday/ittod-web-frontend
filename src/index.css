@@ -1,10 +1,9 @@
 /* font */
-@import "tailwindcss";
-@tailwind utilities;
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
-
+@import 'tailwindcss';
+@tailwind utilities;
 
 /* for tailwind */
 @theme {
@@ -14,12 +13,13 @@
 
 @layer utilities {
   .white-text-glow {
-    text-shadow: 0px 4px 10px #AC6871
+    text-shadow: 0px 4px 10px #ac6871;
   }
 
   .custom-button-shadow {
     box-shadow: 0px 0px 20px 1px rgba(12, 16, 29, 0.5), 0px 0px 15px 1px rgba(12, 16, 29, 0.5) inset;
   }
+
 
   .custom-button-bg {
     background: linear-gradient(to right, #F97283, #B247B4, #9323C2);
@@ -32,6 +32,16 @@
   .back-button-glow {
     text-shadow: 0px 8px 15px #e3e3e3;
   } /*for back button on hover*/
+
+  .timeline-circle-glow {
+    box-shadow: 0px 0px 15px 10px #ac6871 inset;
+    filter: drop-shadow(0px 0px 15px #ac6871);
+  }
+
+  .timeline-line-glow {
+    box-shadow: 0px 0px 5px 1px #ac6871 inset;
+    filter: drop-shadow(0px 0px 5px #ac6871);
+  }
 }
 
 
