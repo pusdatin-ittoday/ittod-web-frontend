@@ -1,6 +1,5 @@
 import React from "react";
 import Button from "./Button";
-import Input from "./Input";
 import { useNavigate } from "react-router-dom";
 
 
@@ -57,7 +56,7 @@ class FormVerifyPassword extends React.Component {
                 
                 <div className="flex flex-col justify-center items-center ">
                     <img
-                        src="/public/gmail.svg"
+                        src="gmail.svg"
                         className="max-w-40 max-h-40 "
                     />
                     <p className="text-white text-sm text-center font-playfair transition-all duration-300 hover:back-button-glow hover:brightness-110" >

@@ -7,7 +7,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { MdEmail } from "react-icons/md";
 import { MdKey } from "react-icons/md";
 
-const FormRegisterWithoutRouter = (props) => {
+const FormRegisterWithRouter = (props) => {
     const navigate = useNavigate();
     return <FormRegister {...props} navigate={navigate} />;
 }
@@ -77,24 +77,36 @@ class FormRegister extends React.Component {
         this.props.navigate('/login');
     }
 
-    
-    handleSubmit(event) {
-        event.preventDefault(); 
-        const { email, password } = this.state;
 
-        if (!email || !password) {
-            this.setState({ errorMessage: "Email dan Password harus diisi!" });
-        } else {
+    handleSubmit(event) {
+        event.preventDefault();
+        const { email, password, confirmPassword } = this.state;
+
+        if (!email || !password || !confirmPassword) {
+            this.setState({ errorMessage: "Semua kolom harus diisi!" });
+            setTimeout(() => {
+                this.setState({ errorMessage: "" });
+            }, 3000);
+        } else if (password !== confirmPassword) {
+            this.setState({ errorMessage: "Password tidak cocok!" });
+            setTimeout(() => {
+                this.setState({ errorMessage: "" });
+            }, 3000);
+        } else if (password.length < 8) {
+            this.setState({ errorMessage: "Password minimal 8 karakter!" });
+            setTimeout(() => {
+                this.setState({ errorMessage: "" });
+            }, 3000);
+        } 
+        else {
             this.setState({ errorMessage: "" });
         }
-        setTimeout(() => {
-            this.setState({ errorMessage: "" });
-          }, 3000);
+
     }
 
     render() {
         return (
-            <form onSubmit = {this.handleSubmit} className="w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
+            <form onSubmit={this.handleSubmit} className="w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
                 <Alert message={this.state.errorMessage} />
                 <div className="relative">
                     <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
@@ -109,7 +121,7 @@ class FormRegister extends React.Component {
                     <MdKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
                     <Input
                         type={this.state.showPassword ? "text" : "password"}
-                        placeholder="password"
+                        placeholder="minimal 8 karakter"
                         value={this.state.password}
                         onChange={this.onPasswordChangeHandler}
                     />
@@ -161,4 +173,4 @@ class FormRegister extends React.Component {
     }
 }
 
-export default FormRegisterWithoutRouter;
+export default FormRegisterWithRouter;

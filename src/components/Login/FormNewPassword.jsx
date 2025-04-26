@@ -76,33 +76,41 @@ class FormNewPassword extends React.Component {
         this.props.navigate('/login');
     }
 
-    
-    handleSubmit(event) {
-        event.preventDefault(); 
-        const { email, password } = this.state;
 
-        if (!email || !password) {
+    handleSubmit(event) {
+        event.preventDefault();
+        const { password, confirmPassword } = this.state;
+
+        if (!password || !confirmPassword) {
             this.setState({ errorMessage: "Password harus diisi!" });
-        } else {
+        } else if (password !== confirmPassword) {
+            this.setState({ errorMessage: "Password tidak cocok!" });
+            setTimeout(() => {
+                this.setState({ errorMessage: "" });
+            }, 3000);
+        } else if (password.length < 8) {
+            this.setState({ errorMessage: "Password minimal 8 karakter!" });
+            setTimeout(() => {
+                this.setState({ errorMessage: "" });
+            }, 3000);
+        }
+        else {
             this.setState({ errorMessage: "" });
         }
-        setTimeout(() => {
-            this.setState({ errorMessage: "" });
-          }, 3000);
     }
 
     render() {
         return (
-            <form onSubmit = {this.handleSubmit} className="w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
+            <form onSubmit={this.handleSubmit} className="w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
                 <Alert message={this.state.errorMessage} />
                 <h2 className="text-[#E4CCCF] text-xl font-semibold text-center font-playfair input-text-glow transition-all duration-300 hover:back-button-glow hover:brightness-110" >
-                        Buat password baru
+                    Buat password baru
                 </h2>
                 <div className="relative flex items-center">
                     <MdKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
                     <Input
                         type={this.state.showPassword ? "text" : "password"}
-                        placeholder="password baru"
+                        placeholder="minimal 8 karakter"
                         value={this.state.password}
                         onChange={this.onPasswordChangeHandler}
                     />

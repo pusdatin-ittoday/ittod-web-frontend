@@ -1,5 +1,5 @@
 import React from "react";
-import FormRegisterWithoutRouter from "../../components/Login/FormRegister";
+import FormRegisterWithRouter from "../../components/Login/FormRegister";
 
 
 const Register = () => {
@@ -9,7 +9,7 @@ const Register = () => {
                 className="max-w-full max-h-85 bg-black rounded-xl mb-4 mr-20"
                 src="/DummyImg.jpg"
             />
-            <FormRegisterWithoutRouter />
+            <FormRegisterWithRouter />
         </div>
     )
 }
