@@ -13,7 +13,7 @@ class FormVerifyPassword extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            countdown: 10
+            countdown: 60
         };    
         this.handleResendClick = this.handleResendClick.bind(this);
     }
