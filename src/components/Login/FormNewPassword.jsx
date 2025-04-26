@@ -71,9 +71,6 @@ class FormNewPassword extends React.Component {
         })
     }
 
-    handleLoginClick() {
-        this.props.navigate('/login');
-    }
 
 
     handleSubmit(event) {
