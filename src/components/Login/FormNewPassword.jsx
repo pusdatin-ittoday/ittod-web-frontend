@@ -84,17 +84,24 @@ class FormNewPassword extends React.Component {
             this.setState({ errorMessage: "Password harus diisi!" });
         } else if (password !== confirmPassword) {
             this.setState({ errorMessage: "Password tidak cocok!" });
-            setTimeout(() => {
+            this.errorTimeout = setTimeout(() => {
                 this.setState({ errorMessage: "" });
             }, 3000);
         } else if (password.length < 8) {
             this.setState({ errorMessage: "Password minimal 8 karakter!" });
-            setTimeout(() => {
+            this.errorTimeout = setTimeout(() => {
                 this.setState({ errorMessage: "" });
             }, 3000);
-        }
-        else {
+        } else {
             this.setState({ errorMessage: "" });
+            // Navigate to login page or show success message
+            this.props.navigate('/login');
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.errorTimeout) {
+            clearTimeout(this.errorTimeout);
         }
     }
 
