@@ -1,18 +1,19 @@
-import Event from './pages/Event';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from './pages/Home';
 import Login from './pages/LoginPage/Login';
 import Register from './pages/LoginPage/Register';
-import ForgetPassword from './pages/LoginPage/ForgetPassword';
-import VerifyPassword from './pages/LoginPage/VerifyPassword';
-import NewPassword from './pages/LoginPage/NewPassword';
+import Event from './pages/Event';
 import Lomba from './pages/Lomba';
 import TimelineUmum from './pages/TimelineUmum';
+import DashboardBeranda from './pages/DashboardBeranda';
+import IkutLomba from './pages/IkutLomba'; 
+import ForgetPassword from './pages/LoginPage/ForgetPassword';
 import ContactUs from './pages/ContactUs';
-
 
 const App = () => {
   return (
+
     <>
       <BrowserRouter>
         <Routes>

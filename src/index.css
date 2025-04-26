@@ -1,8 +1,8 @@
 /* font */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
-
-@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+@import "tailwindcss";
 @tailwind utilities;
 
 /* for tailwind */
@@ -58,4 +58,298 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.white-text-glow {
+  color: #FFF;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 25px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  text-shadow: 0px 1px 6.5px 0px #FF9BA8 inset, 0px 5px 10px 0px rgba(172, 104, 113, 0.70), 0px 0px 20px #ffffff;
+}
+
+@layer utilities {
+  .font-dm-sans {
+    font-family: 'DM Sans', sans-serif;
+  }
+
+
+  @layer utilities {
+    /* shadow untuk Beranda */
+    .shadow-beranda {
+      box-shadow:
+        0px 4px 4px 0px rgba(0, 0, 0, 0.25),
+        0px 0px 50px 0px #CA63A9;
+    }
+  }
+
+  @layer utilities {
+    .bg-competition {
+      background:
+        linear-gradient(0deg, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.10) 100%),
+        linear-gradient(0deg, rgba(48, 32, 68, 0.30) 0%, rgba(48, 32, 68, 0.30) 100%),
+        url('/images/background.png') lightgray -1.288px -0.418px / 100.509% 225.45% no-repeat;
+    }
+  }
+}
+
+/* Root styling untuk seluruh body */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #302044;
+  color: white;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Container dashboard utama */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Navbar bagian atas */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #3f2a59;
+  padding: 20px 40px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.user-avatar {
+  width: 56px;
+  height: 56px;
+  background-color: #ddd;
+  border-radius: 50%;
+}
+
+.nav-links a {
+  margin: 0 15px;
+  text-decoration: none;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #f2a8ff;
+}
+
+.logout-button {
+  background: linear-gradient(to right, #f35b8b, #9d4edd);
+  padding: 10px 20px;
+  border-radius: 9999px;
+  font-weight: bold;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* Konten Dashboard */
+.dashboard-content {
+  display: flex;
+  flex: 1;
+}
+
+/* Sidebar */
+.dashboard-sidebar {
+  background-color: transparent;
+  width: 200px;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboard-sidebar h2 {
+  font-size: 14px;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.sidebar-button {
+  background: linear-gradient(to right, #4b267e, #5a2f7d);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.sidebar-button.active {
+  background: linear-gradient(to right, #ff6ec4, #7873f5);
+}
+
+/* Main content */
+.main-content {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+  padding: 40px;
+}
+
+/* Kartu kiri (Profil + Competition) */
+.left-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Card Umum */
+.card {
+  background: linear-gradient(to bottom right, #402650, #1d152f);
+  border-radius: 16px;
+  padding: 20px;
+  color: white;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  width: 500px;
+  height: 260px;
+}
+
+.profile-card {
+  height: 300px;
+}
+
+/* Header dalam card profil */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.edit-button {
+  background: linear-gradient(to right, #ff6ec4, #7873f5);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.card-divider {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 16px;
+}
+
+.info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-item {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 14px;
+}
+
+.info-item.no-border {
+  border-bottom: none;
+}
+
+
+
+/* Tombol bantuan (?) */
+.help-button {
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(to right, #ff6ec4, #7873f5);
+  color: white;
+  font-size: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+
+/* Atur elemen pembungkus utama dengan ukuran 1920px x 1080px */
+
+
+.competition-title {
+  color: #fff;
+  text-align: center;
+  font-family: Rowdies;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-transform: uppercase;
+  
+  /* Glow effect on text */
+  text-shadow: 0px 0px 6px rgba(255, 155, 168, 1), 0px 0px 10px rgba(255, 155, 168, 0.7);
+}
+
+.title-announcement {
+  display: flex;
+  width: 321px;
+  height: 59px;
+  flex-direction: column;
+  justify-content: center;
+  color: #FFF;
+  text-align: center;
+  text-shadow: 0px 5px 10px rgba(172, 104, 113, 0.70);
+  font-family: Rowdies;
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  text-transform: uppercase;
+}
+
+
+.white-text-glow {
+  color: #FFF;
+  text-align: center;
+  font-family: "Playfair Display", serif;
+  font-size: 25px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+ 
+  text-shadow:
+    0px 1px 6.5px #FF9BA8,
+    0px 5px 10px rgba(172, 104, 113, 0.7);
+}
+
+.glow-text {
+  width: 123px;
+  color: #FFF;
+  text-align: center;
+  font-family: 'Rowdies', sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-transform: uppercase;
+  text-shadow:
+  0px 1px 6.5px #FF9BA8,
+  0px 5px 10px rgba(172, 104, 113, 0.7);
 }
