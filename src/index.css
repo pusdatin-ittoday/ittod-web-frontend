@@ -89,8 +89,8 @@ body {
   font-family: 'Poppins', sans-serif;
   background-color: #302044;
   color: white;
-  width: 1920px;
-  height: 1080px;
+  min-height: 100vh;
+  width: 100%;
 }
 
 /* Container dashboard utama */
