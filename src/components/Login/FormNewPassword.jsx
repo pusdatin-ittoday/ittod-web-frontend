@@ -4,7 +4,6 @@ import Input from "./Input";
 import Alert from "./Alert";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { MdEmail } from "react-icons/md";
 import { MdKey } from "react-icons/md";
 
 const FormNewPasswordWithRouter = (props) => {
@@ -101,9 +100,9 @@ class FormNewPassword extends React.Component {
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit} className="w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
+            <form onSubmit={this.handleSubmit} className="w-80 lg:w-96 lg:h-auto font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
                 <Alert message={this.state.errorMessage} />
-                <h2 className="text-[#E4CCCF] text-xl font-semibold text-center font-playfair input-text-glow transition-all duration-300 hover:back-button-glow hover:brightness-110" >
+                <h2 className="text-[#E4CCCF] text-xl  font-semibold text-center font-playfair input-text-glow transition-all duration-300 hover:back-button-glow hover:brightness-110" >
                     Buat password baru
                 </h2>
                 <div className="relative flex items-center">

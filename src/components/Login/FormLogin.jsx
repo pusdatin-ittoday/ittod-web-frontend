@@ -72,7 +72,7 @@ class FormLogin extends React.Component {
         return (
             <form
                 onSubmit={this.handleSubmit} // <-- Tambahin onSubmit
-                className="w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]"
+                className="w-80 lg:w-96 font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]"
             >
                 <Alert message={errorMessage} />
 
