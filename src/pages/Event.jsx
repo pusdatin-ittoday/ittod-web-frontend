@@ -3,8 +3,8 @@ import EventCard from '../components/EventCard';
 
 const Event = () => {
   return (
-    <div className="min-h-screen min-w-screen flex flex-col items-center justify-center py-16 px-4 gap-8">
-      <h1 className="text-white text-5xl font-playfair font-bold leading-[140.625%] [text-shadow:0px_5px_10px_rgba(172,104,113,0.7)]">
+    <div className="min-h-screen min-w-screen flex flex-col items-center justify-center py-16 px-4 lg:px-8   gap-8">
+      <h1 className="text-white text-4xl lg:text-5xl font-playfair font-bold leading-[140.625%] [text-shadow:0px_5px_10px_rgba(172,104,113,0.7)]">
         Event
       </h1>
       
@@ -26,7 +26,6 @@ const Event = () => {
           imageSrc={"/DummyImg.jpg"}
         />
       </div>
-    
     </div>
   );
 };
