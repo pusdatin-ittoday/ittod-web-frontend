@@ -46,7 +46,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="navbar-box relative flex items-center justify-between font-dm-sans">
           <div className="logo">
-            <h1 className="sm:text-2xl text-xl font-bold cursor-pointer">IT-TODAY</h1>
+            <h1 className="font-dm-playfair sm:text-2xl text-xl font-bold cursor-pointer">IT-TODAY</h1>
           </div>
           <ul
             className={`flex lg:gap-12 flex-col gap-8 absolute top-full right-0 mt-4 z-40 w-64 px-8 py-6 rounded shadow-lg bg-[#6a316c] font-bold text-white transition duration-300
@@ -56,7 +56,7 @@ const Navbar = () => {
             <li className="flex items-center ">
               <a
                 href="#"
-                className="font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer "
+                className="font-dm-playfair font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer "
               >
                 Home
               </a>
@@ -64,7 +64,7 @@ const Navbar = () => {
             <li className="flex items-center ">
               <a
                 href="#"
-                className="font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer"
+                className=" font-dm-playfair font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer"
               >
                 Competition
               </a>
@@ -72,7 +72,7 @@ const Navbar = () => {
             <li className="flex items-center ">
               <a
                 href="#"
-                className="font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer "
+                className=" font-dm-playfair font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer "
               >
                 Event
               </a>
@@ -80,7 +80,7 @@ const Navbar = () => {
             <li className="flex items-center ">
               <a
                 href="#"
-                className="font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer"
+                className=" font-dm-playfair font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer"
               >
                 ContactUs
               </a>
@@ -96,10 +96,12 @@ const Navbar = () => {
               Login
             </button>
           </div>
-          <i
-            className="ri-menu-line text-3xl md:hidden block"
+          <img
+            src="/menu.svg"
+            alt="Menu"
+            className="w-[40px] h-[40px] md:hidden block cursor-pointer bg-transparent"
             onClick={handleClick}
-          ></i>
+          />
         </div>
       </div>
     </div>

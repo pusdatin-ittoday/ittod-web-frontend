@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 const EventCard = ({ title, description, imageSrc }) => {
   return (
@@ -17,5 +17,4 @@ const EventCard = ({ title, description, imageSrc }) => {
   );
 };
 
-
-export default EventCard
+export default EventCard;
