@@ -44,7 +44,7 @@ const Navbar = () => {
   return (
     <div className={`navbar fixed w-full transition-all ${scrollActive}`}>
       <div className="container mx-auto px-4">
-        <div className="navbar-box relative flex items-center justify-between">
+        <div className="navbar-box relative flex items-center justify-between font-dm-sans">
           <div className="logo">
             <h1 className="font-dm-playfair sm:text-2xl text-xl font-bold cursor-pointer">IT-TODAY</h1>
           </div>
