@@ -9,6 +9,8 @@ import TimelineUmum from './pages/TimelineUmum';
 import DashboardBeranda from './pages/DashboardBeranda';
 import IkutLomba from './pages/IkutLomba'; 
 import ForgetPassword from './pages/LoginPage/ForgetPassword';
+import VerifyPassword from './pages/LoginPage/VerifyPassword';
+import NewPassword from './pages/LoginPage/NewPassword';
 import ContactUs from './pages/ContactUs';
 
 const App = () => {
@@ -34,10 +36,6 @@ const App = () => {
           <Route
             path="/home"
             element={<Home />}
-          />
-          <Route
-            path="/event"
-            element={<Event />}
           />
           <Route
             path="/competition"
