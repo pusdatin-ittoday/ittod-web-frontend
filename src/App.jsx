@@ -12,6 +12,7 @@ import ForgetPassword from './pages/LoginPage/ForgetPassword';
 import VerifyPassword from './pages/LoginPage/VerifyPassword';
 import NewPassword from './pages/LoginPage/NewPassword';
 import ContactUs from './pages/ContactUs';
+import Sponsors from "./Sponsors";
 
 const App = () => {
   return (
@@ -31,18 +32,6 @@ const App = () => {
           <Route path="/new-password" element={<NewPassword />} />
 
           <Route
-            path="/"
-            element={<Home />}
-          />
-          <Route
-            path="/home"
-            element={<Home />}
-          />
-          <Route
-            path="/competition"
-            element={<Lomba />}
-          />
-          <Route
             path="/timeline"
             element={<TimelineUmum />}
           />
@@ -50,6 +39,10 @@ const App = () => {
             path="/ContactUs"
             element={<ContactUs />}
           />
+
+          {/* buat liat liat waktu bikin page */}
+          <Route path="/competition" element={<Lomba />}/>
+          <Route path="/sponsors" element={<Sponsors/>}></Route>
         </Routes>
       </BrowserRouter>
     </>
