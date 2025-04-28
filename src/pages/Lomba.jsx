@@ -1,5 +1,5 @@
 import React from 'react'
-import CompetitionCard from '../components/CompetitionCard'
+import LandingCompetitionCard from '../components/LandingCompetitionCard'
 
 const Lomba = () => {
   return (
@@ -10,25 +10,25 @@ const Lomba = () => {
       
       {/* competitions */}
       <div className='flex flex-wrap justify-center align-middle gap-10'>
-        <CompetitionCard
+        <LandingCompetitionCard
           title= "Hack Today"
           description= "Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/DummyImg.jpg"}
+          imageSrc={"/logo-competition/HACKTODAY.png"}
         />
-        <CompetitionCard
+        <LandingCompetitionCard
           title= "Mine Today"
           description= "Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/DummyImg.jpg"}
+          imageSrc={"/logo-competition/MINETODAY.png"}
         />
-        <CompetitionCard
+        <LandingCompetitionCard
           title= "UX Today"
           description= "Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/DummyImg.jpg"}
+          imageSrc={"/logo-competition/UXTODAY.png"}
         />
-        <CompetitionCard
+        <LandingCompetitionCard
           title= "Game Today"
           description= "Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/DummyImg.jpg"}
+          imageSrc={"/logo-competition/GAMETODAY.png"}
         />
       </div>
     </div>

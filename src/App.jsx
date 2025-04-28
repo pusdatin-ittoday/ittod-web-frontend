@@ -25,6 +25,7 @@ const App = () => {
           <Route path="/event" element={<Event />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="ikutlomba" element={<IkutLomba />}></Route>
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/verify-password" element={<VerifyPassword />} />
           <Route path="/new-password" element={<NewPassword />} />
