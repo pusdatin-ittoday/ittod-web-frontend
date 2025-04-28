@@ -1,5 +1,5 @@
 import React from 'react'
-import EventCard from '../components/EventCard';
+import LandingEventCard from '../components/LandingEventCard';
 
 const Event = () => {
   return (
@@ -10,20 +10,20 @@ const Event = () => {
       
       {/* Events */}
       <div className="flex flex-wrap justify-center align-middle gap-10">
-        <EventCard
+        <LandingEventCard
           title="National Seminar"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/DummyImg.jpg"}
+          imageSrc={"/logo-event/SEMINAR-NASIONAL.png"}
           />
-        <EventCard
+        <LandingEventCard
           title="Bootcamp"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/DummyImg.jpg"}
+          imageSrc={"/logo-event/BOOTCAMP.png"}
           />
-        <EventCard
+        <LandingEventCard
           title="Workshop"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/DummyImg.jpg"}
+          imageSrc={"/logo-event/WORKSHOP.png"}
         />
       </div>
     </div>
