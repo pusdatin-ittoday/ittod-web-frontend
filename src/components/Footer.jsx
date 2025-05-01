@@ -47,7 +47,7 @@ const Footer = () => {
                     className="flex justify-center"
                   >
                     <a href={item.url}>
-                      <div className="w-12 h-12 flex items-center justify-center rounded-md hover:scale-105 transition duration-300 ease-in-out">
+                      <div className="w-12 h-12 flex items-center justify-center rounded-md hover:scale-155 transition duration-300 ease-in-out">
                         <img
                           src={`/${item.icon}`}
                           alt={`Social Icon ${i + 1}`}
@@ -67,7 +67,7 @@ const Footer = () => {
               <p className="font-dm-sans hover:text-pink-400 cursor-pointer whitespace-nowrap">ittoday2025@gmail.com</p>
 
               <a
-                href="tel:+6281210242743"
+                href="https://wa.me/+6281210242743"
                 className="font-dm-sans hover:text-pink-400 cursor-pointer"
               >
                 +6281210242743
