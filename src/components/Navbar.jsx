@@ -40,7 +40,7 @@ const Navbar = () => {
     };
   }, []);
 
-  let scrollActive = scroll ? 'backdrop-blur-md py-6 bg-white/30 shadow-md' : 'bg-transparent py-4';
+  let scrollActive = scroll ? 'backdrop-blur-md py-4 bg-gray/30 shadow-md' : 'bg-transparent py-4';
 
   return (
     <div className={`navbar fixed w-full transition-all z-[999] ${scrollActive}`}>

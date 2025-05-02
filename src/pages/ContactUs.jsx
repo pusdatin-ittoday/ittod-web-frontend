@@ -16,7 +16,7 @@ const ContactUs = () => {
               {/* Konten isi dan tombol */}
               <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
                 {/* Paragraf */}
-                <p className="font-dm-sans text-base md:text-lg leading-relaxed text-pink-200 drop-shadow-[0_0_10px_#ffffff77] max-w-3xl text-justify md:text-left">
+                <p className="font-dm-sans text-base md:text-lg leading-relaxed text-pink-100 drop-shadow-[0_0_10px_#ffffff77] max-w-3xl text-justify md:text-left">
                   We sincerely express our appreciation to our sponsor for their generous support and confidence in IT-TODAY 2025.
                 </p>
 
