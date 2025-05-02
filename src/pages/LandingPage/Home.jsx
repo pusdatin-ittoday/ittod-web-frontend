@@ -5,6 +5,7 @@ import Footer from '../../components/Footer';
 import Event  from './Event';
 import Lomba from './Lomba';
 import ContactUs from '../ContactUs';
+import TimelineUmum from '../TimelineUmum';
 
 const Home = () => {
   return (
@@ -25,6 +26,7 @@ const Home = () => {
       </div>
       <Event />
       <Lomba />
+      <TimelineUmum />
       <ContactUs />
       <Footer />
     </>
