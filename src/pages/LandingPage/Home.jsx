@@ -3,6 +3,7 @@ import Navbar from '../../components/Navbar';
 import HeroCard from '../../components/HeroCard';
 import Footer from '../../components/Footer';
 import Event  from './Event';
+import Lomba from './Lomba';
 
 const Home = () => {
   return (
@@ -22,6 +23,7 @@ const Home = () => {
         </div>
       </div>
       <Event />
+      <Lomba />
       <Footer />
     </>
   );

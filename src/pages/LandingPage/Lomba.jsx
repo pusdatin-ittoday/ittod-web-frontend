@@ -1,5 +1,5 @@
 import React from 'react'
-import LandingCompetitionCard from '../components/LandingCompetitionCard'
+import LandingCompetitionCard from '../../components/LandingCompetitionCard'
 
 const Lomba = () => {
   return (
