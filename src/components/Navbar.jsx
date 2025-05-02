@@ -1,112 +1,102 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Impor Link dari react-router-dom
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
-const Navbar = () => {
-  const [active, setActive] = useState(false);
-  const [scroll, setScroll] = useState(false);
+class Navbar extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      active: false,
+      scroll: false,
+    };
+  }
 
-  const handleClick = () => {
-    setActive(!active);
+  handleClick = () => {
+    this.setState((prevState) => ({ active: !prevState.active }));
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScroll(true);
-        setActive(false);
-      } else {
-        setScroll(false);
-      }
-    };
+  handleScroll = () => {
+    if (window.scrollY > 10) {
+      this.setState({ scroll: true, active: false });
+    } else {
+      this.setState({ scroll: false });
+    }
+  };
 
-    window.addEventListener('scroll', handleScroll);
+  handleResize = () => {
+    if (window.innerWidth >= 768) {
+      this.setState({ active: false });
+    }
+  };
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+  componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('resize', this.handleResize);
+  }
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setActive(false);
-      }
-    };
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener('resize', this.handleResize);
+  }
 
-    window.addEventListener('resize', handleResize);
+  render() {
+    const { active, scroll } = this.state;
+    const { isDashboard } = this.props;
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+    const scrollActive = scroll
+      ? 'backdrop-blur-md py-3 bg-black/20 shadow-md' 
+      : 'bg-transparent py-2';
 
-  let scrollActive = scroll ? 'backdrop-blur-md py-6 bg-white/30 shadow-md' : 'bg-transparent py-4';
+    const navLinkBase =
+      'font-dm-sans font-medium opacity-100 text-white nav-text-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer';
 
-  return (
-    <div className={`navbar fixed w-full transition-all z-[999] ${scrollActive}`}>
-      <div className="container mx-auto px-4">
-        <div className="navbar-box relative flex items-center justify-between font-dm-sans">
-          <div className="logo">
-            <h1 className="font-dm-playfair sm:text-2xl text-xl font-bold cursor-pointer">IT-TODAY</h1>
-          </div>
-          <ul
-            className={`flex lg:gap-12 flex-col gap-3 absolute top-full right-0 mt-1 z-[9999] w-36 px-4 py-4 rounded-lg shadow-lg bg-[#6a316c] font-bold text-white text-sm transition duration-300
-            ${active ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'}
-            md:opacity-100 md:visible md:pointer-events-auto md:static md:flex-row md:gap-12 md:shadow-none md:bg-transparent md:w-auto md:h-full md:p-0 md:text-black md:transition-none md:items-center md:mt-0`}
-          >
-            <li className="flex items-center">
-              <Link
-                to="/home"
-                className="font-dm-playfair font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer"
+    return (
+      <div className={`navbar fixed w-full transition-all z-[999] ${scrollActive}`}>
+        <div className="container mx-auto px-4">
+          <div className="navbar-box relative flex items-center justify-between font-dm-sans">
+            <div className="logo">
+              <h1 className="font-playfair sm:text-2xl text-xl font-bold cursor-pointer">IT-TODAY</h1>
+            </div>
+            <ul
+              className={`flex lg:gap-12 flex-col gap-3 absolute top-full right-0 mt-1 z-[9999] w-36 px-4 py-4 rounded-lg shadow-lg bg-[#6a316c] font-bold text-white text-[17px] transition duration-300
+              ${active ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'}
+              md:opacity-100 md:visible md:pointer-events-auto md:static md:flex-row md:gap-12 md:shadow-none md:bg-transparent md:w-auto md:h-full md:p-0 md:text-black md:transition-none md:items-center md:mt-0`}
+            >
+              <li className="flex items-center">
+                <Link to="/home" className={navLinkBase}>Home</Link>
+              </li>
+              <li className="flex items-center">
+                <Link to="/competition" className={navLinkBase}>Competition</Link>
+              </li>
+              <li className="flex items-center">
+                <Link to="/event" className={navLinkBase}>Event</Link>
+              </li>
+              <li className="flex items-center">
+                <Link to="/contact-us" className={navLinkBase}>Contact Us</Link>
+              </li>
+              <li className="block lg:hidden">
+                <button className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-xl custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
+                  {isDashboard ? 'Logout' : 'Login'}
+                </button>
+              </li>
+            </ul>
+            <div className="login hidden lg:block">
+              <button
+                className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-xl custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
               >
-                Home
-              </Link>
-            </li>
-            <li className="flex items-center">
-              <Link
-                to="/competition"
-                className="font-dm-playfair font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer"
-              >
-                Competition
-              </Link>
-            </li>
-            <li className="flex items-center">
-              <Link
-                to="/event"
-                className="font-dm-playfair font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer"
-              >
-                Event
-              </Link>
-            </li>
-            <li className="flex items-center">
-              <Link
-                to="/ContactUs"
-                className="font-dm-playfair font-medium opacity-75 text-white hover:text-pink-400 cursor-pointer"
-              >
-                ContactUs
-              </Link>
-            </li>
-            <li className="block lg:hidden">
-              <button className="font-dm-sans font-bold bg-gradient-to-r from-[#F97283] via-[#B247B4] to-[#9323C2] text-white py-3 px-4 rounded-xl custom-button-shadow hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
-                Login
+                {isDashboard ? 'Logout' : 'Login'}
               </button>
-            </li>
-          </ul>
-          <div className="login hidden lg:block">
-            <button className="font-dm-sans font-bold bg-gradient-to-r from-[#F97283] via-[#B247B4] to-[#9323C2] text-white py-2 px-7 rounded-xl custom-button-shadow hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
-              Login
-            </button>
+            </div>
+            <img
+              src="/menu.svg"
+              alt="Menu"
+              className="w-[40px] h-[40px] md:hidden block cursor-pointer bg-transparent"
+              onClick={this.handleClick}
+            />
           </div>
-          <img
-            src="/menu.svg"
-            alt="Menu"
-            className="w-[40px] h-[40px] md:hidden block cursor-pointer bg-transparent"
-            onClick={handleClick}
-          />
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 export default Navbar;

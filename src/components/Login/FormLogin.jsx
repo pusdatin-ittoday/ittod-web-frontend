@@ -109,11 +109,11 @@ class FormLogin extends React.Component {
                     </button>
                 </div>
 
-                <Button classname="text-xs text-left cursor-pointer hover:underline" type="button" text="Lupa Password?" onClick={this.forgetPasswordHandler} />
+                <Button className="text-xs text-left cursor-pointer hover:underline" type="button" text="Lupa Password?" onClick={this.forgetPasswordHandler} />
 
                 <div className="w-full flex flex-col gap-4">
                     <Button
-                        classname="w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 hover:shadow-[0_0_10px_5px_rgba(209,107,165,0.2)] hover:brightness-110 cursor-pointer"
+                        className="w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 button-hover cursor-pointer"
                         type="submit"
                         text="Login"
                     />
@@ -121,7 +121,7 @@ class FormLogin extends React.Component {
 
                     <button
                         type="button"
-                        className="w-full p-[2px] rounded-md bg-[length:200%_200%] bg-gradient-to-r from-[#F97283] via-[#B247B4] to-[#9323C2] cursor-pointer transition-all duration-300 ease-in-out hover:bg-[position:100%_0] hover:shadow-[0_0_10px_5px_rgba(209,107,165,0.2)] hover:brightness-110"
+                        className="w-full p-[2px] rounded-md bg-[length:200%_200%] custom-button-bg cursor-pointer transition-all duration-300 ease-in-out hover:bg-[position:100%_0] button-hover "
                     >
                         <div className="flex items-center justify-center gap-2 w-full h-full bg-[#3D2357] text-white rounded-md p-2">
                             <img src="/google.svg" alt="Google Logo" className="w-5 h-5" />

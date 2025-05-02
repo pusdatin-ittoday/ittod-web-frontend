@@ -6,14 +6,14 @@ import Register from './pages/LoginPage/Register';
 import Event from './pages/Event';
 import Lomba from './pages/Lomba';
 import TimelineUmum from './pages/TimelineUmum';
-import DashboardBeranda from './pages/DashboardBeranda';
-import IkutLomba from './pages/IkutLomba';
+import DashboardLayout from './pages/DashboardPage/DashboardLayout';
 import ForgetPassword from './pages/LoginPage/ForgetPassword';
 import VerifyPassword from './pages/LoginPage/VerifyPassword';
 import NewPassword from './pages/LoginPage/NewPassword';
 import ContactUs from './pages/ContactUs';
 import Sponsors from './Sponsors';
 import Hack_Today from './pages/hack_today';
+
 
 const App = () => {
   return (
@@ -41,10 +41,6 @@ const App = () => {
             element={<Register />}
           />
           <Route
-            path="ikutlomba"
-            element={<IkutLomba />}
-          ></Route>
-          <Route
             path="/forget-password"
             element={<ForgetPassword />}
           />
@@ -62,8 +58,14 @@ const App = () => {
             element={<TimelineUmum />}
           />
           <Route
-            path="/ContactUs"
+            path="/contact-us"
             element={<ContactUs />}
+          />
+
+          {/*Dashboard*/}
+          <Route
+            path="*"
+            element={<DashboardLayout />}
           />
 
           {/* buat liat liat waktu bikin page */}
