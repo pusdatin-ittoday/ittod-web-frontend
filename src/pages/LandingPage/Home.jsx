@@ -4,6 +4,7 @@ import HeroCard from '../../components/HeroCard';
 import Footer from '../../components/Footer';
 import Event  from './Event';
 import Lomba from './Lomba';
+import ContactUs from '../ContactUs';
 
 const Home = () => {
   return (
@@ -24,6 +25,7 @@ const Home = () => {
       </div>
       <Event />
       <Lomba />
+      <ContactUs />
       <Footer />
     </>
   );

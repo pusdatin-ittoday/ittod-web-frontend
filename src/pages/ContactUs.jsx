@@ -5,8 +5,7 @@ import Footer from '../components/Footer';
 const ContactUs = () => {
   return (
     <>
-      <Navbar />
-      <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#6a316c] to-[#2e1c3d] pt-20">
+      <div className="flex flex-col lg:pt-15 pt-5 lg:pb-10 pb-5">
         {/* Konten utama */}
         <main className="flex flex-col flex-grow justify-end">
           <div className="w-full px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16">
@@ -34,8 +33,6 @@ const ContactUs = () => {
             </div>
           </div>
         </main>
-
-        <Footer />
       </div>
     </>
   );

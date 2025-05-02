@@ -47,7 +47,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="navbar-box relative flex items-center justify-between font-dm-sans">
           <div className="logo">
-            <h1 className="font-dm-playfair sm:text-2xl text-xl font-bold cursor-pointer">IT-TODAY</h1>
+            <h1 className="font-dm-sans sm:text-2xl text-4xl font-bold cursor-pointer">IT-TODAY</h1>
           </div>
           <ul
             className={`flex lg:gap-12 flex-col gap-3 absolute top-full right-0 mt-1 z-[9999] w-36 px-4 py-4 rounded-lg shadow-lg bg-[#6a316c] font-bold text-white text-sm transition duration-300
