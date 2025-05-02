@@ -43,7 +43,7 @@ class Navbar extends Component {
     const { isDashboard } = this.props;
 
     const scrollActive = scroll
-      ? 'backdrop-blur-md py-3 bg-black/20 shadow-md' 
+      ? 'backdrop-blur-md py-3 bg-black/20 shadow-md'
       : 'bg-transparent py-2';
 
     const navLinkBase =
@@ -74,17 +74,39 @@ class Navbar extends Component {
                 <Link to="/contact-us" className={navLinkBase}>Contact Us</Link>
               </li>
               <li className="block lg:hidden">
-                <button className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-xl custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
-                  {isDashboard ? 'Logout' : 'Login'}
-                </button>
+                {isDashboard ? (
+                  <button
+                    onClick={this.handleClick} // Add logic for logout if necessary
+                    className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  >
+                    Login
+                  </Link>
+                )}
               </li>
             </ul>
             <div className="login hidden lg:block">
-              <button
-                className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-xl custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
-              >
-                {isDashboard ? 'Logout' : 'Login'}
-              </button>
+              {isDashboard ? (
+                <button
+                  onClick={this.handleClick} // Add logic for logout if necessary
+                  className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                >
+                  Login
+                </Link>
+              )}
             </div>
             <img
               src="/menu.svg"

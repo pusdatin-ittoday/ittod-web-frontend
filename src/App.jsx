@@ -13,6 +13,7 @@ import NewPassword from './pages/LoginPage/NewPassword';
 import ContactUs from './pages/ContactUs';
 import Sponsors from './Sponsors';
 import Hack_Today from './pages/hack_today';
+import EditProfile from './components/Dashboard/EditProfil';
 
 
 const App = () => {
@@ -67,6 +68,12 @@ const App = () => {
             path="*"
             element={<DashboardLayout />}
           />
+          
+          <Route 
+            path='/edit-profile'
+            element={<EditProfile />}
+          />
+          
 
           {/* buat liat liat waktu bikin page */}
           <Route

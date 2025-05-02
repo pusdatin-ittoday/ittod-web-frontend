@@ -1,4 +1,5 @@
 import React from "react";
+import { GrAnnounce } from "react-icons/gr";
 
 const Announcement = () => {
     const announcements = [
@@ -26,10 +27,13 @@ const Announcement = () => {
     ];
 
     return (
-        <div className="py-4 flex flex-col bg-[#7b446c] text-white rounded-lg shadow-md w-1/3 max-w-sm h-[500px] font-dm-sans overflow-hidden">
+        <div className="py-4 flex flex-col bg-[#7b446c] text-white rounded-lg shadow-md w-[250px] h-[500px] font-dm-sans overflow-hidden">
             {/* Header */}
-            <div className="mb-2 px-4 py-3 border-b text-lg font-bold text-center">
-                <span className="font-rowdies">ANNOUNCEMENT</span>
+            <div className="border-b border-[#dfb4d7]/60 mb-3">
+                <div className="mb-3 px-4 py-3 text-lg font-bold text-center">
+                    <GrAnnounce className="inline-block mr-2 text-2xl" />
+                    <span className="font-dm-sans">ANNOUNCEMENT</span>
+                </div>
             </div>
 
             {/* Scrollable content wrapper */}

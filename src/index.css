@@ -140,7 +140,7 @@ body {
   font-family: 'Poppins', sans-serif;
   background-color: #302044;
   color: white;
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
 }
 

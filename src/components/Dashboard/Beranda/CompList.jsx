@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FaList } from "react-icons/fa";
-import { GrAnnounce } from "react-icons/gr";
+
+
 // Komponen utama yang menerima props dan menampilkan data lomba
 const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }) => {
     const handleVerifyClick = (compKey, anggotaIdx) => {
@@ -45,17 +46,19 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
     );
 
     return (
-        <div className="font-dm-sans p-6 bg-[#7b446c] rounded-md shadow-md w-[650px] h-[500px] flex flex-col">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-3xl font-bold text-white tracking-wide transform transition duration-500 hover:scale-105">
-                    {`Halo, ${name}!`}
-                </h2>
-                <button
-                    onClick={onEditUser}
-                    className="custom-button-bg px-4 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold"
-                >
-                    Edit Data
-                </button>
+        <div className="font-dm-sans p-6 bg-[#7b446c] rounded-lg shadow-md w-[650px] h-[500px] flex flex-col">
+            <div className="border-b border-[#dfb4d7]/60 mb-4">
+                <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-3xl font-bold text-white tracking-wide transform transition duration-500 hover:scale-105">
+                        {`Halo, ${name}!`}
+                    </h2>
+                    <button
+                        onClick={onEditUser}
+                        className="custom-button-bg px-4 py-1 mb-4 rounded button-hover transition duration-300 hover:scale-105 font-semibold"
+                    >
+                        Edit Data
+                    </button>
+                </div>
             </div>
             <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
                 <FaList className="text-xl" /> Competition List
@@ -113,10 +116,12 @@ const CompListPage = () => {
     };
 
     // Fungsi untuk mengedit data user
+    const navigate = useNavigate();
+     // Fungsi untuk mengedit data user
+
     const handleEditUser = () => {
-        console.log("Editing user data...");
+        navigate("/edit-profile"); // Ganti dengan rute yang sesuai untuk mengedit data user
         // Misalnya, buka halaman edit user atau tampilkan modal untuk mengedit data
-        alert("Edit Data User");
     };
 
     return (
