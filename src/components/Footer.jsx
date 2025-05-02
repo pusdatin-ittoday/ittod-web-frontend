@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#452C4C] text-white py-12 w-full">
+    <footer className="bg-[#452C4C]/60 text-white py-12 w-full">
       <div className="w-full px-5 md:px-8 lg:px-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-center md:text-left">
           {/* BAGIAN KIRI */}
