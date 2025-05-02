@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
+import Home from './pages/LandingPage/Home';
 import Login from './pages/LoginPage/Login';
 import Register from './pages/LoginPage/Register';
-import Event from './pages/Event';
-import Lomba from './pages/Lomba';
+import Event from './pages/LandingPage/Event';
+import Lomba from './pages/LandingPage/Lomba';
 import TimelineUmum from './pages/TimelineUmum';
 import DashboardBeranda from './pages/DashboardBeranda';
 import IkutLomba from './pages/IkutLomba';
