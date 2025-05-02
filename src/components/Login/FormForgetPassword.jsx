@@ -57,8 +57,8 @@ class FormForgetPassword extends React.Component {
             <form onSubmit={this.handleSubmit} className="w-80 lg:w-96  text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
                 <Alert message={this.state.errorMessage} />
                 <div className="flex flex-row items-center gap-[50px] lg:gap-[75px]">
-                    <p className="text-[#E4CCCF] text-xl font-bold font-playfair leading-normal input-text-glow cursor-pointer transition-all duration-300 hover:back-button-glow hover:brightness-110 " onClick={this.onBackButtonClickHandler}>←</p>
-                    <h2 className="text-[#E4CCCF] text-xl font-semibold text-center font-playfair input-text-glow transition-all duration-300 hover:back-button-glow hover:brightness-110" >
+                    <p className="text-[#E4CCCF] text-xl font-bold font-playfair leading-normal input-text-glow cursor-pointer transition-all duration-300 back-button-glow hover:brightness-110 " onClick={this.onBackButtonClickHandler}>←</p>
+                    <h2 className="text-[#E4CCCF] text-xl font-semibold text-center font-playfair input-text-glow transition-all duration-300 back-button-glow hover:brightness-110" >
                         Lupa Password
                     </h2>
                 </div>
@@ -72,7 +72,7 @@ class FormForgetPassword extends React.Component {
                     />
                 </div>
                 <Button
-                    classname=" w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 hover:shadow-[0_0_10px_5px_rgba(209,107,165,0.2)] hover:brightness-110 cursor-pointer"
+                    className=" w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 button-hover cursor-pointer"
                     type="submit"
                     text="Reset Password" />
 

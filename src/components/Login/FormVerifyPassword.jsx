@@ -64,7 +64,7 @@ class FormVerifyPassword extends React.Component {
                     </p>
                 </div>
                 <Button
-                    classname= "w-full custom-button-bg p-2 text-white font-bold rounded-md transition-all duration-300 hover:shadow-[0_0_10px_5px_rgba(209,107,165,0.2)] hover:brightness-110 cursor-pointer"
+                    className= "w-full custom-button-bg p-2 text-white font-bold rounded-md transition-all duration-300 button-hover cursor-pointer"
                     type="button"
                     text= {countdown == 0? "Kirim ulang email" : `Kirim ulang email dalam ${this.state.countdown} detik`}
                     onClick={this.handleResendClick}

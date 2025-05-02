@@ -143,7 +143,7 @@ constructor(props) {
                 </div>
                 <div className="w-full flex flex-col gap-4">
                     <Button
-                        classname=" w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 hover:shadow-[0_0_10px_5px_rgba(209,107,165,0.2)] hover:brightness-110 cursor-pointer"
+                        className=" w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 button-hover cursor-pointer"
                         type="submit"
                         text="Buat password baru" />
                 </div>
