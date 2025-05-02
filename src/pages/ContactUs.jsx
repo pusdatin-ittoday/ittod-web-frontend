@@ -5,8 +5,7 @@ import Footer from '../components/Footer';
 const ContactUs = () => {
   return (
     <>
-      <Navbar />
-      <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#6a316c] to-[#2e1c3d] pt-20">
+      <div className="flex flex-col lg:pt-15 pt-5 lg:pb-10 pb-5">
         {/* Konten utama */}
         <main className="flex flex-col flex-grow justify-end">
           <div className="w-full px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16">
@@ -17,7 +16,7 @@ const ContactUs = () => {
               {/* Konten isi dan tombol */}
               <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
                 {/* Paragraf */}
-                <p className="font-dm-sans text-base md:text-lg leading-relaxed text-pink-200 drop-shadow-[0_0_10px_#ffffff77] max-w-3xl text-justify md:text-left">
+                <p className="font-dm-sans text-base md:text-lg leading-relaxed text-pink-100 drop-shadow-[0_0_10px_#ffffff77] max-w-3xl text-justify md:text-left">
                   We sincerely express our appreciation to our sponsor for their generous support and confidence in IT-TODAY 2025.
                 </p>
 
@@ -34,8 +33,6 @@ const ContactUs = () => {
             </div>
           </div>
         </main>
-
-        <Footer />
       </div>
     </>
   );

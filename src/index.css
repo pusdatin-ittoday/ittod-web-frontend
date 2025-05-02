@@ -16,12 +16,31 @@
     text-shadow: 0px 0px 4px #ac6871;
   }
 
+  .font-dm-sans {
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* shadow untuk Beranda */
+  .shadow-beranda {
+    box-shadow:
+      0px 4px 4px 0px rgba(0, 0, 0, 0.25),
+      0px 0px 50px 0px #CA63A9;
+  }
+
   .custom-button-shadow {
     box-shadow: 0px 0px 20px 1px rgba(12, 16, 29, 0.5), 0px 0px 15px 1px rgba(12, 16, 29, 0.5) inset;
   }
 
+
   .glow-dashboard-text {
     text-shadow: 0px 5px 10px rgba(172, 104, 113, 0.7);
+
+  .bg-competition {
+    background:
+      linear-gradient(0deg, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.10) 100%),
+      linear-gradient(0deg, rgba(48, 32, 68, 0.30) 0%, rgba(48, 32, 68, 0.30) 100%),
+      url('/images/background.png') lightgray -1.288px -0.418px / 100.509% 225.45% no-repeat;
+
   }
 
   .custom-button-bg {
@@ -107,6 +126,7 @@
   text-shadow: 0px 1px 6.5px 0px #FF9BA8 inset, 0px 5px 10px 0px rgba(172, 104, 113, 0.70), 0px 0px 20px #ffffff;
 }
 
+
 @layer utilities {
   .font-dm-sans {
     font-family: 'DM Sans', sans-serif;
@@ -134,11 +154,13 @@
 }
 
 /* Root styling untuk seluruh body */
+
 body {
   margin: 0;
   padding: 0;
   font-family: 'Poppins', sans-serif;
-  background-color: #302044;
+  /* background-color: #302044; */
+  background: linear-gradient(135deg, #5c3b5c,#2e263c, #a86b8290);
   color: white;
   height: 100vh;
   width: 100%;
