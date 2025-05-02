@@ -1,5 +1,5 @@
 import React from 'react'
-import LandingEventCard from '../components/LandingEventCard';
+import LandingEventCard from '../../components/LandingEventCard';
 
 const Event = () => {
   return (

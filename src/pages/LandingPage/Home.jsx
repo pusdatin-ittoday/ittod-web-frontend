@@ -2,12 +2,13 @@ import React from 'react';
 import Navbar from '../../components/Navbar';
 import HeroCard from '../../components/HeroCard';
 import Footer from '../../components/Footer';
+import Event  from './Event';
 
 const Home = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-[#6a316c] to-[#2e1c3d] flex flex-col justify-start items-center pt-20 overflow-auto">
+      <div className="min-h-screen flex flex-col justify-start items-center pt-20 overflow-auto">
         <HeroCard Logo={'/DummyImg.jpg'} />
 
         <div className="w-full px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 font-dm-sans">
@@ -20,6 +21,7 @@ const Home = () => {
           </div>
         </div>
       </div>
+      <Event />
       <Footer />
     </>
   );
