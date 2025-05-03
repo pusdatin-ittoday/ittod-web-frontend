@@ -22,7 +22,7 @@ const Seminar = () => {
           <div className="flex justify-center mb-6">
             <img
               src="/logo-event/SEMINAR-NASIONAL.png"
-              alt="HackToday Logo"
+              alt="National Seminar Logo"
               className="w-40 md:w-48 h-auto"
             />
           </div>

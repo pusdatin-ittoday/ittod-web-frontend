@@ -18,6 +18,7 @@ const Event = () => {
           title="Bootcamp"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
           imageSrc={'/logo-event/BOOTCAMP.png'}
+          linkHref="/event/bootcamp"
         />
         <LandingEventCard
           title="Workshop"

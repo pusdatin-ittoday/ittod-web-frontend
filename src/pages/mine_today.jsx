@@ -23,7 +23,7 @@ const Mine_Today = () => {
           <div className="flex justify-center mb-6">
             <img
               src="/logo-competition/MINETODAY.png"
-              alt="HackToday Logo"
+              alt="MineToday Logo"
               className="w-40 md:w-48 h-auto"
             />
           </div>

@@ -18,6 +18,7 @@ import Mine_Today from './pages/mine_today';
 import Ux_Today from './pages/ux_today';
 import EditProfile from './components/Dashboard/EditProfil';
 import Seminar from './pages/seminar';
+import Bootcamp from './pages/Bootcamp';
 
 const App = () => {
   return (
@@ -105,6 +106,10 @@ const App = () => {
           <Route
             path="/event/national_seminar"
             element={<Seminar />}
+          ></Route>
+          <Route
+            path="/event/bootcamp"
+            element={<Bootcamp />}
           ></Route>
         </Routes>
       </BrowserRouter>
