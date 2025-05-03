@@ -13,17 +13,17 @@ const Event = () => {
         <LandingEventCard
           title="National Seminar"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/logo-event/SEMINAR-NASIONAL.png"}
+          imageSrc={"/logo-event/SEMINAR-NASIONAL.webp"}
           />
         <LandingEventCard
           title="Bootcamp"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/logo-event/BOOTCAMP.png"}
+          imageSrc={"/logo-event/BOOTCAMP.webp"}
           />
         <LandingEventCard
           title="Workshop"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/logo-event/WORKSHOP.png"}
+          imageSrc={"/logo-event/WORKSHOP.webp"}
         />
       </div>
     </div>

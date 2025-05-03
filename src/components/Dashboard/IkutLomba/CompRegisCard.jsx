@@ -4,25 +4,25 @@ const events = [
     {
         title: "HACKTODAY",
         description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
-        image: "/logo-competition/HACKTODAY.png"
+        image: "/logo-competition/HACKTODAY.webp"
     },
     {
         title: "GAMETODAY",
         description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
-        image: "/logo-competition/GAMETODAY.png"
+        image: "/logo-competition/GAMETODAY.webp"
 
 
     },
     {
         title: "UXTODAY",
         description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
-        image: "/logo-competition/UXTODAY.png"
+        image: "/logo-competition/UXTODAY.webp"
 
     },
     {
         title: "MINETODAY",
         description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
-        image: "/logo-competition/MINETODAY.png"
+        image: "/logo-competition/MINETODAY.webp"
 
     },
 ];
