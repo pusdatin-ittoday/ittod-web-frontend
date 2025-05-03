@@ -17,6 +17,7 @@ import Hack_Today from './pages/hack_today';
 import Mine_Today from './pages/mine_today';
 import Ux_Today from './pages/ux_today';
 import EditProfile from './components/Dashboard/EditProfil';
+import Seminar from './pages/seminar';
 
 const App = () => {
   return (
@@ -100,6 +101,10 @@ const App = () => {
           <Route
             path="/competition/ux_today"
             element={<Ux_Today />}
+          ></Route>
+          <Route
+            path="/event/national_seminar"
+            element={<Seminar />}
           ></Route>
         </Routes>
       </BrowserRouter>
