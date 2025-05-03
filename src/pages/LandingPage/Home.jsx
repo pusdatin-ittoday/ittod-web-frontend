@@ -34,7 +34,7 @@ const Home = () => {
       <div id="event">
         <Event />
       </div>
-      <div id="lomba">
+      <div id="competition">
         <Lomba />
       </div>
       <div id="timeline">

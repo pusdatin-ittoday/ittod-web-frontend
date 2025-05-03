@@ -76,7 +76,7 @@ class Navbar extends Component {
               </li>
               <li className="flex items-center">
                 <a
-                  href="#lomba"
+                  href="#competition"
                   className={navLinkBase}
                 >
                   Competition
