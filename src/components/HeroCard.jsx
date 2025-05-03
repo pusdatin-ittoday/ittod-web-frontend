@@ -1,7 +1,6 @@
 import React from 'react';
 
 const HeroCard = ({ Logo }) => {
-  // menggunakan destructuring untuk menerima prop Logo
   return (
     <div className="w-full max-w-xl mx-auto text-center p-8 lg:mb-10 mb-2 text-white">
       <img

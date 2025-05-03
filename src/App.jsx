@@ -12,9 +12,8 @@ import VerifyPassword from './pages/LoginPage/VerifyPassword';
 import NewPassword from './pages/LoginPage/NewPassword';
 import ContactUs from './pages/ContactUs';
 import Sponsors from './Sponsors';
-import Hack_Today from './pages/hack_today';
+import Game_Today from './pages/game_today';
 import EditProfile from './components/Dashboard/EditProfil';
-
 
 const App = () => {
   return (
@@ -68,12 +67,11 @@ const App = () => {
             path="*"
             element={<DashboardLayout />}
           />
-          
-          <Route 
-            path='/edit-profile'
+
+          <Route
+            path="/edit-profile"
             element={<EditProfile />}
           />
-          
 
           {/* buat liat liat waktu bikin page */}
           <Route
@@ -85,8 +83,8 @@ const App = () => {
             element={<Sponsors />}
           ></Route>
           <Route
-            path="/competition/hack_today"
-            element={<Hack_Today />}
+            path="/competition/game_today"
+            element={<Game_Today />}
           ></Route>
         </Routes>
       </BrowserRouter>
