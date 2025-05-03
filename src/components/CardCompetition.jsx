@@ -16,7 +16,7 @@ const CardCompetition = ({ competitions = [] }) => {
        >
          {/* Gambar */}
          <img
-           src="/images/DummyImg.jpg"
+           src={comp.imgSrc}
            alt="competition"
            className="w-[205px] h-[260px] rounded-lg"
          />

@@ -4,17 +4,17 @@ const events = [
     {
         title: "NATIONAL SEMINAR",
         description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
-        image: "/logo-event/SEMINAR-NASIONAL.png"
+        image: "/logo-event/SEMINAR-NASIONAL.webp"
     },
     {
         title: "BOOTCAMP",
         description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
-        image: "/logo-event/BOOTCAMP.png"
+        image: "/logo-event/BOOTCAMP.webp"
     },
     {
         title: "WORKSHOP",
         description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
-        image: "/logo-event/WORKSHOP.png"
+        image: "/logo-event/WORKSHOP.webp"
     },
 ];
 

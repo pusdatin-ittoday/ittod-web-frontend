@@ -9,18 +9,22 @@ const IkutLomba = () => {
         {
           title: "Hacktoday",
           description: "Acara seru banget aduhai ayo join ittod tahun ini",
+          imgSrc: "/logo-competition/HACKTODAY.webp",
         },
         {
           title: "Uxtoday",
           description: "Acara seru banget aduhai ayo join ittod tahun ini",
+          imgSrc: "/logo-competition/UXTODAY.webp",
         },
         {
           title: "Gametoday",
           description: "Acara seru banget aduhai ayo join ittod tahun ini",
+          imgSrc: "/logo-competition/GAMETODAY.webp",
         },
         {
           title: "Minetoday",
           description: "Acara seru banget aduhai ayo join ittod tahun ini",
+          imgSrc: "/logo-competition/MINETODAY.webp",
         },
       ];
       
