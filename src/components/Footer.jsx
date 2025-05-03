@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -16,22 +17,67 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* EVENTS */}
             <div className="flex flex-col items-center md:items-start space-y-2">
-              <h3 className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair">EVENTS</h3>
-              <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">National Seminar</p>
-              <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">Workshop</p>
+              <a
+                href="#event"
+                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
+              >
+                EVENTS
+              </a>
+              <Link
+                to="/event/national_seminar"
+                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+              >
+                National Seminar
+              </Link>
+              <Link
+                to="/event/workshop"
+                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+              >
+                Workshop
+              </Link>
             </div>
 
             {/* COMPETITIONS */}
             <div className="flex flex-col items-center md:items-start space-y-2">
-              <h3 className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair">COMPETITIONS</h3>
-              <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">Game Today</p>
-              <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">Hack Today</p>
-              <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">UX Today</p>
-              <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">Mine Today</p>
+              <a
+                href="#competition"
+                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
+              >
+                COMPETITIONS
+              </a>
+              <Link
+                to="/competition/game_today"
+                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+              >
+                Game Today
+              </Link>
+              <Link
+                to="/competition/hack_today"
+                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+              >
+                Hack Today
+              </Link>
+              <Link
+                to="/competition/ux_today"
+                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+              >
+                UX Today
+              </Link>
+              <Link
+                to="/competition/mine_today"
+                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+              >
+                Mine Today
+              </Link>
             </div>
 
             <div className="flex flex-col items-center md:items-start space-y-4">
-              <h3 className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair">SOCIAL MEDIA</h3>
+              <a
+                href="#contact"
+                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
+              >
+                SOCIAL MEDIA
+              </a>
 
               <div className="grid grid-cols-3 gap-4 justify-items-center">
                 {[
@@ -62,7 +108,12 @@ const Footer = () => {
 
             {/* KONTAK KAMI */}
             <div className="flex flex-col items-center md:items-start space-y-2">
-              <h3 className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair">KONTAK KAMI</h3>
+              <a
+                href="#contact"
+                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
+              >
+                KONTAK KAMI
+              </a>
 
               <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer whitespace-nowrap">ittoday2025@gmail.com</p>
 
