@@ -24,6 +24,7 @@ const Lomba = () => {
           title="UX Today"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
           imageSrc={'/logo-competition/UXTODAY.png'}
+          linkHref="/competition/ux_today"
         />
         <LandingCompetitionCard
           title="Game Today"
