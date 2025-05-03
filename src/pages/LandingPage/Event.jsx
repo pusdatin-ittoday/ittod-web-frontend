@@ -25,7 +25,6 @@ const Event = () => {
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
           imageSrc={'/logo-event/WORKSHOP.png'}
           linkHref="/event/workshop"
-        />
       </div>
     </div>
   );

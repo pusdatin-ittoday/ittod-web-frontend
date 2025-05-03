@@ -17,6 +17,7 @@ const Home = () => {
       >
         <HeroCard Logo={'/LOGO_ITTODAY_2025.png'} />
 
+
         <div
           className="w-full px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 font-dm-sans"
           id="about"
