@@ -3,7 +3,7 @@ import React from 'react';
 const PrizepoolSection = () => {
   return (
     <section className="min-h-screen flex flex-col items-center justify-center text-white font-dm-sans px-4 md:px-12">
-      <h2 className="text-4xl md:text-6xl font-playfair font-bold text-center mb-12 drop-shadow-[0_0_10px_#ac6871]">PRIZEPOOL</h2>
+      <h2 className="text-5xl md:text-5xl font-playfair font-bold text-center mb-12 drop-shadow-[0_0_10px_#ac6871]">PRIZEPOOL</h2>
 
       <div className="flex flex-col items-center gap-10 md:gap-16">
         {/* Juara 1 */}

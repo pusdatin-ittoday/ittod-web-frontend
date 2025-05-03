@@ -57,7 +57,7 @@ const TimelineLomba = () => {
 
   return (
     <>
-      <h1 className="text-center text-white text-4xl lg:text-5xl font-playfair font-bold leading-[140.625%] [text-shadow:0px_5px_10px_rgba(172,104,113,0.7)]">Timeline</h1>
+      <h1 className="text-center text-white text-4xl lg:text-5xl font-playfair font-bold leading-[140.625%] [text-shadow:0px_5px_10px_rgba(172,104,113,0.7)]">TIMELINE</h1>
       <div className="flex justify-center px-8 py-16">
         <div className="max-w-xl">
           {items.map((item, index) => (

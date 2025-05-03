@@ -12,6 +12,7 @@ const Lomba = () => {
           title="Hack Today"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
           imageSrc={'/logo-competition/HACKTODAY.png'}
+          linkHref="/competition/hack_today"
         />
         <LandingCompetitionCard
           title="Mine Today"
