@@ -2,10 +2,9 @@ import React, { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import TimelineLomba from '../components/TimeLineLomba';
-import PrizepoolSection from '../components/Prizepool';
 import ContactUs from './ContactUs';
 
-const Ux_Today = () => {
+const Workshop = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -17,13 +16,13 @@ const Ux_Today = () => {
         {/* SECTION: Home */}
         <section className="min-h-screen mb-0 pb-0">
           {/* Judul */}
-          <h1 className="text-5xl md:text-5xl font-playfair font-bold text-center mb-6 drop-shadow-[0_0_10px_#ac6871]">UXTODAY</h1>
+          <h1 className="text-5xl md:text-5xl font-playfair font-bold text-center mb-6 drop-shadow-[0_0_10px_#ac6871]">WORKSHOP</h1>
 
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img
-              src="/logo-competition/UXTODAY.png"
-              alt="UxToday Logo"
+              src="/logo-event/WORKSHOP.png"
+              alt="Workshop Logo"
               className="w-40 md:w-48 h-auto"
             />
           </div>
@@ -52,11 +51,6 @@ const Ux_Today = () => {
         <section className="min-h-screen mb-0 pb-0 md:mb-0 md:pb-0">
           <TimelineLomba />
         </section>
-
-        {/* SECTION: Prizepool */}
-        <section className="min-h-screen mb-0 pb-0 md:mb-20 md:pb-20">
-          <PrizepoolSection />
-        </section>
       </main>
       <ContactUs />
       <Footer />
@@ -64,4 +58,4 @@ const Ux_Today = () => {
   );
 };
 
-export default Ux_Today;
+export default Workshop;
