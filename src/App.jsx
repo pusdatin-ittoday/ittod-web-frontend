@@ -14,6 +14,7 @@ import ContactUs from './pages/ContactUs';
 import Sponsors from './Sponsors';
 import Game_Today from './pages/game_today';
 import Hack_Today from './pages/hack_today';
+import Mine_Today from './pages/mine_today';
 import EditProfile from './components/Dashboard/EditProfil';
 
 const App = () => {
@@ -90,6 +91,10 @@ const App = () => {
           <Route
             path="/competition/hack_today"
             element={<Hack_Today />}
+          ></Route>
+          <Route
+            path="/competition/mine_today"
+            element={<Mine_Today />}
           ></Route>
         </Routes>
       </BrowserRouter>
