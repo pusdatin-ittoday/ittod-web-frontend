@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 @tailwind utilities;
 
 /* for tailwind */
@@ -22,42 +22,36 @@
 
   /* shadow untuk Beranda */
   .shadow-beranda {
-    box-shadow:
-      0px 4px 4px 0px rgba(0, 0, 0, 0.25),
-      0px 0px 50px 0px #CA63A9;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 0px 50px 0px #ca63a9;
   }
 
   .custom-button-shadow {
     box-shadow: 0px 0px 20px 1px rgba(12, 16, 29, 0.5), 0px 0px 15px 1px rgba(12, 16, 29, 0.5) inset;
   }
 
-
   .glow-dashboard-text {
     text-shadow: 0px 5px 10px rgba(172, 104, 113, 0.7);
   }
 
   .bg-competition {
-    background:
-      linear-gradient(0deg, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.10) 100%),
-      linear-gradient(0deg, rgba(48, 32, 68, 0.30) 0%, rgba(48, 32, 68, 0.30) 100%),
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%), linear-gradient(0deg, rgba(48, 32, 68, 0.3) 0%, rgba(48, 32, 68, 0.3) 100%),
       url('/images/background.png') lightgray -1.288px -0.418px / 100.509% 225.45% no-repeat;
-
   }
 
   .custom-button-bg {
-    background: linear-gradient(to right, #F97283, #B247B4, #9323C2);
+    background: linear-gradient(to right, #f97283, #b247b4, #9323c2);
   }
 
   .custom-button-bg-2:hover {
-    background: linear-gradient(to right, #F97283, #B247B4, #9323C2);
+    background: linear-gradient(to right, #f97283, #b247b4, #9323c2);
   }
   .input-text-glow {
-    text-shadow: 0px 4px 15px #AC6871;
+    text-shadow: 0px 4px 15px #ac6871;
   }
 
   .button-hover:hover {
     box-shadow: 0 0 10px 5px rgba(209, 107, 165, 0.2);
-    filter: brightness(1.1)
+    filter: brightness(1.1);
   }
 
   .back-button-glow:hover {
@@ -67,7 +61,7 @@
   /*for back button on hover*/
   .nav-text-hover:hover {
     color: #fb64b6;
-    text-shadow: 0px 0px 20px #AC6871;
+    text-shadow: 0px 0px 20px #ac6871;
     filter: brightness(1.1);
   }
 
@@ -92,23 +86,23 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #2d1a36 ;
+    background: #2d1a36;
     border-radius: 10px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #4D3159;
+    background: #4d3159;
   }
 
   .white-text-glow {
-    color: #FFF;
+    color: #fff;
     text-align: center;
     font-family: 'Playfair Display', serif;
     font-size: 25px;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
-    text-shadow: 0px 1px 6.5px 0px #FF9BA8 inset, 0px 5px 10px 0px rgba(172, 104, 113, 0.70), 0px 0px 20px #ffffff;
+    text-shadow: 0px 1px 6.5px 0px #ff9ba8 inset, 0px 5px 10px 0px rgba(172, 104, 113, 0.7), 0px 0px 20px #ffffff;
   }
 }
 
@@ -137,4 +131,7 @@ body {
   color: white;
   /* height: 100vh; */
   width: 100%;
+}
+html {
+  scroll-behavior: smooth;
 }

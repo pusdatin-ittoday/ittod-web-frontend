@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 
 class Navbar extends Component {
   constructor(props) {
@@ -42,12 +41,9 @@ class Navbar extends Component {
     const { active, scroll } = this.state;
     const { isDashboard } = this.props;
 
-    const scrollActive = scroll
-      ? 'backdrop-blur-md py-3 bg-black/20 shadow-md'
-      : 'bg-transparent py-2';
+    const scrollActive = scroll ? 'backdrop-blur-md py-3 bg-black/20 shadow-md' : 'bg-transparent py-2';
 
-    const navLinkBase =
-      'font-dm-sans font-medium opacity-100 text-white nav-text-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer';
+    const navLinkBase = 'font-dm-sans font-medium opacity-100 text-white nav-text-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer';
 
     return (
       <div className={`navbar fixed w-full transition-all z-[999] ${scrollActive}`}>
@@ -62,50 +58,71 @@ class Navbar extends Component {
               md:opacity-100 md:visible md:pointer-events-auto md:static md:flex-row md:gap-12 md:shadow-none md:bg-transparent md:w-auto md:h-full md:p-0 md:text-black md:transition-none md:items-center md:mt-0`}
             >
               <li className="flex items-center">
-                <Link to="/home" className={navLinkBase}>Home</Link>
+                <a
+                  href="#hero"
+                  className={navLinkBase}
+                >
+                  Home
+                </a>
+              </li>
+
+              <li className="flex items-center">
+                <a
+                  href="#event"
+                  className={navLinkBase}
+                >
+                  Event
+                </a>
               </li>
               <li className="flex items-center">
-                <Link to="/competition" className={navLinkBase}>Competition</Link>
+                <a
+                  href="#lomba"
+                  className={navLinkBase}
+                >
+                  Competition
+                </a>
               </li>
               <li className="flex items-center">
-                <Link to="/event" className={navLinkBase}>Event</Link>
-              </li>
-              <li className="flex items-center">
-                <Link to="/contact-us" className={navLinkBase}>Contact Us</Link>
+                <a
+                  href="#contact"
+                  className={navLinkBase}
+                >
+                  Contact Us
+                </a>
               </li>
               <li className="block lg:hidden">
                 {isDashboard ? (
                   <button
-                    onClick={this.handleClick} // Add logic for logout if necessary
+                    onClick={this.handleClick}
                     className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
                   >
                     Logout
                   </button>
                 ) : (
-                  <Link
-                    to="/login"
+                  <a
+                    href="/login"
                     className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
                   >
                     Login
-                  </Link>
+                  </a>
                 )}
               </li>
             </ul>
             <div className="login hidden lg:block">
               {isDashboard ? (
                 <button
-                  onClick={this.handleClick} // Add logic for logout if necessary
+                  onClick={this.handleClick}
                   className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
                 >
                   Logout
                 </button>
               ) : (
-                <Link
-                  to="/login"
+                <a
+                  href="/login"
                   className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-2 px-7 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
                 >
                   Login
-                </Link>
+                </a>
               )}
             </div>
             <img
