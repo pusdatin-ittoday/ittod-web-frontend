@@ -12,9 +12,11 @@ import VerifyPassword from './pages/LoginPage/VerifyPassword';
 import NewPassword from './pages/LoginPage/NewPassword';
 import ContactUs from './pages/ContactUs';
 import Sponsors from './Sponsors';
+import Game_Today from './pages/game_today';
 import Hack_Today from './pages/hack_today';
+import Mine_Today from './pages/mine_today';
+import Ux_Today from './pages/ux_today';
 import EditProfile from './components/Dashboard/EditProfil';
-
 
 const App = () => {
   return (
@@ -68,12 +70,11 @@ const App = () => {
             path="*"
             element={<DashboardLayout />}
           />
-          
-          <Route 
-            path='/edit-profile'
+
+          <Route
+            path="/edit-profile"
             element={<EditProfile />}
           />
-          
 
           {/* buat liat liat waktu bikin page */}
           <Route
@@ -85,8 +86,20 @@ const App = () => {
             element={<Sponsors />}
           ></Route>
           <Route
+            path="/competition/game_today"
+            element={<Game_Today />}
+          ></Route>
+          <Route
             path="/competition/hack_today"
             element={<Hack_Today />}
+          ></Route>
+          <Route
+            path="/competition/mine_today"
+            element={<Mine_Today />}
+          ></Route>
+          <Route
+            path="/competition/ux_today"
+            element={<Ux_Today />}
           ></Route>
         </Routes>
       </BrowserRouter>

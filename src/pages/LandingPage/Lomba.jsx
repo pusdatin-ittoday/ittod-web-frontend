@@ -1,38 +1,40 @@
-import React from 'react'
-import LandingCompetitionCard from '../../components/LandingCompetitionCard'
+import React from 'react';
+import LandingCompetitionCard from '../../components/LandingCompetitionCard';
 
 const Lomba = () => {
   return (
-    <div className='min-h-screen w-full flex flex-col items-center justify-center py-16 px-4 lg:px-8 gap-8'>
-      <h1 className='text-white text-4xl lg:text-5xl font-playfair font-bold leading-[140.625%] [text-shadow:0px_5px_10px_rgba(172,104,113,0.7)]'>
-        Competition
-      </h1>
-      
+    <div className="min-h-screen w-full flex flex-col items-center justify-center py-16 px-4 lg:px-8 gap-8">
+      <h1 className="text-white text-4xl lg:text-5xl font-playfair font-bold leading-[140.625%] [text-shadow:0px_5px_10px_rgba(172,104,113,0.7)]">Competition</h1>
+
       {/* competitions */}
-      <div className='flex flex-wrap justify-center align-middle gap-10'>
+      <div className="flex flex-wrap justify-center align-middle gap-10">
         <LandingCompetitionCard
-          title= "Hack Today"
-          description= "Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/logo-competition/HACKTODAY.webp"}
+          title="Hack Today"
+          description="Acara seru banget aduhai ayo join ittod yang tahun ini"
+          imageSrc={'/logo-competition/HACKTODAY.png'}
+          linkHref="/competition/hack_today"
         />
         <LandingCompetitionCard
-          title= "Mine Today"
-          description= "Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/logo-competition/MINETODAY.webp"}
+          title="Mine Today"
+          description="Acara seru banget aduhai ayo join ittod yang tahun ini"
+          imageSrc={'/logo-competition/MINETODAY.png'}
+          linkHref="/competition/mine_today"
         />
         <LandingCompetitionCard
-          title= "UX Today"
-          description= "Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/logo-competition/UXTODAY.webp"}
+          title="UX Today"
+          description="Acara seru banget aduhai ayo join ittod yang tahun ini"
+          imageSrc={'/logo-competition/UXTODAY.png'}
+          linkHref="/competition/ux_today"
         />
         <LandingCompetitionCard
-          title= "Game Today"
-          description= "Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={"/logo-competition/GAMETODAY.webp"}
+          title="Game Today"
+          description="Acara seru banget aduhai ayo join ittod yang tahun ini"
+          imageSrc="/logo-competition/GAMETODAY.png"
+          linkHref="/competition/game_today"
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Lomba
+export default Lomba;

@@ -5,7 +5,7 @@ import TimelineLomba from '../components/TimeLineLomba';
 import PrizepoolSection from '../components/Prizepool';
 import ContactUs from './ContactUs';
 
-const Hack_Today = () => {
+const Game_Today = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -17,13 +17,13 @@ const Hack_Today = () => {
         {/* SECTION: Home */}
         <section className="min-h-screen mb-0 pb-0">
           {/* Judul */}
-          <h1 className="text-5xl md:text-5xl font-playfair font-bold text-center mb-6 drop-shadow-[0_0_10px_#ac6871]">HACKTODAY</h1>
+          <h1 className="text-5xl md:text-5xl font-playfair font-bold text-center mb-6 drop-shadow-[0_0_10px_#ac6871]">GAMETODAY</h1>
 
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img
-              src="/logo-competition/HACKTODAY.png"
-              alt="HackToday Logo"
+              src="/logo-competition/GAMETODAY.png"
+              alt="GameToday Logo"
               className="w-40 md:w-48 h-auto"
             />
           </div>
@@ -64,4 +64,4 @@ const Hack_Today = () => {
   );
 };
 
-export default Hack_Today;
+export default Game_Today;
