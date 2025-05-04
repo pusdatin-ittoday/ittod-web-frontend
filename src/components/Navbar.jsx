@@ -207,7 +207,7 @@ class Navbar extends Component {
                 ) : (
                   <button
                     onClick={this.navigateToLogin}
-                    className="w-full text-center font-dm-sans font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-2 px-7 rounded-lg shadow-md hover:from-purple-700 hover:to-indigo-700 hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                    className="w-full text-center font-dm-sans font-bold custom-button-bg text-white py-2 px-7 rounded-lg shadow-md button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
                   >
                     Login
                   </button>
