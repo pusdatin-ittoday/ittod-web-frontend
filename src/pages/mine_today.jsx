@@ -7,7 +7,7 @@ import ContactUs from './ContactUs';
 
 const Mine_Today = () => {
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
   return (
