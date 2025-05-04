@@ -11,25 +11,25 @@ const Lomba = () => {
         <LandingCompetitionCard
           title="Hack Today"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={'/logo-competition/HACKTODAY.png'}
+          imageSrc={'/logo-competition/HACKTODAY.webp'}
           linkHref="/competition/hack_today"
         />
         <LandingCompetitionCard
           title="Mine Today"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={'/logo-competition/MINETODAY.png'}
+          imageSrc={'/logo-competition/MINETODAY.webp'}
           linkHref="/competition/mine_today"
         />
         <LandingCompetitionCard
           title="UX Today"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={'/logo-competition/UXTODAY.png'}
+          imageSrc={'/logo-competition/UXTODAY.webp'}
           linkHref="/competition/ux_today"
         />
         <LandingCompetitionCard
           title="Game Today"
           description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc="/logo-competition/GAMETODAY.png"
+          imageSrc="/logo-competition/GAMETODAY.webp"
           linkHref="/competition/game_today"
         />
       </div>

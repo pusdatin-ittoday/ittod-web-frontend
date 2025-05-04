@@ -21,9 +21,9 @@ const Bootcamp = () => {
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img
-              src="/logo-event/BOOTCAMP.png"
+              src="/logo-event/BOOTCAMP.webp"
               alt="Bootcamp Logo"
-              className="w-40 md:w-48 h-auto"
+              className="w-40 md:w-48 h-auto rounded-full"
             />
           </div>
 
@@ -39,9 +39,7 @@ const Bootcamp = () => {
           <div className="w-full px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 font-dm-sans mt-8 md:mt-20">
             <div className="max-w-7xl mx-auto bg-[#4D3159] rounded-3xl text-white shadow-[0_0_60px_#AC6871] py-8 md:py-12 px-4 md:px-6 mt-8 md:mt-12 mb-0 md:mb-20">
               <p className="text-base md:text-lg leading-relaxed text-justify text-pink-100 drop-shadow-[0_0_10px_#ffffff77]">
-                GameToday adalah bagian dari Kompetisi IT Today yang diadakan oleh Ilmu Komputer IPB dengan konsep Game Jam. Dalam kompetisi ini, peserta ditantang untuk membuat game dari nol dalam waktu terbatas, sehingga bisa mengasah
-                kreativitas, skill, dan minat mereka di dunia Game Development. Setiap tim harus merancang dan mengembangkan game berdasarkan tema yang sudah ditentukan. Kompetisi ini terbuka untuk mahasiswa sarjana dan diploma dari seluruh
-                Indonesia, dan dilaksanakan secara daring serta luring di IPB University.
+                Bootcamp is a training program designed to equip participants with skills and knowledge related to the field of Information Technology. The bootcamp is held for several hours per week over the course of three weeks.
               </p>
             </div>
           </div>
