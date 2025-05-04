@@ -10,21 +10,22 @@ const Event = () => {
       <div className="flex flex-wrap justify-center align-middle gap-10">
         <LandingEventCard
           title="National Seminar"
-          description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={'/logo-event/SEMINAR-NASIONAL.png'}
+          // description='National Seminar is one of the series of events under IT Today 2025, aimed at students and the general public who have an interest in the field of Information Technology. This aligns with the theme of IT Today 2025: “Collaborating for Change and Harnessing the Power of Technology."'
+          imageSrc={'/logo-event/SEMINAR-NASIONAL.webp'}
           linkHref="/event/national_seminar"
         />
         <LandingEventCard
           title="Bootcamp"
-          description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={'/logo-event/BOOTCAMP.png'}
+          // description="Bootcamp is a training program designed to equip participants with skills and knowledge related to the field of Information Technology. The bootcamp is held for several hours per week over the course of three weeks."
+          imageSrc={'/logo-event/BOOTCAMP.webp'}
           linkHref="/event/bootcamp"
         />
         <LandingEventCard
           title="Workshop"
-          description="Acara seru banget aduhai ayo join ittod yang tahun ini"
-          imageSrc={'/logo-event/WORKSHOP.png'}
+          // description="Workshop is a training session featuring speakers who are experts in their respective fields. This workshop allows participants to actively engage and interact with the speakers on various interesting IT-related topics."
+          imageSrc={'/logo-event/WORKSHOP.webp'}
           linkHref="/event/workshop"
+        />
       </div>
     </div>
   );

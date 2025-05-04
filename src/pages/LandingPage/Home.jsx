@@ -15,7 +15,7 @@ const Home = () => {
         className="min-h-screen flex flex-col justify-start items-center pt-20"
         id="hero"
       >
-        <HeroCard Logo={'/LOGO_ITTODAY_2025.png'} />
+        <HeroCard Logo={'/LOGO_ITTODAY_2025.webp'} />
 
 
         <div
