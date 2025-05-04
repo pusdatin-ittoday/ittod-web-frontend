@@ -59,16 +59,15 @@ class Navbar extends Component {
             >
               <li className="flex items-center">
                 <a
-                  href="#hero"
+                  href="/#hero"
                   className={navLinkBase}
                 >
                   Home
                 </a>
               </li>
-
               <li className="flex items-center">
                 <a
-                  href="#event"
+                  href="/#event"
                   className={navLinkBase}
                 >
                   Event
@@ -76,7 +75,7 @@ class Navbar extends Component {
               </li>
               <li className="flex items-center">
                 <a
-                  href="#competition"
+                  href="/#competition"
                   className={navLinkBase}
                 >
                   Competition
@@ -84,7 +83,7 @@ class Navbar extends Component {
               </li>
               <li className="flex items-center">
                 <a
-                  href="#contact"
+                  href="/#contact"
                   className={navLinkBase}
                 >
                   Contact Us
