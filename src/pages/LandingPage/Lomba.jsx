@@ -10,25 +10,25 @@ const Lomba = () => {
       <div className="flex flex-wrap justify-center align-middle gap-10">
         <LandingCompetitionCard
           title="Hack Today"
-          description="Acara seru banget aduhai ayo join ittod yang tahun ini"
+          description="Taklukan CTF!"
           imageSrc={'/logo-competition/HACKTODAY.webp'}
           linkHref="/competition/hack_today"
         />
         <LandingCompetitionCard
           title="Mine Today"
-          description="Acara seru banget aduhai ayo join ittod yang tahun ini"
+          description="Selesaikan masalah dengan Machine Learning!"
           imageSrc={'/logo-competition/MINETODAY.webp'}
           linkHref="/competition/mine_today"
         />
         <LandingCompetitionCard
           title="UX Today"
-          description="Acara seru banget aduhai ayo join ittod yang tahun ini"
+          description="Rancang UI/UX yang inovatif!"
           imageSrc={'/logo-competition/UXTODAY.webp'}
           linkHref="/competition/ux_today"
         />
         <LandingCompetitionCard
           title="Game Today"
-          description="Acara seru banget aduhai ayo join ittod yang tahun ini"
+          description="Ciptakan game yang menarik!"
           imageSrc="/logo-competition/GAMETODAY.webp"
           linkHref="/competition/game_today"
         />

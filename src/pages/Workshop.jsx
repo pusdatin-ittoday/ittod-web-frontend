@@ -39,7 +39,7 @@ const Workshop = () => {
           <div className="w-full px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 font-dm-sans mt-8 md:mt-20">
             <div className="max-w-7xl mx-auto bg-[#4D3159] rounded-3xl text-white shadow-[0_0_60px_#AC6871] py-8 md:py-12 px-4 md:px-6 mt-8 md:mt-12 mb-0 md:mb-20">
               <p className="text-base md:text-lg leading-relaxed text-justify text-pink-100 drop-shadow-[0_0_10px_#ffffff77]">
-                Workshop is a training session featuring speakers who are experts in their respective fields. This workshop allows participants to actively engage and interact with the speakers on various interesting IT-related topics.
+                Workshop IT Today 2025 merupakan  pelatihan yang akan diisi oleh pembicara yang ahli dibidangnya. Workshop ini memungkinkan peserta melakukan interaksi aktif dan bersama pembicara terkait topik-topik menarik mengenai IT.
               </p>
             </div>
           </div>

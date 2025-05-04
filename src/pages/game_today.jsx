@@ -22,7 +22,7 @@ const Game_Today = () => {
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img
-              src="/logo-competition/GAMETODAY.png"
+              src="/logo-competition/GAMETODAY.webp"
               alt="GameToday Logo"
               className="w-40 md:w-48 h-auto"
             />
