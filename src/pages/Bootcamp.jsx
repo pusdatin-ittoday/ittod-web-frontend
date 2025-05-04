@@ -6,8 +6,10 @@ import ContactUs from './ContactUs';
 
 const Bootcamp = () => {
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+
+    window.scrollTo({top: 0, behavior: 'instant'});
   }, []);
+
 
   return (
     <>

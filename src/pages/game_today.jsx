@@ -7,7 +7,7 @@ import ContactUs from './ContactUs';
 
 const Game_Today = () => {
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({top: 0, behavior: 'instant'});
   }, []);
 
   return (

@@ -7,8 +7,9 @@ import ContactUs from './ContactUs';
 
 const Ux_Today = () => {
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({top: 0, behavior: 'instant'});
   }, []);
+
 
   return (
     <>
