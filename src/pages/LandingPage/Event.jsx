@@ -10,19 +10,19 @@ const Event = () => {
       <div className="flex flex-wrap justify-center align-middle gap-10">
         <LandingEventCard
           title="National Seminar"
-          description='Exciting insights on the field of Information Technology!'
+          description='Wawasan menarik di bidang Teknologi Informasi!'
           imageSrc={'/logo-event/SEMINAR-NASIONAL.webp'}
           linkHref="/event/national_seminar"
         />
         <LandingEventCard
           title="Bootcamp"
-          description="Obtain skills and knowledge related to the field of Information Technology!"
+          description="Asah kemampuanmu dalam bidang Teknologi Informasi!"
           imageSrc={'/logo-event/BOOTCAMP.webp'}
           linkHref="/event/bootcamp"
         />
         <LandingEventCard
           title="Workshop"
-          description="Engage and interact with the experts on various interesting IT-related topics!"
+          description="Temui dengan para ahli di berbagai bidang IT!"
           imageSrc={'/logo-event/WORKSHOP.webp'}
           linkHref="/event/workshop"
         />

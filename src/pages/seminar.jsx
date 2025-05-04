@@ -39,7 +39,7 @@ const Seminar = () => {
           <div className="w-full px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 font-dm-sans mt-8 md:mt-20">
             <div className="max-w-7xl mx-auto bg-[#4D3159] rounded-3xl text-white shadow-[0_0_60px_#AC6871] py-8 md:py-12 px-4 md:px-6 mt-8 md:mt-12 mb-0 md:mb-20">
               <p className="text-base md:text-lg leading-relaxed text-justify text-pink-100 drop-shadow-[0_0_10px_#ffffff77]">
-                National Seminar is one of the series of events under IT Today 2025, aimed at students and the general public who have an interest in the field of Information Technology. This aligns with the theme of IT Today 2025: “Collaborating for Change and Harnessing the Power of Technology.”
+                Seminar Nasional IT Today 2025 adalah salah satu rangkaian acara dalam kegiatan IT Today 2025 yang ditujukan kepada mahasiswa atau khalayak umum yang tertarik dengan bidang IT, sebagaimana tema yang diusung pada IT Today 2025 yaitu “Collaborating For Change and Harnessing the Power of Technology”.
               </p>
             </div>
           </div>

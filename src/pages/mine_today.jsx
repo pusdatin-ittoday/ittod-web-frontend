@@ -22,7 +22,7 @@ const Mine_Today = () => {
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img
-              src="/logo-competition/MINETODAY.png"
+              src="/logo-competition/MINETODAY.webp"
               alt="MineToday Logo"
               className="w-40 md:w-48 h-auto"
             />
@@ -40,9 +40,7 @@ const Mine_Today = () => {
           <div className="w-full px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 font-dm-sans mt-8 md:mt-20">
             <div className="max-w-7xl mx-auto bg-[#4D3159] rounded-3xl text-white shadow-[0_0_60px_#AC6871] py-8 md:py-12 px-4 md:px-6 mt-8 md:mt-12 mb-0 md:mb-20">
               <p className="text-base md:text-lg leading-relaxed text-justify text-pink-100 drop-shadow-[0_0_10px_#ffffff77]">
-                GameToday adalah bagian dari Kompetisi IT Today yang diadakan oleh Ilmu Komputer IPB dengan konsep Game Jam. Dalam kompetisi ini, peserta ditantang untuk membuat game dari nol dalam waktu terbatas, sehingga bisa mengasah
-                kreativitas, skill, dan minat mereka di dunia Game Development. Setiap tim harus merancang dan mengembangkan game berdasarkan tema yang sudah ditentukan. Kompetisi ini terbuka untuk mahasiswa sarjana dan diploma dari seluruh
-                Indonesia, dan dilaksanakan secara daring serta luring di IPB University.
+                MineToday merupakan kompetisi Data Mining dan juga cabang kompetisi terbaru dalam IT Today 2025. Kompetisi ini berfokus pada penerapan machine learning untuk menyelesaikan permasalahan berbasis data. Peserta ditantang untuk membangun model prediktif yang akurat dan mendorong pemanfaatan teknik-teknik machine learning untuk menghasilkan solusi berbasis data.
               </p>
             </div>
           </div>

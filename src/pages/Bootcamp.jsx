@@ -39,7 +39,7 @@ const Bootcamp = () => {
           <div className="w-full px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 font-dm-sans mt-8 md:mt-20">
             <div className="max-w-7xl mx-auto bg-[#4D3159] rounded-3xl text-white shadow-[0_0_60px_#AC6871] py-8 md:py-12 px-4 md:px-6 mt-8 md:mt-12 mb-0 md:mb-20">
               <p className="text-base md:text-lg leading-relaxed text-justify text-pink-100 drop-shadow-[0_0_10px_#ffffff77]">
-                Bootcamp is a training program designed to equip participants with skills and knowledge related to the field of Information Technology. The bootcamp is held for several hours per week over the course of three weeks.
+                Bootcamp IT Today 2025 merupakan program pelatihan yang dirancang untuk membekali peserta dengan keterampilan dan pengetahuan terkait bidang IT. Bootcamp berlangsung selama beberapa jam per minggu selama tiga minggu.
               </p>
             </div>
           </div>
