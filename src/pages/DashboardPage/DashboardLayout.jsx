@@ -29,12 +29,12 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="bg-[#302044] h-full w-full text-white font-dm-sans">
+    <div className="flex min-h-screen  text-white font-dm-sans">
       {/* Navbar tetap di atas */}
       <Navbar />
 
       {/* Wrapper: Sidebar + Main Content sejajar */}
-      <div className="flex">
+      <div className="flex flex-col lg:flex-row  w-full ">
         <aside className="mt-20 ml-6">
           {/* Sidebar */}
           <Sidebar active={active} setActive={setActive} />

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaList } from "react-icons/fa";
-
+import { FaUser } from "react-icons/fa";
 
 // Komponen utama yang menerima props dan menampilkan data lomba
 const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }) => {
@@ -46,12 +46,17 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
     );
 
     return (
-        <div className="font-dm-sans p-6 bg-[#7b446c] rounded-lg shadow-md w-[650px] h-[500px] flex flex-col">
+        <div className="max-w-full lg:w-[650px] font-dm-sans p-6 bg-[#7b446c] rounded-lg shadow-md h-[500px] flex flex-col">
             <div className="border-b border-[#dfb4d7]/60 mb-4">
                 <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-3xl font-bold text-white tracking-wide transform transition duration-500 hover:scale-105">
-                        {`Halo, ${name}!`}
-                    </h2>
+                    <div className="flex items-center gap-5">
+                        <FaUser className="text-2xl text-white" />
+                        <h2 className="text-3xl font-bold text-white tracking-wide transform transition duration-500 hover:scale-105">
+                            {`Halo, ${name}!`}
+                        </h2>
+                    </div>
+
+
                     <button
                         onClick={onEditUser}
                         className="custom-button-bg px-4 py-1 mb-4 rounded button-hover transition duration-300 hover:scale-105 font-semibold"
@@ -117,7 +122,6 @@ const CompListPage = () => {
 
     // Fungsi untuk mengedit data user
     const navigate = useNavigate();
-     // Fungsi untuk mengedit data user
 
     const handleEditUser = () => {
         navigate("/edit-profile"); // Ganti dengan rute yang sesuai untuk mengedit data user
@@ -125,7 +129,7 @@ const CompListPage = () => {
     };
 
     return (
-        <div>
+        <div className="w-full lg:w-[650px]">
             {/* Kirim data dan fungsi handleVerify ke CompList */}
             <CompList
                 name="Budi"

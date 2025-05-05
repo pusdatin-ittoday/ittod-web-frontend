@@ -1,4 +1,5 @@
 import React from "react";
+import { BsCalendarEvent } from "react-icons/bs";
 
 const events = [
     {
@@ -22,7 +23,7 @@ const events = [
 const IkutEvent = ({ title, description, image }) => (
     <div className="font-dm-sans flex flex-col items-center text-white">
         {/* Image Placeholder */}
-        <div className="w-[250px] h-[220px]">
+        <div className="w-full max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[250px] aspect-[5/4]">
             {image ? (
                 <img
                     src={image}
@@ -50,18 +51,16 @@ const IkutEvent = ({ title, description, image }) => (
 );
 
 const EventRegisCard = () => (
-    <div className="h-[500px] w-[650px] bg-[#7b446c] rounded-lg shadow-lg flex flex-col p-6 border-b border-[#dfb4d7]/60">
-        {/* Header - Added justify-between for better spacing */}
+    <div className="h-[500px] w-full lg:w-[650px] bg-[#7b446c] rounded-lg shadow-lg flex flex-col p-6 border-[#dfb4d7]/60">
+        {/* Header */}
         <div className="flex flex-row items-start justify-between mb-4 pb-2 border-b border-[#dfb4d7]/60">
-            {/* Wrapped text content */}
-            <div>
-                <h2 className="text-xl font-bold text-white">Event yang Tersedia</h2>
-                <p className="text-sm text-gray-300">Pilih dan daftar!</p>
+            <div className="flex flex-col">
+                <div className="flex items-center mb-1">
+                    <BsCalendarEvent className="text-2xl text-white mr-2" />
+                    <h2 className="text-xl font-bold text-white">Event yang Tersedia</h2>
+                </div>
+                <p className="text-sm pl-1 text-gray-300 ml-7">Pilih dan daftar kompetisi sesuai minat kamu!</p>
             </div>
-            {/* Added self-center for better vertical alignment if needed */}
-            <button className="custom-button-bg px-4 py-1 mb-4 rounded button-hover transition duration-300 hover:scale-105 font-semibold self-center">
-                Join Team
-            </button>
         </div>
 
         {/* Grid Container */}

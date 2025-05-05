@@ -86,13 +86,13 @@ class Navbar extends Component {
 
     return (
       <div className={`navbar fixed w-full transition-all duration-300 z-[999] ${scrollActive}`}>
-        <div className="container mx-auto px-4">
+        <div className="w-full px-4 md:px-6 lg:container lg:mx-auto">
           <div className="navbar-box relative flex items-center justify-between font-dm-sans">
-            <div className="logo">
+            <div className="logo flex items-center">
               <img
                 src="/LOGO_ITTODAY_2025.webp"
                 alt="IT Today Logo"
-                className="w-[130px] h-auto md:w-[150px] cursor-pointer"
+                className="w-[80px] h-auto lg:w-[100px] cursor-pointer"
                 onClick={this.navigateToHome}
                 onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/150x50/cccccc/ffffff?text=Logo'; }}
               />
@@ -101,7 +101,7 @@ class Navbar extends Component {
             <ul
               className={`flex lg:gap-12 flex-col gap-3 absolute top-full right-0 mt-1 z-[9999] w-48 px-4 py-4 rounded-lg shadow-lg bg-[#6a316c] font-bold text-white text-[17px] transition-all duration-300 ease-in-out
               ${active ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'} pointer-events-none
-              md:opacity-100 md:visible md:pointer-events-auto md:static md:flex-row md:gap-12 md:shadow-none md:bg-transparent md:w-auto md:h-full md:p-0 md:text-white md:transition-none md:items-center md:mt-0 md:translate-y-0`}
+              lg:opacity-100 lg:visible lg:pointer-events-auto lg:static lg:flex-row lg:gap-12 lg:shadow-none lg:bg-transparent lg:w-auto lg:h-full lg:p-0 lg:text-white lg:transition-none lg:items-center lg:mt-0 lg:translate-y-0`}
               style={active ? { pointerEvents: 'auto' } : {}}
             >
               <li className="flex items-center">
@@ -144,7 +144,7 @@ class Navbar extends Component {
                 </a>
               </li>
 
-              <li className="block md:hidden mt-2">
+              <li className="block lg:hidden mt-2">
                 {isDashboard ? (
                   <button
                     onClick={this.handleLogout}
@@ -163,34 +163,35 @@ class Navbar extends Component {
               </li>
             </ul>
 
-            <div className="login hidden md:block">
-              {isDashboard ? (
-                <button
-                  onClick={this.handleLogout}
-                  className="font-dm-sans font-bold custom-button-bg button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
-                >
-                  Logout
-                </button>
-              ) : (
-                <button
-                  onClick={this.navigateToLogin}
-                  className="font-dm-sans font-bold custom-button-bg button-hover text-white py-2 px-7 rounded-lg shadow-md hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
-                >
-                  Login
-                </button>
-              )}
+            <div className="flex items-center">
+              <div className="login hidden lg:block mr-4">
+                {isDashboard ? (
+                  <button
+                    onClick={this.handleLogout}
+                    className="font-dm-sans font-bold custom-button-bg button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer py-2 px-7 rounded-lg shadow-md"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <button
+                    onClick={this.navigateToLogin}
+                    className="font-dm-sans font-bold custom-button-bg button-hover text-white py-2 px-7 rounded-lg shadow-md hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  >
+                    Login
+                  </button>
+                )}
+              </div>
+
+              <button
+                aria-label="Toggle Menu"
+                className="w-[40px] h-[40px] lg:hidden block cursor-pointer text-white focus:outline-none"
+                onClick={this.handleClick}
+              >
+                <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path>
+                </svg>
+              </button>
             </div>
-
-            <button
-              aria-label="Toggle Menu"
-              className="w-[40px] h-[40px] md:hidden block cursor-pointer text-white focus:outline-none"
-              onClick={this.handleClick}
-            >
-              <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path>
-              </svg>
-            </button>
-
           </div>
         </div>
       </div>
