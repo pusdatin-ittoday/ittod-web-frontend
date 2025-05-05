@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { FaList } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
 
-// Komponen utama yang menerima props dan menampilkan data lomba
+// ... (import sama seperti sebelumnya)
+
 const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }) => {
     const handleVerifyClick = (compKey, anggotaIdx) => {
         if (onVerify) {
@@ -13,7 +14,14 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
 
     const renderCompetition = (key, data) => (
         <div key={key} className="mb-6 pb-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-md px-4 py-3 text-white hover:scale-101 hover:bg-white/20 transition duration-300 ease-in-out">
-            <h3 className="text-xl font-semibold mb-2">{data.jenisLomba}</h3>
+            <h3 className="text-xl font-semibold mb-1">{data.jenisLomba}</h3>
+            <p className="text-sm mb-1">
+                <span className="font-semibold">Team Name:</span> {data.teamName || "-"}
+            </p>
+            <p className="text-sm mb-3">
+                <span className="font-semibold">Team ID:</span> {data.teamID || "-"}
+            </p>
+
             {data.anggota.map((anggota, idx) => (
                 <div key={idx} className="flex items-center gap-4 mb-1">
                     <p className="flex-1">
@@ -29,16 +37,14 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
                             Verify
                         </button>
                     ) : (
-                        <span className="text[#fff0f0]">Not Verified</span>
+                        <span className="text-[#fff0f0]">Not Verified</span>
                     )}
                 </div>
             ))}
 
             <p className="mt-2 font-semibold">
                 Team Status:{" "}
-                <span
-                    className={data.anggota.every((a) => a.verified) ? "text-[#82f5a4]" : "text-[#f23f3f]"}
-                >
+                <span className={data.anggota.every((a) => a.verified) ? "text-[#82f5a4]" : "text-[#f23f3f]"}>
                     {data.anggota.every((a) => a.verified) ? "Verified" : "Not Verified"}
                 </span>
             </p>
@@ -56,7 +62,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
                         </h2>
                     </div>
 
-
                     <button
                         onClick={onEditUser}
                         className="custom-button-bg px-4 py-1 mb-4 rounded button-hover transition duration-300 hover:scale-105 font-semibold"
@@ -65,11 +70,11 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
                     </button>
                 </div>
             </div>
+
             <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
                 <FaList className="text-xl" /> Competition List
             </h3>
 
-            {/* Scrollable content fills remaining height */}
             <div className="overflow-y-auto flex-1 px-4 py-2 custom-scrollbar">
                 {Object.entries(competitions).map(([key, data]) => renderCompetition(key, data))}
             </div>
@@ -77,14 +82,14 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
     );
 };
 
-// Komponen untuk menampilkan halaman dengan data kompetisi dummy
 const CompListPage = () => {
-    const currentUser = "Budi"; // Simulasi pengguna yang sedang login
+    const currentUser = "Budi";
 
-    // Data kompetisi dummy
     const competitions = {
         hackToday: {
             jenisLomba: "HackToday",
+            teamID: "HT2025-001",
+            teamName: "CyberBoys",
             anggota: [
                 { nama: "Budi", verified: false },
                 { nama: "Ani", verified: false },
@@ -92,6 +97,8 @@ const CompListPage = () => {
         },
         gameToday: {
             jenisLomba: "GameToday",
+            teamID: "GT2025-009",
+            teamName: "NoobHunter",
             anggota: [
                 { nama: "Dodi", verified: true },
                 { nama: "Eka", verified: true },
@@ -99,6 +106,8 @@ const CompListPage = () => {
         },
         mineToday: {
             jenisLomba: "MineToday",
+            teamID: "MT2025-777",
+            teamName: "BlockBusters",
             anggota: [
                 { nama: "Ali", verified: false },
                 { nama: "Tina", verified: false },
@@ -106,6 +115,8 @@ const CompListPage = () => {
         },
         uxToday: {
             jenisLomba: "UXToday",
+            teamID: "UXX-03",
+            teamName: "PixelPeepers",
             anggota: [
                 { nama: "Budi", verified: false },
                 { nama: "Ika", verified: true },
@@ -113,24 +124,19 @@ const CompListPage = () => {
         },
     };
 
-    // Fungsi untuk verifikasi anggota
+    const navigate = useNavigate();
+
     const handleVerify = (compKey, anggotaIdx) => {
         console.log(`Verifying member ${competitions[compKey].anggota[anggotaIdx].nama} in ${competitions[compKey].jenisLomba}`);
-        // Di sini kamu bisa simpan perubahan ke backend, misal dengan axios.
         competitions[compKey].anggota[anggotaIdx].verified = true;
     };
 
-    // Fungsi untuk mengedit data user
-    const navigate = useNavigate();
-
     const handleEditUser = () => {
-        navigate("/edit-profile"); // Ganti dengan rute yang sesuai untuk mengedit data user
-        // Misalnya, buka halaman edit user atau tampilkan modal untuk mengedit data
+        navigate("/edit-profile");
     };
 
     return (
         <div className="w-full lg:w-[650px]">
-            {/* Kirim data dan fungsi handleVerify ke CompList */}
             <CompList
                 name="Budi"
                 currentUser={currentUser}

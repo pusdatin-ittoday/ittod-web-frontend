@@ -43,14 +43,6 @@ class Navbar extends Component {
     }
   };
 
-  componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll);
-    window.addEventListener('resize', this.handleResize);
-    document.addEventListener('mousedown', this.handleClickOutside);
-    window.addEventListener('popstate', this.checkIfHomePage);
-    this.checkIfHomePage();
-  }
-
   checkIfHomePage = () => {
     const isHome = window.location.pathname === "/" || window.location.pathname === "";
     if (isHome !== this.state.isHomePage) {
@@ -58,10 +50,16 @@ class Navbar extends Component {
     }
   }
 
+  componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('resize', this.handleResize);
+    window.addEventListener('popstate', this.checkIfHomePage);
+    this.checkIfHomePage();
+  }
+
   componentWillUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
     window.removeEventListener('resize', this.handleResize);
-    document.removeEventListener('mousedown', this.handleClickOutside);
     window.removeEventListener('popstate', this.checkIfHomePage);
   }
 
@@ -78,8 +76,9 @@ class Navbar extends Component {
   }
 
   render() {
-    const { active, scroll, isHomePage } = this.state;
-    const { isDashboard } = this.props;
+    const { active, scroll } = this.state;
+    const isDashboard = ['/beranda', '/ikut-lomba', '/ikut-event', '/edit-profil', '/dashboard'].some(path => window.location.pathname.includes(path));
+
 
     const scrollActive = scroll ? 'backdrop-blur-md py-3 bg-black/20 shadow-md' : 'bg-transparent py-2';
     const navLinkBase = 'font-dm-sans font-medium opacity-100 text-white nav-text-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer';
@@ -100,50 +99,15 @@ class Navbar extends Component {
 
             <ul
               className={`flex lg:gap-12 flex-col gap-3 absolute top-full right-0 mt-1 z-[9999] w-48 px-4 py-4 rounded-lg shadow-lg bg-[#6a316c] font-bold text-white text-[17px] transition-all duration-300 ease-in-out
-              ${active ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'} pointer-events-none
+              ${active ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}
               lg:opacity-100 lg:visible lg:pointer-events-auto lg:static lg:flex-row lg:gap-12 lg:shadow-none lg:bg-transparent lg:w-auto lg:h-full lg:p-0 lg:text-white lg:transition-none lg:items-center lg:mt-0 lg:translate-y-0`}
-              style={active ? { pointerEvents: 'auto' } : {}}
             >
-              <li className="flex items-center">
-                <a
-                  href="/#hero"
-                  onClick={(e) => this.handleSectionLinkClick(e, 'hero')}
-                  className={navLinkBase}
-                >
-                  Home
-                </a>
-              </li>
+              <li><a href="/#hero" onClick={(e) => this.handleSectionLinkClick(e, 'hero')} className={navLinkBase}>Home</a></li>
+              <li><a href="/#event" onClick={(e) => this.handleSectionLinkClick(e, 'event')} className={navLinkBase}>Event</a></li>
+              <li><a href="/#competition" onClick={(e) => this.handleSectionLinkClick(e, 'competition')} className={navLinkBase}>Competition</a></li>
+              <li><a href="#contact" onClick={(e) => this.handleSectionLinkClick(e, 'contact')} className={navLinkBase}>Contact Us</a></li>
 
-              <li className="flex items-center">
-                <a
-                  href="/#event"
-                  onClick={(e) => this.handleSectionLinkClick(e, 'event')}
-                  className={navLinkBase}
-                >
-                  Event
-                </a>
-              </li>
-
-              <li className="flex items-center">
-                <a
-                  href="/#competition"
-                  onClick={(e) => this.handleSectionLinkClick(e, 'competition')}
-                  className={navLinkBase}
-                >
-                  Competition
-                </a>
-              </li>
-
-              <li className="flex items-center">
-                <a
-                  href="#contact"
-                  onClick={(e) => this.handleSectionLinkClick(e, 'contact')}
-                  className={navLinkBase}
-                >
-                  Contact Us
-                </a>
-              </li>
-
+              {/* Mobile login/logout */}
               <li className="block lg:hidden mt-2">
                 {isDashboard ? (
                   <button
@@ -164,6 +128,7 @@ class Navbar extends Component {
             </ul>
 
             <div className="flex items-center">
+              {/* Desktop login/logout */}
               <div className="login hidden lg:block mr-4">
                 {isDashboard ? (
                   <button
@@ -182,13 +147,14 @@ class Navbar extends Component {
                 )}
               </div>
 
+              {/* Mobile menu toggle */}
               <button
                 aria-label="Toggle Menu"
                 className="w-[40px] h-[40px] lg:hidden block cursor-pointer text-white focus:outline-none"
                 onClick={this.handleClick}
               >
                 <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path>
+                  <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
                 </svg>
               </button>
             </div>
