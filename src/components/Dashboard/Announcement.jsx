@@ -27,9 +27,9 @@ const Announcement = () => {
     ];
 
     return (
-        <div className="py-4 flex flex-col bg-[#7b446c] text-white rounded-lg shadow-md w-[250px] h-[500px] font-dm-sans overflow-hidden">
+        <div className="max-w-full py-4 flex flex-col bg-[#7b446c] text-white rounded-lg shadow-md lg:w-[250px] h-[500px] font-dm-sans overflow-hidden">
             {/* Header */}
-            <div className="border-b border-[#dfb4d7]/60 mb-3">
+            <div className="border-b border-[#dfb4d7]/60 mb-3 w-full">
                 <div className="mb-3 px-4 py-3 text-lg font-bold text-center">
                     <GrAnnounce className="inline-block mr-2 text-2xl" />
                     <span className="font-dm-sans">ANNOUNCEMENT</span>

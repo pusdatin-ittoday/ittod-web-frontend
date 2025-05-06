@@ -24,7 +24,7 @@ const ContactUs = () => {
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-center md:justify-end">
                   <a
                     href="https://wa.me/081210242743"
-                    className="font-dm-sans font-bold text-sm lg:text-lg button-hover bg-gradient-to-r from-[#F97283] via-[#B247B4] to-[#9323C2] text-white py-3 px-4 rounded-xl custom-button-shadow hover:scale-105 transition duration-300 ease-in-out truncate"
+                    className="font-dm-sans font-bold bg-gradient-to-r from-[#F97283] via-[#B247B4] to-[#9323C2] text-white py-3 px-6 rounded-xl custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out"
                   >
                     Kontak Kami
                   </a>
