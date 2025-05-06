@@ -118,9 +118,9 @@ class FormLogin extends React.Component {
                         text="Login"
                     />
                     <p className="text-center">or</p>
-
                     <button
                         type="button"
+                        onClick={() => window.location.href = "http://localhost:5000/api/auth/google"}
                         className="w-full p-[2px] rounded-md bg-[length:200%_200%] custom-button-bg cursor-pointer transition-all duration-300 ease-in-out hover:bg-[position:100%_0] button-hover "
                     >
                         <div className="flex items-center justify-center gap-2 w-full h-full bg-[#3D2357] text-white rounded-md p-2">

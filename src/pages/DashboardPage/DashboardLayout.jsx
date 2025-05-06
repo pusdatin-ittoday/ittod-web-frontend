@@ -4,37 +4,35 @@ import Sidebar from "../../components/Dashboard/Sidebar";
 import Beranda from "../../components/Dashboard/Beranda/Beranda";
 import IkutLomba from "../../components/Dashboard/IkutLomba/IkutLomba";
 import IkutEvent from "../../components/Dashboard/IkutEvent/IkutEvent";
+import { MdErrorOutline } from "react-icons/md";
 
 class DashboardLayout extends Component {
   constructor(props) {
     super(props);
+    const validTabs = ["beranda", "ikut-lomba", "ikut-event"];
+    const initialTab = validTabs.includes(props.activeTab) ? props.activeTab : "beranda";
 
-    // Initialize state
     this.state = {
-      active: localStorage.getItem("activeTab") || "beranda",
+      active: initialTab,
       showAlert: false,
       incompleteFields: [],
       alertPosition: {
-        x: 20, // Default position from left
-        y: window.innerHeight - 300 // Default position from bottom
+        x: 20,
+        y: window.innerHeight - 300,
       },
       isDragging: false,
-      dragOffset: { x: 0, y: 0 }
+      dragOffset: { x: 0, y: 0 },
     };
   }
 
   componentDidMount() {
-    // Save active tab to localStorage
-    localStorage.setItem("activeTab", this.state.active);
-
-    // Check user data completeness when component mounts
+    sessionStorage.setItem("activeTab", this.state.active);
     this.checkUserDataCompleteness();
 
-    // Add mouse move and mouse up event listeners to the window
-    window.addEventListener('mousemove', this.handleMouseMove);
-    window.addEventListener('mouseup', this.handleMouseUp);
-    window.addEventListener('touchmove', this.handleTouchMove);
-    window.addEventListener('touchend', this.handleTouchEnd);
+    window.addEventListener("mousemove", this.handleMouseMove);
+    window.addEventListener("mouseup", this.handleMouseUp);
+    window.addEventListener("touchmove", this.handleTouchMove);
+    window.addEventListener("touchend", this.handleTouchEnd);
   }
 
   componentWillUnmount() {
@@ -48,7 +46,7 @@ class DashboardLayout extends Component {
   componentDidUpdate(prevProps, prevState) {
     // Update localStorage when active tab changes
     if (prevState.active !== this.state.active) {
-      localStorage.setItem("activeTab", this.state.active);
+      sessionStorage.setItem("activeTab", this.state.active);
     }
   }
 
@@ -59,9 +57,9 @@ class DashboardLayout extends Component {
 
   // Function to check if user data is complete
   checkUserDataCompleteness = () => {
-    // Get user data from localStorage, API, or context
+    // Get user data from sessionStorage, API, or context
     // This is an example - replace with your actual user data source
-    const userData = JSON.parse(localStorage.getItem("userData")) || {};
+    const userData = JSON.parse(sessionStorage.getItem("userData")) || {};
 
     // Define required fields with their display names
     const requiredFields = [
@@ -96,9 +94,9 @@ class DashboardLayout extends Component {
   handleMouseDown = (e) => {
     // Prevent default behavior and text selection
     e.preventDefault();
-    
+
     const rect = e.currentTarget.getBoundingClientRect();
-    
+
     this.setState({
       isDragging: true,
       dragOffset: {
@@ -112,10 +110,10 @@ class DashboardLayout extends Component {
   handleTouchStart = (e) => {
     // Prevent default behavior
     e.preventDefault();
-    
+
     const touch = e.touches[0];
     const rect = e.currentTarget.getBoundingClientRect();
-    
+
     this.setState({
       isDragging: true,
       dragOffset: {
@@ -128,7 +126,7 @@ class DashboardLayout extends Component {
   // Mouse move handler for dragging
   handleMouseMove = (e) => {
     if (!this.state.isDragging) return;
-    
+
     this.setState({
       alertPosition: {
         x: e.clientX - this.state.dragOffset.x,
@@ -140,9 +138,9 @@ class DashboardLayout extends Component {
   // Touch move handler for touch devices
   handleTouchMove = (e) => {
     if (!this.state.isDragging) return;
-    
+
     const touch = e.touches[0];
-    
+
     this.setState({
       alertPosition: {
         x: touch.clientX - this.state.dragOffset.x,
@@ -205,7 +203,7 @@ class DashboardLayout extends Component {
 
         {/* Alert for incomplete data - now draggable */}
         {showAlert && (
-          <div 
+          <div
             className="bg-red-600/60 text-white px-6 py-3 rounded-lg shadow-lg max-w-md"
             style={alertStyle}
             onMouseDown={this.handleMouseDown}
@@ -214,9 +212,7 @@ class DashboardLayout extends Component {
             <div className="flex justify-between items-start mb-2 gap-5">
               <h3 className="font-bold text-lg">
                 <div className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
+                  <MdErrorOutline className="text-xl mr-2" />
                   Data belum lengkap!
                 </div>
               </h3>

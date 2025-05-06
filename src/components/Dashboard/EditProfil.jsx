@@ -9,6 +9,7 @@ import { IoMdSchool } from "react-icons/io";
 import { FaSchool } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
+
 class EditProfile extends Component {
     constructor(props) {
         super(props);
@@ -58,16 +59,16 @@ class EditProfile extends Component {
     };
 
     handleFileChange = (file) => {
-         if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
-             this.setState({ KTM: file });
-         } else if (file) { // Check if a file was actually selected/dropped
-             alert("Ukuran file maksimal 2MB.");
-             // Clear the invalid file selection if possible (depends on how you handle the file input)
-             if (this.fileInput) {
-                 this.fileInput.value = ""; // Attempt to clear the native input
-             }
-             this.setState({ KTM: null }); // Ensure state reflects no valid file
-         }
+        if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
+            this.setState({ KTM: file });
+        } else if (file) { // Check if a file was actually selected/dropped
+            alert("Ukuran file maksimal 2MB.");
+            // Clear the invalid file selection if possible (depends on how you handle the file input)
+            if (this.fileInput) {
+                this.fileInput.value = ""; // Attempt to clear the native input
+            }
+            this.setState({ KTM: null }); // Ensure state reflects no valid file
+        }
     }
 
     handleFileDrop = (e) => {
@@ -77,8 +78,8 @@ class EditProfile extends Component {
     }
 
     handleFileInputChange = (e) => {
-         const file = e.target.files[0];
-         this.handleFileChange(file);
+        const file = e.target.files[0];
+        this.handleFileChange(file);
     }
 
     handleSubmit = (e) => {
@@ -116,21 +117,21 @@ class EditProfile extends Component {
         for (const key in fieldsToValidate) {
             // Check for empty strings or null (for KTM file)
             if (fieldsToValidate[key] === "" || fieldsToValidate[key] === null) {
-                 // Use the mapping to get user-friendly name
+                // Use the mapping to get user-friendly name
                 emptyFieldsList.push(this.fieldLabels[key]);
             }
         }
 
         // Special validation for 'pendidikan_lainnya'
         if (pendidikan === "lainnya" && (!pendidikan_lainnya || pendidikan_lainnya.trim() === "")) {
-             if (!emptyFieldsList.includes(this.fieldLabels.pendidikan_lainnya)) { // Avoid duplicates if 'pendidikan' was already empty
-                 emptyFieldsList.push(this.fieldLabels.pendidikan_lainnya);
-             }
-             // Also ensure the main 'pendidikan' field itself isn't marked empty if 'lainnya' was selected
-             const pendidikanIndex = emptyFieldsList.indexOf(this.fieldLabels.pendidikan);
-             if (pendidikanIndex > -1 && pendidikan !== "") {
-                 emptyFieldsList.splice(pendidikanIndex, 1);
-             }
+            if (!emptyFieldsList.includes(this.fieldLabels.pendidikan_lainnya)) { // Avoid duplicates if 'pendidikan' was already empty
+                emptyFieldsList.push(this.fieldLabels.pendidikan_lainnya);
+            }
+            // Also ensure the main 'pendidikan' field itself isn't marked empty if 'lainnya' was selected
+            const pendidikanIndex = emptyFieldsList.indexOf(this.fieldLabels.pendidikan);
+            if (pendidikanIndex > -1 && pendidikan !== "") {
+                emptyFieldsList.splice(pendidikanIndex, 1);
+            }
         }
 
         // --- Update State Based on Validation ---
@@ -145,8 +146,11 @@ class EditProfile extends Component {
                 showErrorBox: false,
                 errorFields: [],
             });
+            
             console.log("Form Submitted Successfully!");
             console.log("Submitted Data:", this.state);
+
+            window.location.href = "/beranda"; // Redirect to dashboard after submission
             // TODO: Add your actual form submission logic here (e.g., API call)
         }
     };
@@ -313,7 +317,7 @@ class EditProfile extends Component {
                         </div>
 
                         {/* Conditional field for 'lainnya' */}
-                         {pendidikan === "lainnya" && (
+                        {pendidikan === "lainnya" && (
                             <div className="mb-3 relative">
                                 <label className="block text-sm font-bold mb-2">Tulis Status Pendidikan Anda</label>
                                 {/* No icon needed here, maybe? */}
@@ -379,7 +383,7 @@ class EditProfile extends Component {
                             <button
                                 type="submit"
                                 className="custom-button-bg text-white button-hover transition duration-300 ease-in-out hover:scale-105 px-4 py-2 rounded cursor-pointer" // Make sure custom-button-bg and button-hover classes are defined in your CSS
-                                
+
                             >
                                 Simpan
                             </button>
@@ -390,7 +394,7 @@ class EditProfile extends Component {
                 {/* Error Notification Box */}
                 {showErrorBox && (
                     <div
-                        className="fixed bottom-5 right-5 bg-red-600 text-white p-4 rounded-lg shadow-lg max-w-xs w-full z-50" // Added z-index
+                        className="fixed bottom-5 right-5 bg-red-600/90 text-white p-4 rounded-lg shadow-lg max-w-xs w-full z-50" // Added z-index
                         role="alert"
                     >
                         <div className="flex items-center justify-between mb-2">
@@ -398,7 +402,11 @@ class EditProfile extends Component {
                                 <MdErrorOutline className="text-xl mr-2" />
                                 <span className="font-bold">Harap isi kolom berikut:</span>
                             </div>
-                            <button onClick={this.closeErrorBox} className="text-xl font-bold hover:text-red-200">&times;</button>
+                            <button onClick={this.closeErrorBox} className="bg-red-700/85 hover:bg-red-800/85 rounded-full p-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                            </button>
                         </div>
                         <ul className="list-disc list-inside text-sm">
                             {errorFields.map((field, index) => (
