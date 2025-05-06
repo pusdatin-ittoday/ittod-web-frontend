@@ -4,6 +4,7 @@ import Sidebar from "../../components/Dashboard/Sidebar";
 import Beranda from "../../components/Dashboard/Beranda/Beranda";
 import IkutLomba from "../../components/Dashboard/IkutLomba/IkutLomba";
 import IkutEvent from "../../components/Dashboard/IkutEvent/IkutEvent";
+import SubmitLomba from "../../components/Dashboard/SubmitLomba/SubmitLomba";
 
 const DashboardLayout = () => {
   const [active, setActive] = useState(() => {
@@ -23,6 +24,8 @@ const DashboardLayout = () => {
         return <IkutLomba />;
       case "ikut-event":
         return <IkutEvent />;
+      case "submit-lomba":
+        return <SubmitLomba />;
       default:
         return <Beranda />;
     }

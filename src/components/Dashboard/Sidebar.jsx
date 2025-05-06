@@ -8,6 +8,7 @@ const Sidebar = ({ active, setActive }) => {
         { id: "beranda", label: "Beranda" },
         { id: "ikut-lomba", label: "Ikut Lomba" },
         { id: "ikut-event", label: "Ikut Event" },
+        { id: "submit-lomba", label: "Submit Lomba" }
     ];
 
     return (
