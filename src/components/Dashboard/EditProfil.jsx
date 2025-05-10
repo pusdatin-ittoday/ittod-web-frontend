@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { MdDriveFileRenameOutline, MdErrorOutline, MdClose } from "react-icons/md"; // Added MdErrorOutline, MdClose
+import { MdDriveFileRenameOutline, MdErrorOutline } from "react-icons/md";
 import { CiCalendarDate, CiPhone } from "react-icons/ci";
 import { PiGenderIntersex } from "react-icons/pi";
 import { IoIosMale, IoIosFemale } from "react-icons/io";
@@ -8,7 +8,6 @@ import { FaDiscord, FaInstagram } from "react-icons/fa";
 import { IoMdSchool } from "react-icons/io";
 import { FaSchool } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-
 
 class EditProfile extends Component {
     constructor(props) {
@@ -22,14 +21,14 @@ class EditProfile extends Component {
             id_discord: "",
             id_instagram: "",
             pendidikan: "",
-            pendidikan_lainnya: "", // Tambahan untuk 'lainnya'
+            pendidikan_lainnya: "",
             nama_sekolah: "",
             KTM: null,
-            // NEW state variables for error handling
             showErrorBox: false,
             errorFields: [],
+            ktmFileName: "", // To store filename of previously uploaded KTM
         };
-        // Mapping state keys to user-friendly labels
+
         this.fieldLabels = {
             full_name: "Nama Lengkap",
             birth_date: "Tanggal Lahir",
@@ -45,29 +44,63 @@ class EditProfile extends Component {
         };
     }
 
+    componentDidMount() {
+        // Load user data from sessionStorage when component mounts
+        this.loadUserData();
+    }
+
+    loadUserData = () => {
+        try {
+            const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
+            
+            // Extract pendidikan data and determine if it's "lainnya"
+            let pendidikan = userData.pendidikan || "";
+            let pendidikan_lainnya = "";
+            
+            // Check if pendidikan is one of the standard options
+            if (pendidikan && !["sma", "mahasiswa", "lainnya"].includes(pendidikan)) {
+                pendidikan_lainnya = pendidikan;
+                pendidikan = "lainnya";
+            }
+            
+            // Update state with retrieved data
+            this.setState({
+                full_name: userData.name || "",
+                birth_date: userData.birth_date || "",
+                phone_number: userData.phone_number || "",
+                jenis_kelamin: userData.jenis_kelamin || "",
+                id_line: userData.id_line || "",
+                id_discord: userData.id_discord || "",
+                id_instagram: userData.id_instagram || "",
+                pendidikan: pendidikan,
+                pendidikan_lainnya: pendidikan_lainnya,
+                nama_sekolah: userData.nama_sekolah || "",
+                ktmFileName: userData.ktmFileName || "", // Filename of the previously uploaded KTM
+            });
+            
+            console.log("User data loaded from sessionStorage:", userData);
+        } catch (error) {
+            console.error("Error loading user data from sessionStorage:", error);
+        }
+    };
+
     handleChange = (e) => {
         const { name, type, value, files } = e.target;
-        // If the field being changed is one of the error fields,
-        // optionally remove it from the error list or hide the box immediately.
-        // For simplicity, we'll just let the next submit re-validate.
         this.setState({ [name]: type === "file" ? files[0] : value });
-
-        // Optionally hide error box on any change
-        // if (this.state.showErrorBox) {
-        //   this.setState({ showErrorBox: false, errorFields: [] });
-        // }
     };
 
     handleFileChange = (file) => {
         if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
-            this.setState({ KTM: file });
-        } else if (file) { // Check if a file was actually selected/dropped
+            this.setState({ 
+                KTM: file,
+                ktmFileName: file.name // Update filename in state
+            });
+        } else if (file) {
             alert("Ukuran file maksimal 2MB.");
-            // Clear the invalid file selection if possible (depends on how you handle the file input)
             if (this.fileInput) {
-                this.fileInput.value = ""; // Attempt to clear the native input
+                this.fileInput.value = "";
             }
-            this.setState({ KTM: null }); // Ensure state reflects no valid file
+            // Don't clear KTM state if there was a previous valid file
         }
     }
 
@@ -95,7 +128,8 @@ class EditProfile extends Component {
             pendidikan,
             pendidikan_lainnya,
             nama_sekolah,
-            KTM
+            KTM,
+            ktmFileName
         } = this.state;
 
         const emptyFieldsList = [];
@@ -111,23 +145,24 @@ class EditProfile extends Component {
             id_instagram,
             pendidikan,
             nama_sekolah,
-            KTM, // Check if null
         };
 
+        // Only validate KTM as required if it's a new user without existing KTM
+        if (!ktmFileName && !KTM) {
+            fieldsToValidate.KTM = null;
+        }
+
         for (const key in fieldsToValidate) {
-            // Check for empty strings or null (for KTM file)
             if (fieldsToValidate[key] === "" || fieldsToValidate[key] === null) {
-                // Use the mapping to get user-friendly name
                 emptyFieldsList.push(this.fieldLabels[key]);
             }
         }
 
         // Special validation for 'pendidikan_lainnya'
         if (pendidikan === "lainnya" && (!pendidikan_lainnya || pendidikan_lainnya.trim() === "")) {
-            if (!emptyFieldsList.includes(this.fieldLabels.pendidikan_lainnya)) { // Avoid duplicates if 'pendidikan' was already empty
+            if (!emptyFieldsList.includes(this.fieldLabels.pendidikan_lainnya)) {
                 emptyFieldsList.push(this.fieldLabels.pendidikan_lainnya);
             }
-            // Also ensure the main 'pendidikan' field itself isn't marked empty if 'lainnya' was selected
             const pendidikanIndex = emptyFieldsList.indexOf(this.fieldLabels.pendidikan);
             if (pendidikanIndex > -1 && pendidikan !== "") {
                 emptyFieldsList.splice(pendidikanIndex, 1);
@@ -146,16 +181,42 @@ class EditProfile extends Component {
                 showErrorBox: false,
                 errorFields: [],
             });
-            
+
             console.log("Form Submitted Successfully!");
             console.log("Submitted Data:", this.state);
 
+            // Save user data to sessionStorage
+            const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
+            
+            // Update userData with form data
+            const updatedUserData = {
+                ...userData,
+                name: full_name,
+                birth_date,
+                phone_number,
+                jenis_kelamin,
+                id_line,
+                id_discord,
+                id_instagram,
+                pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
+                nama_sekolah,
+                ktmFileName: KTM ? KTM.name : ktmFileName, // Save the filename of the KTM
+            };
+            
+            sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
+
+            // If there's a new KTM file, you might want to handle it differently
+            // For example, you might want to upload it to a server
+            // But for now, we'll just store its filename in sessionStorage
+            
+            // Set flag for profile completion
+            sessionStorage.setItem("profileUpdateStatus", "success");
+            sessionStorage.setItem("profileComplete", "true");
+
             window.location.href = "/beranda"; // Redirect to dashboard after submission
-            // TODO: Add your actual form submission logic here (e.g., API call)
         }
     };
 
-    // Function to close the error box
     closeErrorBox = () => {
         this.setState({ showErrorBox: false, errorFields: [] });
     };
@@ -173,7 +234,7 @@ class EditProfile extends Component {
             pendidikan_lainnya,
             nama_sekolah,
             KTM,
-            // Get error state
+            ktmFileName,
             showErrorBox,
             errorFields
         } = this.state;
@@ -187,8 +248,11 @@ class EditProfile extends Component {
             genderIcon = <PiGenderIntersex className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />;
         }
 
+        // Determine what to display in the KTM upload area
+        const ktmDisplayText = KTM ? KTM.name : (ktmFileName || "Drop file di sini atau klik untuk pilih file");
+
         return (
-            <div className="flex items-center justify-center relative"> {/* Added relative positioning for the error box context */}
+            <div className="flex items-center justify-center relative">
                 <div className="min-h-screen bg-[#7b446c] mx-10 lg:mx-auto lg:my-20 p-6 rounded-md shadow-md text-white w-full max-w-4xl">
                     <h1 className="text-2xl font-bold mb-6 text-center">Edit Profil</h1>
                     <form
@@ -229,7 +293,7 @@ class EditProfile extends Component {
                             <label className="block text-sm font-bold mb-2">Nomor HP</label>
                             <CiPhone className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
                             <input
-                                type="text" // Consider type="tel" for better mobile UX
+                                type="text"
                                 name="phone_number"
                                 placeholder="Nomor HP"
                                 value={phone_number}
@@ -320,7 +384,6 @@ class EditProfile extends Component {
                         {pendidikan === "lainnya" && (
                             <div className="mb-3 relative">
                                 <label className="block text-sm font-bold mb-2">Tulis Status Pendidikan Anda</label>
-                                {/* No icon needed here, maybe? */}
                                 <input
                                     type="text"
                                     name="pendidikan_lainnya"
@@ -333,8 +396,7 @@ class EditProfile extends Component {
                         )}
 
                         {/* Nama Sekolah */}
-                        {/* Adjust grid span if 'lainnya' is not selected and causing layout shift */}
-                        <div className={`mb-3 relative ${pendidikan !== 'lainnya' ? 'lg:col-start-2' : ''}`}> {/* Simple adjustment */}
+                        <div className={`mb-3 relative ${pendidikan !== 'lainnya' ? 'lg:col-start-2' : ''}`}>
                             <label className="block text-sm font-bold mb-2">Nama Sekolah/Institusi</label>
                             <FaSchool className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
                             <input
@@ -347,43 +409,50 @@ class EditProfile extends Component {
                             />
                         </div>
 
-
                         {/* Upload KTM */}
                         <div className="mb-3 col-span-full">
-                            <label className="block text-sm font-bold mb-2">Kartu Institusi (jpg/png, max 2MB)</label>
+                            <label className="block text-sm font-bold mb-2">
+                                Kartu Institusi (jpg/png, max 2MB)
+                                {ktmFileName && !KTM && (
+                                    <span className="text-sm font-normal ml-2 text-gray-300">
+                                        (File yang telah diunggah: {ktmFileName})
+                                    </span>
+                                )}
+                            </label>
                             <div
                                 className={`border-2 border-dashed ${errorFields.includes(this.fieldLabels.KTM) ? 'border-red-500' : 'border-pink-400'} rounded-md p-6 text-center ${errorFields.includes(this.fieldLabels.KTM) ? 'bg-red-100' : 'bg-gray-100'} text-gray-800 cursor-pointer w-full min-h-24 flex items-center justify-center`}
                                 onDragOver={(e) => e.preventDefault()}
-                                onDrop={this.handleFileDrop} // Use consolidated handler
-                                onClick={() => this.fileInput && this.fileInput.click()} // Check if ref exists
+                                onDrop={this.handleFileDrop}
+                                onClick={() => this.fileInput && this.fileInput.click()}
                             >
                                 <div className="w-full overflow-hidden text-ellipsis">
-                                    {KTM ? <p className="truncate">{KTM.name}</p> : <p>Drop file di sini atau klik untuk pilih file</p>}
+                                    <p className="truncate">{ktmDisplayText}</p>
                                 </div>
                                 <input
                                     type="file"
-                                    name="KTM" // Name is less relevant here as we handle file in state
+                                    name="KTM"
                                     accept=".jpg,.jpeg,.png"
                                     ref={(ref) => (this.fileInput = ref)}
-                                    onChange={this.handleFileInputChange} // Use consolidated handler
+                                    onChange={this.handleFileInputChange}
                                     style={{ display: "none" }}
                                 />
                             </div>
-                            {errorFields.includes(this.fieldLabels.KTM) && <p className="text-red-300 text-xs mt-1">File Kartu Institusi wajib diunggah.</p>}
+                            {errorFields.includes(this.fieldLabels.KTM) && (
+                                <p className="text-red-300 text-xs mt-1">File Kartu Institusi wajib diunggah.</p>
+                            )}
                         </div>
 
                         {/* Tombol */}
                         <div className="col-span-full flex justify-end mt-6">
                             <Link
-                                to="/dashboard" // Ensure this route exists in your routing setup
+                                to="/dashboard"
                                 className="bg-gray-300 hover:bg-gray-400 transition duration-300 ease-in-out hover:scale-105 text-black px-4 py-2 rounded mr-2"
                             >
                                 Batal
                             </Link>
                             <button
                                 type="submit"
-                                className="custom-button-bg text-white button-hover transition duration-300 ease-in-out hover:scale-105 px-4 py-2 rounded cursor-pointer" // Make sure custom-button-bg and button-hover classes are defined in your CSS
-
+                                className="custom-button-bg text-white button-hover transition duration-300 ease-in-out hover:scale-105 px-4 py-2 rounded cursor-pointer"
                             >
                                 Simpan
                             </button>
@@ -394,7 +463,7 @@ class EditProfile extends Component {
                 {/* Error Notification Box */}
                 {showErrorBox && (
                     <div
-                        className="fixed bottom-5 right-5 bg-red-600/90 text-white p-4 rounded-lg shadow-lg max-w-xs w-full z-50" // Added z-index
+                        className="fixed bottom-5 right-5 bg-red-600/90 text-white p-4 rounded-lg shadow-lg max-w-xs w-full z-50"
                         role="alert"
                     >
                         <div className="flex items-center justify-between mb-2">
