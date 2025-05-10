@@ -20,6 +20,8 @@ import EditProfile from './components/Dashboard/EditProfil';
 import Seminar from './pages/seminar';
 import Bootcamp from './pages/Bootcamp';
 import Workshop from './pages/Workshop';
+import SubmitLomba from './components/Dashboard/SubmitLomba/SubmitLomba';
+import Submit_Gametoday from './pages/CompSubmission/Submit_Gametoday';
 
 const App = () => {
   return (
@@ -78,6 +80,13 @@ const App = () => {
             path="/edit-profile"
             element={<EditProfile />}
           />
+
+          {/* Buat submit lomba */}
+          <Route 
+            path='/submit-gametoday'
+            element={<Submit_Gametoday />}
+          ></Route>
+
 
           {/* buat liat liat waktu bikin page */}
           <Route

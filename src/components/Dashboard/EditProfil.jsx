@@ -80,7 +80,6 @@ class EditProfile extends Component {
 
                             <div className="mb-3 relative">
                                 <label className="block text-sm font-bold mb-2">Nama Lengkap</label>
-                                <MdDriveFileRenameOutline className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
                                 <input
                                     type="text"
                                     name="full_name"
