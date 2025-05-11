@@ -193,7 +193,8 @@ class EditProfile extends Component {
                 ...userData,
                 name: full_name,
                 birth_date,
-                phone_number,
+                phone: phone_number,          // unify with DashboardLayout expectation
+                phone_number,                 // optionally keep the old key for backward-compat
                 jenis_kelamin,
                 id_line,
                 id_discord,
@@ -202,7 +203,6 @@ class EditProfile extends Component {
                 nama_sekolah,
                 ktmFileName: KTM ? KTM.name : ktmFileName, // Save the filename of the KTM
             };
-            
             sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
 
             // If there's a new KTM file, you might want to handle it differently
