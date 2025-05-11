@@ -13,9 +13,9 @@ import VerifyPassword from './pages/LoginPage/VerifyPassword';
 import NewPassword from './pages/LoginPage/NewPassword';
 import ContactUs from './pages/ContactUs';
 import Sponsors from "./Sponsors";
-import AdminCompetitionView from './pages/Admin/AdminCompetitionView';  // Pastikan pathnya benar
-import AdminVerifyTeamView from './pages/Admin/VerifyTeamView';  // Pastikan pathnya benar
 
+import AdminCompetitionView from './pages/Admin/AdminCompetitionView';  
+import AdminVerifyTeamView from './pages/Admin/VerifyTeamView';  
 import LoginAdmin from '././pages/Admin/LoginPage/LoginAdmin';
 import RegisterAdmin from '././pages/Admin/LoginPage/RegisterAdmin';
 import ForgetPasswordAdmin from '././pages/Admin/LoginPage/ForgetPasswordAdmin';

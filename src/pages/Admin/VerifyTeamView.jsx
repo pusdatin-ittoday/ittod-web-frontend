@@ -3,71 +3,22 @@ import SidebarAdmin from '../../components/SidebarAdmin';
 
 const AdminVerifyTeamView = () => {
   const [selectedCompetition, setSelectedCompetition] = useState('HackToday');
-  const [teams, setTeams] = useState([]);
+  const [teams, setTeams] = useState([
+    { id: 1, name: 'Team Alpha', contact: '1234567890', paymentProof: 'https://example.com/payment1.jpg', is_verified: false },
+    { id: 2, name: 'Team Beta', contact: '0987654321', paymentProof: 'https://example.com/payment2.jpg', is_verified: true },
+  ]);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
-  const [teamMembers, setTeamMembers] = useState([]);
-  const token = localStorage.getItem("adminToken");
-
-  // Fetch teams when competition changes
-  useEffect(() => {
-    if (token) {
-      fetch(`/api/admin/teams?competition=${selectedCompetition}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then(res => res.json())
-        .then(data => setTeams(data))
-        .catch(error => console.error("Error fetching teams:", error));
-    }
-  }, [selectedCompetition, token]);
-
-  // Fetch members when a team is selected
-  useEffect(() => {
-    if (selectedTeamId && token) {
-      fetch(`/api/admin/teams/${selectedTeamId}/members`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then(res => res.json())
-        .then(data => setTeamMembers(data))
-        .catch(error => console.error("Error fetching team members:", error));
-    }
-  }, [selectedTeamId, token]);
+  const [teamMembers, setTeamMembers] = useState([
+    { name: 'Azka', role: 'Leader', twibbon: 'https://example.com/twibbon1.jpg', kartu: 'https://example.com/kartu1.jpg' },
+    { name: 'Calvin', role: 'Member', twibbon: 'https://example.com/twibbon2.jpg', kartu: 'https://example.com/kartu2.jpg' },
+  ]);
 
   const handleVerify = (teamId) => {
-    fetch(`/api/admin/teams/${teamId}/verify`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        console.log("Team verified:", data);
-        // refresh teams after verification
-        setTeams(prev => prev.map(t => t.id === teamId ? { ...t, is_verified: true } : t));
-      })
-      .catch(error => console.error("Error verifying team:", error));
+    setTeams(prev => prev.map(t => t.id === teamId ? { ...t, is_verified: true } : t));
   };
 
   const handleReject = (teamId) => {
-    fetch(`/api/admin/teams/${teamId}/reject`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        console.log("Team rejected:", data);
-        // refresh teams after rejection
-        setTeams(prev => prev.map(t => t.id === teamId ? { ...t, is_verified: false } : t));
-      })
-      .catch(error => console.error("Error rejecting team:", error));
+    setTeams(prev => prev.map(t => t.id === teamId ? { ...t, is_verified: false } : t));
   };
 
   return (
@@ -94,24 +45,18 @@ const AdminVerifyTeamView = () => {
             <th className="border border-black p-2">Nama Tim</th>
             <th className="border border-black p-2">Kontak Ketua</th>
             <th className="border border-black p-2">Bukti Pembayaran</th>
+            <th className="border border-black p-2">Status</th> {/* Kolom Status */}
             <th className="border border-black p-2">Aksi</th>
           </tr>
         </thead>
         <tbody>
           {teams.map((team) => (
-           <tr
-           key={team.id}
-           className={`text-center cursor-pointer hover:bg-blue-100 ${
-             selectedTeamId === team.id ? 'bg-purple-300' : ''
-           }`}
-           onClick={() => setSelectedTeamId(team.id)}
-         >
-              <td
-                className="border border-black p-2 cursor-pointer hover:bg-blue-100"
-                onClick={() => setSelectedTeamId(team.id)}
-              >
-                {team.name}
-              </td>
+            <tr
+              key={team.id}
+              className={`text-center cursor-pointer hover:bg-blue-100 ${selectedTeamId === team.id ? 'bg-purple-300' : ''}`}
+              onClick={() => setSelectedTeamId(team.id)}
+            >
+              <td className="border border-black p-2">{team.name}</td>
               <td className="border border-black p-2">{team.contact}</td>
               <td className="border border-black p-2">
                 {team.paymentProof && (
@@ -124,6 +69,12 @@ const AdminVerifyTeamView = () => {
                     Lihat Bukti
                   </a>
                 )}
+              </td>
+              <td className="border border-black p-2">
+                {/* Status Verifikasi */}
+                <span className={`font-bold ${team.is_verified ? 'text-green-500' : 'text-red-500'}`}>
+                  {team.is_verified ? 'Verified' : 'Not Verified'}
+                </span>
               </td>
               <td className="border border-black p-2 space-x-2">
                 <button

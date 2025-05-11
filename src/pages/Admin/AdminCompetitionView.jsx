@@ -17,23 +17,60 @@ const AdminCompetitionView = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("adminToken");
-        const res = await fetch(`/api/admin/competition/${selected}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!res.ok) throw new Error('Gagal mengambil data');
-        const data = await res.json();
-        setCompetitionData(data);
-      } catch (err) {
-        console.error("Gagal ambil data kompetisi:", err);
-      }
+    // TODO: Ganti dummy data ke fetch() dari backend setelah endpoint siap
+    const dummyData = {
+      HackToday: {
+        detail: {
+          title: 'HackToday 2025',
+          description: 'Kompetisi hackathon untuk pelajar dan mahasiswa.',
+          guidebook: 'https://example.com/hacktoday-guidebook.pdf',
+          contact: 'https://wa.me/6281234567890',
+        },
+        timeline: [
+          { name: 'Pendaftaran', date: '2025-06-01' },
+          { name: 'Seleksi', date: '2025-06-10' },
+          { name: 'Final', date: '2025-06-20' },
+        ],
+      },
+      GameToday: {
+        detail: {
+          title: 'GameToday 2025',
+          description: 'Turnamen game dan pembuatan game interaktif.',
+          guidebook: 'https://example.com/gametoday-guidebook.pdf',
+          contact: 'https://wa.me/6289876543210',
+        },
+        timeline: [
+          { name: 'Registrasi', date: '2025-07-01' },
+          { name: 'Penyisihan', date: '2025-07-10' },
+        ],
+      },
+      UxToday: {
+        detail: {
+          title: 'UxToday 2025',
+          description: 'Kompetisi desain antarmuka pengguna (UI/UX).',
+          guidebook: 'https://example.com/uxtoday-guidebook.pdf',
+          contact: 'https://wa.me/6281122334455',
+        },
+        timeline: [
+          { name: 'Open Submission', date: '2025-08-01' },
+          { name: 'Penjurian', date: '2025-08-15' },
+        ],
+      },
+      MineToday: {
+        detail: {
+          title: 'MineToday 2025',
+          description: 'Kompetisi inovasi pertambangan modern.',
+          guidebook: 'https://example.com/minetoday-guidebook.pdf',
+          contact: 'https://wa.me/6285566778899',
+        },
+        timeline: [
+          { name: 'Kick-off', date: '2025-09-01' },
+          { name: 'Presentasi', date: '2025-09-20' },
+        ],
+      },
     };
 
-    fetchData();
+    setCompetitionData(dummyData[selected]);
   }, [selected]);
 
   return (
@@ -64,14 +101,24 @@ const AdminCompetitionView = () => {
             <td className="border border-black p-2">{competitionData.detail.title}</td>
             <td className="border border-black p-2">{competitionData.detail.description}</td>
             <td className="border border-black p-2">
-              {competitionData.detail.guidebook && (
-                <a href={competitionData.detail.guidebook} className="text-black underline" target="_blank" rel="noopener noreferrer">Link</a>
-              )}
+             <a
+  href={competitionData.detail.guidebook}
+  className="text-blue-600 underline hover:text-blue-800"
+  target="_blank"
+  rel="noopener noreferrer">
+  Link
+</a>
             </td>
             <td className="border border-black p-2">
-              {competitionData.detail.contact && (
-                <a href={competitionData.detail.contact} className="text-black underline" target="_blank" rel="noopener noreferrer">WA</a>
-              )}
+             <a
+  href={competitionData.detail.contact}
+  className="text-blue-600 underline hover:text-blue-800"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  WA
+</a>
+
             </td>
           </tr>
         </tbody>
@@ -89,7 +136,7 @@ const AdminCompetitionView = () => {
           {competitionData.timeline.map((stage, idx) => (
             <tr key={idx} className="text-center">
               <td className="border border-black p-2">{stage.name}</td>
-              <td className="border border-black p-2">{stage.date && formatDate(stage.date)}</td>
+              <td className="border border-black p-2">{formatDate(stage.date)}</td>
             </tr>
           ))}
         </tbody>
