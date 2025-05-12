@@ -7,7 +7,7 @@ import ContactUs from './ContactUs';
 
 const Hack_Today = () => {
   useEffect(() => {
-    window.scrollTo({top: 0, behavior: 'instant'});
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
   return (
@@ -20,7 +20,7 @@ const Hack_Today = () => {
           <h1 className="text-5xl md:text-5xl font-playfair font-bold text-center mb-6 drop-shadow-[0_0_10px_#ac6871]">HACKTODAY</h1>
 
           {/* Logo */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-6 hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out">
             <img
               src="/logo-competition/HACKTODAY.webp"
               alt="HackToday Logo"
@@ -40,7 +40,8 @@ const Hack_Today = () => {
           <div className="w-full px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 font-dm-sans mt-8 md:mt-20">
             <div className="max-w-7xl mx-auto bg-[#4D3159] rounded-3xl text-white shadow-[0_0_60px_#AC6871] py-8 md:py-12 px-4 md:px-6 mt-8 md:mt-12 mb-0 md:mb-20">
               <p className="text-base md:text-lg leading-relaxed text-justify text-pink-100 drop-shadow-[0_0_10px_#ffffff77]">
-                HackToday merupakan kompetisi Capture The Flag (CTF) dalam IT Today 2025 yang menguji kemampuan peserta dalam bidang keamanan siber melalui berbagai tantangan teknis yang menuntut ketelitian, analisis, dan kecepatan dalam menyelesaikan soal.
+                HackToday merupakan kompetisi Capture The Flag (CTF) dalam IT Today 2025 yang menguji kemampuan peserta dalam bidang keamanan siber melalui berbagai tantangan teknis yang menuntut ketelitian, analisis, dan kecepatan dalam
+                menyelesaikan soal.
               </p>
             </div>
           </div>

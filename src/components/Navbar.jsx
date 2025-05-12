@@ -11,7 +11,6 @@ class Navbar extends Component {
       isLoggedIn: false,
     };
   }
-
   componentDidMount() {
     // Cek status login dari localStorage
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -52,7 +51,7 @@ class Navbar extends Component {
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
       sessionStorage.setItem('scrollToSectionId', targetId);
-      window.location.href = '/';
+      window.location.href = `/#${targetId}`;
     }
   };
 

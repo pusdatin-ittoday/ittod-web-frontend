@@ -7,7 +7,7 @@ import ContactUs from './ContactUs';
 
 const Game_Today = () => {
   useEffect(() => {
-    window.scrollTo({top: 0, behavior: 'instant'});
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
   return (
@@ -20,7 +20,7 @@ const Game_Today = () => {
           <h1 className="text-5xl md:text-5xl font-playfair font-bold text-center mb-6 drop-shadow-[0_0_10px_#ac6871]">GAMETODAY</h1>
 
           {/* Logo */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-6 hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out">
             <img
               src="/logo-competition/GAMETODAY.webp"
               alt="GameToday Logo"
