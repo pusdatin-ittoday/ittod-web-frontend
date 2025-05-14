@@ -4,7 +4,7 @@ import Announcement from '../Announcement';
 
 function Beranda() {
     return (
-        <div className="flex gap-6 justify-center items-start px-6 mt-20">
+        <div className="flex flex-col lg:flex-row gap-6 justify-center items-start lg:mt-20">
             <CompList />
             <Announcement />
         </div>

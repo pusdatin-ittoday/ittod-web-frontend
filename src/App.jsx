@@ -1,3 +1,4 @@
+// App.js
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './pages/LandingPage/Home';
@@ -6,7 +7,6 @@ import Register from './pages/LoginPage/Register';
 import Event from './pages/LandingPage/Event';
 import Lomba from './pages/LandingPage/Lomba';
 import TimelineUmum from './pages/TimelineUmum';
-import DashboardLayout from './pages/DashboardPage/DashboardLayout';
 import ForgetPassword from './pages/LoginPage/ForgetPassword';
 import VerifyPassword from './pages/LoginPage/VerifyPassword';
 import NewPassword from './pages/LoginPage/NewPassword';
@@ -24,53 +24,30 @@ import SubmitLomba from './components/Dashboard/SubmitLomba/SubmitLomba';
 import Submit_Gametoday from './pages/CompSubmission/Submit_Gametoday';
 import Submit_Uxtoday from './pages/CompSubmission/Submit_Uxtoday';
 import Submit_Minetoday from './pages/CompSubmission/Submit_Minetoday';
+import DashboardWrapper from './pages/DashboardPage/DashboardWrapper';
 
 const App = () => {
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route
-            path="/"
-            element={<Home />}
-          />
-          <Route
-            path="/home"
-            element={<Home />}
-          />
-          <Route
-            path="/event"
-            element={<Event />}
-          />
-          <Route
-            path="/login"
-            element={<Login />}
-          />
-          <Route
-            path="/register"
-            element={<Register />}
-          />
-          <Route
-            path="/forget-password"
-            element={<ForgetPassword />}
-          />
-          <Route
-            path="/verify-password"
-            element={<VerifyPassword />}
-          />
-          <Route
-            path="/new-password"
-            element={<NewPassword />}
-          />
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/event" element={<Event />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forget-password" element={<ForgetPassword />} />
+          <Route path="/verify-password" element={<VerifyPassword />} />
+          <Route path="/new-password" element={<NewPassword />} />
+          <Route path="/timeline" element={<TimelineUmum />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
 
-          <Route
-            path="/timeline"
-            element={<TimelineUmum />}
-          />
-          <Route
-            path="/contact-us"
-            element={<ContactUs />}
-          />
+          {/* Dashboard pages */}
+          <Route path="/dashboard" element={<DashboardWrapper />} />
+          <Route path="/beranda" element={<DashboardWrapper />} />
+          <Route path="/ikut-lomba" element={<DashboardWrapper />} />
+          <Route path="/ikut-event" element={<DashboardWrapper />} />
 
           {/*Dashboard*/}
           <Route
@@ -135,6 +112,17 @@ const App = () => {
             path="/event/workshop"
             element={<Workshop />}
           ></Route>
+
+          {/* Preview/test pages */}
+          <Route path="/competition" element={<Lomba />} />
+          <Route path="/sponsors" element={<Sponsors />} />
+          <Route path="/competition/game_today" element={<Game_Today />} />
+          <Route path="/competition/hack_today" element={<Hack_Today />} />
+          <Route path="/competition/mine_today" element={<Mine_Today />} />
+          <Route path="/competition/ux_today" element={<Ux_Today />} />
+          <Route path="/event/national_seminar" element={<Seminar />} />
+          <Route path="/event/bootcamp" element={<Bootcamp />} />
+          <Route path="/event/workshop" element={<Workshop />} />
         </Routes>
       </BrowserRouter>
     </>

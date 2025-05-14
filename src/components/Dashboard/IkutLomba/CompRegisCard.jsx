@@ -1,4 +1,5 @@
 import React from "react";
+import { PiTargetBold } from "react-icons/pi";
 
 const events = [
     {
@@ -10,34 +11,30 @@ const events = [
         title: "GAMETODAY",
         description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
         image: "/logo-competition/GAMETODAY.webp"
-
-
     },
     {
         title: "UXTODAY",
         description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
         image: "/logo-competition/UXTODAY.webp"
-
     },
     {
         title: "MINETODAY",
         description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
         image: "/logo-competition/MINETODAY.webp"
-
     },
 ];
 
 const IkutLomba = ({ title, description, image }) => (
     <div className="font-dm-sans flex flex-col items-center text-white">
         {/* Image Placeholder */}
-        <div className="w-[200px] h-[220px]">
-            {image?(
+        <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1]">
+            {image ? (
                 <img
                     src={image}
                     alt={title}
                     className="w-full h-full object-cover rounded-lg hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out"
                 />
-            ):(
+            ) : (
                 <div className="w-full h-full bg-black"></div>
             )}
         </div>
@@ -58,12 +55,15 @@ const IkutLomba = ({ title, description, image }) => (
 );
 
 const CompRegisCard = () => (
-    <div className=" h-[500px] w-[650px] bg-[#7b446c] rounded-lg shadow-lg flex flex-col p-6 border-b border-[#dfb4d7]/60">
+    <div className="h-[500px] w-full lg:w-[650px] bg-[#7b446c] rounded-lg shadow-lg flex flex-col p-6 border-[#dfb4d7]/60">
         {/* Header */}
-        <div className="flex flex-row items-start mb-4 pb-2 gap-50 border-b border-[#dfb4d7]/60">
-            <div>
-                <h2 className="text-xl font-bold text-white">Kompetisi yang Tersedia</h2>
-                <p className="text-sm text-gray-300">Pilih dan daftar kompetisi sesuai minat kamu!</p>
+        <div className="flex flex-row items-start justify-between mb-4 pb-2 border-b border-[#dfb4d7]/60">
+            <div className="flex flex-col">
+                <div className="flex items-center mb-1">
+                    <PiTargetBold className="text-2xl text-white mr-2" />
+                    <h2 className="text-xl font-bold text-white">Kompetisi yang Tersedia</h2>
+                </div>
+                <p className="text-sm pl-1 text-gray-300 ml-7">Pilih dan daftar kompetisi sesuai minat kamu!</p>
             </div>
             <button className="custom-button-bg px-4 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold mb-4">
                 Join Team
