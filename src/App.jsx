@@ -20,6 +20,10 @@ import EditProfile from './components/Dashboard/EditProfil';
 import Seminar from './pages/seminar';
 import Bootcamp from './pages/Bootcamp';
 import Workshop from './pages/Workshop';
+import SubmitLomba from './components/Dashboard/SubmitLomba/SubmitLomba';
+import Submit_Gametoday from './pages/CompSubmission/Submit_Gametoday';
+import Submit_Uxtoday from './pages/CompSubmission/Submit_Uxtoday';
+import Submit_Minetoday from './pages/CompSubmission/Submit_Minetoday';
 import DashboardWrapper from './pages/DashboardPage/DashboardWrapper';
 
 const App = () => {
@@ -44,6 +48,70 @@ const App = () => {
           <Route path="/beranda" element={<DashboardWrapper />} />
           <Route path="/ikut-lomba" element={<DashboardWrapper />} />
           <Route path="/ikut-event" element={<DashboardWrapper />} />
+
+          {/*Dashboard*/}
+          <Route
+            path="*"
+            element={<DashboardLayout />}
+          />
+
+          <Route
+            path="/edit-profile"
+            element={<EditProfile />}
+          />
+
+          {/* Buat submit lomba */}
+          <Route 
+            path='/submit-gametoday'
+            element={<Submit_Gametoday />}
+          ></Route>
+          <Route 
+            path='/submit-uxtoday'
+            element={<Submit_Uxtoday />}
+          ></Route>
+          <Route 
+            path='/submit-minetoday'
+            element={<Submit_Minetoday />}
+          ></Route>
+
+
+          {/* buat liat liat waktu bikin page */}
+          <Route
+            path="/competition"
+            element={<Lomba />}
+          />
+          <Route
+            path="/sponsors"
+            element={<Sponsors />}
+          ></Route>
+          <Route
+            path="/competition/game_today"
+            element={<Game_Today />}
+          ></Route>
+          <Route
+            path="/competition/hack_today"
+            element={<Hack_Today />}
+          ></Route>
+          <Route
+            path="/competition/mine_today"
+            element={<Mine_Today />}
+          ></Route>
+          <Route
+            path="/competition/ux_today"
+            element={<Ux_Today />}
+          ></Route>
+          <Route
+            path="/event/national_seminar"
+            element={<Seminar />}
+          ></Route>
+          <Route
+            path="/event/bootcamp"
+            element={<Bootcamp />}
+          ></Route>
+          <Route
+            path="/event/workshop"
+            element={<Workshop />}
+          ></Route>
 
           {/* Preview/test pages */}
           <Route path="/competition" element={<Lomba />} />

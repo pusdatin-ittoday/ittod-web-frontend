@@ -6,6 +6,7 @@ import Sidebar from "../../components/Dashboard/Sidebar";
 import Beranda from "../../components/Dashboard/Beranda/Beranda";
 import IkutLomba from "../../components/Dashboard/IkutLomba/IkutLomba";
 import IkutEvent from "../../components/Dashboard/IkutEvent/IkutEvent";
+
 import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md"; // Added MdCheckCircleOutline
 
 class DashboardLayout extends Component {
@@ -245,6 +246,8 @@ class DashboardLayout extends Component {
         return <IkutLomba />;
       case "ikut-event":
         return <IkutEvent />;
+      case "submit-lomba":
+        return <SubmitLomba />;
       default:
         return <Beranda />;
     }

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { MdHomeFilled } from "react-icons/md";
 import { GiTrophy } from "react-icons/gi";
 import { MdEvent } from "react-icons/md";
+import { FaFileUpload } from "react-icons/fa";
 
 const Sidebar = ({ active, setActive }) => {
     const navigate = useNavigate();
@@ -11,6 +12,7 @@ const Sidebar = ({ active, setActive }) => {
         { id: "beranda", label: "Beranda", icon: <MdHomeFilled className="text-lg sm:text-xl" /> },
         { id: "ikut-lomba", label: "Ikut Lomba", icon: <GiTrophy className="text-lg sm:text-xl" /> },
         { id: "ikut-event", label: "Ikut Event", icon: <MdEvent className="text-lg sm:text-xl" /> },
+        { id: "submit-lomba", label: "Submit Lomba", icon: <FaFileUpload className="text-lg sm:text-xl" /> }
     ];
 
     return (
