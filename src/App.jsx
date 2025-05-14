@@ -42,6 +42,7 @@ const App = () => {
           <Route path="/timeline" element={<TimelineUmum />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/edit-profile" element={<EditProfile />} />
+          
 
           {/* Dashboard pages */}
           <Route path="/dashboard" element={<DashboardWrapper />} />

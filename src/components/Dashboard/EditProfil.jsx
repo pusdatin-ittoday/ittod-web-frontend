@@ -7,6 +7,7 @@ import { BsLine } from "react-icons/bs";
 import { FaDiscord, FaInstagram } from "react-icons/fa";
 import { IoMdSchool } from "react-icons/io";
 import { FaSchool } from "react-icons/fa6";
+import { FaAddressCard } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 class EditProfile extends Component {
@@ -420,11 +421,12 @@ class EditProfile extends Component {
                                 )}
                             </label>
                             <div
-                                className={`border-2 border-dashed ${errorFields.includes(this.fieldLabels.KTM) ? 'border-red-500' : 'border-pink-400'} rounded-md p-6 text-center ${errorFields.includes(this.fieldLabels.KTM) ? 'bg-red-100' : 'bg-gray-100'} text-gray-800 cursor-pointer w-full min-h-24 flex items-center justify-center`}
+                                className={`border-2 border-dashed ${errorFields.includes(this.fieldLabels.KTM) ? 'border-red-500' : 'border-pink-400'} rounded-md p-6 text-center ${errorFields.includes(this.fieldLabels.KTM) ? 'bg-red-100' : 'bg-gray-100'} text-white bg-white/10 hover:bg-white/20 transition duration-300 hover:scale-102 cursor-pointer w-full min-h-24 flex items-center justify-center`}
                                 onDragOver={(e) => e.preventDefault()}
                                 onDrop={this.handleFileDrop}
                                 onClick={() => this.fileInput && this.fileInput.click()}
                             >
+                                <FaAddressCard className="mr-2 text-xl text-pink-300 group-hover:text-pink-200'" />
                                 <div className="w-full overflow-hidden text-ellipsis">
                                     <p className="truncate">{ktmDisplayText}</p>
                                 </div>
