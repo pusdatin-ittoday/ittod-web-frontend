@@ -308,7 +308,7 @@ class DashboardLayout extends Component {
                 </svg>
               </button>
             </div>
-            <p className="text-sm mb-2">Silakan lengkapi data diri Anda untuk pengalaman terbaik:</p>
+            <p className="text-sm mb-2">Mohon untuk lengkapi data diri Anda :</p>
             <ul className="list-disc pl-5 text-sm space-y-1">
               {incompleteFields.map((field, index) => (
                 <li key={index}>{field.label}</li>
