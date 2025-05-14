@@ -22,6 +22,8 @@ import Bootcamp from './pages/Bootcamp';
 import Workshop from './pages/Workshop';
 import SubmitLomba from './components/Dashboard/SubmitLomba/SubmitLomba';
 import Submit_Gametoday from './pages/CompSubmission/Submit_Gametoday';
+import Submit_Uxtoday from './pages/CompSubmission/Submit_Uxtoday';
+import Submit_Minetoday from './pages/CompSubmission/Submit_Minetoday';
 
 const App = () => {
   return (
@@ -85,6 +87,14 @@ const App = () => {
           <Route 
             path='/submit-gametoday'
             element={<Submit_Gametoday />}
+          ></Route>
+          <Route 
+            path='/submit-uxtoday'
+            element={<Submit_Uxtoday />}
+          ></Route>
+          <Route 
+            path='/submit-minetoday'
+            element={<Submit_Minetoday />}
           ></Route>
 
 

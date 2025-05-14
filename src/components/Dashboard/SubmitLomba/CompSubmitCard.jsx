@@ -4,10 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 const events = [
   {
-    title: "HACKTODAY",
-    image: "/logo-competition/HACKTODAY.webp",
-  },
-  {
     title: "GAMETODAY",
     image: "/logo-competition/GAMETODAY.webp",
     submitLink: "submit-gametoday",

@@ -1,5 +1,9 @@
 import React from 'react'
 import Navbar from "../../components/Navbar";
+import { useNavigate } from 'react-router-dom';
+import { FaItchIo } from "react-icons/fa";
+import { FaYoutube } from "react-icons/fa";
+import { FaGoogleDrive } from "react-icons/fa";
 
 const Submit_Gametoday = () => {
   const [SubmisiGame, setSubmisiGame] = React.useState("");
@@ -66,6 +70,7 @@ const Submit_Gametoday = () => {
 
   }
 
+  const navigate = useNavigate();
 
   return (
     <>
@@ -76,22 +81,29 @@ const Submit_Gametoday = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit}  className="flex flex-col gap-4 font-dm-sans">
-            <div className=''>
-              <label htmlFor="SubmisiGame">Submisi Game (itch.io)</label>
-              <input id='SubmisiGame' name='SubmisiGame' value={SubmisiGame} onChange={handleChange} type="text" placeholder="Link Submisi Game (itch.io)" className="text-sm lg:text-lg w-full px-4 py-2 rounded-xl text-black bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-400" />
+            <div className='mb-3 relative'>
+              <label htmlFor="SubmisiGame" className='block text-sm font-bold mb-2'> Submisi Game (itch.io)</label>
+              <FaItchIo className='absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl'/>
+              <input id='SubmisiGame' name='SubmisiGame' value={SubmisiGame} onChange={handleChange} type="text" placeholder="Link Submisi Game (itch.io)" className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]" />
             </div>
 
-            <div>
-              <label htmlFor="TrailerGame">Trailer Game (youtube)</label>
-              <input id='TrailerGame' name='TrailerGame' value={TrailerGame} onChange={handleChange} type="text" placeholder="Link Trailer Game (Youtube)" className="text-sm lg:text-lg w-full px-4 py-2 rounded-xl text-black bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-400" />
+            <div className='mb-3 relative'>
+              <label htmlFor="TrailerGame" className='block text-sm font-bold mb-2'>Trailer Game (youtube)</label>
+              <FaYoutube className='absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl'/>
+              <input id='TrailerGame' name='TrailerGame' value={TrailerGame} onChange={handleChange} type="text" placeholder="Link Trailer Game (Youtube)" className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]" />
             </div>
 
-            <div>
-              <label htmlFor="ExecutiveSummary">Executive Summary/Proposal (Drive)</label>
-              <input id='ExecutiveSummary' name='ExecutiveSummary' value={ExecutiveSummary} onChange={handleChange} type="text" placeholder="Link Drive File Executive Summary/Proposal" className="text-sm lg:text-lg w-full px-4 py-2 rounded-xl text-black bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-400" />
+            <div className='mb-3 relative'>
+              <label htmlFor="ExecutiveSummary" className='block text-sm font-bold mb-2'>Executive Summary/Proposal (Drive)</label>
+              <FaGoogleDrive className='absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl'/>
+              <input id='ExecutiveSummary' name='ExecutiveSummary' value={ExecutiveSummary} onChange={handleChange} type="text" placeholder="Link Drive File Executive Summary/Proposal" className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]" />
             </div>
 
-            <button type='submit' className='w-full text-center font-dm-sans font-bold border-2 text-white py-2 px-7 rounded-lg shadow-md button-hover hover:bg-neutral-100/20 transition duration-300 ease-in-out cursor-pointer'>Confirm</button>
+            <div className="buttons flex flex-row justify-end">
+              <a onClick={() => navigate("/dashboard")} type='cancel' className='bg-gray-300 text-black px-4 py-2 rounded mr-2'>Batal</a>
+              <button type='submit' className='custom-button-bg text-white button-hover transition duration-300 ease-in-out hover:scale-105 px-4 py-2 rounded'>Simpan</button>
+            </div>
+          
           </form>
         </div>
       </div>
