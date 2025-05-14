@@ -50,16 +50,6 @@ const App = () => {
           <Route path="/ikut-lomba" element={<DashboardWrapper />} />
           <Route path="/ikut-event" element={<DashboardWrapper />} />
 
-          {/*Dashboard*/}
-          <Route
-            path="*"
-            element={<DashboardLayout />}
-          />
-
-          <Route
-            path="/edit-profile"
-            element={<EditProfile />}
-          />
 
           {/* Buat submit lomba */}
           <Route 
