@@ -145,21 +145,14 @@ class DashboardLayout extends Component {
       sessionStorage.removeItem("profileUpdateStatus");
 
       // After 3 seconds, change the message to "Data sudah lengkap!"
--     setTimeout(() => {
-+     this.successTimer = setTimeout(() => {
+      setTimeout(() => {
         if (this.state.showSuccessAlert) {
           this.setState({
             successAlertMessage: "Data sudah lengkap!"
           });
         }
--     }, 3000);
-+     }, 3000);
+      }, 3000);
     }
-
-+   componentWillUnmount() {
-+     clearTimeout(this.successTimer);
-+     // existing removes …
-+   }
   };
 
   closeAlert = () => {
