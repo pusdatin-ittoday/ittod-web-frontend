@@ -6,7 +6,7 @@ import ContactUs from './ContactUs';
 
 const Workshop = () => {
   useEffect(() => {
-    window.scrollTo({top: 0, behavior: 'instant'});
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
   return (
@@ -19,7 +19,7 @@ const Workshop = () => {
           <h1 className="text-5xl md:text-5xl font-playfair font-bold text-center mb-6 drop-shadow-[0_0_10px_#ac6871]">WORKSHOP</h1>
 
           {/* Logo */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-6 hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out">
             <img
               src="/logo-event/WORKSHOP.webp"
               alt="Workshop Logo"
@@ -39,7 +39,7 @@ const Workshop = () => {
           <div className="w-full px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 font-dm-sans mt-8 md:mt-20">
             <div className="max-w-7xl mx-auto bg-[#4D3159] rounded-3xl text-white shadow-[0_0_60px_#AC6871] py-8 md:py-12 px-4 md:px-6 mt-8 md:mt-12 mb-0 md:mb-20">
               <p className="text-base md:text-lg leading-relaxed text-justify text-pink-100 drop-shadow-[0_0_10px_#ffffff77]">
-                Workshop IT Today 2025 merupakan  pelatihan yang akan diisi oleh pembicara yang ahli dibidangnya. Workshop ini memungkinkan peserta melakukan interaksi aktif dan bersama pembicara terkait topik-topik menarik mengenai IT.
+                Workshop IT Today 2025 merupakan pelatihan yang akan diisi oleh pembicara yang ahli dibidangnya. Workshop ini memungkinkan peserta melakukan interaksi aktif dan bersama pembicara terkait topik-topik menarik mengenai IT.
               </p>
             </div>
           </div>
