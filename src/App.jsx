@@ -30,6 +30,7 @@ import RegistGametoday from "./pages/CompeRegisPage/RegistGametoday.jsx";
 import RegistMineToday from "./pages/CompeRegisPage/RegistMinetoday.jsx";
 import RegistHackToday from "./pages/CompeRegisPage/RegistHacktoday.jsx";
 import RegistUXToday from "./pages/CompeRegisPage/RegistUXtoday.jsx";
+import AuthCallback from './components/Login/AuthCallback';
 
 const App = () => {
   return (
@@ -40,6 +41,7 @@ const App = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/event" element={<Event />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/verify-password" element={<VerifyPassword />} />
@@ -47,7 +49,6 @@ const App = () => {
           <Route path="/timeline" element={<TimelineUmum />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/edit-profile" element={<EditProfile />} />
-
 
           {/* Dashboard pages */}
           <Route path="/dashboard" element={<DashboardWrapper />} />
