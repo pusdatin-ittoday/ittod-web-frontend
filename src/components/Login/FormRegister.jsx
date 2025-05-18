@@ -78,7 +78,7 @@ class FormRegister extends React.Component {
         this.setState({ loading: true, errorMessage: "" });
 
         const response = await axios.post(
-          "/api/auth/register",
+          "https://staging-api.ittoday.web.id/api/auth/register",
           {
             email,
             password,
@@ -190,6 +190,9 @@ class FormRegister extends React.Component {
           <button
             type="button"
             className="w-full p-[2px] rounded-md bg-[length:200%_200%] custom-button-bg cursor-pointer transition-all duration-300 ease-in-out hover:bg-[position:100%_0] button-hover"
+            onClick={() =>
+              (window.location.href = "https://staging-api.ittoday.web.id/api/auth/google")
+            }
           >
             <div className="flex items-center justify-center gap-2 w-full h-full bg-[#3D2357] text-white rounded-md p-2">
               <img src="/google.svg" alt="Google Logo" className="w-5 h-5" />

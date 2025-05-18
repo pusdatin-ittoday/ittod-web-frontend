@@ -31,6 +31,11 @@ import RegistMineToday from "./pages/CompeRegisPage/RegistMinetoday.jsx";
 import RegistHackToday from "./pages/CompeRegisPage/RegistHacktoday.jsx";
 import RegistUXToday from "./pages/CompeRegisPage/RegistUXtoday.jsx";
 import AuthCallback from './components/Login/AuthCallback';
+import Beranda from './components/Dashboard/Beranda/Beranda.jsx';
+import IkutLomba from './components/Dashboard/IkutLomba/IkutLomba.jsx';
+import IkutEvent from './components/Dashboard/IkutEvent/IkutEvent.jsx';
+
+
 
 const App = () => {
   return (
@@ -50,26 +55,14 @@ const App = () => {
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/edit-profile" element={<EditProfile />} />
 
-          {/* Dashboard pages */}
-          <Route path="/dashboard" element={<DashboardWrapper />} />
-          <Route path="/beranda" element={<DashboardWrapper />} />
-          <Route path="/ikut-lomba" element={<DashboardWrapper />} />
-          <Route path="/ikut-event" element={<DashboardWrapper />} />
-
-
-          {/* Buat submit lomba */}
-          <Route
-            path='/submit-gametoday'
-            element={<Submit_Gametoday />}
-          ></Route>
-          <Route
-            path='/submit-uxtoday'
-            element={<Submit_Uxtoday />}
-          ></Route>
-          <Route
-            path='/submit-minetoday'
-            element={<Submit_Minetoday />}
-          ></Route>
+          {/* Dashboard Routes */}
+          <Route path="/dashboard/beranda" element={<DashboardWrapper />} />
+          <Route path="/dashboard/ikut-lomba" element={<DashboardWrapper />} />
+          <Route path="/dashboard/ikut-event" element={<DashboardWrapper />} />
+          <Route path="/dashboard/submit-lomba" element={<DashboardWrapper />} />
+          <Route path="/submit-gametoday" element={<Submit_Gametoday />} />
+          <Route path="/submit-uxtoday" element={<Submit_Uxtoday />} />
+          <Route path="/submit-minetoday" element={<Submit_Minetoday />} />
 
           {/* buat daftar lomba */}
           <Route
@@ -137,7 +130,7 @@ const App = () => {
           <Route path="/event/national_seminar" element={<Seminar />} />
           <Route path="/event/bootcamp" element={<Bootcamp />} />
           <Route path="/event/workshop" element={<Workshop />} />
-          <Route path="/submit-lomba" element={<SubmitLomba />} />
+
           <Route path="/daftar-event" element={<DaftarEvent />} />
         </Routes>
       </BrowserRouter>

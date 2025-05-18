@@ -165,15 +165,15 @@ const RegistGameToday = () => {
 
                         <div className="buttons flex flex-row justify-end">
                             <a
-                                onClick={() => navigate("/dashboard")}
+                                onClick={() => navigate("/dashboard/ikut-lomba")}
                                 type="cancel"
-                                className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
+                                className="bg-gray-300 text-black px-4 py-2 rounded mr-2 cursor-pointer transition duration-300 ease-in-out hover:scale-105"
                             >
                                 Batal
                             </a>
                             <button
                                 type="submit"
-                                className="custom-button-bg text-white button-hover transition duration-300 ease-in-out hover:scale-105 px-4 py-2 rounded"
+                                className="custom-button-bg text-white button-hover transition duration-300 ease-in-out hover:scale-105 px-4 py-2 rounded cursor-pointer"
                             >
                                 Submit
                             </button>

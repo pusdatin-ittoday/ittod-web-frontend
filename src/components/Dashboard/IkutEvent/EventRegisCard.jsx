@@ -46,7 +46,7 @@ const IkutEvent = ({ title, description, image }) => (
         <div className="flex gap-5">
             <Link
                 to="/daftar-event"
-                className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm inline-block text-center"
+                className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm inline-block text-center cursor-pointer"
             >
                 Daftar Sekarang
             </Link>

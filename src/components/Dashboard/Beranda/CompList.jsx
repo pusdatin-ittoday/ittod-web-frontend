@@ -138,14 +138,14 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
                                     handleVerifyClick(compKey, idx);
                                 }
                             }}
-                            className="custom-button-bg px-3 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold"
+                            className="cursor-pointer custom-button-bg px-3 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold"
                         >
                             <FaUpload className="inline mr-1" /> Verify
                         </button>
 
                         <button
                             onClick={handleEditUserClick}
-                            className="custom-button-bg px-3 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold"
+                            className="cursor-pointer custom-button-bg px-3 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold"
                         >
                             Edit Data
                         </button>

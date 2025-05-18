@@ -52,7 +52,7 @@ const Submit_Minetoday = () => {
     // Reset form (optional)
     setDrive("");
   
-    window.location.href = "/dashboard"; // Redirect to dashboard after submission
+    window.location.href = "/dashboard/submit-lomba"; // Redirect to dashboard after submission
 
   }
 
@@ -74,7 +74,7 @@ const Submit_Minetoday = () => {
             </div>
 
             <div className="buttons flex flex-row justify-end">
-              <a onClick={() => navigate("/dashboard")} type='cancel' className='bg-gray-300 text-black px-4 py-2 rounded mr-2'>Batal</a>
+              <a onClick={() => navigate("/dashboard/submit-lomba")} type='cancel' className='bg-gray-300 text-black px-4 py-2 rounded mr-2'>Batal</a>
               <button type='submit' className='custom-button-bg text-white button-hover transition duration-300 ease-in-out hover:scale-105 px-4 py-2 rounded'>Simpan</button>
             </div>
           

@@ -24,7 +24,7 @@ const Sidebar = ({ active, setActive }) => {
                         key={item.id}
                         onClick={(event) => {
                             setActive(item.id);
-                            navigate(`/${item.id}`);
+                            navigate(`/dashboard/${item.id}`);
                         }}
                         className={`px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-xs sm:text-sm md:text-base 
                             rounded-md lg:font-medium text-left button-hover transition duration-300 ease-in-out cursor-pointer
