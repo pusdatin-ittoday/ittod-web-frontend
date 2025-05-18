@@ -1,5 +1,6 @@
 import React from "react";
 import { BsCalendarEvent } from "react-icons/bs";
+import { Link } from "react-router-dom";
 
 const events = [
     {
@@ -43,9 +44,12 @@ const IkutEvent = ({ title, description, image }) => (
 
         {/* Button */}
         <div className="flex gap-5">
-            <button className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm">
+            <Link
+                to="/daftar-event"
+                className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm inline-block text-center"
+            >
                 Daftar Sekarang
-            </button>
+            </Link>
         </div>
     </div>
 );
@@ -76,9 +80,8 @@ const EventRegisCard = () => (
                     return (
                         <div
                             key={idx} // Key should be on the outermost element in map
-                            className={`${
-                                isWorkshop ? 'col-span-2 justify-self-center' : '' // Span 2 columns and center itself if it's Workshop
-                            }`}
+                            className={`${isWorkshop ? 'col-span-2 justify-self-center' : '' // Span 2 columns and center itself if it's Workshop
+                                }`}
                         >
                             <IkutEvent
                                 title={event.title}

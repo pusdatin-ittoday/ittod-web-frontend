@@ -25,6 +25,7 @@ import Submit_Gametoday from './pages/CompSubmission/Submit_Gametoday';
 import Submit_Uxtoday from './pages/CompSubmission/Submit_Uxtoday';
 import Submit_Minetoday from './pages/CompSubmission/Submit_Minetoday';
 import DashboardWrapper from './pages/DashboardPage/DashboardWrapper';
+import DaftarEvent from './pages/DaftarEvent';
 
 const App = () => {
   return (
@@ -42,7 +43,7 @@ const App = () => {
           <Route path="/timeline" element={<TimelineUmum />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/edit-profile" element={<EditProfile />} />
-          
+
 
           {/* Dashboard pages */}
           <Route path="/dashboard" element={<DashboardWrapper />} />
@@ -52,15 +53,15 @@ const App = () => {
 
 
           {/* Buat submit lomba */}
-          <Route 
+          <Route
             path='/submit-gametoday'
             element={<Submit_Gametoday />}
           ></Route>
-          <Route 
+          <Route
             path='/submit-uxtoday'
             element={<Submit_Uxtoday />}
           ></Route>
-          <Route 
+          <Route
             path='/submit-minetoday'
             element={<Submit_Minetoday />}
           ></Route>
@@ -114,6 +115,8 @@ const App = () => {
           <Route path="/event/national_seminar" element={<Seminar />} />
           <Route path="/event/bootcamp" element={<Bootcamp />} />
           <Route path="/event/workshop" element={<Workshop />} />
+          <Route path="/submit-lomba" element={<SubmitLomba />} />
+          <Route path="/daftar-event" element={<DaftarEvent />} />
         </Routes>
       </BrowserRouter>
     </>
