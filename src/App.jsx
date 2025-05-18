@@ -26,6 +26,7 @@ import Submit_Uxtoday from './pages/CompSubmission/Submit_Uxtoday';
 import Submit_Minetoday from './pages/CompSubmission/Submit_Minetoday';
 import DashboardWrapper from './pages/DashboardPage/DashboardWrapper';
 import DaftarEvent from './pages/DaftarEvent';
+import AuthCallback from './components/Login/AuthCallback';
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/event" element={<Event />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/verify-password" element={<VerifyPassword />} />
@@ -43,7 +45,6 @@ const App = () => {
           <Route path="/timeline" element={<TimelineUmum />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/edit-profile" element={<EditProfile />} />
-
 
           {/* Dashboard pages */}
           <Route path="/dashboard" element={<DashboardWrapper />} />
