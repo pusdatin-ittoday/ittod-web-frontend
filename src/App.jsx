@@ -26,6 +26,10 @@ import Submit_Uxtoday from './pages/CompSubmission/Submit_Uxtoday';
 import Submit_Minetoday from './pages/CompSubmission/Submit_Minetoday';
 import DashboardWrapper from './pages/DashboardPage/DashboardWrapper';
 import DaftarEvent from './pages/DaftarEvent';
+import RegistGametoday from "./pages/CompeRegisPage/RegistGametoday.jsx";
+import RegistMineToday from "./pages/CompeRegisPage/RegistMinetoday.jsx";
+import RegistHackToday from "./pages/CompeRegisPage/RegistHacktoday.jsx";
+import RegistUXToday from "./pages/CompeRegisPage/RegistUXtoday.jsx";
 import AuthCallback from './components/Login/AuthCallback';
 
 const App = () => {
@@ -67,6 +71,23 @@ const App = () => {
             element={<Submit_Minetoday />}
           ></Route>
 
+          {/* buat daftar lomba */}
+          <Route
+            path="/register-hacktoday"
+            element={<RegistHackToday />}
+          ></Route>
+          <Route
+            path="/register-gametoday"
+            element={<RegistGametoday />}
+          ></Route>
+          <Route
+            path="/register-minetoday"
+            element={<RegistMineToday />}
+          ></Route>
+          <Route
+            path="/register-uxtoday"
+            element={<RegistUXToday />}
+          ></Route>
 
           {/* buat liat liat waktu bikin page */}
           <Route
