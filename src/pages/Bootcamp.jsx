@@ -9,6 +9,10 @@ const Bootcamp = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
+  const timeline = [
+    { title: 'Bootcamp', date: '17, 24, 31 Agustus 2025 & 7 September 2025' },
+  ];
+
   return (
     <>
       <Navbar />
@@ -47,7 +51,7 @@ const Bootcamp = () => {
 
         {/* SECTION: Timeline */}
         <section className="min-h-screen mb-0 pb-0 md:mb-0 md:pb-0">
-          <TimelineLomba />
+          <TimelineLomba items={timeline}/>
         </section>
       </main>
       <ContactUs />
