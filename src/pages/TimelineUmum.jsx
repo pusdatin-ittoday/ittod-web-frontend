@@ -34,7 +34,7 @@ const TimelineItem = ({ title, date, isFirst, isLast }) => {
 
       {/* Title and date description */}
       <div className="flex flex-col justify-center lg:ml-4 ml-[-10px]">
-        <h3 className="text-white text-xl lg:text-2xl font-bold mb-1 font-playfair drop-shadow-[0_0_10px_#ac6871] pl-6">{title}</h3>
+        <h3 className="text-white text-xl lg:text-2xl font-bold mb-1 font-dm-sans drop-shadow-[0_0_10px_#ac6871] pl-6">{title}</h3>
         <p className="text-sm lg:text-xl text-white/80 font-dm-sans pl-6">{date}</p>
       </div>
     </div>
@@ -45,16 +45,18 @@ const TimelineItem = ({ title, date, isFirst, isLast }) => {
 const TimelineUmum = () => {
   // List of timeline events
   var items = [
-    { title: "Pendaftaran", date: "19 Februari 2049 - 23 Januari 2312"},
-    { title: "Pengumuman Tema", date: "19 Februari 2049 - 23 Januari 2312"},
-    { title: "Pengumuman Pemenang", date: "19 Februari 2049 - 23 Januari 2312"},
+    { title: "Bootcamp", date: "17, 24, 31 Agustus & 7 September 2025"},
+    { title: "Workshop 1 & 2", date: "31 Agustus 2025"},
+    { title: "Workshop 3", date: "7 September 2025"},
+    { title: "Seminar Nasional", date: "13 September 2025"},
+    { title: "Final & Awarding", date: "27 September 2025"},
   ];
 
   
   return (
   <>
     <h1 className='text-center text-white text-4xl lg:text-5xl font-playfair font-bold leading-[140.625%] [text-shadow:0px_5px_10px_rgba(172,104,113,0.7)]'>
-        Timeline
+        Timeline Event
     </h1>
     <div className="flex justify-center px-8 py-16">
       <div className="max-w-xl">

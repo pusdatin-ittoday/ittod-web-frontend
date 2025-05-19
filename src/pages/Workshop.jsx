@@ -9,6 +9,11 @@ const Workshop = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
+  const timeline = [
+    { title: 'Workshop 1 & 2', date: '31 Agustus 2025' },
+    { title: 'Workshop 3', date: '7 September 2025' },
+  ];
+
   return (
     <>
       <Navbar />
@@ -47,7 +52,7 @@ const Workshop = () => {
 
         {/* SECTION: Timeline */}
         <section className="min-h-screen mb-0 pb-0 md:mb-0 md:pb-0">
-          <TimelineLomba />
+          <TimelineLomba items={timeline} />
         </section>
       </main>
       <ContactUs />
