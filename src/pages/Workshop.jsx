@@ -3,12 +3,22 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import TimelineLomba from '../components/TimeLineLomba';
 import ContactUs from './ContactUs';
+import { useNavigate } from 'react-router-dom';
 
 const Workshop = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
-
+  const handleDaftarClick = () => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (isLoggedIn === 'true') {
+      navigate('/ikut-event');
+    } else {
+      navigate('/login?redirectTo=ikut-event');
+    }
+  };
   return (
     <>
       <Navbar />
@@ -30,7 +40,8 @@ const Workshop = () => {
           {/* Tombol */}
           <div className="flex justify-center gap-4 mb-8 md:mb-10">
             <button className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-3 px-4 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer">Guidebook</button>
-            <button className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-3 px-4 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
+            <button onClick={handleDaftarClick}
+              className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-3 px-4 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
               Daftar Sekarang
             </button>
           </div>
