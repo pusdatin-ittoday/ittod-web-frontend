@@ -20,6 +20,10 @@ const Seminar = () => {
     }
   };
 
+  const timeline = [
+    { title: 'Seminar Nasional', date: '13 September 2025' },
+  ];
+
   return (
     <>
       <Navbar />
@@ -61,7 +65,7 @@ const Seminar = () => {
 
         {/* SECTION: Timeline */}
         <section className="min-h-screen mb-0 pb-0 md:mb-0 md:pb-0">
-          <TimelineLomba />
+          <TimelineLomba items={timeline}/>
         </section>
       </main>
       <ContactUs />

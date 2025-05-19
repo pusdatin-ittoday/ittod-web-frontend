@@ -1,31 +1,36 @@
 import React, { useState } from 'react';
 import { PiTargetBold } from 'react-icons/pi';
+import {Link} from 'react-router-dom';
 
 const events = [
   {
     title: 'HACKTODAY',
     description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
     image: '/logo-competition/HACKTODAY.webp',
+    registerLink: '/register-hacktoday',
   },
   {
     title: 'GAMETODAY',
     description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
     image: '/logo-competition/GAMETODAY.webp',
+    registerLink: '/register-gametoday',
   },
   {
     title: 'UXTODAY',
     description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
     image: '/logo-competition/UXTODAY.webp',
+    registerLink: '/register-uxtoday',
   },
   {
     title: 'MINETODAY',
     description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
     image: '/logo-competition/MINETODAY.webp',
+    registerLink: '/register-minetoday',
   },
 ];
 
-const IkutLomba = ({ title, description, image }) => (
-  <div className="font-dm-sans flex flex-col items-center text-white">
+const IkutLomba = ({title, description, image, registerLink}) => (
+    <div className="font-dm-sans flex flex-col items-center text-white">
     <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1]">
       {image ? (
         <img
@@ -42,7 +47,12 @@ const IkutLomba = ({ title, description, image }) => (
       <p className="text-sm">{description}</p>
     </div>
     <div className="flex gap-5">
-      <button className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm">Daftar Sekarang</button>
+      <Link to={registerLink}>
+        <button
+            className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm">
+          Daftar Sekarang
+        </button>
+      </Link>
     </div>
   </div>
 );
@@ -141,6 +151,7 @@ const CompRegisCard = () => {
               title={event.title}
               description={event.description}
               image={event.image}
+              registerLink={event.registerLink}
             />
           ))}
         </div>
