@@ -5,17 +5,17 @@ import { Link } from "react-router-dom";
 const events = [
     {
         title: "NATIONAL SEMINAR",
-        description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
+        description: "Wawasan menarik di bidang Teknologi Informasi!",
         image: "/logo-event/SEMINAR-NASIONAL.webp"
     },
     {
         title: "BOOTCAMP",
-        description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
+        description: "Asah kemampuanmu dalam bidang Teknologi Informasi!",
         image: "/logo-event/BOOTCAMP.webp"
     },
     {
         title: "WORKSHOP",
-        description: "Acara seru banget aduhai ayo join ittod yang tahun ini",
+        description: "Asah kemampuanmu dalam bidang Teknologi Informasi!",
         image: "/logo-event/WORKSHOP.webp"
     },
 ];
