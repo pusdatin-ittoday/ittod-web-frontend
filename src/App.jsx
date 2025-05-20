@@ -138,7 +138,7 @@ const App = () => {
           <Route path="/event/bootcamp" element={<Bootcamp />} />
           <Route path="/event/workshop" element={<Workshop />} />
           <Route path="/submit-lomba" element={<SubmitLomba />} />
-          <Route path="/daftar-event" element={<DaftarEvent />} />
+          <Route path="/daftar-event/:target" element={<DaftarEvent />} />
         </Routes>
       </BrowserRouter>
     </>
