@@ -5,7 +5,8 @@ import Alert from "./Alert";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { MdEmail, MdKey } from "react-icons/md";
-import axios from "axios";
+// Import API functions from user.js
+import { registerUser, initiateGoogleLogin } from "../../api/user";
 
 const FormRegisterWithRouter = (props) => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ class FormRegister extends React.Component {
       showPassword: false,
       showConfirmPassword: false,
       errorMessage: "",
+      successMessage: "",
       loading: false,
     };
 
@@ -33,6 +35,7 @@ class FormRegister extends React.Component {
     this.showPasswordHandler = this.showPasswordHandler.bind(this);
     this.showConfirmPasswordHandler = this.showConfirmPasswordHandler.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleGoogleLogin = this.handleGoogleLogin.bind(this);
   }
 
   onEmailChangeHandler(e) {
@@ -63,10 +66,19 @@ class FormRegister extends React.Component {
     this.props.navigate("/login");
   }
 
+  handleGoogleLogin() {
+    // Use the API function for Google login
+    initiateGoogleLogin();
+  }
+
   async handleSubmit(e) {
     e.preventDefault();
     const { email, password, confirmPassword } = this.state;
 
+    // Clear previous timeout if exists
+    if (this.errorTimeout) clearTimeout(this.errorTimeout);
+
+    // Client-side validation
     if (!email || !password || !confirmPassword) {
       this.setState({ errorMessage: "Semua kolom harus diisi!" });
     } else if (password.length < 8) {
@@ -74,41 +86,53 @@ class FormRegister extends React.Component {
     } else if (password !== confirmPassword) {
       this.setState({ errorMessage: "Password tidak cocok!" });
     } else {
+      // Set loading state and clear messages
+      this.setState({ loading: true, errorMessage: "", successMessage: "" });
+      
       try {
-        this.setState({ loading: true, errorMessage: "" });
-
-        const response = await axios.post(
-          "https://staging-api.ittoday.web.id/api/auth/register",
-          {
-            email,
-            password,
-            confirmPassword,
-          },
-          { withCredentials: true } // opsional, kalau backend pake cookie
-        );
-
-        if (response.status === 201 || response.status === 200) {
+        // Call the API function for registration
+        const result = await registerUser({
+          email,
+          password,
+          confirmPassword
+        });
+        
+        if (result.success) {
+          // Registration successful
           this.setState({
             email: "",
             password: "",
             confirmPassword: "",
             errorMessage: "",
+            successMessage: "Registration successful! Redirecting to login...",
             loading: false,
           });
-
-          // Redirect ke login page
-          this.props.navigate("/login");
+          
+          // Redirect to login after a delay
+          setTimeout(() => {
+            this.props.navigate("/login");
+          }, 1500);
+        } else {
+          // Registration failed
+          this.setState({
+            errorMessage: result.error,
+            loading: false,
+          });
         }
-      } catch (err) {
-        const msg = err.response?.data?.message || "Registrasi gagal.";
-        this.setState({ errorMessage: msg, loading: false });
+      } catch (error) {
+        // Handle unexpected errors
+        console.error("Registration error:", error);
+        this.setState({
+          errorMessage: "An unexpected error occurred. Please try again.",
+          loading: false
+        });
       }
     }
 
-    // Reset error setelah 3 detik
+    // Reset messages after some time
     this.errorTimeout = setTimeout(() => {
-      this.setState({ errorMessage: "" });
-    }, 3000);
+      this.setState({ errorMessage: "", successMessage: "" });
+    }, 5000);
   }
 
   componentWillUnmount() {
@@ -123,6 +147,7 @@ class FormRegister extends React.Component {
       showPassword,
       showConfirmPassword,
       errorMessage,
+      successMessage,
       loading,
     } = this.state;
 
@@ -131,7 +156,8 @@ class FormRegister extends React.Component {
         onSubmit={this.handleSubmit}
         className="w-80 lg:w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]"
       >
-        <Alert message={errorMessage} />
+        {errorMessage && <Alert message={errorMessage} type="error" />}
+        {successMessage && <Alert message={successMessage} type="success" />}
 
         <div className="relative">
           <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
@@ -140,6 +166,7 @@ class FormRegister extends React.Component {
             placeholder="email"
             value={email}
             onChange={this.onEmailChangeHandler}
+            disabled={loading}
           />
         </div>
 
@@ -150,11 +177,13 @@ class FormRegister extends React.Component {
             placeholder="minimal 8 karakter"
             value={password}
             onChange={this.onPasswordChangeHandler}
+            disabled={loading}
           />
           <button
             type="button"
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#3D2357]"
             onClick={this.showPasswordHandler}
+            disabled={loading}
           >
             {showPassword ? <FiEyeOff /> : <FiEye />}
           </button>
@@ -167,11 +196,13 @@ class FormRegister extends React.Component {
             placeholder="confirm password"
             value={confirmPassword}
             onChange={this.onConfirmPasswordChangeHandler}
+            disabled={loading}
           />
           <button
             type="button"
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#3D2357]"
             onClick={this.showConfirmPasswordHandler}
+            disabled={loading}
           >
             {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
           </button>
@@ -179,7 +210,7 @@ class FormRegister extends React.Component {
 
         <div className="w-full flex flex-col gap-4">
           <Button
-            className="w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 button-hover cursor-pointer"
+            className={`w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 ${loading ? 'opacity-70' : 'button-hover'} cursor-pointer`}
             type="submit"
             text={loading ? "Loading..." : "Registrasi"}
             disabled={loading}
@@ -190,9 +221,8 @@ class FormRegister extends React.Component {
           <button
             type="button"
             className="w-full p-[2px] rounded-md bg-[length:200%_200%] custom-button-bg cursor-pointer transition-all duration-300 ease-in-out hover:bg-[position:100%_0] button-hover"
-            onClick={() =>
-              (window.location.href = "https://staging-api.ittoday.web.id/api/auth/google")
-            }
+            onClick={this.handleGoogleLogin}
+            disabled={loading}
           >
             <div className="flex items-center justify-center gap-2 w-full h-full bg-[#3D2357] text-white rounded-md p-2">
               <img src="/google.svg" alt="Google Logo" className="w-5 h-5" />
