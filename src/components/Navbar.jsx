@@ -80,7 +80,7 @@ class Navbar extends Component {
     // Menghapus status login dari localStorage dan memperbarui state
     localStorage.setItem('isLoggedIn', 'false');
     this.setState({ isLoggedIn: false });
-    console.log('Logout clicked');
+    // console.log('Logout clicked');
   };
 
   toggleDropdown = () => {

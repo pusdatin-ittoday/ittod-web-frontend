@@ -58,7 +58,7 @@ const Game_Today = () => {
 
         {/* SECTION: Timeline */}
         <section className="h-fit mb-0 pb-0 md:mb-0 md:pb-0">
-          <TimelineLomba />
+          <TimelineLomba items={timeline} />
         </section>
 
         {/* SECTION: Prizepool */}

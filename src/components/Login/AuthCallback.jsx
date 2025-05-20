@@ -15,6 +15,7 @@ const AuthCallback = () => {
         if (token) {
           // Simpen token ke localStorage
           localStorage.setItem("token", token);
+          localStorage.setItem("isLoggedIn", "true");
           navigate("/dashboard");
         } else {
           // Kalau backend pake cookie, bisa cek user langsung
@@ -27,6 +28,7 @@ const AuthCallback = () => {
         }
       } catch (err) {
         console.error("Login gagal:", err);
+        localStorage.removeItem("isLoggedIn", "false");
         navigate("/login");
       }
     };

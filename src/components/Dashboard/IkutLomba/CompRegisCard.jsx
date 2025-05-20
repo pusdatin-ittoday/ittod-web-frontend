@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PiTargetBold } from 'react-icons/pi';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const events = [
   {
@@ -29,8 +29,8 @@ const events = [
   },
 ];
 
-const IkutLomba = ({title, description, image, registerLink}) => (
-    <div className="font-dm-sans flex flex-col items-center text-white">
+const IkutLomba = ({ title, description, image, registerLink }) => (
+  <div className="font-dm-sans flex flex-col items-center text-white">
     <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1]">
       {image ? (
         <img
@@ -49,7 +49,7 @@ const IkutLomba = ({title, description, image, registerLink}) => (
     <div className="flex gap-5">
       <Link to={registerLink}>
         <button
-            className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm">
+          className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm">
           Daftar Sekarang
         </button>
       </Link>
@@ -64,7 +64,7 @@ const CompRegisCard = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(`Berhasil join team dengan ID: ${teamId}`);
-    window.location.href = '/';
+    window.location.href = '/dashboard';
   };
 
   // logic dengan back end :
