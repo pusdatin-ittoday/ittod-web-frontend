@@ -4,7 +4,7 @@ import { getCurrentUser } from "../../api/user";
 import instance from "../../api/axios";
 
 // Get API base URL from environment variables
-const API_BASE_URL = import.meta.env.VITE_API_KEY;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Remove trailing slash if present
 const cleanApiUrl = API_BASE_URL.endsWith('/') 

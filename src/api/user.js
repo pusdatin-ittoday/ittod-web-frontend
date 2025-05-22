@@ -2,7 +2,7 @@ import axios from "axios";
 import instance from "./axios";
 
 // Get API base URL from environment variables
-const API_BASE_URL = import.meta.env.VITE_API_KEY;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Remove trailing slash if present
 const cleanApiUrl = API_BASE_URL.endsWith('/')
