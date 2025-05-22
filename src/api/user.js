@@ -1,4 +1,3 @@
-import axios from "axios";
 import instance from "./axios";
 
 // Get API base URL from environment variables
@@ -77,7 +76,7 @@ export const initiateGoogleLogin = () => {
     localStorage.setItem('redirectAfterAuth', '/dashboard/beranda');
 
     // Redirect to Google OAuth endpoint
-    window.location.href = `${cleanApiUrl}/auth/google/redirect`;
+    window.location.href = `${cleanApiUrl}/api/auth/google`;
 };
 
 /**
