@@ -10,18 +10,20 @@ const cleanApiUrl = API_BASE_URL.endsWith('/')
 
 /**
  * Register a new user
- * @param {Object} userData - Contains email, password, and confirmPassword
+ * @param {Object} userData - Contains name, email, password, and confirmPassword
  * @returns {Promise<Object>} Result of the registration attempt
  */
 export const registerUser = async (userData) => {
     try {
-        const response = await instance.post('/auth/register', userData);
+        console.log("Sending registration data:", userData); // Log what we're sending
+        const response = await instance.post('/api/auth/register', userData);
         return {
             success: true,
             data: response.data
         };
     } catch (error) {
         console.error("Registration error:", error);
+        console.log("Error response data:", error.response?.data); // Log the detailed error
         return {
             success: false,
             error: error.response?.data?.message ||
@@ -38,7 +40,7 @@ export const registerUser = async (userData) => {
  */
 export const loginUser = async (credentials) => {
     try {
-        const response = await instance.post('/auth/login', credentials);
+        const response = await instance.post('/api/auth/login', credentials);
 
         // Store token if available
         if (response.data.token) {

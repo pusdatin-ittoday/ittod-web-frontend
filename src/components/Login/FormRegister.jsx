@@ -4,7 +4,7 @@ import Input from "./Input";
 import Alert from "./Alert";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { MdEmail, MdKey } from "react-icons/md";
+import { MdEmail, MdKey, MdPerson } from "react-icons/md";
 // Import API functions from user.js
 import { registerUser, initiateGoogleLogin } from "../../api/user";
 
@@ -17,6 +17,7 @@ class FormRegister extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      namaLengkap: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -27,6 +28,7 @@ class FormRegister extends React.Component {
       loading: false,
     };
 
+    this.onNamaLengkapChangeHandler = this.onNamaLengkapChangeHandler.bind(this);
     this.onEmailChangeHandler = this.onEmailChangeHandler.bind(this);
     this.onPasswordChangeHandler = this.onPasswordChangeHandler.bind(this);
     this.onConfirmPasswordChangeHandler =
@@ -36,6 +38,10 @@ class FormRegister extends React.Component {
     this.showConfirmPasswordHandler = this.showConfirmPasswordHandler.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleGoogleLogin = this.handleGoogleLogin.bind(this);
+  }
+
+  onNamaLengkapChangeHandler(e) {
+    this.setState({ namaLengkap: e.target.value });
   }
 
   onEmailChangeHandler(e) {
@@ -73,13 +79,13 @@ class FormRegister extends React.Component {
 
   async handleSubmit(e) {
     e.preventDefault();
-    const { email, password, confirmPassword } = this.state;
+    const { namaLengkap, email, password, confirmPassword } = this.state;
 
     // Clear previous timeout if exists
     if (this.errorTimeout) clearTimeout(this.errorTimeout);
 
     // Client-side validation
-    if (!email || !password || !confirmPassword) {
+    if (!namaLengkap || !email || !password || !confirmPassword) {
       this.setState({ errorMessage: "Semua kolom harus diisi!" });
     } else if (password.length < 8) {
       this.setState({ errorMessage: "Password minimal 8 karakter!" });
@@ -90,16 +96,17 @@ class FormRegister extends React.Component {
       this.setState({ loading: true, errorMessage: "", successMessage: "" });
       
       try {
-        // Call the API function for registration
+        // Call the API function for registration with correct parameter names
         const result = await registerUser({
-          email,
-          password,
-          confirmPassword
+          full_name: namaLengkap,  // Changed from 'name' to 'full_name' to match API expectation
+          email: email,
+          password: password
         });
         
         if (result.success) {
           // Registration successful
           this.setState({
+            namaLengkap: "",
             email: "",
             password: "",
             confirmPassword: "",
@@ -141,6 +148,7 @@ class FormRegister extends React.Component {
 
   render() {
     const {
+      namaLengkap,
       email,
       password,
       confirmPassword,
@@ -158,6 +166,17 @@ class FormRegister extends React.Component {
       >
         {errorMessage && <Alert message={errorMessage} type="error" />}
         {successMessage && <Alert message={successMessage} type="success" />}
+
+        <div className="relative">
+          <MdPerson className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
+          <Input
+            type="text"
+            placeholder="nama lengkap"
+            value={namaLengkap}
+            onChange={this.onNamaLengkapChangeHandler}
+            disabled={loading}
+          />
+        </div>
 
         <div className="relative">
           <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
