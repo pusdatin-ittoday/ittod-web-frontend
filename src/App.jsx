@@ -21,7 +21,7 @@ import RegisterAdmin from '././pages/Admin/LoginPage/RegisterAdmin';
 import ForgetPasswordAdmin from '././pages/Admin/LoginPage/ForgetPasswordAdmin';
 import VerifyPasswordAdmin from '././pages/Admin/LoginPage/VerifyPasswordAdmin';
 import NewPasswordAdmin from '././pages/Admin/LoginPage/NewPasswordAdmin';
-
+import PrivateAdmin from "./components/AdminLogin/PrivateAdmin";
 
 const App = () => {
   return (
@@ -54,14 +54,14 @@ const App = () => {
           <Route path="/sponsors" element={<Sponsors/>}></Route>
           {/* Admin Routes */}
      
-        <Route path="/AdminCompetitionView" element={<AdminCompetitionView />} />
-        <Route path="/AdminVerifyTeamView" element={<AdminVerifyTeamView />} />
+       
         <Route path="/AdminLogin" element={<LoginAdmin />} />
         <Route path="/AdminRegister" element={<RegisterAdmin />} />
         <Route path="/AdminForgetPassword" element={<ForgetPasswordAdmin />} />
         <Route path="/AdminVerifyPassword" element={<VerifyPasswordAdmin />} />
         <Route path="/AdminNewPassword" element={<NewPasswordAdmin />} />
-     
+        <Route path="/AdminCompetitionView" element={ <PrivateAdmin> <AdminCompetitionView /> </PrivateAdmin> }/>
+        <Route path= "/AdminVerifyTeamView" element={ <PrivateAdmin> <AdminVerifyTeamView /></PrivateAdmin> }/>
         
 
         </Routes>

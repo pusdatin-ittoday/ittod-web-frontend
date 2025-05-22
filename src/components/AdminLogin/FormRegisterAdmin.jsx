@@ -149,16 +149,13 @@ class FormRegisterAdmin extends React.Component {
                         type="submit"
                         text="Registrasi" />
 
-                    <p className="text-center">or</p>
+              
 
                     <button
                         type="button"
                         className="w-full p-[2px] rounded-md bg-[length:200%_200%] bg-gradient-to-r from-[#F97283] via-[#B247B4] to-[#9323C2] cursor-pointer transition-all duration-300 ease-in-out hover:bg-[position:100%_0] hover:shadow-[0_0_10px_5px_rgba(209,107,165,0.2)] hover:brightness-110"
                     >
-                        <div className="flex items-center justify-center gap-2 w-full h-full bg-[#3D2357] text-white rounded-md p-2">
-                            <img src="/google.svg" alt="Google Logo" className="w-5 h-5" />
-                            Login dengan Google
-                        </div>
+                      
                     </button>
                     <p className="text-center text-xs">Sudah punya akun? <span className="text-xs text-[#F97283] hover:underline font-bold cursor-pointer" onClick={this.handleLoginClick}>Login</span></p>
                 </div>
