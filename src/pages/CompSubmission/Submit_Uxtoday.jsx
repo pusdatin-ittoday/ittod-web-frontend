@@ -1,4 +1,5 @@
 import React from 'react'
+import { submitFileCompe } from "../../api/compeSubmit.js";
 import Navbar from "../../components/Navbar";
 import { useNavigate } from 'react-router-dom';
 import { FaYoutube } from "react-icons/fa";
@@ -16,50 +17,71 @@ const Submit_Uxtoday = () => {
       setProposal(value);
     }
   }
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const emptyFields = [];
-  
+
     const fieldLabels = {
       TrailerKarya: "Link Trailer Karya (YouTube)",
       Proposal: "Link Proposal dan Presentasi Penjelasan Karya (Google Drive)",
     };
-  
+
     const fieldsToValidate = {
       TrailerKarya,
       Proposal
     };
-  
+
     for (const key in fieldsToValidate) {
       if (!fieldsToValidate[key] || fieldsToValidate[key].trim() === "") {
         emptyFields.push(fieldLabels[key]);
       }
     }
-  
+
     if (emptyFields.length > 0) {
       alert(`Mohon lengkapi kolom berikut:\n- ${emptyFields.join("\n- ")}`);
       return;
     }
-  
+
     const submissionData = {
       TrailerKarya,
       Proposal,
     };
-  
-    console.log("Form Submitted Successfully!");
-    console.log("Submitted Data:", submissionData);
-  
-    // Save to sessionStorage
-    sessionStorage.setItem("SubmissionData", JSON.stringify(submissionData));
-  
-  
+
+    // console.log("Form Submitted Successfully!");
+    // console.log("Submitted Data:", submissionData);
+
+    try {
+      const filesToSubmit = [
+        {
+          title: "Trailer Karya UXToday",
+          url_file: TrailerKarya,
+          team_id: "1", // need to change to team id from api call
+        },
+        {
+          title: "Proposal UXToday",
+          url_file: Proposal,
+          team_id: "1", // need to change to team id from api call
+        },
+      ];
+
+      for (const fileData of filesToSubmit){
+        let response = await submitFileCompe(fileData);
+        console.log(response.data);
+      }
+
+      sessionStorage.setItem("SubmissionData", JSON.stringify(submissionData));
+
     // Reset form (optional)
     setTrailerKarya("");
     setProposal("");
-  
-    window.location.href = "/dashboard"; // Redirect to dashboard after submission
 
+    window.location.href = "/dashboard"; // Redirect to dashboard after submission
+    } catch (err) {
+      alert("Terjadi kesalahan saat mengirim data.");
+      console.error(err.message);
+    }
   }
 
   const navigate = useNavigate();

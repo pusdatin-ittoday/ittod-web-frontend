@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaItchIo } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import { FaGoogleDrive } from "react-icons/fa";
+import { submitFileCompe } from '../../api/compeSubmit';
 
 const Submit_Gametoday = () => {
   const [SubmisiGame, setSubmisiGame] = React.useState("");
@@ -20,7 +21,7 @@ const Submit_Gametoday = () => {
       setExecutiveSummary(value);
     }
   }
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
   
     const emptyFields = [];
@@ -53,20 +54,42 @@ const Submit_Gametoday = () => {
       TrailerGame,
       ExecutiveSummary,
     };
+
+    try {
+      const filesToSubmit = [
+        {
+          title: "Submisi Game GameToday",
+          url_file: SubmisiGame,
+          team_id: "1", // need to change to team id from api call
+        },
+        {
+          title: "Trailer Game GameToday",
+          url_file: TrailerGame,
+          team_id: "1", // need to change to team id from api call
+        },
+      ]
+
+      for (const fileData of filesToSubmit){ 
+        let response = await submitFileCompe(fileData);
+        console.log(response.data);
+      }
+    
+      // Save to sessionStorage
+      sessionStorage.setItem("SubmissionData", JSON.stringify(submissionData));
+    
+    
+      // Reset form (optional)
+      setSubmisiGame("");
+      setTrailerGame("");
+      setExecutiveSummary("");
+    
+      window.location.href = "/dashboard"; // Redirect to dashboard after submission
+
+    } catch (err) {
+      alert("Terjadi kesalahan saat mengirim data.");
+      console.log(err.message);
+    }
   
-    console.log("Form Submitted Successfully!");
-    console.log("Submitted Data:", submissionData);
-  
-    // Save to sessionStorage
-    sessionStorage.setItem("SubmissionData", JSON.stringify(submissionData));
-  
-  
-    // Reset form (optional)
-    setSubmisiGame("");
-    setTrailerGame("");
-    setExecutiveSummary("");
-  
-    window.location.href = "/dashboard"; // Redirect to dashboard after submission
 
   }
 

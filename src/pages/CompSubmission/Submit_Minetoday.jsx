@@ -2,6 +2,7 @@ import React from 'react'
 import Navbar from "../../components/Navbar";
 import { useNavigate } from 'react-router-dom';
 import { FaGoogleDrive } from "react-icons/fa";
+import { submitFileCompe } from '../../api/compeSubmit';
 
 
 const Submit_Minetoday = () => {
@@ -13,14 +14,13 @@ const Submit_Minetoday = () => {
       setDrive(value);
     }
   }
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
   
     const emptyFields = [];
   
     const fieldLabels = {
-      TrailerKarya: "Link Trailer Karya (YouTube)",
-      Drive: "Link Drive dan Presentasi Penjelasan Karya (Google Drive)",
+      Drive: "Notebook, Model, Hasil Submission.csv (Drive)",
     };
   
     const fieldsToValidate = {
@@ -42,17 +42,31 @@ const Submit_Minetoday = () => {
       Drive,
     };
   
-    console.log("Form Submitted Successfully!");
-    console.log("Submitted Data:", submissionData);
-  
-    // Save to sessionStorage
-    sessionStorage.setItem("SubmissionData", JSON.stringify(submissionData));
-  
-  
-    // Reset form (optional)
-    setDrive("");
-  
-    window.location.href = "/dashboard"; // Redirect to dashboard after submission
+    try {
+      // Submit Drive
+      const driveData = {
+        title: "Drive MineToday",
+        url_file: Drive,
+        team_id: "1", // need to change to team id from api call
+      };
+      const response = await submitFileCompe(driveData);
+      console.log(response.data);
+      // console.log("Form Submitted Successfully!");
+      // console.log("Submitted Data:", submissionData);
+    
+      // Save to sessionStorage
+      sessionStorage.setItem("SubmissionData", JSON.stringify(submissionData));
+    
+    
+      // Reset form (optional)
+      setDrive("");
+    
+      window.location.href = "/dashboard"; // Redirect to dashboard after submission
+    } catch (err) {
+      alert("Terjadi kesalahan saat mengirim data.");
+      console.log(err.message);
+    }
+
 
   }
 
