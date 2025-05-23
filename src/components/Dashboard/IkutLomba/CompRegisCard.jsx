@@ -5,25 +5,25 @@ import { Link } from 'react-router-dom';
 const events = [
   {
     title: 'HACKTODAY',
-    description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
+    description: 'Taklukan CTF!',
     image: '/logo-competition/HACKTODAY.webp',
     registerLink: '/register-hacktoday',
   },
   {
     title: 'GAMETODAY',
-    description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
+    description: 'Ciptakan game yang menarik!',
     image: '/logo-competition/GAMETODAY.webp',
     registerLink: '/register-gametoday',
   },
   {
     title: 'UXTODAY',
-    description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
+    description: 'Rancang UI/UX yang inovatif!',
     image: '/logo-competition/UXTODAY.webp',
     registerLink: '/register-uxtoday',
   },
   {
     title: 'MINETODAY',
-    description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
+    description: 'Selesaikan masalah dengan Machine Learning!',
     image: '/logo-competition/MINETODAY.webp',
     registerLink: '/register-minetoday',
   },
