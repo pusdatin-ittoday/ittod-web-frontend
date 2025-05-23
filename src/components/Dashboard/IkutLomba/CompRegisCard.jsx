@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PiTargetBold } from 'react-icons/pi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { joinTeam } from '../../../utils/api/competition';
 
 const events = [
   {
@@ -58,35 +59,29 @@ const IkutLomba = ({ title, description, image, registerLink }) => (
 );
 
 const CompRegisCard = () => {
+  const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [teamId, setTeamId] = useState('');
+  const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Berhasil join team dengan ID: ${teamId}`);
-    window.location.href = '/dashboard';
+    setLoading(true);
+    joinTeam(teamId)
+    .then((response) => {
+      console.log(response);
+    }).catch((error) => {
+      console.error(error);
+    }).finally(() => {
+      setLoading(false);
+      navigate('/dashboard');
+      // window.location.href = "/dashboard"
+      // setShowForm(false);
+      // setTeamId('');
+    });
+
   };
-
-  // logic dengan back end :
-  // const handleSubmit = async (e) => {
-  //     e.preventDefault();
-
-  //     try {
-  //       const response = await fetch(`/api/teams/validate?id=${teamId}`);
-  //       const data = await response.json();
-
-  //       if (data.valid) {
-  //         alert(`Berhasil join team dengan ID: ${teamId}`);
-  //         window.location.href = '/';
-  //       } else {
-  //         alert('ID Team tidak valid. Coba lagi atau hubungi admin.');
-  //       }
-  //     } catch (error) {
-  //       console.error('Terjadi kesalahan saat validasi:', error);
-  //       alert('Gagal memvalidasi ID Team. Coba lagi nanti.');
-  //     }
-  //   };
-
   return (
     <div className="h-[500px] w-full lg:w-[650px] bg-[#7b446c] rounded-lg shadow-lg flex flex-col p-6 border-[#dfb4d7]/60">
       {/* Header */}
@@ -112,7 +107,7 @@ const CompRegisCard = () => {
           onSubmit={handleSubmit}
           className="text-white mb-4 p-4 bg-[#302044] rounded-lg shadow-lg"
         >
-          <p className="text-sm text-red-500 mb-2">Pastikan anda sudah yakin. Jika ada kesalahan, hubungi admin.</p>
+          <p className="text-sm text-red-500 mb-2">Pastikan anda sudah yakin. Jika ada kesalahan, hubungi adminn.</p>
           <input
             type="text"
             value={teamId}
@@ -124,6 +119,7 @@ const CompRegisCard = () => {
           <div className="flex gap-2">
             <button
               type="submit"
+              disabled={loading}
               className="text-white custom-button-bg px-4 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold"
             >
               Submit
