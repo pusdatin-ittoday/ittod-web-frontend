@@ -5,7 +5,8 @@ import Alert from "./Alert";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { MdEmail, MdKey } from "react-icons/md";
-import axios from "axios";
+import instance from "../../api/axios";
+import cookieClient from "react-cookie";
 
 const FormLoginWithRouter = (props) => {
   const navigate = useNavigate();
@@ -29,6 +30,11 @@ class FormLogin extends React.Component {
     this.showPasswordHandler = this.showPasswordHandler.bind(this);
     this.forgetPasswordHandler = this.forgetPasswordHandler.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleSetCookie = (val) => {
+    const { cookies } = this.props;
+    cookies.set("connect.sid", val);
   }
 
   onEmailChangeHandler(event) {
@@ -69,13 +75,17 @@ class FormLogin extends React.Component {
     try {
       this.setState({ loading: true });
 
-      const response = await axios.post(
+      const response = await instance.post(
         "/api/auth/login",
         { email, password },
         { withCredentials: true } // ⬅️ penting kalau pakai cookie di backend
       );
 
+      
       if (response.status === 200) {
+        // Simpan cookie
+        // this.handleSetCookie(response.data);
+        cookieClient.set("connect.sid", response.data, {path: '/'});
         // (Optional) Kalau backend kirim token
         // localStorage.setItem("token", response.data.token);
 
