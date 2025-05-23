@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import SidebarAdmin from '../../components/SidebarAdmin';
 
 const AdminVerifyTeamView = () => {
@@ -9,8 +9,8 @@ const AdminVerifyTeamView = () => {
   ]);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [teamMembers, setTeamMembers] = useState([
-    { name: 'Azka', role: 'Leader', twibbon: 'https://example.com/twibbon1.jpg', kartu: 'https://example.com/kartu1.jpg' },
-    { name: 'Calvin', role: 'Member', twibbon: 'https://example.com/twibbon2.jpg', kartu: 'https://example.com/kartu2.jpg' },
+    { name: 'Azka', role: 'Leader', twibbon: 'https://example.com/twibbon1.jpg', kartu: 'https://example.com/kartu1.jpg', is_complete: false },
+    { name: 'Calvin', role: 'Member', twibbon: 'https://example.com/twibbon2.jpg', kartu: 'https://example.com/kartu2.jpg', is_complete: true },
   ]);
 
   const handleVerify = (teamId) => {
@@ -21,6 +21,14 @@ const AdminVerifyTeamView = () => {
     setTeams(prev => prev.map(t => t.id === teamId ? { ...t, is_verified: false } : t));
   };
 
+  const toggleComplete = (index) => {
+    setTeamMembers(prev =>
+      prev.map((member, i) =>
+        i === index ? { ...member, is_complete: !member.is_complete } : member
+      )
+    );
+  };
+
   return (
     <SidebarAdmin>
       <h1 className="text-2xl font-bold mb-4 text-white">Verify Team View</h1>
@@ -29,7 +37,7 @@ const AdminVerifyTeamView = () => {
         value={selectedCompetition}
         onChange={(e) => {
           setSelectedCompetition(e.target.value);
-          setSelectedTeamId(null); // reset selected team
+          setSelectedTeamId(null);
         }}
         className="mb-4 px-4 py-2 border border-black text-black bg-white rounded"
       >
@@ -45,7 +53,7 @@ const AdminVerifyTeamView = () => {
             <th className="border border-black p-2">Nama Tim</th>
             <th className="border border-black p-2">Kontak Ketua</th>
             <th className="border border-black p-2">Bukti Pembayaran</th>
-            <th className="border border-black p-2">Status</th> {/* Kolom Status */}
+            <th className="border border-black p-2">Status</th>
             <th className="border border-black p-2">Aksi</th>
           </tr>
         </thead>
@@ -71,7 +79,6 @@ const AdminVerifyTeamView = () => {
                 )}
               </td>
               <td className="border border-black p-2">
-                {/* Status Verifikasi */}
                 <span className={`font-bold ${team.is_verified ? 'text-green-500' : 'text-red-500'}`}>
                   {team.is_verified ? 'Verified' : 'Not Verified'}
                 </span>
@@ -106,6 +113,8 @@ const AdminVerifyTeamView = () => {
                 <th className="border border-black p-2">Role</th>
                 <th className="border border-black p-2">Twibbon</th>
                 <th className="border border-black p-2">Kartu Mahasiswa</th>
+                <th className="border border-black p-2">Status</th>
+                <th className="border border-black p-2">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -115,27 +124,30 @@ const AdminVerifyTeamView = () => {
                   <td className="border border-black p-2">{member.role}</td>
                   <td className="border border-black p-2">
                     {member.twibbon && (
-                      <a
-                        href={member.twibbon}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 underline"
-                      >
+                      <a href={member.twibbon} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
                         Lihat
                       </a>
                     )}
                   </td>
                   <td className="border border-black p-2">
                     {member.kartu && (
-                      <a
-                        href={member.kartu}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 underline"
-                      >
+                      <a href={member.kartu} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
                         Lihat
                       </a>
                     )}
+                  </td>
+                  <td className="border border-black p-2">
+                    <span className={`font-semibold ${member.is_complete ? 'text-green-500' : 'text-red-500'}`}>
+                      {member.is_complete ? 'Complete' : 'Not Complete'}
+                    </span>
+                  </td>
+                  <td className="border border-black p-2">
+                    <button
+                      onClick={() => toggleComplete(i)}
+                      className={`px-3 py-1 rounded ${member.is_complete ? 'bg-red-600' : 'bg-green-600'} text-white`}
+                    >
+                      {member.is_complete ? 'Incomplete' : 'Complete'}
+                    </button>
                   </td>
                 </tr>
               ))}
