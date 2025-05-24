@@ -16,7 +16,7 @@ const cleanApiUrl = API_BASE_URL.endsWith('/')
 export const registerUser = async (userData) => {
     try {
         console.log("Sending registration data:", userData); 
-        const response = await instance.post('/api/auth/register', userData);
+        const response = await instance.post('/auth/register', userData);
         
         // Return success with verification flag
         return {
@@ -43,7 +43,7 @@ export const registerUser = async (userData) => {
  */
 export const loginUser = async (credentials) => {
     try {
-        const response = await instance.post('/api/auth/login', credentials);
+        const response = await instance.post('/auth/login', credentials);
 
         // Store token if available
         if (response.data.token) {
@@ -81,7 +81,7 @@ export const initiateGoogleLogin = () => {
     localStorage.setItem('redirectAfterAuth', '/dashboard/beranda');
 
     // Redirect to Google OAuth endpoint
-    window.location.href = `${cleanApiUrl}/api/auth/google`;
+    window.location.href = `${cleanApiUrl}/auth/google`;
 };
 
 /**
@@ -193,7 +193,7 @@ export const updateUserInfo = async (userInfo) => {
  */
 export const requestPasswordReset = async (data) => {
     try {
-        const response = await instance.post('/api/auth/forgot-password', data);
+        const response = await instance.post('/auth/forgot-password', data);
         return {
             success: true,
             data: response.data
@@ -216,7 +216,7 @@ export const requestPasswordReset = async (data) => {
  */
 export const resetPassword = async (resetData) => {
   try {
-    const response = await instance.post('/api/auth/reset-password', resetData);
+    const response = await instance.post('/auth/reset-password', resetData);
     return {
       success: true,
       data: response.data
@@ -239,7 +239,7 @@ export const resetPassword = async (resetData) => {
  */
 export const verifyEmail = async (token) => {
   try {
-    const response = await instance.get(`/api/auth/verify?token=${token}`);
+    const response = await instance.get(`/auth/verify?token=${token}`);
     return {
       success: true,
       data: response.data
