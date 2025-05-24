@@ -26,6 +26,9 @@ class FormRegister extends React.Component {
       errorMessage: "",
       successMessage: "",
       loading: false,
+      showAlert: false,
+      alertType: "",
+      alertMessage: "",
     };
 
     this.onNamaLengkapChangeHandler = this.onNamaLengkapChangeHandler.bind(this);
@@ -77,6 +80,16 @@ class FormRegister extends React.Component {
     initiateGoogleLogin();
   }
 
+  resetForm() {
+    this.setState({
+      namaLengkap: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      loading: false
+    });
+  }
+
   async handleSubmit(e) {
     e.preventDefault();
     const { namaLengkap, email, password, confirmPassword } = this.state;
@@ -84,53 +97,63 @@ class FormRegister extends React.Component {
     // Clear previous timeout if exists
     if (this.errorTimeout) clearTimeout(this.errorTimeout);
 
+    // Reset all alert states at the beginning
+    this.setState({ 
+      errorMessage: "", 
+      successMessage: "",
+      showAlert: false,
+      alertType: "",
+      alertMessage: ""
+    });
+
     // Client-side validation
     if (!namaLengkap || !email || !password || !confirmPassword) {
       this.setState({ errorMessage: "Semua kolom harus diisi!" });
+    } else if (namaLengkap.length < 8) {
+      this.setState({ errorMessage: "Nama lengkap minimal 8 karakter!" });
     } else if (password.length < 8) {
       this.setState({ errorMessage: "Password minimal 8 karakter!" });
     } else if (password !== confirmPassword) {
       this.setState({ errorMessage: "Password tidak cocok!" });
     } else {
-      // Set loading state and clear messages
-      this.setState({ loading: true, errorMessage: "", successMessage: "" });
+      // Set loading state
+      this.setState({ loading: true });
       
       try {
-        // Call the API function for registration with correct parameter names
+        // Call the API function for registration
         const result = await registerUser({
-          full_name: namaLengkap,  // Changed from 'name' to 'full_name' to match API expectation
+          full_name: namaLengkap,
           email: email,
           password: password
         });
         
         if (result.success) {
-          // Registration successful
+          // Show success alert with clear instructions about verification
           this.setState({
-            namaLengkap: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
-            errorMessage: "",
-            successMessage: "Registration successful! Redirecting to login...",
-            loading: false,
+            showAlert: true,
+            alertType: 'success',
+            alertMessage: 'Registrasi berhasil! Silakan periksa email Anda untuk verifikasi. Setelah verifikasi, Anda dapat login dengan akun yang telah terdaftar.',
+            loading: false
           });
           
-          // Redirect to login after a delay
-          setTimeout(() => {
-            this.props.navigate("/login");
-          }, 1500);
+          // Reset the form
+          this.resetForm();
         } else {
-          // Registration failed
+          // Show error message
           this.setState({
-            errorMessage: result.error,
-            loading: false,
+            showAlert: true,
+            alertType: 'error',
+            alertMessage: result.error || "Registrasi gagal. Silakan coba lagi.",
+            loading: false
           });
         }
       } catch (error) {
         // Handle unexpected errors
         console.error("Registration error:", error);
         this.setState({
-          errorMessage: "An unexpected error occurred. Please try again.",
+          showAlert: true,
+          alertType: 'error',
+          alertMessage: "An unexpected error occurred. Please try again.",
           loading: false
         });
       }
@@ -138,8 +161,12 @@ class FormRegister extends React.Component {
 
     // Reset messages after some time
     this.errorTimeout = setTimeout(() => {
-      this.setState({ errorMessage: "", successMessage: "" });
-    }, 5000);
+      this.setState({ 
+        errorMessage: "", 
+        successMessage: "",
+        showAlert: false 
+      });
+    }, 10000); // Increased to 10 seconds so users have more time to read the message
   }
 
   componentWillUnmount() {
@@ -157,6 +184,9 @@ class FormRegister extends React.Component {
       errorMessage,
       successMessage,
       loading,
+      showAlert,
+      alertType,
+      alertMessage,
     } = this.state;
 
     return (
@@ -166,6 +196,7 @@ class FormRegister extends React.Component {
       >
         {errorMessage && <Alert message={errorMessage} type="error" />}
         {successMessage && <Alert message={successMessage} type="success" />}
+        {showAlert && <Alert message={alertMessage} type={alertType} />}
 
         <div className="relative">
           <MdPerson className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />

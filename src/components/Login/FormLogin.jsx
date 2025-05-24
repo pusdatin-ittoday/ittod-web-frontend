@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { MdEmail, MdKey } from "react-icons/md";
 import Button from "./Button";
@@ -10,7 +10,18 @@ import { loginUser, initiateGoogleLogin } from "../../api/user";
 
 const FormLoginWithRouter = (props) => {
     const navigate = useNavigate();
-    return <FormLogin {...props} navigate={navigate} />;
+    const location = useLocation();
+    
+    // Cek apakah user baru saja diverifikasi
+    const verified = location.state?.verified;
+    const verificationMessage = location.state?.message;
+    
+    return <FormLogin 
+        {...props} 
+        navigate={navigate} 
+        verified={verified}
+        verificationMessage={verificationMessage}
+    />;
 };
 
 class FormLogin extends React.Component {
@@ -22,7 +33,10 @@ class FormLogin extends React.Component {
             showPassword: false,
             errorMessage: "",
             successMessage: "",
-            loading: false
+            loading: false,
+            showAlert: props.verified || false,
+            alertType: props.verified ? "success" : "error",
+            alertMessage: props.verificationMessage || ""
         };
 
         this.onEmailChangeHandler = this.onEmailChangeHandler.bind(this);
@@ -119,10 +133,13 @@ class FormLogin extends React.Component {
 
     componentWillUnmount() {
         if (this.errorTimeout) clearTimeout(this.errorTimeout);
+        if (this.alertTimeout) {
+            clearTimeout(this.alertTimeout);
+        }
     }
 
     render() {
-        const { email, password, showPassword, loading, errorMessage, successMessage } = this.state;
+        const { email, password, showPassword, loading, errorMessage, successMessage, showAlert, alertType, alertMessage } = this.state;
 
         return (
             <form
@@ -131,6 +148,7 @@ class FormLogin extends React.Component {
             >
                 {errorMessage && <Alert message={errorMessage} type="error" />}
                 {successMessage && <Alert message={successMessage} type="success" />}
+                {showAlert && <Alert message={alertMessage} type={alertType} />}
 
                 <div className="relative">
                     <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />

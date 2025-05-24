@@ -31,9 +31,8 @@ import RegistMineToday from "./pages/CompeRegisPage/RegistMinetoday.jsx";
 import RegistHackToday from "./pages/CompeRegisPage/RegistHacktoday.jsx";
 import RegistUXToday from "./pages/CompeRegisPage/RegistUXtoday.jsx";
 import AuthCallback from './components/Login/AuthCallback';
-import Beranda from './components/Dashboard/Beranda/Beranda.jsx';
-import IkutLomba from './components/Dashboard/IkutLomba/IkutLomba.jsx';
-import IkutEvent from './components/Dashboard/IkutEvent/IkutEvent.jsx';
+
+
 
 
 
@@ -42,6 +41,7 @@ const App = () => {
     <>
       <BrowserRouter>
         <Routes>
+          {/* Core routes */}
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/event" element={<Event />} />
@@ -49,7 +49,6 @@ const App = () => {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forget-password" element={<ForgetPassword />} />
-          <Route path="/verify-password" element={<VerifyPassword />} />
           <Route path="/new-password" element={<NewPassword />} />
           <Route path="/timeline" element={<TimelineUmum />} />
           <Route path="/contact-us" element={<ContactUs />} />
@@ -60,67 +59,17 @@ const App = () => {
           <Route path="/dashboard/ikut-lomba" element={<DashboardWrapper />} />
           <Route path="/dashboard/ikut-event" element={<DashboardWrapper />} />
           <Route path="/dashboard/submit-lomba" element={<DashboardWrapper />} />
-          <Route path="/submit-gametoday" element={<Submit_Gametoday />} />
-          <Route path="/submit-uxtoday" element={<Submit_Uxtoday />} />
-          <Route path="/submit-minetoday" element={<Submit_Minetoday />} />
+          <Route path="/dashboard/submit-gametoday" element={<DashboardWrapper />} />
+          <Route path="/dashboard/submit-uxtoday" element={<DashboardWrapper />} />
+          <Route path="/dashboard/submit-minetoday" element={<DashboardWrapper />} />
 
-          {/* buat daftar lomba */}
-          <Route
-            path="/register-hacktoday"
-            element={<RegistHackToday />}
-          ></Route>
-          <Route
-            path="/register-gametoday"
-            element={<RegistGametoday />}
-          ></Route>
-          <Route
-            path="/register-minetoday"
-            element={<RegistMineToday />}
-          ></Route>
-          <Route
-            path="/register-uxtoday"
-            element={<RegistUXToday />}
-          ></Route>
+          {/* Registration Routes */}
+          <Route path="/register-hacktoday" element={<RegistHackToday />} />
+          <Route path="/register-gametoday" element={<RegistGametoday />} />
+          <Route path="/register-minetoday" element={<RegistMineToday />} />
+          <Route path="/register-uxtoday" element={<RegistUXToday />} />
 
-          {/* buat liat liat waktu bikin page */}
-          <Route
-            path="/competition"
-            element={<Lomba />}
-          />
-          <Route
-            path="/sponsors"
-            element={<Sponsors />}
-          ></Route>
-          <Route
-            path="/competition/game_today"
-            element={<Game_Today />}
-          ></Route>
-          <Route
-            path="/competition/hack_today"
-            element={<Hack_Today />}
-          ></Route>
-          <Route
-            path="/competition/mine_today"
-            element={<Mine_Today />}
-          ></Route>
-          <Route
-            path="/competition/ux_today"
-            element={<Ux_Today />}
-          ></Route>
-          <Route
-            path="/event/national_seminar"
-            element={<Seminar />}
-          ></Route>
-          <Route
-            path="/event/bootcamp"
-            element={<Bootcamp />}
-          ></Route>
-          <Route
-            path="/event/workshop"
-            element={<Workshop />}
-          ></Route>
-
-          {/* Preview/test pages */}
+          {/* Competition/Event Pages */}
           <Route path="/competition" element={<Lomba />} />
           <Route path="/sponsors" element={<Sponsors />} />
           <Route path="/competition/game_today" element={<Game_Today />} />

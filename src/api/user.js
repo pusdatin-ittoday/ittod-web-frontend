@@ -15,15 +15,18 @@ const cleanApiUrl = API_BASE_URL.endsWith('/')
  */
 export const registerUser = async (userData) => {
     try {
-        console.log("Sending registration data:", userData); // Log what we're sending
+        console.log("Sending registration data:", userData); 
         const response = await instance.post('/api/auth/register', userData);
+        
+        // Return success with verification flag
         return {
             success: true,
+            requiresEmailVerification: true, // Added flag to indicate verification is needed
             data: response.data
-        };
+    };
     } catch (error) {
         console.error("Registration error:", error);
-        console.log("Error response data:", error.response?.data); // Log the detailed error
+        console.log("Error response data:", error.response?.data);
         return {
             success: false,
             error: error.response?.data?.message ||
@@ -36,7 +39,7 @@ export const registerUser = async (userData) => {
 /**
  * Login user with email and password
  * @param {Object} credentials - Contains email and password
- * @returns {Promise<Object>} Result of the login attempt
+ * @returns {Promise<Object>}
  */
 export const loginUser = async (credentials) => {
     try {
@@ -184,13 +187,13 @@ export const updateUserInfo = async (userInfo) => {
 };
 
 /**
- * Request password reset
- * @param {string} email - User's email
+ * Request a password reset
+ * @param {Object} data - Contains email
  * @returns {Promise<Object>} Result of the password reset request
  */
-export const requestPasswordReset = async (email) => {
+export const requestPasswordReset = async (data) => {
     try {
-        const response = await instance.post('/auth/forgot-password', { email });
+        const response = await instance.post('/api/auth/forgot-password', data);
         return {
             success: true,
             data: response.data
@@ -200,29 +203,54 @@ export const requestPasswordReset = async (email) => {
         return {
             success: false,
             error: error.response?.data?.message ||
-                "Failed to request password reset"
+                error.response?.data?.error ||
+                "Failed to send password reset email. Please try again."
         };
     }
 };
 
 /**
- * Reset password with token
+ * Reset password using token
  * @param {Object} resetData - Contains token, password and confirmPassword
  * @returns {Promise<Object>} Result of the password reset attempt
  */
 export const resetPassword = async (resetData) => {
-    try {
-        const response = await instance.post('/auth/reset-password', resetData);
-        return {
-            success: true,
-            data: response.data
-        };
-    } catch (error) {
-        console.error("Password reset error:", error);
-        return {
-            success: false,
-            error: error.response?.data?.message ||
-                "Failed to reset password"
-        };
-    }
+  try {
+    const response = await instance.post('/api/auth/reset-password', resetData);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Password reset error:", error);
+    return {
+      success: false,
+      error: error.response?.data?.message || 
+             error.response?.data?.error || 
+             "Gagal mengubah password. Token mungkin sudah kadaluarsa."
+    };
+  }
+};
+
+/**
+ * Verify user email with token
+ * @param {string} token - Verification token from email
+ * @returns {Promise<Object>} Result of the email verification attempt
+ */
+export const verifyEmail = async (token) => {
+  try {
+    const response = await instance.get(`/api/auth/verify?token=${token}`);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Email verification error:", error);
+    return {
+      success: false,
+      error: error.response?.data?.message || 
+             error.response?.data?.error || 
+             "Gagal memverifikasi email. Token mungkin sudah kadaluarsa."
+    };
+  }
 };
