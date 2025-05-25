@@ -31,11 +31,6 @@ import RegistMineToday from "./pages/CompeRegisPage/RegistMinetoday.jsx";
 import RegistHackToday from "./pages/CompeRegisPage/RegistHacktoday.jsx";
 import RegistUXToday from "./pages/CompeRegisPage/RegistUXtoday.jsx";
 import AuthCallback from './components/Login/AuthCallback';
-import EmailVerification from './components/EmailVerification/EmailVerification';
-
-
-
-
 
 const App = () => {
   return (
@@ -55,16 +50,16 @@ const App = () => {
           <Route path="/timeline" element={<TimelineUmum />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/edit-profile" element={<EditProfile />} />
-          <Route path="/verify-email" element={<EmailVerification />} />
+  
 
           {/* Dashboard Routes */}
           <Route path="/dashboard/beranda" element={<DashboardWrapper />} />
           <Route path="/dashboard/ikut-lomba" element={<DashboardWrapper />} />
           <Route path="/dashboard/ikut-event" element={<DashboardWrapper />} />
           <Route path="/dashboard/submit-lomba" element={<DashboardWrapper />} />
-          <Route path="/dashboard/submit-gametoday" element={<DashboardWrapper />} />
-          <Route path="/dashboard/submit-uxtoday" element={<DashboardWrapper />} />
-          <Route path="/dashboard/submit-minetoday" element={<DashboardWrapper />} />
+          <Route path="/submit-gametoday" element={<Submit_Gametoday />} />
+          <Route path="/submit-uxtoday" element={<Submit_Uxtoday />} />
+          <Route path="/submit-minetoday" element={<Submit_Minetoday />} />
 
           {/* Registration Routes */}
           <Route path="/register-hacktoday" element={<RegistHackToday />} />

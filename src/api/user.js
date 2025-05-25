@@ -16,7 +16,7 @@ const cleanApiUrl = API_BASE_URL.endsWith('/')
 export const registerUser = async (userData) => {
     try {
         console.log("Sending registration data:", userData); 
-        const response = await instance.post('/auth/register', userData);
+        const response = await instance.post('/api/auth/register', userData);
         
         // Return success with verification flag
         return {
@@ -43,7 +43,7 @@ export const registerUser = async (userData) => {
  */
 export const loginUser = async (credentials) => {
     try {
-        const response = await instance.post('/auth/login', credentials);
+        const response = await instance.post('/api/auth/login', credentials);
 
         // Store token if available
         if (response.data.token) {
@@ -81,7 +81,7 @@ export const initiateGoogleLogin = () => {
     localStorage.setItem('redirectAfterAuth', '/dashboard/beranda');
 
     // Redirect to Google OAuth endpoint
-    window.location.href = `${cleanApiUrl}/auth/google`;
+    window.location.href = `${cleanApiUrl}/api/auth/google`;
 };
 
 /**
@@ -90,7 +90,7 @@ export const initiateGoogleLogin = () => {
  */
 export const getCurrentUser = async () => {
     try {
-        const response = await instance.get('/auth/me');
+        const response = await instance.get('/api/auth/me');
 
         return {
             success: true,
@@ -113,7 +113,7 @@ export const getCurrentUser = async () => {
 export const logoutUser = async () => {
     try {
         // Call logout endpoint
-        await instance.post('/auth/logout');
+        await instance.post('/api/auth/logout');
 
         // Clear local storage and session storage
         localStorage.removeItem('authToken');
@@ -161,7 +161,7 @@ export const getUserData = () => {
  */
 export const updateUserInfo = async (userInfo) => {
     try {
-        const response = await instance.put('/auth/user', userInfo);
+        const response = await instance.put('/api/auth/user', userInfo);
 
         // Update stored user data if available
         if (response.data.user) {
@@ -193,7 +193,7 @@ export const updateUserInfo = async (userInfo) => {
  */
 export const requestPasswordReset = async (data) => {
     try {
-        const response = await instance.post('/auth/forgot-password', data);
+        const response = await instance.post('/api/auth/forgot-password', data);
         return {
             success: true,
             data: response.data
@@ -216,7 +216,7 @@ export const requestPasswordReset = async (data) => {
  */
 export const resetPassword = async (resetData) => {
   try {
-    const response = await instance.post('/auth/reset-password', resetData);
+    const response = await instance.post('/api/auth/reset-password', resetData);
     return {
       success: true,
       data: response.data
@@ -239,7 +239,7 @@ export const resetPassword = async (resetData) => {
  */
 export const verifyEmail = async (token) => {
   try {
-    const response = await instance.get(`/auth/verify?token=${token}`);
+    const response = await instance.get(`/api/auth/verify?token=${token}`);
     return {
       success: true,
       data: response.data
@@ -251,6 +251,29 @@ export const verifyEmail = async (token) => {
       error: error.response?.data?.message || 
              error.response?.data?.error || 
              "Gagal memverifikasi email. Token mungkin sudah kadaluarsa."
+    };
+  }
+};
+
+/**
+ * Resend verification email to user
+ * @param {string} email - User's email address
+ * @returns {Promise<Object>} Result of the resend attempt
+ */
+export const resendVerificationEmail = async (email) => {
+  try {
+    const response = await instance.post('/api/auth/resend-verification', { email });
+    return {
+      success: true,
+      message: response.data.message || "Email verifikasi telah dikirim!"
+    };
+  } catch (error) {
+    console.error("Resend verification error:", error);
+    return {
+      success: false,
+      error: error.response?.data?.message || 
+             error.response?.data?.error || 
+             "Gagal mengirim email verifikasi."
     };
   }
 };

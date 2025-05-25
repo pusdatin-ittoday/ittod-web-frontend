@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { MdEmail, MdKey, MdPerson } from "react-icons/md";
 // Import API functions from user.js
-import { registerUser, initiateGoogleLogin } from "../../api/user";
+import { registerUser, initiateGoogleLogin, resendVerificationEmail } from "../../api/user";
 
 const FormRegisterWithRouter = (props) => {
   const navigate = useNavigate();
@@ -29,6 +29,8 @@ class FormRegister extends React.Component {
       showAlert: false,
       alertType: "",
       alertMessage: "",
+      showResendOption: false,
+      emailForResend: ""
     };
 
     this.onNamaLengkapChangeHandler = this.onNamaLengkapChangeHandler.bind(this);
@@ -41,6 +43,7 @@ class FormRegister extends React.Component {
     this.showConfirmPasswordHandler = this.showConfirmPasswordHandler.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleGoogleLogin = this.handleGoogleLogin.bind(this);
+    this.handleResendVerification = this.handleResendVerification.bind(this);
   }
 
   onNamaLengkapChangeHandler(e) {
@@ -139,13 +142,23 @@ class FormRegister extends React.Component {
           // Reset the form
           this.resetForm();
         } else {
-          // Show error message
-          this.setState({
-            showAlert: true,
-            alertType: 'error',
-            alertMessage: result.error || "Registrasi gagal. Silakan coba lagi.",
-            loading: false
-          });
+          // If email already used error
+          if (result.error === "Email already used") {
+            this.setState({
+              errorMessage: "Email sudah terdaftar. Apakah Anda perlu mengirim ulang email verifikasi?",
+              showResendOption: true,
+              emailForResend: email,
+              loading: false
+            });
+          } else {
+            // Show error message
+            this.setState({
+              showAlert: true,
+              alertType: 'error',
+              alertMessage: result.error || "Registrasi gagal. Silakan coba lagi.",
+              loading: false
+            });
+          }
         }
       } catch (error) {
         // Handle unexpected errors
@@ -169,6 +182,32 @@ class FormRegister extends React.Component {
     }, 10000); // Increased to 10 seconds so users have more time to read the message
   }
 
+  async handleResendVerification() {
+    const { emailForResend } = this.state;
+    this.setState({ loading: true });
+    try {
+      const result = await resendVerificationEmail(emailForResend);
+      if (result.success) {
+        this.setState({
+          successMessage: result.message,
+          showResendOption: false,
+          loading: false
+        });
+      } else {
+        this.setState({
+          errorMessage: result.error,
+          loading: false
+        });
+      }
+    } catch (error) {
+      console.error("Resend verification error:", error);
+      this.setState({
+        errorMessage: "An unexpected error occurred while resending verification. Please try again.",
+        loading: false
+      });
+    }
+  }
+
   componentWillUnmount() {
     if (this.errorTimeout) clearTimeout(this.errorTimeout);
   }
@@ -187,6 +226,7 @@ class FormRegister extends React.Component {
       showAlert,
       alertType,
       alertMessage,
+      showResendOption
     } = this.state;
 
     return (
@@ -197,6 +237,16 @@ class FormRegister extends React.Component {
         {errorMessage && <Alert message={errorMessage} type="error" />}
         {successMessage && <Alert message={successMessage} type="success" />}
         {showAlert && <Alert message={alertMessage} type={alertType} />}
+        
+        {/* Moved resend verification button to top as single component */}
+        {showResendOption && (
+          <Button
+            className="w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 mb-3 cursor-pointer"
+            text={loading ? "Mengirim..." : "Kirim Ulang Email Verifikasi"}
+            onClick={this.handleResendVerification}
+            disabled={loading}
+          />
+        )}
 
         <div className="relative">
           <MdPerson className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />

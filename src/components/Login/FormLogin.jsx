@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { MdEmail, MdKey } from "react-icons/md";
@@ -6,7 +6,7 @@ import Button from "./Button";
 import Input from "./Input";
 import Alert from "./Alert";
 // Import API functions from user.js
-import { loginUser, initiateGoogleLogin } from "../../api/user";
+import { loginUser, initiateGoogleLogin, resendVerificationEmail } from "../../api/user";
 
 const FormLoginWithRouter = (props) => {
     const navigate = useNavigate();
@@ -36,7 +36,9 @@ class FormLogin extends React.Component {
             loading: false,
             showAlert: props.verified || false,
             alertType: props.verified ? "success" : "error",
-            alertMessage: props.verificationMessage || ""
+            alertMessage: props.verificationMessage || "",
+            needsVerification: false,
+            resendLoading: false
         };
 
         this.onEmailChangeHandler = this.onEmailChangeHandler.bind(this);
@@ -46,6 +48,7 @@ class FormLogin extends React.Component {
         this.forgetPasswordHandler = this.forgetPasswordHandler.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleGoogleLogin = this.handleGoogleLogin.bind(this);
+        this.handleResendVerification = this.handleResendVerification.bind(this);
     }
 
     onEmailChangeHandler(event) {
@@ -93,7 +96,7 @@ class FormLogin extends React.Component {
         }
 
         try {
-            this.setState({ loading: true, errorMessage: "", successMessage: "" });
+            this.setState({ loading: true, errorMessage: "", successMessage: "", needsVerification: false });
 
             // Use the API function for login
             const result = await loginUser({ email, password });
@@ -110,10 +113,16 @@ class FormLogin extends React.Component {
                     this.props.navigate("/dashboard/beranda");
                 }, 1000);
             } else {
+                // Check if verification is needed
+                const isVerificationError = result.error?.toLowerCase().includes('verify') || 
+                                          result.error?.toLowerCase().includes('verifikasi') ||
+                                          result.error?.toLowerCase().includes('email belum');
+                
                 // Login failed
                 this.setState({
                     errorMessage: result.error,
-                    loading: false
+                    loading: false,
+                    needsVerification: isVerificationError
                 });
             }
         } catch (error) {
@@ -131,6 +140,41 @@ class FormLogin extends React.Component {
         }, 3000);
     }
 
+    async handleResendVerification() {
+        const { email } = this.state;
+        
+        if (!email) {
+            this.setState({ errorMessage: "Masukkan email untuk verifikasi ulang" });
+            return;
+        }
+        
+        try {
+            this.setState({ resendLoading: true, errorMessage: "", successMessage: "" });
+            
+            const result = await resendVerificationEmail(email);
+            
+            if (result.success) {
+                this.setState({ 
+                    successMessage: result.message,
+                    errorMessage: "",
+                    resendLoading: false 
+                });
+            } else {
+                this.setState({ 
+                    errorMessage: result.error,
+                    successMessage: "",
+                    resendLoading: false 
+                });
+            }
+        } catch (error) {
+            console.error("Resend verification error:", error);
+            this.setState({
+                errorMessage: "Gagal mengirim email verifikasi.",
+                resendLoading: false
+            });
+        }
+    }
+
     componentWillUnmount() {
         if (this.errorTimeout) clearTimeout(this.errorTimeout);
         if (this.alertTimeout) {
@@ -138,8 +182,40 @@ class FormLogin extends React.Component {
         }
     }
 
+    componentDidMount() {
+        const params = new URLSearchParams(window.location.search);
+        const verified = params.get('verified');
+        const error = params.get('error');
+        
+        if (verified === 'true') {
+          this.setState({
+            successMessage: '',  // Don't set this to avoid duplicate alerts
+            showAlert: true,
+            alertType: 'success',
+            alertMessage: 'Email berhasil diverifikasi! Silakan login.'
+          });
+        } else if (error) {
+          // Handle error from verification redirect
+          const errorMessage = decodeURIComponent(error);
+          this.setState({
+            errorMessage: '',  // Don't set this to avoid duplicate alerts
+            showAlert: true,
+            alertType: 'error',
+            alertMessage: errorMessage
+          });
+        }
+        
+        // Set timeout to clear alert messages after some time
+        this.alertTimeout = setTimeout(() => {
+          this.setState({ showAlert: false });
+        }, 5000);
+      }
+
     render() {
-        const { email, password, showPassword, loading, errorMessage, successMessage, showAlert, alertType, alertMessage } = this.state;
+        const { 
+            email, password, showPassword, loading, errorMessage, successMessage, 
+            showAlert, alertType, alertMessage, needsVerification, resendLoading 
+        } = this.state;
 
         return (
             <form
@@ -149,6 +225,30 @@ class FormLogin extends React.Component {
                 {errorMessage && <Alert message={errorMessage} type="error" />}
                 {successMessage && <Alert message={successMessage} type="success" />}
                 {showAlert && <Alert message={alertMessage} type={alertType} />}
+                
+                {/* Add resend verification section */}
+                {needsVerification && (
+                    <div className="backdrop-blur-md  text-white px-4 py-3 rounded-lg relative mb-3 shadow-lg transition-all duration-300 ease-in-out">
+                        <div className="absolute inset-0 rounded-lg bg-gradient-to-b bg-white/30 border z-0"></div>
+                        <p className="text-xs font-medium relative z-10">Email belum diverifikasi.</p>
+                        <button
+                            type="button"
+                            className="mt-2 text-xs bg-gradient-to-r custom-button-bg button-hover text-white py-1.5 px-3 rounded-md relative z-10 shadow-md transition-all duration-300"
+                            onClick={this.handleResendVerification}
+                            disabled={resendLoading}
+                        >
+                            {resendLoading ? (
+                                <span className="flex items-center justify-center">
+                                    <svg className="animate-spin -ml-1 mr-2 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Mengirim...
+                                </span>
+                            ) : "Kirim Ulang Email Verifikasi"}
+                        </button>
+                    </div>
+                )}
 
                 <div className="relative">
                     <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
@@ -157,7 +257,7 @@ class FormLogin extends React.Component {
                         placeholder="email"
                         value={email}
                         onChange={this.onEmailChangeHandler}
-                        disabled={loading}
+                        disabled={loading || resendLoading}
                     />
                 </div>
 

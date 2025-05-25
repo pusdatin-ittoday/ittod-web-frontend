@@ -83,7 +83,7 @@ constructor(props) {
 
     async handleSubmit(event) {
         event.preventDefault();
-        const { password, confirmPassword } = this.state;
+        const { password, confirmPassword } = this.state; // Fixed: added confirmPassword
         const { token } = this.props;
 
         // Clear previous timeout if exists
@@ -111,19 +111,17 @@ constructor(props) {
             this.setState({ loading: true });
             
             try {
-                // Call API to reset password
+                // Call API to reset password - Fixed: using password variable
                 const result = await resetPassword({
                     token,
-                    password,
-                    confirmPassword
+                    newPassword: password // Fixed: was undefined before
                 });
                 
                 if (result.success) {
                     this.setState({
                         successMessage: "Password berhasil diubah! Anda akan dialihkan ke halaman login.",
                         loading: false,
-                        password: "",
-                        confirmPassword: ""
+                        newPassword: "",
                     });
                     
                     // Redirect to login after 3 seconds
