@@ -164,7 +164,7 @@ class EditProfile extends Component {
         if (!ktmFileName && !KTM) {
             fieldsToValidate.KTM = "";
         }
-        }
+        
 
         for (const key in fieldsToValidate) {
             if (fieldsToValidate[key] === "" || fieldsToValidate[key] === null) {
