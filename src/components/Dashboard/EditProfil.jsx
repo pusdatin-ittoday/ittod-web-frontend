@@ -160,8 +160,10 @@ class EditProfile extends Component {
         };
 
         // Validate KTM if there's no existing file OR no new file
-        if (!ktmFileName || !KTM) {
+        // Validate KTM if there's no existing file AND no new file
+        if (!ktmFileName && !KTM) {
             fieldsToValidate.KTM = "";
+        }
         }
 
         for (const key in fieldsToValidate) {
