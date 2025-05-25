@@ -9,6 +9,7 @@ import { IoMdSchool } from "react-icons/io";
 import { FaSchool } from "react-icons/fa6";
 import { FaAddressCard } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import axios from 'axios';
 
 class EditProfile extends Component {
     constructor(props) {
@@ -27,7 +28,9 @@ class EditProfile extends Component {
             KTM: null,
             showErrorBox: false,
             errorFields: [],
-            ktmFileName: "", // To store filename of previously uploaded KTM
+            ktmFileName: "",
+            isLoading: true,
+            error: null
         };
 
         this.fieldLabels = {
@@ -46,13 +49,16 @@ class EditProfile extends Component {
     }
 
     componentDidMount() {
-        // Load user data from sessionStorage when component mounts
         this.loadUserData();
     }
 
-    loadUserData = () => {
+    loadUserData = async () => {
         try {
-            const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
+            const response = await axios.get('/api/user', {
+                withCredentials: true
+            });
+            
+            const userData = response.data;
             
             // Extract pendidikan data and determine if it's "lainnya"
             let pendidikan = userData.pendidikan || "";
@@ -66,7 +72,7 @@ class EditProfile extends Component {
             
             // Update state with retrieved data
             this.setState({
-                full_name: userData.name || "",
+                full_name: userData.full_name || "",
                 birth_date: userData.birth_date || "",
                 phone_number: userData.phone_number || "",
                 jenis_kelamin: userData.jenis_kelamin || "",
@@ -76,12 +82,17 @@ class EditProfile extends Component {
                 pendidikan: pendidikan,
                 pendidikan_lainnya: pendidikan_lainnya,
                 nama_sekolah: userData.nama_sekolah || "",
-                ktmFileName: userData.ktmFileName || "", // Filename of the previously uploaded KTM
+                ktmFileName: userData.ktm_key || "",
+                isLoading: false
             });
             
-            console.log("User data loaded from sessionStorage:", userData);
+            console.log("User data loaded from API:", userData);
         } catch (error) {
-            console.error("Error loading user data from sessionStorage:", error);
+            console.error("Error loading user data from API:", error);
+            this.setState({
+                error: "Failed to load user data",
+                isLoading: false
+            });
         }
     };
 
@@ -116,7 +127,7 @@ class EditProfile extends Component {
         this.handleFileChange(file);
     }
 
-    handleSubmit = (e) => {
+    handleSubmit = async (e) => {
         e.preventDefault();
         const {
             full_name,
@@ -135,7 +146,7 @@ class EditProfile extends Component {
 
         const emptyFieldsList = [];
 
-        // --- Validation ---
+        // Validation
         const fieldsToValidate = {
             full_name,
             birth_date,
@@ -148,9 +159,9 @@ class EditProfile extends Component {
             nama_sekolah,
         };
 
-        // Only validate KTM as required if it's a new user without existing KTM
-        if (!ktmFileName && !KTM) {
-            fieldsToValidate.KTM = null;
+        // Validate KTM if there's no existing file OR no new file
+        if (!ktmFileName || !KTM) {
+            fieldsToValidate.KTM = "";
         }
 
         for (const key in fieldsToValidate) {
@@ -170,51 +181,50 @@ class EditProfile extends Component {
             }
         }
 
-        // --- Update State Based on Validation ---
         if (emptyFieldsList.length > 0) {
             this.setState({
                 showErrorBox: true,
                 errorFields: emptyFieldsList,
             });
-        } else {
-            // All fields are filled, proceed with submission logic
-            this.setState({
-                showErrorBox: false,
-                errorFields: [],
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            // Only append non-empty values
+            if (full_name) formData.append('full_name', full_name);
+            if (birth_date) formData.append('birth_date', birth_date);
+            if (phone_number) formData.append('phone_number', phone_number);
+            if (jenis_kelamin) formData.append('jenis_kelamin', jenis_kelamin);
+            if (id_line) formData.append('id_line', id_line);
+            if (id_discord) formData.append('id_discord', id_discord);
+            if (id_instagram) formData.append('id_instagram', id_instagram);
+            if (pendidikan === "lainnya" && pendidikan_lainnya) {
+                formData.append('pendidikan', pendidikan_lainnya);
+            } else if (pendidikan) {
+                formData.append('pendidikan', pendidikan);
+            }
+            if (nama_sekolah) formData.append('nama_sekolah', nama_sekolah);
+            
+            if (KTM) {
+                formData.append('image', KTM);
+            }
+
+            const response = await axios.patch('/api/user', formData, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
 
-            console.log("Form Submitted Successfully!");
-            console.log("Submitted Data:", this.state);
-
-            // Save user data to sessionStorage
-            const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
-            
-            // Update userData with form data
-            const updatedUserData = {
-                ...userData,
-                name: full_name,
-                birth_date,
-                phone: phone_number,          // unify with DashboardLayout expectation
-                phone_number,                 // optionally keep the old key for backward-compat
-                jenis_kelamin,
-                id_line,
-                id_discord,
-                id_instagram,
-                pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
-                nama_sekolah,
-                ktmFileName: KTM ? KTM.name : ktmFileName, // Save the filename of the KTM
-            };
-            sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
-
-            // If there's a new KTM file, you might want to handle it differently
-            // For example, you might want to upload it to a server
-            // But for now, we'll just store its filename in sessionStorage
-            
-            // Set flag for profile completion
-            sessionStorage.setItem("profileUpdateStatus", "success");
-            sessionStorage.setItem("profileComplete", "true");
-
-            window.location.href = "/beranda"; // Redirect to dashboard after submission
+            console.log("Profile updated successfully:", response.data);
+            window.location.href = "/beranda";
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            this.setState({
+                showErrorBox: true,
+                errorFields: ["Failed to update profile. Please try again."]
+            });
         }
     };
 
@@ -237,8 +247,29 @@ class EditProfile extends Component {
             KTM,
             ktmFileName,
             showErrorBox,
-            errorFields
+            errorFields,
+            isLoading,
+            error
         } = this.state;
+
+        if (isLoading) {
+            return (
+                <div className="flex justify-center items-center min-h-screen">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            );
+        }
+
+        if (error) {
+            return (
+                <div className="flex justify-center items-center min-h-screen">
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <strong className="font-bold">Error!</strong>
+                        <span className="block sm:inline"> {error}</span>
+                    </div>
+                </div>
+            );
+        }
 
         let genderIcon;
         if (jenis_kelamin === "L") {
