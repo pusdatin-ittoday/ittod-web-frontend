@@ -20,11 +20,11 @@ const events = [
   },
 ];
 
-const SubmitLomba = ({ title, image, submitLink }) => {
+const CardSubmit = ({ title, image, submitLink }) => {
   const navigate = useNavigate();
   return (
     <div className="font-dm-sans flex flex-col items-center text-white">
-      <div className="w-[200px] h-[220px]">
+      <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1]">
         {image ? (
           <img
             src={image}
@@ -41,8 +41,9 @@ const SubmitLomba = ({ title, image, submitLink }) => {
       {submitLink && (
         <div className="flex gap-5">
           <button
+            // To this:
             onClick={() => navigate("/" + submitLink)}
-            className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm"
+            className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer"
           >
             Submit
           </button>
@@ -67,31 +68,32 @@ const CompSubmitCard = () => {
   }, []);
 
   return (
-    <div className="h-[500px] w-[650px] bg-[#7b446c] rounded-lg shadow-lg flex flex-col p-6 border-b border-[#dfb4d7]/60">
-     
-
+    <div className="h-[500px] w-full lg:w-[650px] bg-[#7b446c] rounded-lg shadow-lg flex flex-col p-6 border-[#dfb4d7]/60">
       {/* Header */}
-      <div className="flex flex-row items-start mb-4 pb-2 gap-[45%] border-b border-[#dfb4d7]/60">
-        <h2 className="text-xl font-bold text-white">Kompetisi yang Diikuti</h2>
+      <div className="flex flex-row items-start  mb-4 pb-2 border-b border-[#dfb4d7]/60">
+        <div className="flex flex-col text-left">
+          <h2 className="text-xl font-bold text-white text-left">Upload Karya Terbaikmu</h2>
+          <p className="text-sm text-gray-300 pl-1 ml-1 text-left">Pastikan Karyamu Sudah Siap!</p>
+        </div>
       </div>
-      
-      {/* Alert */}
-        {showSuccessAlert && (
-            <div className="bg-green-600/90 text-white px-6 py-4 rounded-lg shadow-xl max-w-sm mb-4 self-center">
-            <div className="flex justify-between items-center mb-1 gap-4">
-                <h3 className="font-semibold text-md flex items-center">
-                <MdCheckCircleOutline className="text-xl mr-2" />
-                Form berhasil dikirim!
-                </h3>
-            </div>
-            </div>
-        )}
 
-      {/* Grid */}
+      {/* Alert */}
+      {showSuccessAlert && (
+        <div className="bg-green-600/90 text-white px-6 py-4 rounded-lg shadow-xl max-w-sm mb-4 self-center">
+          <div className="flex justify-between items-center mb-1 gap-4">
+            <h3 className="font-semibold text-md flex items-center">
+              <MdCheckCircleOutline className="text-xl mr-2" />
+              Form berhasil dikirim!
+            </h3>
+          </div>
+        </div>
+      )}
+
+      {/* Grid daftar kompetisi dengan scroll */}
       <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
         <div className="grid grid-cols-2 gap-x-8 gap-y-6 justify-items-center">
           {events.map((event, idx) => (
-            <SubmitLomba
+            <CardSubmit
               key={idx}
               title={event.title}
               image={event.image}

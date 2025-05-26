@@ -6,13 +6,14 @@ import Sidebar from "../../components/Dashboard/Sidebar";
 import Beranda from "../../components/Dashboard/Beranda/Beranda";
 import IkutLomba from "../../components/Dashboard/IkutLomba/IkutLomba";
 import IkutEvent from "../../components/Dashboard/IkutEvent/IkutEvent";
+import SubmitLomba from "../../components/Dashboard/SubmitLomba/SubmitLomba";
 
 import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md"; // Added MdCheckCircleOutline
 
 class DashboardLayout extends Component {
   constructor(props) {
     super(props);
-    const validTabs = ["beranda", "ikut-lomba", "ikut-event"];
+    const validTabs = ["beranda", "ikut-lomba", "ikut-event", "submit-lomba", "submit-gametoday", "submit-uxtoday", "submit-minetoday"];
     const initialTab = validTabs.includes(props.activeTab) ? props.activeTab : "beranda";
 
     this.state = {

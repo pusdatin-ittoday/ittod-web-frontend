@@ -162,7 +162,6 @@ const DaftarEvent = () => {
                                 >
                                     Simpan
                                 </button>
-                            </div>
                         </form>
                     )}
                 </div>

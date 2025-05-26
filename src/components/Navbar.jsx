@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { isAuthenticated, logoutUser } from '../api/user';
 
 class Navbar extends Component {
   constructor(props) {
@@ -8,19 +9,67 @@ class Navbar extends Component {
       scroll: false,
       isHomePage: true,
       dropdownOpen: false,
-      isLoggedIn: false,
+      isLoggedIn: false
     };
   }
+  
   componentDidMount() {
-    // Cek status login dari localStorage
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    this.setState({ isLoggedIn });
-
+    this.setState({ isLoggedIn: isAuthenticated() });
+    window.addEventListener('auth-changed', this.updateAuthStatus);
     window.addEventListener('scroll', this.handleScroll);
     window.addEventListener('resize', this.handleResize);
     window.addEventListener('popstate', this.checkIfHomePage);
+    window.addEventListener('focus', this.checkAuthStatus);
     this.checkIfHomePage();
   }
+  
+  updateAuthStatus = () => {
+    this.setState({ isLoggedIn: isAuthenticated() });
+  }
+
+  checkAuthStatus = () => {
+    const isLoggedIn = isAuthenticated();
+    if (isLoggedIn !== this.state.isLoggedIn) {
+      this.setState({ isLoggedIn });
+    }
+  }
+
+  // Update mobile menu for login/logout toggle
+  renderMobileMenu = () => {
+    const { isLoggedIn } = this.state;
+    const navLinkBase = "hover:text-pink-400 transition-all duration-300";
+    
+    if (isLoggedIn) {
+      return (
+        <>
+          <li className="block lg:hidden">
+            <a href="/dashboard/beranda" className={navLinkBase}>Dashboard</a>
+          </li>
+          <li className="block lg:hidden">
+            <span onClick={this.handleLogout} className={`${navLinkBase} cursor-pointer`}>Logout</span>
+          </li>
+        </>
+      );
+    } else {
+      return (
+        <li className="block lg:hidden mt-2">
+          <button
+            onClick={this.navigateToLogin}
+            className="w-full text-center font-dm-sans font-bold custom-button-bg text-white py-2 px-7 rounded-lg shadow-md button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+          >
+            Login
+          </button>
+        </li>
+      );
+    }
+  }
+  
+  handleLogout = async () => {
+    await logoutUser();
+    this.setState({ isLoggedIn: false });
+    // Redirect to home page
+    window.location.href = '/';
+  };
 
   handleClick = () => {
     this.setState((prevState) => ({ active: !prevState.active }));
@@ -63,9 +112,14 @@ class Navbar extends Component {
   };
 
   componentWillUnmount() {
+    // Clean up listener
+    if (this.unlisten) this.unlisten();
+    
+    window.removeEventListener('auth-changed', this.updateAuthStatus);
     window.removeEventListener('scroll', this.handleScroll);
     window.removeEventListener('resize', this.handleResize);
     window.removeEventListener('popstate', this.checkIfHomePage);
+    window.removeEventListener('focus', this.checkAuthStatus);
   }
 
   navigateToHome = () => {
@@ -75,14 +129,6 @@ class Navbar extends Component {
   navigateToLogin = () => {
     window.location.href = '/login';
   };
-
-  handleLogout = () => {
-    // Menghapus status login dari localStorage dan memperbarui state
-    localStorage.setItem('isLoggedIn', 'false');
-    this.setState({ isLoggedIn: false });
-    // console.log('Logout clicked');
-  };
-
   toggleDropdown = () => {
     this.setState((prevState) => ({ dropdownOpen: !prevState.dropdownOpen }));
   };
@@ -155,36 +201,7 @@ class Navbar extends Component {
               </li>
 
               {/* Menu Login/Profile untuk mobile */}
-              {isLoggedIn && isDashboard && (
-                <>
-                  <li className="block lg:hidden">
-                    <a
-                      href="/dashboard"
-                      className={navLinkBase}
-                    >
-                      Dashboard
-                    </a>
-                  </li>
-                  <li className="block lg:hidden">
-                    <span
-                      onClick={this.handleLogout}
-                      className={navLinkBase + ' cursor-pointer'}
-                    >
-                      Logout
-                    </span>
-                  </li>
-                </>
-              )}
-              {!isLoggedIn && (
-                <li className="block lg:hidden mt-2">
-                  <button
-                    onClick={this.navigateToLogin}
-                    className="w-full text-center font-dm-sans font-bold custom-button-bg text-white py-2 px-7 rounded-lg shadow-md button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
-                  >
-                    Login
-                  </button>
-                </li>
-              )}
+              {this.renderMobileMenu()}
             </ul>
 
             {/* Dropdown Profil untuk Desktop */}
@@ -204,7 +221,7 @@ class Navbar extends Component {
                   {dropdownOpen && (
                     <div className="absolute right-0 mt-2 w-40 bg-[#6a316c] text-white rounded-lg shadow-lg py-2 z-50">
                       <a
-                        href="/dashboard"
+                        href="/dashboard/beranda"
                         className="block px-4 py-2 font-dm-sans hover:text-pink-400 cursor-pointer"
                       >
                         Dashboard
