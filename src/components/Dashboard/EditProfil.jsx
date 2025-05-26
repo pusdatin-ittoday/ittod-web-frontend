@@ -10,7 +10,7 @@ import { FaSchool } from "react-icons/fa6";
 import { FaAddressCard } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaImage } from "react-icons/fa";
-import axios from 'axios';
+import instance from "../../api/axios";
 
 class EditProfile extends Component {
     constructor(props) {
@@ -58,9 +58,7 @@ class EditProfile extends Component {
 
     loadUserData = async () => {
         try {
-            const response = await axios.get('/api/user', {
-                withCredentials: true
-            });
+            const response = await instance.get('/api/user');
             
             // First check for saved form progress
             const savedProgress = localStorage.getItem('formProgress');
@@ -87,30 +85,27 @@ class EditProfile extends Component {
                         ktmFileName: formData.ktmFileName || "",
                         twibbonFileName: formData.twibbonFileName || "",
                         showProgressRestoredMessage: true
-
                     });
                     setTimeout(() => {
                         this.setState({ showProgressRestoredMessage: false });
                     }, 5000);
 
-                    return; // Don't load from sessionStorage if we restored from localStorage
+                    return; // Don't load from API if we restored from localStorage
                 }
             }
 
-            // If no recent form progress, load from sessionStorage as normal
+            // If no recent form progress, load from API
             const userData = response.data;
-
+            
             // Extract pendidikan data and determine if it's "lainnya"
             let pendidikan = userData.pendidikan || "";
             let pendidikan_lainnya = "";
 
-            // Check if pendidikan is one of the standard options
             if (pendidikan && !["sma", "mahasiswa", "lainnya"].includes(pendidikan)) {
                 pendidikan_lainnya = pendidikan;
                 pendidikan = "lainnya";
             }
 
-            // Update state with retrieved data
             this.setState({
                 full_name: userData.full_name || "",
                 birth_date: userData.birth_date || "",
@@ -122,15 +117,18 @@ class EditProfile extends Component {
                 pendidikan: pendidikan,
                 pendidikan_lainnya: pendidikan_lainnya,
                 nama_sekolah: userData.nama_sekolah || "",
-                ktmFileName: userData.ktmFileName || "",
-                twibbonFileName: userData.twibbonFileName || ""
-                ktmFileName: userData.ktm_key || "",
+                ktmFileName: userData.ktm_key || "", // Use ktm_key from API
+                twibbonFileName: userData.twibbonFileName || "",
                 isLoading: false
             });
 
             console.log("User data loaded from API:", userData);
         } catch (error) {
             console.error("Error loading data:", error);
+            this.setState({
+                error: "Failed to load user data",
+                isLoading: false
+            });
         }
     };
 
@@ -202,12 +200,6 @@ class EditProfile extends Component {
         };
 
         localStorage.setItem('formProgress', JSON.stringify(formProgress));
-            console.error("Error loading user data from API:", error);
-            this.setState({
-                error: "Failed to load user data",
-                isLoading: false
-            });
-        }
     };
 
     handleChange = (e) => {
@@ -286,12 +278,10 @@ class EditProfile extends Component {
             nama_sekolah,
         };
 
-        // Validate KTM if there's no existing file OR no new file
         // Validate KTM if there's no existing file AND no new file
         if (!ktmFileName && !KTM) {
             fieldsToValidate.KTM = "";
         }
-        
 
         for (const key in fieldsToValidate) {
             if (fieldsToValidate[key] === "" || fieldsToValidate[key] === null) {
@@ -338,57 +328,48 @@ class EditProfile extends Component {
             if (KTM) {
                 formData.append('image', KTM);
             }
+            if (twibbon) {
+                formData.append('twibbon', twibbon);
+            }
 
-            const response = await axios.patch('/api/user', formData, {
-                withCredentials: true,
+            const response = await instance.patch('/api/user', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
 
-            console.log("Profile updated successfully:", response.data);
-            window.location.href = "/beranda";
+            if (response.data.success) {
+                // Save user data to sessionStorage
+                const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
+                
+                // Update userData with form data
+                const updatedUserData = {
+                    ...userData,
+                    name: full_name,
+                    birth_date,
+                    phone: phone_number,
+                    phone_number,
+                    jenis_kelamin,
+                    id_line,
+                    id_discord,
+                    id_instagram,
+                    pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
+                    nama_sekolah,
+                    ktmFileName: KTM ? KTM.name : ktmFileName,
+                    twibbonFileName: twibbon ? twibbon.name : twibbonFileName
+                };
+                sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
+                sessionStorage.setItem("profileUpdateStatus", "success");
+                sessionStorage.setItem("profileComplete", "true");
+
+                this.clearFormProgress();
+                window.location.href = "/dashboard/beranda";
+            } else {
+                throw new Error(response.data.message || "Failed to update profile");
+            }
         } catch (error) {
             console.error("Error updating profile:", error);
             this.setState({
-                showErrorBox: false,
-                errorFields: [],
-            });
-
-            console.log("Form Submitted Successfully!");
-            console.log("Submitted Data:", this.state);
-
-            // Save user data to sessionStorage
-            const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
-
-            // Update userData with form data
-            const updatedUserData = {
-                ...userData,
-                name: full_name,
-                birth_date,
-                phone: phone_number,          // unify with DashboardLayout expectation
-                phone_number,                 // optionally keep the old key for backward-compat
-                jenis_kelamin,
-                id_line,
-                id_discord,
-                id_instagram,
-                pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
-                nama_sekolah,
-                ktmFileName: KTM ? KTM.name : ktmFileName, // Save the filename of the KTM
-                twibbonFileName: twibbon ? twibbon.name : twibbonFileName // Save the filename of the Twibbon
-            };
-            sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
-
-            // If there's a new KTM file, you might want to handle it differently
-            // For example, you might want to upload it to a server
-            // But for now, we'll just store its filename in sessionStorage
-
-            // Set flag for profile completion
-            sessionStorage.setItem("profileUpdateStatus", "success");
-            sessionStorage.setItem("profileComplete", "true");
-
-            this.clearFormProgress();
-            window.location.href = "/dashboard/beranda"; // Redirect to dashboard after submission
                 showErrorBox: true,
                 errorFields: ["Failed to update profile. Please try again."]
             });
