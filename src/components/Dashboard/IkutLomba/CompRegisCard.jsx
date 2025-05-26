@@ -1,36 +1,36 @@
 import React, { useState } from 'react';
 import { PiTargetBold } from 'react-icons/pi';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const events = [
   {
     title: 'HACKTODAY',
-    description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
+    description: 'Taklukan CTF!',
     image: '/logo-competition/HACKTODAY.webp',
     registerLink: '/register-hacktoday',
   },
   {
     title: 'GAMETODAY',
-    description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
+    description: 'Ciptakan game yang menarik!',
     image: '/logo-competition/GAMETODAY.webp',
     registerLink: '/register-gametoday',
   },
   {
     title: 'UXTODAY',
-    description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
+    description: 'Rancang UI/UX yang inovatif!',
     image: '/logo-competition/UXTODAY.webp',
     registerLink: '/register-uxtoday',
   },
   {
     title: 'MINETODAY',
-    description: 'Acara seru banget aduhai ayo join ittod yang tahun ini',
+    description: 'Selesaikan masalah dengan Machine Learning!',
     image: '/logo-competition/MINETODAY.webp',
     registerLink: '/register-minetoday',
   },
 ];
 
-const IkutLomba = ({title, description, image, registerLink}) => (
-    <div className="font-dm-sans flex flex-col items-center text-white">
+const IkutLomba = ({ title, description, image, registerLink }) => (
+  <div className="font-dm-sans flex flex-col items-center text-white">
     <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1]">
       {image ? (
         <img
@@ -64,7 +64,7 @@ const CompRegisCard = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(`Berhasil join team dengan ID: ${teamId}`);
-    window.location.href = '/';
+    window.location.href = '/dashboard';
   };
 
   // logic dengan back end :

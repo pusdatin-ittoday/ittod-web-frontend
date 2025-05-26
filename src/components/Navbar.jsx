@@ -129,7 +129,6 @@ class Navbar extends Component {
   navigateToLogin = () => {
     window.location.href = '/login';
   };
-
   toggleDropdown = () => {
     this.setState((prevState) => ({ dropdownOpen: !prevState.dropdownOpen }));
   };

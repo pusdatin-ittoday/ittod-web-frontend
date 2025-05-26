@@ -77,8 +77,8 @@ const App = () => {
           <Route path="/event/national_seminar" element={<Seminar />} />
           <Route path="/event/bootcamp" element={<Bootcamp />} />
           <Route path="/event/workshop" element={<Workshop />} />
+          <Route path="/daftar-event/:target" element={<DaftarEvent />} />
 
-          <Route path="/daftar-event" element={<DaftarEvent />} />
         </Routes>
       </BrowserRouter>
     </>

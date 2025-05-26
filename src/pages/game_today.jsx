@@ -10,12 +10,20 @@ const Game_Today = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
+  const timeline = [
+    { title: 'Pendaftaran Batch 1', date: '27 Mei 2025 - 20 Juni 2025' },
+    { title: 'Pendaftaran Batch 2', date: '25 Juni 2025 - 28 Juli 2025' },
+    { title: 'Batas Submisi', date: '5 September 2025' },
+    { title: 'Pengumuman Finalis', date: '10 September 2025' },
+    { title: 'Babak Final & Award', date: '27 September 2025' },
+  ];
+
   return (
     <>
       <Navbar />
       <main className="w-full text-white pt-20 px-4 md:px-12 font-dm-sans">
         {/* SECTION: Home */}
-        <section className="min-h-screen mb-0 pb-0">
+        <section className="h-fit mb-0 pb-0">
           {/* Judul */}
           <h1 className="text-5xl md:text-5xl font-playfair font-bold text-center mb-6 drop-shadow-[0_0_10px_#ac6871]">GAMETODAY</h1>
 
@@ -49,12 +57,12 @@ const Game_Today = () => {
         </section>
 
         {/* SECTION: Timeline */}
-        <section className="min-h-screen mb-0 pb-0 md:mb-0 md:pb-0">
-          <TimelineLomba />
+        <section className="h-fit mb-0 pb-0 md:mb-0 md:pb-0">
+          <TimelineLomba items={timeline} />
         </section>
 
         {/* SECTION: Prizepool */}
-        <section className="min-h-screen mb-0 pb-0 md:mb-20 md:pb-20">
+        <section className="h-fit mb-0 pb-0 md:mb-5 md:pb-5">
           <PrizepoolSection />
         </section>
       </main>

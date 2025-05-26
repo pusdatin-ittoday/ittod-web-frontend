@@ -36,7 +36,7 @@ const TimelineItem = ({ title, date, isFirst, isLast }) => {
 
       {/* Teks judul dan tanggal */}
       <div className="flex flex-col justify-center lg:ml-4 ml-[-10px]">
-        <h3 className="text-white text-xl lg:text-2xl font-bold mb-1 font-playfair drop-shadow-[0_0_10px_#ac6871] pl-6">{title}</h3>
+        <h3 className="text-white text-xl lg:text-2xl font-bold mb-1 font-dm-sans drop-shadow-[0_0_10px_#ac6871] pl-6">{title}</h3>
         <p className="text-sm lg:text-xl text-white/80 font-dm-sans pl-6">{date}</p>
       </div>
     </div>
@@ -44,16 +44,8 @@ const TimelineItem = ({ title, date, isFirst, isLast }) => {
 };
 
 // Komponen utama timeline lomba
-const TimelineLomba = () => {
-  const items = [
-    { title: 'Pendaftaran', date: '14 Mei 2025 - 30 Juli 2025' },
-    { title: 'Pengumuman Tema', date: 'Akhir Agustus' },
-    { title: 'Technical Meeting', date: '19 Februari 2025 - 23 Februari 2025' },
-    { title: 'Technical Meeting', date: '19 Februari 2025 - 23 Februari 2025' },
-    { title: 'Technical Meeting', date: '19 Februari 2025 - 23 Februari 2025' },
-    { title: 'Technical Meeting', date: '19 Februari 2025 - 23 Februari 2025' },
-    { title: 'Technical Meeting', date: '19 Februari 2025 - 23 Februari 2025' },
-  ];
+const TimelineLomba = ({items}) => {
+
 
   return (
     <>
