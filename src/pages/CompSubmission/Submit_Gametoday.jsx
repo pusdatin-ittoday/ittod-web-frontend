@@ -5,7 +5,7 @@ import { FaItchIo } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import { FaGoogleDrive } from "react-icons/fa";
 import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md";
-import { submitCompetitionFile, editCompetitionFile } from "../../api/compeFile";
+import { upsertCompetitionFile } from "../../api/compeFile";
 import { getUserCompetitions } from "../../api/user";
 
 const Submit_Gametoday = () => {
@@ -18,8 +18,6 @@ const Submit_Gametoday = () => {
   const [incompleteFields, setIncompleteFields] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [teamId, setTeamId] = useState("");
-  const [fileId, setFileId] = useState(""); // For edit mode
-  const [isEditMode, setIsEditMode] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -80,25 +78,16 @@ const Submit_Gametoday = () => {
     try {
       // Prepare the data for submission
       const gameSubmission = {
-        title: "Submisi GameToday",
-        url_file: {
-          SubmisiGame,
-          TrailerGame,
-          ExecutiveSummary
+        team_id: teamId,
+        submission_object: {
+          SubmisiGame: SubmisiGame,
+          TrailerGame: TrailerGame,
+          ExecutiveSummary: ExecutiveSummary,
         },
-        team_id: teamId
       };
 
-      let result;
-      
-      if (isEditMode && fileId) {
-        // Edit existing submission
-        gameSubmission.id = fileId;
-        result = await editCompetitionFile(gameSubmission);
-      } else {
-        // Submit new file
-        result = await submitCompetitionFile(gameSubmission);
-      }
+      // Submit or update file using upsert
+      const result = await upsertCompetitionFile(gameSubmission);
 
       if (!result.success) {
         throw new Error(`Failed to submit: ${result.error}`);
@@ -126,7 +115,7 @@ const Submit_Gametoday = () => {
       
       // Show success message and redirect
       setAlertType("success");
-      setAlertMessage(isEditMode ? "Submission berhasil diupdate!" : "Submission berhasil dikirim!");
+      setAlertMessage("Submission berhasil dikirim!");
       setShowAlert(true);
       
       setTimeout(() => {
@@ -167,11 +156,8 @@ const Submit_Gametoday = () => {
             console.log("Found team ID:", gameTodayTeam.teamID);
             
             // Check if there's existing submission data
-            if (gameTodayTeam.submissionID && gameTodayTeam.submissionData) {
-              setFileId(gameTodayTeam.submissionID);
-              setIsEditMode(true);
-              
-              const submissionData = gameTodayTeam.submissionData.url_file || {};
+            if (gameTodayTeam.submissionData) {
+              const submissionData = gameTodayTeam.submissionData.submission_object || {};
               
               // Set form fields with existing data
               if (submissionData.SubmisiGame) setSubmisiGame(submissionData.SubmisiGame);
@@ -232,7 +218,7 @@ const Submit_Gametoday = () => {
                 disabled={isSubmitting}
                 className={`custom-button-bg text-white px-4 py-2 rounded cursor-pointer ${isSubmitting ? 'opacity-75 cursor-not-allowed' : 'button-hover transition duration-300 ease-in-out hover:scale-105'}`}
               >
-                {isSubmitting ? 'Mengirim...' : (isEditMode ? 'Update' : 'Simpan')}
+                {isSubmitting ? 'Mengirim...' : 'Simpan'}
               </button>
             </div>
           </form>

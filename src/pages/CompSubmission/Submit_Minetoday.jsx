@@ -3,7 +3,7 @@ import Navbar from "../../components/Navbar";
 import { useNavigate } from 'react-router-dom';
 import { FaGoogleDrive } from "react-icons/fa";
 import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md";
-import { submitCompetitionFile, editCompetitionFile } from "../../api/compeFile";
+import { upsertCompetitionFile } from "../../api/compeFile";
 import { getUserCompetitions } from "../../api/user";
 
 const Submit_Minetoday = () => {
@@ -15,8 +15,6 @@ const Submit_Minetoday = () => {
   const [incompleteFields, setIncompleteFields] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [teamId, setTeamId] = useState("");
-  const [fileId, setFileId] = useState(""); // For edit mode
-  const [isEditMode, setIsEditMode] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,25 +65,16 @@ const Submit_Minetoday = () => {
     setIsSubmitting(true);
 
     try {
-      // Prepare the data for submission
+      // Prepare the data for submission with new structure
       const mineSubmission = {
-        title: "Submisi MineToday",
-        url_file: {
-          Drive
-        },
-        team_id: teamId
+        team_id: teamId,
+        submission_object: {
+          Drive: Drive
+        }
       };
 
-      let result;
-      
-      if (isEditMode && fileId) {
-        // Edit existing submission
-        mineSubmission.id = fileId;
-        result = await editCompetitionFile(mineSubmission);
-      } else {
-        // Submit new file
-        result = await submitCompetitionFile(mineSubmission);
-      }
+      // Submit or update using upsert function
+      const result = await upsertCompetitionFile(mineSubmission);
 
       if (!result.success) {
         throw new Error(`Failed to submit: ${result.error}`);
@@ -104,12 +93,12 @@ const Submit_Minetoday = () => {
       // Save active tab to localStorage
       localStorage.setItem("activeTab", "submit-lomba");
       
-      // Reset form (optional)
+      // Reset form
       setDrive("");
       
       // Show success message and redirect
       setAlertType("success");
-      setAlertMessage(isEditMode ? "Submission berhasil diupdate!" : "Submission berhasil dikirim!");
+      setAlertMessage("Submission berhasil dikirim!");
       setShowAlert(true);
       
       setTimeout(() => {
@@ -149,11 +138,8 @@ const Submit_Minetoday = () => {
             console.log("Found team ID:", mineTodayTeam.teamID);
             
             // Check if there's existing submission data
-            if (mineTodayTeam.submissionID && mineTodayTeam.submissionData) {
-              setFileId(mineTodayTeam.submissionID);
-              setIsEditMode(true);
-              
-              const submissionData = mineTodayTeam.submissionData.url_file || {};
+            if (mineTodayTeam.submissionData) {
+              const submissionData = mineTodayTeam.submissionData.submission_object || {};
               
               // Set form field with existing data
               if (submissionData.Drive) setDrive(submissionData.Drive);
@@ -200,7 +186,7 @@ const Submit_Minetoday = () => {
                 disabled={isSubmitting}
                 className={`custom-button-bg text-white px-4 py-2 rounded cursor-pointer ${isSubmitting ? 'opacity-75 cursor-not-allowed' : 'button-hover transition duration-300 ease-in-out hover:scale-105'}`}
               >
-                {isSubmitting ? 'Mengirim...' : (isEditMode ? 'Update' : 'Simpan')}
+                {isSubmitting ? 'Mengirim...' : 'Simpan'}
               </button>
             </div>
           </form>
