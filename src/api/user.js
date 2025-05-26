@@ -108,6 +108,7 @@ export const isAuthenticated = async () => {
 export const getCurrentUser = async () => {
   try {
     const response = await instance.get('/api/user');
+    // console.log("User data fetched:", response.data);
     return {
       success: true,
       data: response.data
