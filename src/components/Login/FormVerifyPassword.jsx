@@ -2,13 +2,12 @@ import React from "react";
 import Button from "./Button";
 import Alert from "./Alert";
 import { useNavigate } from "react-router-dom";
-import { requestPasswordReset } from "../../api/user";
+import { resendVerificationEmail } from "../../api/user";
 
 const FormVerifyPasswordWithRouter = (props) => {
     const navigate = useNavigate();
     return <FormVerifyPassword {...props} navigate={navigate} />;
 }
-
 
 class FormVerifyPassword extends React.Component {
     constructor(props) {
@@ -19,7 +18,7 @@ class FormVerifyPassword extends React.Component {
             alertMessage: "",
             showAlert: false,
             alertType: "error"
-        };    
+        };
         this.handleResendClick = this.handleResendClick.bind(this);
     }
 
@@ -45,96 +44,86 @@ class FormVerifyPassword extends React.Component {
             });
         }, 1000);
     }
-    
+
     showAlert(message, type = "error") {
-        // Clear any existing timeout
         if (this.alertTimeout) {
             clearTimeout(this.alertTimeout);
         }
-        
+
         this.setState({
             alertMessage: message,
             showAlert: true,
             alertType: type
         });
-        
-        // Auto-hide alert after 3 seconds
+
         this.alertTimeout = setTimeout(() => {
             this.setState({ showAlert: false });
         }, 3000);
     }
-    
+
     handleResendClick = async () => {
-        // Only proceed if countdown is 0
         if (this.state.countdown > 0) return;
-        
+
         this.setState({ resendStatus: 'sending' });
-        
+
         try {
-            // Get email from props or wherever it's stored in your app
             const email = this.props.email;
-            
-            // Call the API function
-            const result = await requestPasswordReset({ email });
-            
+            const result = await resendVerificationEmail(email);
+
             if (result.success) {
-                // Reset the countdown and start it again
                 clearInterval(this.interval);
-                this.setState({ 
-                    countdown: 60, 
-                    resendStatus: 'success' 
+                this.setState({
+                    countdown: 60,
+                    resendStatus: 'success'
                 }, () => {
                     this.startCountdown();
                 });
-                
-                // Show success alert
+
                 this.showAlert("Email verifikasi berhasil dikirim!", "success");
             } else {
                 this.setState({ resendStatus: 'error' });
-                
-                // Show error alert
                 this.showAlert(result.error || "Gagal mengirim email verifikasi.");
             }
         } catch (error) {
             console.error("Error resending verification email:", error);
             this.setState({ resendStatus: 'error' });
-            
-            // Show error alert
             this.showAlert("Terjadi kesalahan saat mengirim email.");
         }
     }
-    
+
     render() {
         const { countdown, resendStatus, showAlert, alertMessage, alertType } = this.state;
         const isDisabled = countdown > 0;
 
         return (
             <form className="w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
-                
                 {showAlert && <Alert message={alertMessage} type={alertType} />}
-                
-                <h2 className="text-[#E4CCCF] text-xl font-semibold text-center font-playfair input-text-glow transition-all duration-300 hover:back-button-glow hover:brightness-110" >
+
+                <h2 className="text-[#E4CCCF] text-xl font-semibold text-center font-playfair input-text-glow transition-all duration-300 hover:back-button-glow hover:brightness-110">
                     Verifikasi Email
                 </h2>
-                
-                <div className="flex flex-col justify-center items-center ">
+
+                <div className="flex flex-col justify-center items-center">
                     <img
                         src="gmail.svg"
                         className="max-w-40 max-h-40"
                         alt="Email verification"
                     />
-                    <p className="text-white text-sm text-center font-playfair transition-all duration-300 hover:back-button-glow hover:brightness-110" >
+                    <p className="text-white text-sm text-center font-playfair transition-all duration-300 hover:back-button-glow hover:brightness-110">
                         Mohon <span className="font-bold input-text-glow">periksa email</span> untuk melanjutkan. Jika tidak ada email, <span className="font-bold input-text-glow">mohon memeriksa folder spam</span>
                     </p>
-                </div>                
+                </div>
+
                 <Button
-                    className= "w-full custom-button-bg p-2 text-white font-bold rounded-md transition-all duration-300 button-hover cursor-pointer"
+                    className="w-full custom-button-bg p-2 text-white font-bold rounded-md transition-all duration-300 button-hover cursor-pointer"
                     type="button"
-                    text= {resendStatus === 'sending' 
-                        ? "Mengirim..." 
-                        : (countdown === 0 
-                            ? "Kirim ulang email" 
-                            : `Kirim ulang email dalam ${countdown} detik`)}
+                    text={
+                        resendStatus === 'sending'
+                            ? "Mengirim..."
+                            : (countdown === 0
+                                ? "Kirim ulang email"
+                                : `Kirim ulang email dalam ${countdown} detik`)
+                    }
                     onClick={this.handleResendClick}
                     disabled={isDisabled || resendStatus === 'sending'}
                 />
