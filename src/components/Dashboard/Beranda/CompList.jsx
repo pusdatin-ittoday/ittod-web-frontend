@@ -45,9 +45,12 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
         }
     };
 
-    const filteredCompetitions = Object.entries(competitions).filter(
-        ([key, data]) => data.anggota.some(member => member.nama === currentUser)
-    );
+    const filteredCompetitions = Object.entries(competitions || {}).filter(([, data]) => {
+        if (!data || !data.anggota || !Array.isArray(data.anggota)) {
+            return false;
+        }
+        return data.anggota.some(member => member && member.nama === currentUser);
+    });
 
 
     const renderCompetition = (key, data) => {
