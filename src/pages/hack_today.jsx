@@ -14,7 +14,9 @@ const Hack_Today = () => {
     { title: 'Pendaftaran Batch 1', date: '27 Mei 2025 - 20 Juni 2025' },
     { title: 'Pendaftaran Batch 2', date: '25 Juni 2025 - 28 Juli 2025' },
     { title: 'Warm Up', date: '2 Agustus 2025' },
-    { title: 'Penyisihan', date: '27 September 2025' },
+    { title: 'Penyisihan', date: '10 Agustus 2025' },
+    { title: 'Pengumuman Finalis', date: '10 September 2025' },
+    { title: 'Babak Final & Awarding', date: '27 September 2025' },
   ];
 
   return (
