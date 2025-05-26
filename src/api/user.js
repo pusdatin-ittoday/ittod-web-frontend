@@ -308,3 +308,21 @@ export const getUserCompetitions = async () => {
     };
   }
 };
+
+/**
+ * Announcement API
+ */
+
+// Get all announcements
+export const getAnnouncements = async () => {
+  try {
+    const response = await instance.get('/api/announcements');
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to fetch announcements"
+    };
+  }
+};
+

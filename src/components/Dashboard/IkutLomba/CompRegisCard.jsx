@@ -87,9 +87,9 @@ const CompRegisCard = () => {
       {/* Header */}
       <div className="flex flex-row items-start justify-between mb-4 pb-2 border-b border-[#dfb4d7]/60">
         <div className="flex flex-col">
-          <div className="flex items-center mb-1">
-            <PiTargetBold className="text-2xl text-white mr-2" />
-            <h2 className="text-xl font-bold text-white">Kompetisi yang Tersedia</h2>
+          <div className="flex items-center mb-1.5">
+            <PiTargetBold className="text-2xl input-text-glow  drop-shadow-[0_1px_6px_#FFE6FC] text-white mr-2" />
+            <h2 className="text-xl font-bold text-white input-text-glow drop-shadow-[0_1px_1px_#FFE6FC]">Kompetisi yang Tersedia</h2>
           </div>
           <p className="text-sm pl-1 text-gray-300 ml-7">Pilih dan daftar kompetisi sesuai minat kamu!</p>
         </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { MdCheckCircleOutline } from "react-icons/md";
+import { TfiClipboard } from "react-icons/tfi"; // Add this import
 import { useNavigate } from "react-router-dom";
 
 const events = [
@@ -70,10 +71,17 @@ const CompSubmitCard = () => {
   return (
     <div className="h-[500px] w-full lg:w-[650px] bg-[#7b446c] rounded-lg shadow-lg flex flex-col p-6 border-[#dfb4d7]/60">
       {/* Header */}
-      <div className="flex flex-row items-start  mb-4 pb-2 border-b border-[#dfb4d7]/60">
-        <div className="flex flex-col text-left">
-          <h2 className="text-xl font-bold text-white text-left">Upload Karya Terbaikmu</h2>
-          <p className="text-sm text-gray-300 pl-1 ml-1 text-left">Pastikan Karyamu Sudah Siap!</p>
+      <div className="flex flex-col items-start mb-4 pb-2 border-b border-[#dfb4d7]/60">
+        <div className="flex flex-col">
+          <div className="flex items-center mb-1.5">
+            <TfiClipboard className="text-xl text-white mr-2 drop-shadow-[0_1px_8px_#FFE6FC] input-text-glow" />
+            <h2 className="text-xl lg:text-xl font-bold text-white input-text-glow drop-shadow-[0_1px_12px_#FFE6FC]">
+              Upload Karya Terbaikmu di Sini
+            </h2>
+          </div>
+          <p className="text-sm text-gray-200 ml-7">
+            Pastikan Karyamu Sudah Siap!
+          </p>
         </div>
       </div>
 

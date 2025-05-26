@@ -138,28 +138,40 @@ const RegistGameToday = () => {
                                 htmlFor="Pembayaran"
                                 className="block text-sm font-bold mb-2"
                             >
-                                Bukti Pembayaran{" "}
+                                Bukti Pembayaran (jpg/png, max 2MB)
+                                {fileName && !Pembayaran && (
+                                    <span className="text-sm font-normal ml-2 text-gray-300">
+                                        (File yang telah diunggah: {fileName})
+                                    </span>
+                                )}
                             </label>
-                            {/*<FaFileImage  className='absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl'/>*/}
-                            <input
-                                type="file"
-                                accept={"image/*"}
-                                ref={pembayaranRef}
-                                onChange={handleChange}
-                                id="Pembayaran"
-                                name="Pembayaran"
-                                className="hidden"
-                            />
-
-                            {/* Custom styled file upload */}
                             <div
+                                className={`border-2 border-dashed border-pink-400 rounded-md p-6 text-center bg-white/10 hover:bg-white/20 transition duration-300 hover:scale-102 cursor-pointer w-full min-h-24 flex items-center justify-center`}
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+                                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                                        setPembayaran(e.dataTransfer.files[0]);
+                                        setFileName(e.dataTransfer.files[0].name);
+                                    }
+                                }}
                                 onClick={handleClick}
-                                className="flex flex-col gap-3 items-center space-x-2 bg-gray-100 text-[#000000] px-4 py-3 rounded-lg cursor-pointer"
                             >
-                                <FaFileImage className="text-5xl text-[#3D2357]" />
-                                <span className="text-sm">
-                  {fileName ? fileName : "Upload Bukti Pembayaran"}
-                </span>
+                                <FaFileImage className="mr-2 text-xl text-pink-300 group-hover:text-pink-200" />
+                                <div className="w-full overflow-hidden text-ellipsis">
+                                    <p className="truncate">
+                                        {fileName ? fileName : "Upload Bukti Pembayaran"}
+                                    </p>
+                                </div>
+                                <input
+                                    type="file"
+                                    accept=".jpg,.jpeg,.png,image/*"
+                                    ref={pembayaranRef}
+                                    onChange={handleChange}
+                                    id="Pembayaran"
+                                    name="Pembayaran"
+                                    style={{ display: "none" }}
+                                />
                             </div>
                         </div>
 

@@ -112,8 +112,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
             <div className="border-b border-[#dfb4d7]/60 mb-4">
                 <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-5">
-                        <FaUser className="text-2xl text-white" />
-                        <h2 className="text-2xl font-bold text-white tracking-wide transform transition duration-500 hover:scale-105">
+                        <FaUser className="text-2xl input-text-glow text-white drop-shadow-[0_1px_6px_#FFE6FC]" />
+                        <h2 className="text-2xl font-bold input-text-glow tracking-wide transform transition duration-500 hover:scale-102 text-white drop-shadow-[0_1px_1px_#FFE6FC]">
                             Halo, {name}!
                         </h2>
                     </div>
