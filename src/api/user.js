@@ -48,6 +48,9 @@ export const loginUser = async (credentials) => {
         // Store token if available
         if (response.data.token) {
             localStorage.setItem('authToken', response.data.token);
+            
+            // Dispatch custom event
+            window.dispatchEvent(new Event('auth-changed'));
         }
 
         // Store user data if available
@@ -85,25 +88,46 @@ export const initiateGoogleLogin = () => {
 };
 
 /**
- * Get current user data using stored token
- * @returns {Promise<Object>} Current user data or error
+ * Check if the user is logged in based on cookie presence
+ * @returns {boolean} Whether the user is logged in
+ */
+export const isAuthenticated = () => {
+  // First check localStorage
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    return true;
+  }
+  
+  // Simple check for cookie presence - assume any cookie means logged in
+  return document.cookie.length > 0;
+};
+
+/**
+ * Get current user's data
+ * @returns {Promise<Object>} User data or error
  */
 export const getCurrentUser = async () => {
-    try {
-        const response = await instance.get('/api/auth/me');
-
-        return {
-            success: true,
-            data: response.data
-        };
-    } catch (error) {
-        console.error("Get user error:", error);
-        return {
-            success: false,
-            error: error.response?.data?.message ||
-                "Failed to get user data"
-        };
+  try {
+    const response = await instance.get('/api/user');
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    
+    // If unauthorized, clear token
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('authToken');
     }
+    
+    return {
+      success: false,
+      error: error.response?.data?.message || 
+             error.response?.data?.error || 
+             "Failed to fetch user data"
+    };
+  }
 };
 
 /**
@@ -111,38 +135,44 @@ export const getCurrentUser = async () => {
  * @returns {Promise<Object>} Result of logout attempt
  */
 export const logoutUser = async () => {
-    try {
-        // Call logout endpoint
-        await instance.post('/api/auth/logout');
-
-        // Clear local storage and session storage
-        localStorage.removeItem('authToken');
-        sessionStorage.removeItem('userData');
-
-        return {
-            success: true
-        };
-    } catch (error) {
-        console.error("Logout error:", error);
-        // Even if API fails, clear local data
-        localStorage.removeItem('authToken');
-        sessionStorage.removeItem('userData');
-
-        return {
-            success: false,
-            error: error.response?.data?.message ||
-                "Logout failed"
-        };
-    }
-};
-
-/**
- * Check if the user is authenticated
- * @returns {boolean} Whether the user is authenticated
- */
-export const isAuthenticated = () => {
-    const token = localStorage.getItem('authToken');
-    return !!token; // Convert to boolean
+  try {
+    // Call logout endpoint on the server to clear cookies
+    await instance.post('/api/auth/logout');
+    
+    // Clear localStorage
+    localStorage.removeItem('authToken');
+    
+    // Clear sessionStorage
+    sessionStorage.removeItem('userData');
+    
+    // Clear cookies if the API doesn't handle it
+    // This is a simple approach that may not work for HttpOnly cookies
+    document.cookie.split(";").forEach(function(c) {
+      document.cookie = c.replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    
+    return {
+      success: true
+    };
+  } catch (error) {
+    console.error("Logout error:", error);
+    
+    // Still remove client-side storage even if API call fails
+    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('userData');
+    
+    // Also try to clear cookies on error
+    document.cookie.split(";").forEach(function(c) {
+      document.cookie = c.replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    
+    return {
+      success: false,
+      error: "Server logout failed but client storage was cleared"
+    };
+  }
 };
 
 /**
@@ -274,6 +304,28 @@ export const resendVerificationEmail = async (email) => {
       error: error.response?.data?.message || 
              error.response?.data?.error || 
              "Gagal mengirim email verifikasi."
+    };
+  }
+};
+
+/**
+ * Get the competitions that the current user has joined
+ * @returns {Promise<Object>} The user's competitions data
+ */
+export const getUserCompetitions = async () => {
+  try {
+    const response = await instance.get('/api/user/competition-data');
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error fetching user competition data:", error);
+    return {
+      success: false,
+      error: error.response?.data?.message || 
+             error.response?.data?.error || 
+             "Failed to fetch competition data."
     };
   }
 };

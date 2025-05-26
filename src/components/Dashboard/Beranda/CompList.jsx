@@ -1,9 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaList, FaUser, FaUpload, FaImage, FaReceipt } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
+import { getCurrentUser, getUserCompetitions } from "../../../api/user"; // Update imports to include getUserCompetitions
 
-const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }) => {
+const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, loading }) => {
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [pembayaran, setPembayaran] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
@@ -109,7 +110,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
                 <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-5">
                         <FaUser className="text-2xl text-white" />
-                        <h2 className="text-3xl font-bold text-white tracking-wide transform transition duration-500 hover:scale-105">
+                        <h2 className="text-2xl font-bold text-white tracking-wide transform transition duration-500 hover:scale-105">
                             Halo, {name}!
                         </h2>
                     </div>
@@ -134,7 +135,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
                     filteredCompetitions.map(([key, data]) => renderCompetition(key, data))
                 ) : (
                     <div className="text-center text-white/70 py-8">
-                        <p>You are not participating in any competitions yet.</p>
+                        <p>Kamu belum ikut kompetisi apapun.</p>
                     </div>
                 )}
             </div>
@@ -245,57 +246,52 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
 
 // Komponen CompListPage DIKEMBALIKAN KE VERSI ASLI ANDA
 const CompListPage = () => {
-    const [competitions, setCompetitions] = useState({
-        hackToday: {
-            jenisLomba: "HackToday",
-            teamID: "HT2025-001",
-            teamName: "CyberBoys",
-            anggota: [
-                { nama: "Budi", verified: false },
-                { nama: "Ani", verified: false },
-            ],
-        },
-        gameToday: {
-            jenisLomba: "GameToday",
-            teamID: "GT2025-009",
-            teamName: "NoobHunter",
-            anggota: [
-                { nama: "Dodi", verified: true },
-                { nama: "Eka", verified: true },
-            ],
-        },
-        mineToday: {
-            jenisLomba: "MineToday",
-            teamID: "MT2025-777",
-            teamName: "BlockBusters",
-            anggota: [
-                { nama: "Ali", verified: false },
-                { nama: "Tina", verified: false },
-            ],
-        },
-        uxToday: {
-            jenisLomba: "UXToday",
-            teamID: "UXX-03",
-            teamName: "PixelPeepers",
-            anggota: [
-                { nama: "Budi", verified: false },
-                { nama: "Ika", verified: true },
-            ],
-        },
-    });
-
-    const currentUser = "Budi";
+    // Initialize competitions state properly
+    const [competitions, setCompetitions] = useState({});
+    const [userData, setUserData] = useState({ name: "" });
+    const [loading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState("User");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch both user profile and competitions in parallel
+                const [userResponse, competitionsResponse] = await Promise.all([
+                    getCurrentUser(),
+                    getUserCompetitions()
+                ]);
+                
+                // Process user data
+                if (userResponse.success && userResponse.data) {
+                    const fullName = userResponse.data.full_name || userResponse.data.name || "User";
+                    setUserData({ name: fullName });
+                    setCurrentUser(fullName);
+                }
+                
+                // Process competitions data
+                if (competitionsResponse.success && competitionsResponse.data) {
+                    setCompetitions(competitionsResponse.data);
+                } else {
+                    console.error("Failed to fetch competitions:", competitionsResponse.error);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const handleVerify = (compKey, pembayaran) => {
         console.log("Verifying for competition:", compKey);
         console.log("Pembayaran:", pembayaran.name);
 
-        // Update only the specific competition
+        // Update verification status in competitions
         setCompetitions(prevCompetitions => {
             const updated = { ...prevCompetitions };
-
-            // Only update the specific competition
             if (updated[compKey]) {
                 updated[compKey] = {
                     ...updated[compKey],
@@ -304,7 +300,6 @@ const CompListPage = () => {
                     )
                 };
             }
-
             return updated;
         });
     };
@@ -316,7 +311,8 @@ const CompListPage = () => {
     return (
         <div className="w-full lg:w-[650px]">
             <CompList
-                name="Budi"
+                name={userData.name}
+                loading={loading}
                 currentUser={currentUser}
                 competitions={competitions}
                 onVerify={handleVerify}
