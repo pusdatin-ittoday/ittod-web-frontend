@@ -1,8 +1,8 @@
-import Api from "../Api";
+import instance from "../../api/axios";
 
 export const joinTeam = async (teamCode) => {
     try {
-        const res = await Api.post("/api/competition/join", {
+        const res = await instance.post("/api/competition/join", {
             team_code: teamCode
         });
 

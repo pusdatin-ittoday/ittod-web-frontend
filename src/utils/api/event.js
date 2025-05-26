@@ -1,8 +1,8 @@
-import Api from "../Api";
+import instance from "../../api/axios";
 
 export const registerEvent = async ({eventId, intitutionName, phoneNumber}) => {
     try {
-        const res = await Api.post("/api/event/join", {
+        const res = await instance.post("/api/event/join", {
 
             "event_id": eventId,
             "institution_name": intitutionName,
@@ -20,7 +20,7 @@ export const registerEvent = async ({eventId, intitutionName, phoneNumber}) => {
 
 export const getJoinEvent = async () => {
     try {
-        const res = await Api.get("/api/event");
+        const res = await instance.get("/api/event");
 
         return res;
     } catch (error) {
