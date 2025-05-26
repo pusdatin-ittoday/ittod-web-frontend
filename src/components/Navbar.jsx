@@ -9,20 +9,22 @@ class Navbar extends Component {
       scroll: false,
       isHomePage: true,
       dropdownOpen: false,
-      isLoggedIn: false
+      isLoggedIn: isAuthenticated()
     };
   }
   
   componentDidMount() {
-    this.setState({ isLoggedIn: isAuthenticated() });
     window.addEventListener('auth-changed', this.updateAuthStatus);
-    window.addEventListener('scroll', this.handleScroll);
-    window.addEventListener('resize', this.handleResize);
-    window.addEventListener('popstate', this.checkIfHomePage);
     window.addEventListener('focus', this.checkAuthStatus);
-    this.checkIfHomePage();
+    // ...other listeners
   }
   
+  componentWillUnmount() {
+    window.removeEventListener('auth-changed', this.updateAuthStatus);
+    window.removeEventListener('focus', this.checkAuthStatus);
+    // ...other listeners
+  }
+
   updateAuthStatus = () => {
     this.setState({ isLoggedIn: isAuthenticated() });
   }
@@ -110,17 +112,6 @@ class Navbar extends Component {
       this.setState({ isHomePage: isHome });
     }
   };
-
-  componentWillUnmount() {
-    // Clean up listener
-    if (this.unlisten) this.unlisten();
-    
-    window.removeEventListener('auth-changed', this.updateAuthStatus);
-    window.removeEventListener('scroll', this.handleScroll);
-    window.removeEventListener('resize', this.handleResize);
-    window.removeEventListener('popstate', this.checkIfHomePage);
-    window.removeEventListener('focus', this.checkAuthStatus);
-  }
 
   navigateToHome = () => {
     window.location.href = '/';

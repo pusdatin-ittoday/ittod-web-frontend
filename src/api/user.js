@@ -91,16 +91,11 @@ export const initiateGoogleLogin = () => {
  * Check if the user is logged in based on cookie presence
  * @returns {boolean} Whether the user is logged in
  */
-export const isAuthenticated = () => {
-  // First check localStorage
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    return true;
-  }
-  
-  // Simple check for cookie presence - assume any cookie means logged in
-  return document.cookie.length > 0;
+export const isAuthenticated = async () => {
+  const cookie = document.cookie;
+  return /(^|;\s*)(authToken|session|connect\.sid|s%3A)=/.test(cookie);
 };
+
 
 /**
  * Get current user's data
@@ -136,43 +131,21 @@ export const getCurrentUser = async () => {
  */
 export const logoutUser = async () => {
   try {
-    // Call logout endpoint on the server to clear cookies
-    await instance.post('/api/auth/logout');
-    
-    // Clear localStorage
-    localStorage.removeItem('authToken');
-    
-    // Clear sessionStorage
-    sessionStorage.removeItem('userData');
-    
-    // Clear cookies if the API doesn't handle it
-    // This is a simple approach that may not work for HttpOnly cookies
-    document.cookie.split(";").forEach(function(c) {
-      document.cookie = c.replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-    
-    return {
-      success: true
-    };
-  } catch (error) {
-    console.error("Logout error:", error);
-    
-    // Still remove client-side storage even if API call fails
-    localStorage.removeItem('authToken');
-    sessionStorage.removeItem('userData');
-    
-    // Also try to clear cookies on error
-    document.cookie.split(";").forEach(function(c) {
-      document.cookie = c.replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-    
-    return {
-      success: false,
-      error: "Server logout failed but client storage was cleared"
-    };
+    await instance.get('/api/auth/logout', {withCredentials: true});
+    localStorage.removeItem('user');
+    window.location.href = '/login'; // Redirect to login page
+  } catch(error) {
+    console.error("Error during logout : ", error);
   }
+  
+
+};
+
+const clearClientCookies = () => {
+  document.cookie.split(";").forEach((cookie) => {
+    const name = cookie.split("=")[0].trim();
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  });
 };
 
 /**
