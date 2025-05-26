@@ -37,97 +37,37 @@ const App = () => {
     <>
       <BrowserRouter>
         <Routes>
+          {/* Core routes */}
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/event" element={<Event />} />
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/verify-password" element={<VerifyPassword />} />
+          <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/new-password" element={<NewPassword />} />
           <Route path="/timeline" element={<TimelineUmum />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/edit-profile" element={<EditProfile />} />
+  
 
-          {/* Dashboard pages */}
-          <Route path="/dashboard" element={<DashboardWrapper />} />
-          <Route path="/beranda" element={<DashboardWrapper />} />
-          <Route path="/ikut-lomba" element={<DashboardWrapper />} />
-          <Route path="/ikut-event" element={<DashboardWrapper />} />
+          {/* Dashboard Routes */}
+          <Route path="/dashboard/beranda" element={<DashboardWrapper />} />
+          <Route path="/dashboard/ikut-lomba" element={<DashboardWrapper />} />
+          <Route path="/dashboard/ikut-event" element={<DashboardWrapper />} />
+          <Route path="/dashboard/submit-lomba" element={<DashboardWrapper />} />
+          <Route path="/submit-gametoday" element={<Submit_Gametoday />} />
+          <Route path="/submit-uxtoday" element={<Submit_Uxtoday />} />
+          <Route path="/submit-minetoday" element={<Submit_Minetoday />} />
 
+          {/* Registration Routes */}
+          <Route path="/register-hacktoday" element={<RegistHackToday />} />
+          <Route path="/register-gametoday" element={<RegistGametoday />} />
+          <Route path="/register-minetoday" element={<RegistMineToday />} />
+          <Route path="/register-uxtoday" element={<RegistUXToday />} />
 
-          {/* Buat submit lomba */}
-          <Route
-            path='/submit-gametoday'
-            element={<Submit_Gametoday />}
-          ></Route>
-          <Route
-            path='/submit-uxtoday'
-            element={<Submit_Uxtoday />}
-          ></Route>
-          <Route
-            path='/submit-minetoday'
-            element={<Submit_Minetoday />}
-          ></Route>
-
-          {/* buat daftar lomba */}
-          <Route
-            path="/register-hacktoday"
-            element={<RegistHackToday />}
-          ></Route>
-          <Route
-            path="/register-gametoday"
-            element={<RegistGametoday />}
-          ></Route>
-          <Route
-            path="/register-minetoday"
-            element={<RegistMineToday />}
-          ></Route>
-          <Route
-            path="/register-uxtoday"
-            element={<RegistUXToday />}
-          ></Route>
-
-          {/* buat liat liat waktu bikin page */}
-          <Route
-            path="/competition"
-            element={<Lomba />}
-          />
-          <Route
-            path="/sponsors"
-            element={<Sponsors />}
-          ></Route>
-          <Route
-            path="/competition/game_today"
-            element={<Game_Today />}
-          ></Route>
-          <Route
-            path="/competition/hack_today"
-            element={<Hack_Today />}
-          ></Route>
-          <Route
-            path="/competition/mine_today"
-            element={<Mine_Today />}
-          ></Route>
-          <Route
-            path="/competition/ux_today"
-            element={<Ux_Today />}
-          ></Route>
-          <Route
-            path="/event/national_seminar"
-            element={<Seminar />}
-          ></Route>
-          <Route
-            path="/event/bootcamp"
-            element={<Bootcamp />}
-          ></Route>
-          <Route
-            path="/event/workshop"
-            element={<Workshop />}
-          ></Route>
-
-          {/* Preview/test pages */}
+          {/* Competition/Event Pages */}
           <Route path="/competition" element={<Lomba />} />
           <Route path="/sponsors" element={<Sponsors />} />
           <Route path="/competition/game_today" element={<Game_Today />} />
@@ -137,8 +77,8 @@ const App = () => {
           <Route path="/event/national_seminar" element={<Seminar />} />
           <Route path="/event/bootcamp" element={<Bootcamp />} />
           <Route path="/event/workshop" element={<Workshop />} />
-          <Route path="/submit-lomba" element={<SubmitLomba />} />
           <Route path="/daftar-event/:target" element={<DaftarEvent />} />
+
         </Routes>
       </BrowserRouter>
     </>
