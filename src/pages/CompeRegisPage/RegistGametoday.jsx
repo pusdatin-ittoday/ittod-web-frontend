@@ -1,51 +1,41 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import Navbar from "../../components/Navbar.jsx";
 import { MdGroups } from "react-icons/md";
-import { IoMdPerson } from "react-icons/io";
+import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { FaFileImage } from "react-icons/fa";
+import { registerTeam } from "../../api/compe.js";
 
 const RegistGameToday = () => {
     const navigate = useNavigate();
 
     const [NamaTim, setNamaTim] = useState("");
-    const [NamaKetuaTim, setNamaKetuaTim] = useState("");
-
-    const [Pembayaran, setPembayaran] = useState("");
-    const pembayaranRef = useRef("");
-    const [fileName, setFileName] = useState("");
-
-    const handleClick = () => {
-        pembayaranRef.current.click();
-    };
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertType, setAlertType] = useState("error"); // "error" or "success"
+    const [incompleteFields, setIncompleteFields] = useState([]);
 
     const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        if (name === "Pembayaran" && files[0]) {
-            setPembayaran(files[0]);
-            setFileName(files[0].name);
-        } else if (name === "NamaTim") {
+        const { name, value } = e.target;
+        if (name === "NamaTim") {
             setNamaTim(value);
-        } else if (name === "NamaKetuaTim") {
-            setNamaKetuaTim(value);
-        }
+        } 
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Prevent multiple submissions
+        if (isSubmitting) return;
 
         const emptyFields = [];
 
         const fieldLabels = {
             NamaTim: "Nama tim",
-            NamaKetuaTim: "Nama ketua tim",
-            Pembayaran: "Bukti pembayaran",
         };
 
         const fieldsToValidate = {
             NamaTim,
-            NamaKetuaTim,
-            Pembayaran,
         };
 
         for (const key in fieldsToValidate) {
@@ -59,29 +49,59 @@ const RegistGameToday = () => {
         }
 
         if (emptyFields.length > 0) {
-            alert(`Mohon lengkapi kolom berikut:\n- ${emptyFields.join("\n- ")}`);
+            // Replace alert with custom alert
+            setIncompleteFields(emptyFields);
+            setAlertMessage("Mohon lengkapi kolom berikut:");
+            setAlertType("error");
+            setShowAlert(true);
             return;
         }
 
+        setIsSubmitting(true);
+
         const submissionData = {
-            NamaTim,
-            NamaKetuaTim,
-            Pembayaran,
-        };
+            "competition_id": "gametoday",
+            "team_name": NamaTim
+        }
 
-        console.log("Form Submitted Successfully!");
-        console.log("Submitted Data:", submissionData);
+        try {
+            const response = await registerTeam(submissionData);
+            
+            if (!response.success) {
+                throw new Error(response.error || "Failed to register team");
+            }
+            
+            console.log("Form Submitted Successfully!");
+            console.log("Submitted Data:", submissionData);
 
-        // Save to sessionStorage
-        sessionStorage.setItem("SubmissionData", JSON.stringify(submissionData));
+            // Save to sessionStorage
+            sessionStorage.setItem("SubmissionData", JSON.stringify(submissionData));
 
-        // Reset form (optional)
-        setNamaTim("");
-        setNamaKetuaTim("");
-        setFileName("");
-        setPembayaran("");
+            // Reset form
+            setNamaTim("");
+            
+            // Show success message and redirect
+            setAlertType("success");
+            setAlertMessage("Pendaftaran tim berhasil!");
+            setShowAlert(true);
+            
+            // Redirect after showing success message
+            setTimeout(() => {
+                window.location.href = "/dashboard/ikut-lomba"; 
+            }, 2000);
+            
+        } catch (error) {
+            console.error("Registration error:", error);
+            setAlertType("error");
+            setAlertMessage(`Gagal mendaftar: ${error.message}`);
+            setShowAlert(true);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
-        window.location.href = "/dashboard"; // Redirect to dashboard after submission
+    const closeAlert = () => {
+        setShowAlert(false);
     };
 
     return (
@@ -114,85 +134,66 @@ const RegistGameToday = () => {
                             />
                         </div>
 
-                        <div className="mb-3 relative">
-                            <label
-                                htmlFor="NamaKetuaTim"
-                                className="block text-sm font-bold mb-2"
-                            >
-                                Nama Ketua Tim
-                            </label>
-                            <IoMdPerson className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
-                            <input
-                                value={NamaKetuaTim}
-                                onChange={handleChange}
-                                id="NamaKetuaTim"
-                                name="NamaKetuaTim"
-                                type="text"
-                                placeholder="nama ketua tim"
-                                className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]"
-                            />
-                        </div>
-
-                        <div className="mb-3 relative align-middle">
-                            <label
-                                htmlFor="Pembayaran"
-                                className="block text-sm font-bold mb-2"
-                            >
-                                Bukti Pembayaran (jpg/png, max 2MB)
-                                {fileName && !Pembayaran && (
-                                    <span className="text-sm font-normal ml-2 text-gray-300">
-                                        (File yang telah diunggah: {fileName})
-                                    </span>
-                                )}
-                            </label>
-                            <div
-                                className={`border-2 border-dashed border-pink-400 rounded-md p-6 text-center bg-white/10 hover:bg-white/20 transition duration-300 hover:scale-102 cursor-pointer w-full min-h-24 flex items-center justify-center`}
-                                onDragOver={(e) => e.preventDefault()}
-                                onDrop={(e) => {
-                                    e.preventDefault();
-                                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                                        setPembayaran(e.dataTransfer.files[0]);
-                                        setFileName(e.dataTransfer.files[0].name);
-                                    }
-                                }}
-                                onClick={handleClick}
-                            >
-                                <FaFileImage className="mr-2 text-xl text-pink-300 group-hover:text-pink-200" />
-                                <div className="w-full overflow-hidden text-ellipsis">
-                                    <p className="truncate">
-                                        {fileName ? fileName : "Upload Bukti Pembayaran"}
-                                    </p>
-                                </div>
-                                <input
-                                    type="file"
-                                    accept=".jpg,.jpeg,.png,image/*"
-                                    ref={pembayaranRef}
-                                    onChange={handleChange}
-                                    id="Pembayaran"
-                                    name="Pembayaran"
-                                    style={{ display: "none" }}
-                                />
-                            </div>
-                        </div>
-
                         <div className="buttons flex flex-row justify-end">
                             <a
                                 onClick={() => navigate("/dashboard/ikut-lomba")}
                                 type="cancel"
-                                className="bg-gray-300 text-black px-4 py-2 rounded mr-2 cursor-pointer transition duration-300 ease-in-out hover:scale-105"
+                                className="bg-gray-300 text-black px-4 py-2 rounded mr-2 cursor-pointer transition duration-300 hover:scale-105"
                             >
                                 Batal
                             </a>
                             <button
                                 type="submit"
-                                className="custom-button-bg text-white button-hover transition duration-300 ease-in-out hover:scale-105 px-4 py-2 rounded cursor-pointer"
+                                disabled={isSubmitting}
+                                className={`custom-button-bg text-white px-4 py-2 rounded cursor-pointer ${isSubmitting ? 'opacity-75 cursor-not-allowed' : 'button-hover transition duration-300 ease-in-out hover:scale-105'}`}
                             >
-                                Submit
+                                {isSubmitting ? 'Mendaftar...' : 'Submit'}
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
+
+            {/* Custom Alert Dialog */}
+            {showAlert && (
+                <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black/50">
+                    <div className={`${alertType === 'error' ? 'bg-red-600/90' : 'bg-green-600/90'} text-white px-6 py-4 rounded-lg shadow-xl max-w-md`}>
+                        <div className="flex justify-between items-start mb-2 gap-5">
+                            <h3 className="font-bold text-lg">
+                                <div className="flex items-center">
+                                    {alertType === 'error' ? (
+                                        <>
+                                            <MdErrorOutline className="text-xl mr-2" />
+                                            Pendaftaran Gagal!
+                                        </>
+                                    ) : (
+                                        <>
+                                            <MdCheckCircleOutline className="text-xl mr-2" />
+                                            Berhasil!
+                                        </>
+                                    )}
+                                </div>
+                            </h3>
+                            <button
+                                onClick={closeAlert}
+                                className={`${alertType === 'error' ? 'bg-red-700/85 hover:bg-red-800/85' : 'bg-green-700/85 hover:bg-green-800/85'} rounded-full p-1 transition-colors`}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p className="text-sm mb-2">{alertMessage}</p>
+                        {alertType === 'error' && incompleteFields.length > 0 && (
+                            <ul className="list-disc pl-5 text-sm space-y-1">
+                                {incompleteFields.map((field, index) => (
+                                    <li key={index}>{field}</li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                </div>
+            )}
         </>
     );
 };
