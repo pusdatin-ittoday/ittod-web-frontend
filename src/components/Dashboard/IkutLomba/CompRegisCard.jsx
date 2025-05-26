@@ -75,7 +75,7 @@ const CompRegisCard = () => {
       console.error(error);
     }).finally(() => {
       setLoading(false);
-      navigate('/dashboard');
+      navigate('/dashboard/beranda');
       // window.location.href = "/dashboard"
       // setShowForm(false);
       // setTeamId('');
