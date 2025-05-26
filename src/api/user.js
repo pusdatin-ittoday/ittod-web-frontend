@@ -131,28 +131,14 @@ export const getCurrentUser = async () => {
  */
 export const logoutUser = async () => {
   try {
-    // Call backend to clear cookies
-    await instance.get('/api/auth/logout');
-
-    // Clear client-side storage
-    localStorage.removeItem('authToken');
-    sessionStorage.removeItem('userData');
-    clearClientCookies();
-
-    return { success: true };
-  } catch (error) {
-    console.error("Logout error:", error);
-
-    // Fallback cleanup
-    localStorage.removeItem('authToken');
-    sessionStorage.removeItem('userData');
-    clearClientCookies();
-
-    return {
-      success: false,
-      error: "Server logout failed but client storage was cleared"
-    };
+    await instance.get('/api/auth/logout', {withCredentials: true});
+    localStorage.removeItem('user');
+    window.location.href = '/login'; // Redirect to login page
+  } catch(error) {
+    console.error("Error during logout : ", error);
   }
+  
+
 };
 
 const clearClientCookies = () => {
