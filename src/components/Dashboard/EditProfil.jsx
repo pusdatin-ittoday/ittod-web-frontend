@@ -10,6 +10,7 @@ import { FaSchool } from "react-icons/fa6";
 import { FaAddressCard } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaImage } from "react-icons/fa";
+import instance from "../../api/axios";
 
 class EditProfile extends Component {
     constructor(props) {
@@ -29,7 +30,7 @@ class EditProfile extends Component {
             showErrorBox: false,
             twibbon: null,
             errorFields: [],
-            ktmFileName: "",
+            ktm_key: "",
             twibbonFileName: "",
             showProgressRestoredMessage: false
         };
@@ -52,12 +53,13 @@ class EditProfile extends Component {
     }
 
     componentDidMount() {
-        // Load user data from sessionStorage when component mounts
         this.loadUserData();
     }
 
-    loadUserData = () => {
+    loadUserData = async () => {
         try {
+            const response = await instance.get('/api/user');
+            
             // First check for saved form progress
             const savedProgress = localStorage.getItem('formProgress');
             if (savedProgress) {
@@ -80,35 +82,32 @@ class EditProfile extends Component {
                         pendidikan: formData.pendidikan || "",
                         pendidikan_lainnya: formData.pendidikan_lainnya || "",
                         nama_sekolah: formData.nama_sekolah || "",
-                        ktmFileName: formData.ktmFileName || "",
+                        ktm_key: formData.ktm_key || "",
                         twibbonFileName: formData.twibbonFileName || "",
                         showProgressRestoredMessage: true
-
                     });
                     setTimeout(() => {
                         this.setState({ showProgressRestoredMessage: false });
                     }, 5000);
 
-                    return; // Don't load from sessionStorage if we restored from localStorage
+                    return; // Don't load from API if we restored from localStorage
                 }
             }
 
-            // If no recent form progress, load from sessionStorage as normal
-            const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
-
+            // If no recent form progress, load from API
+            const userData = response.data;
+            
             // Extract pendidikan data and determine if it's "lainnya"
             let pendidikan = userData.pendidikan || "";
             let pendidikan_lainnya = "";
 
-            // Check if pendidikan is one of the standard options
             if (pendidikan && !["sma", "mahasiswa", "lainnya"].includes(pendidikan)) {
                 pendidikan_lainnya = pendidikan;
                 pendidikan = "lainnya";
             }
 
-            // Update state with retrieved data
             this.setState({
-                full_name: userData.name || "",
+                full_name: userData.full_name || "",
                 birth_date: userData.birth_date || "",
                 phone_number: userData.phone_number || "",
                 jenis_kelamin: userData.jenis_kelamin || "",
@@ -118,13 +117,18 @@ class EditProfile extends Component {
                 pendidikan: pendidikan,
                 pendidikan_lainnya: pendidikan_lainnya,
                 nama_sekolah: userData.nama_sekolah || "",
-                ktmFileName: userData.ktmFileName || "",
-                twibbonFileName: userData.twibbonFileName || ""
+                ktm_key: userData.ktm_key || "",
+                twibbonFileName: userData.twibbonFileName || "",
+                isLoading: false
             });
 
-            console.log("User data loaded from sessionStorage:", userData);
+            console.log("User data loaded from API:", userData);
         } catch (error) {
             console.error("Error loading data:", error);
+            this.setState({
+                error: "Failed to load user data",
+                isLoading: false
+            });
         }
     };
 
@@ -174,7 +178,7 @@ class EditProfile extends Component {
             pendidikan,
             pendidikan_lainnya,
             nama_sekolah,
-            ktmFileName,
+            ktm_key,
             twibbonFileName
         } = this.state;
 
@@ -190,7 +194,7 @@ class EditProfile extends Component {
             pendidikan,
             pendidikan_lainnya,
             nama_sekolah,
-            ktmFileName,
+            ktm_key,
             twibbonFileName,
             lastUpdated: new Date().toISOString()
         };
@@ -215,7 +219,7 @@ class EditProfile extends Component {
         if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
             this.setState({
                 KTM: file,
-                ktmFileName: file.name // Update filename in state
+                ktm_key: file.name // Update filename in state
             }, () => {
                 // Save current state to localStorage after file change
                 this.saveFormProgress();
@@ -240,7 +244,7 @@ class EditProfile extends Component {
         this.handleFileChange(file);
     }
 
-    handleSubmit = (e) => {
+    handleSubmit = async (e) => {
         e.preventDefault();
         const {
             full_name,
@@ -254,14 +258,14 @@ class EditProfile extends Component {
             pendidikan_lainnya,
             nama_sekolah,
             KTM,
-            ktmFileName,
+            ktm_key,
             twibbon,
             twibbonFileName
         } = this.state;
 
         const emptyFieldsList = [];
 
-        // --- Validation ---
+        // Validation
         const fieldsToValidate = {
             full_name,
             birth_date,
@@ -274,9 +278,9 @@ class EditProfile extends Component {
             nama_sekolah,
         };
 
-        // Only validate KTM as required if it's a new user without existing KTM
-        if (!ktmFileName && !KTM) {
-            fieldsToValidate.KTM = null;
+        // Validate KTM if there's no existing file AND no new file
+        if (!ktm_key && !KTM) {
+            fieldsToValidate.KTM = "";
         }
 
         for (const key in fieldsToValidate) {
@@ -296,53 +300,78 @@ class EditProfile extends Component {
             }
         }
 
-        // --- Update State Based on Validation ---
         if (emptyFieldsList.length > 0) {
             this.setState({
                 showErrorBox: true,
                 errorFields: emptyFieldsList,
             });
-        } else {
-            // All fields are filled, proceed with submission logic
-            this.setState({
-                showErrorBox: false,
-                errorFields: [],
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            // Only append non-empty values
+            if (full_name) formData.append('full_name', full_name);
+            if (birth_date) formData.append('birth_date', birth_date);
+            if (phone_number) formData.append('phone_number', phone_number);
+            if (jenis_kelamin) formData.append('jenis_kelamin', jenis_kelamin);
+            if (id_line) formData.append('id_line', id_line);
+            if (id_discord) formData.append('id_discord', id_discord);
+            if (id_instagram) formData.append('id_instagram', id_instagram);
+            if (pendidikan === "lainnya" && pendidikan_lainnya) {
+                formData.append('pendidikan', pendidikan_lainnya);
+            } else if (pendidikan) {
+                formData.append('pendidikan', pendidikan);
+            }
+            if (nama_sekolah) formData.append('nama_sekolah', nama_sekolah);
+            
+            if (KTM) {
+                formData.append('image', KTM);
+            }
+            if (twibbon) {
+                formData.append('twibbon', twibbon);
+            }
+
+            const response = await instance.patch('/api/user', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
 
-            console.log("Form Submitted Successfully!");
-            console.log("Submitted Data:", this.state);
+            if (response.data.success) {
+                // Save user data to sessionStorage
+                const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
+                
+                // Update userData with form data
+                const updatedUserData = {
+                    ...userData,
+                    full_name: full_name,
+                    birth_date,
+                    phone_number,
+                    jenis_kelamin,
+                    id_line,
+                    id_discord,
+                    id_instagram,
+                    pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
+                    nama_sekolah,
+                    ktm_key: KTM ? KTM.name : ktm_key,
+                    twibbonFileName: twibbon ? twibbon.name : twibbonFileName
+                };
+                sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
+                sessionStorage.setItem("profileUpdateStatus", "success");
+                sessionStorage.setItem("profileComplete", "true");
 
-            // Save user data to sessionStorage
-            const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
-
-            // Update userData with form data
-            const updatedUserData = {
-                ...userData,
-                name: full_name,
-                birth_date,
-                phone: phone_number,          // unify with DashboardLayout expectation
-                phone_number,                 // optionally keep the old key for backward-compat
-                jenis_kelamin,
-                id_line,
-                id_discord,
-                id_instagram,
-                pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
-                nama_sekolah,
-                ktmFileName: KTM ? KTM.name : ktmFileName, // Save the filename of the KTM
-                twibbonFileName: twibbon ? twibbon.name : twibbonFileName // Save the filename of the Twibbon
-            };
-            sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
-
-            // If there's a new KTM file, you might want to handle it differently
-            // For example, you might want to upload it to a server
-            // But for now, we'll just store its filename in sessionStorage
-
-            // Set flag for profile completion
-            sessionStorage.setItem("profileUpdateStatus", "success");
-            sessionStorage.setItem("profileComplete", "true");
-
-            this.clearFormProgress();
-            window.location.href = "/dashboard/beranda"; // Redirect to dashboard after submission
+                this.clearFormProgress();
+                window.location.href = "/dashboard/beranda";
+            } else {
+                throw new Error(response.data.message || "Failed to update profile");
+            }
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            this.setState({
+                showErrorBox: true,
+                errorFields: ["Failed to update profile. Please try again."]
+            });
         }
     };
 
@@ -363,12 +392,33 @@ class EditProfile extends Component {
             pendidikan_lainnya,
             nama_sekolah,
             KTM,
-            ktmFileName,
+            ktm_key,
             twibbon,
             twibbonFileName,
             showErrorBox,
-            errorFields
+            errorFields,
+            isLoading,
+            error
         } = this.state;
+
+        if (isLoading) {
+            return (
+                <div className="flex justify-center items-center min-h-screen">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            );
+        }
+
+        if (error) {
+            return (
+                <div className="flex justify-center items-center min-h-screen">
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <strong className="font-bold">Error!</strong>
+                        <span className="block sm:inline"> {error}</span>
+                    </div>
+                </div>
+            );
+        }
 
         let genderIcon;
         if (jenis_kelamin === "L") {
@@ -380,7 +430,7 @@ class EditProfile extends Component {
         }
 
         // Determine what to display in the KTM upload area
-        const ktmDisplayText = KTM ? KTM.name : (ktmFileName || "Drop file di sini atau klik untuk pilih file");
+        const ktmDisplayText = KTM ? KTM.name : (ktm_key || "Drop file di sini atau klik untuk pilih file");
 
         return (
             <div className="flex items-center justify-center relative">
@@ -544,9 +594,9 @@ class EditProfile extends Component {
                         <div className="mb-3 col-span-full">
                             <label className="block text-sm font-bold mb-2">
                                 Kartu Institusi (jpg/png, max 2MB)
-                                {ktmFileName && !KTM && (
+                                {ktm_key && !KTM && (
                                     <span className="text-sm font-normal ml-2 text-gray-300">
-                                        (File yang telah diunggah: {ktmFileName})
+                                        (File yang telah diunggah: {ktm_key})
                                     </span>
                                 )}
                             </label>
