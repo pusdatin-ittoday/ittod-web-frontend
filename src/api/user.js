@@ -5,8 +5,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Remove trailing slash if present
 const cleanApiUrl = API_BASE_URL.endsWith('/')
-    ? API_BASE_URL.slice(0, -1)
-    : API_BASE_URL;
+  ? API_BASE_URL.slice(0, -1)
+  : API_BASE_URL;
 
 /**
  * Register a new user
@@ -14,26 +14,26 @@ const cleanApiUrl = API_BASE_URL.endsWith('/')
  * @returns {Promise<Object>} Result of the registration attempt
  */
 export const registerUser = async (userData) => {
-    try {
-        console.log("Sending registration data:", userData); 
-        const response = await instance.post('/api/auth/register', userData);
-        
-        // Return success with verification flag
-        return {
-            success: true,
-            requiresEmailVerification: true, // Added flag to indicate verification is needed
-            data: response.data
+  try {
+    console.log("Sending registration data:", userData);
+    const response = await instance.post('/api/auth/register', userData);
+
+    // Return success with verification flag
+    return {
+      success: true,
+      requiresEmailVerification: true, // Added flag to indicate verification is needed
+      data: response.data
     };
-    } catch (error) {
-        console.error("Registration error:", error);
-        console.log("Error response data:", error.response?.data);
-        return {
-            success: false,
-            error: error.response?.data?.message ||
-                error.response?.data?.error ||
-                "Registration failed. Please try again."
-        };
-    }
+  } catch (error) {
+    console.error("Registration error:", error);
+    console.log("Error response data:", error.response?.data);
+    return {
+      success: false,
+      error: error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Registration failed. Please try again."
+    };
+  }
 };
 
 /**
@@ -42,49 +42,49 @@ export const registerUser = async (userData) => {
  * @returns {Promise<Object>}
  */
 export const loginUser = async (credentials) => {
-    try {
-        const response = await instance.post('/api/auth/login', credentials);
+  try {
+    const response = await instance.post('/api/auth/login', credentials);
 
-        // Store token if available
-        if (response.data.token) {
-            localStorage.setItem('authToken', response.data.token);
-            
-            // Dispatch custom event
-            window.dispatchEvent(new Event('auth-changed'));
-        }
+    // Store token if available
+    if (response.data.token) {
+      localStorage.setItem('authToken', response.data.token);
 
-        // Store user data if available
-        if (response.data.user) {
-            const userData = {
-                name: response.data.user.name || response.data.user.email.split('@')[0],
-                email: response.data.user.email,
-                // Add other user fields as needed
-            };
-            sessionStorage.setItem('userData', JSON.stringify(userData));
-        }
-
-        return {
-            success: true,
-            data: response.data
-        };
-    } catch (error) {
-        console.error("Login error:", error);
-        return {
-            success: false,
-            error: error.response?.data?.message ||
-                error.response?.data?.error ||
-                "Login failed. Please check your credentials."
-        };
+      // Dispatch custom event
+      window.dispatchEvent(new Event('auth-changed'));
     }
+
+    // Store user data if available
+    if (response.data.user) {
+      const userData = {
+        name: response.data.user.name || response.data.user.email.split('@')[0],
+        email: response.data.user.email,
+        // Add other user fields as needed
+      };
+      sessionStorage.setItem('userData', JSON.stringify(userData));
+    }
+
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Login error:", error);
+    return {
+      success: false,
+      error: error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Login failed. Please check your credentials."
+    };
+  }
 };
 
 //Initiate Google OAuth login
 export const initiateGoogleLogin = () => {
-    // Save redirect path for after login
-    localStorage.setItem('redirectAfterAuth', '/dashboard/beranda');
+  // Save redirect path for after login
+  localStorage.setItem('redirectAfterAuth', '/dashboard/beranda');
 
-    // Redirect to Google OAuth endpoint
-    window.location.href = `${cleanApiUrl}/api/auth/google`;
+  // Redirect to Google OAuth endpoint
+  window.location.href = `${cleanApiUrl}/api/auth/google`;
 };
 
 /**
@@ -114,17 +114,17 @@ export const getCurrentUser = async () => {
     };
   } catch (error) {
     console.error("Error fetching user data:", error);
-    
+
     // If unauthorized, clear token
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('authToken');
     }
-    
+
     return {
       success: false,
-      error: error.response?.data?.message || 
-             error.response?.data?.error || 
-             "Failed to fetch user data"
+      error: error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Failed to fetch user data"
     };
   }
 };
@@ -135,8 +135,8 @@ export const getCurrentUser = async () => {
  */
 export const logoutUser = async () => {
   try {
-    await instance.get('/api/auth/logout', {withCredentials: true});
-  } catch(error) {
+    await instance.get('/api/auth/logout', { withCredentials: true });
+  } catch (error) {
     console.error("Error during logout : ", error);
   }
   // Remove tokens and user data
@@ -159,8 +159,8 @@ const clearClientCookies = () => {
  * @returns {Object|null} User data or null if not found
  */
 export const getUserData = () => {
-    const userData = sessionStorage.getItem('userData');
-    return userData ? JSON.parse(userData) : null;
+  const userData = sessionStorage.getItem('userData');
+  return userData ? JSON.parse(userData) : null;
 };
 
 /**
@@ -169,30 +169,30 @@ export const getUserData = () => {
  * @returns {Promise<Object>} Result of the update attempt
  */
 export const updateUserInfo = async (userInfo) => {
-    try {
-        const response = await instance.put('/api/auth/user', userInfo);
+  try {
+    const response = await instance.put('/api/auth/user', userInfo);
 
-        // Update stored user data if available
-        if (response.data.user) {
-            const userData = {
-                ...getUserData(),
-                ...response.data.user
-            };
-            sessionStorage.setItem('userData', JSON.stringify(userData));
-        }
-
-        return {
-            success: true,
-            data: response.data
-        };
-    } catch (error) {
-        console.error("Update user error:", error);
-        return {
-            success: false,
-            error: error.response?.data?.message ||
-                "Failed to update user information"
-        };
+    // Update stored user data if available
+    if (response.data.user) {
+      const userData = {
+        ...getUserData(),
+        ...response.data.user
+      };
+      sessionStorage.setItem('userData', JSON.stringify(userData));
     }
+
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Update user error:", error);
+    return {
+      success: false,
+      error: error.response?.data?.message ||
+        "Failed to update user information"
+    };
+  }
 };
 
 /**
@@ -201,21 +201,21 @@ export const updateUserInfo = async (userInfo) => {
  * @returns {Promise<Object>} Result of the password reset request
  */
 export const requestPasswordReset = async (data) => {
-    try {
-        const response = await instance.post('/api/auth/forgot-password', data);
-        return {
-            success: true,
-            data: response.data
-        };
-    } catch (error) {
-        console.error("Password reset request error:", error);
-        return {
-            success: false,
-            error: error.response?.data?.message ||
-                error.response?.data?.error ||
-                "Failed to send password reset email. Please try again."
-        };
-    }
+  try {
+    const response = await instance.post('/api/auth/forgot-password', data);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Password reset request error:", error);
+    return {
+      success: false,
+      error: error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Failed to send password reset email. Please try again."
+    };
+  }
 };
 
 /**
@@ -234,9 +234,9 @@ export const resetPassword = async (resetData) => {
     console.error("Password reset error:", error);
     return {
       success: false,
-      error: error.response?.data?.message || 
-             error.response?.data?.error || 
-             "Gagal mengubah password. Token mungkin sudah kadaluarsa."
+      error: error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Gagal mengubah password. Token mungkin sudah kadaluarsa."
     };
   }
 };
@@ -257,9 +257,9 @@ export const verifyEmail = async (token) => {
     console.error("Email verification error:", error);
     return {
       success: false,
-      error: error.response?.data?.message || 
-             error.response?.data?.error || 
-             "Gagal memverifikasi email. Token mungkin sudah kadaluarsa."
+      error: error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Gagal memverifikasi email. Token mungkin sudah kadaluarsa."
     };
   }
 };
@@ -269,23 +269,23 @@ export const verifyEmail = async (token) => {
  * @param {string} email - User's email address
  * @returns {Promise<Object>} Result of the resend attempt
  */
-export const resendVerificationEmail = async (email) => {
-  try {
-    const response = await instance.post('/api/auth/resend-verification', { email });
-    return {
-      success: true,
-      message: response.data.message || "Email verifikasi telah dikirim!"
-    };
-  } catch (error) {
-    console.error("Resend verification error:", error);
-    return {
-      success: false,
-      error: error.response?.data?.message || 
-             error.response?.data?.error || 
-             "Gagal mengirim email verifikasi."
-    };
-  }
-};
+// export const resendVerificationEmail = async (email) => {
+//   try {
+//     const response = await instance.post('/api/auth/resend-verification', { email });
+//     return {
+//       success: true,
+//       message: response.data.message || "Email verifikasi telah dikirim!"
+//     };
+//   } catch (error) {
+//     console.error("Resend verification error:", error);
+//     return {
+//       success: false,
+//       error: error.response?.data?.message || 
+//              error.response?.data?.error || 
+//              "Gagal mengirim email verifikasi."
+//     };
+//   }
+// };
 
 /**
  * Get the competitions that the current user has joined
@@ -302,9 +302,9 @@ export const getUserCompetitions = async () => {
     console.error("Error fetching user competition data:", error);
     return {
       success: false,
-      error: error.response?.data?.message || 
-             error.response?.data?.error || 
-             "Failed to fetch competition data."
+      error: error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Failed to fetch competition data."
     };
   }
 };
@@ -326,3 +326,45 @@ export const getAnnouncements = async () => {
   }
 };
 
+export const resendVerificationEmail = async (email) => {
+  try {
+    const response = await instance.post("https://ittoday.web.id/api/auth/resend-verification-email", { email });
+
+    return {
+      success: true,
+      message: response.data.message || "Email verifikasi telah dikirim ulang.",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || "Terjadi kesalahan saat mengirim email verifikasi.",
+    };
+  }
+};
+
+// join team
+export const joinTeam = async (teamCode) => {
+  try {
+    const res = await instance.post("https://ittoday.web.id/api/competition/join", {
+      team_code: teamCode
+    });
+    return res;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+}
+
+export const registerEvent = async ({ eventId, institutionName, phoneNumber }) => {
+  try {
+    const res = await instance.post("http://localhost:3000/api/event/join", {
+      event_id: eventId,
+      institution_name: institutionName,
+      phone_number: phoneNumber
+    });
+    return res;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+}

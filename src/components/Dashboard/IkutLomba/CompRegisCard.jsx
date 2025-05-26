@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PiTargetBold } from 'react-icons/pi';
 import { Link, useNavigate } from 'react-router-dom';
-import { joinTeam } from '../../../utils/api/competition';
+import { joinTeam } from "../../../api/user";
 
 const events = [
   {
@@ -50,7 +50,7 @@ const IkutLomba = ({ title, description, image, registerLink }) => (
     <div className="flex gap-5">
       <Link to={registerLink}>
         <button
-            className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer">
+          className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer">
           Daftar Sekarang
         </button>
       </Link>
@@ -69,17 +69,17 @@ const CompRegisCard = () => {
     e.preventDefault();
     setLoading(true);
     joinTeam(teamId)
-    .then((response) => {
-      console.log(response);
-    }).catch((error) => {
-      console.error(error);
-    }).finally(() => {
-      setLoading(false);
-      navigate('/dashboard/beranda');
-      // window.location.href = "/dashboard"
-      // setShowForm(false);
-      // setTeamId('');
-    });
+      .then((response) => {
+        console.log(response);
+      }).catch((error) => {
+        console.error(error);
+      }).finally(() => {
+        setLoading(false);
+        navigate('/dashboard/beranda');
+        // window.location.href = "/dashboard"
+        // setShowForm(false);
+        // setTeamId('');
+      });
 
   };
   return (
