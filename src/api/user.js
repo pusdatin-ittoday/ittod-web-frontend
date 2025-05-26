@@ -88,14 +88,18 @@ export const initiateGoogleLogin = () => {
 };
 
 /**
- * Check if the user is logged in based on cookie presence
- * @returns {boolean} Whether the user is logged in
+ * Check if the user is logged in by calling the backend status endpoint
+ * @returns {Promise<boolean>} Whether the user is logged in
  */
-export const isAuthenticated = () => {
-  const cookie = document.cookie;
-  return /(^|;\s*)(authToken|session|connect\.sid|s%3A)=/.test(cookie);
+export const isAuthenticated = async () => {
+  try {
+    const res = await instance.get('/api/auth/status', { withCredentials: true });
+    // Adjust this depending on your backend's response
+    return res.data?.authenticated === true || res.data?.status === 'authenticated';
+  } catch {
+    return false;
+  }
 };
-
 
 /**
  * Get current user's data
@@ -132,13 +136,15 @@ export const getCurrentUser = async () => {
 export const logoutUser = async () => {
   try {
     await instance.get('/api/auth/logout', {withCredentials: true});
-    localStorage.removeItem('user');
-    window.location.href = '/login'; // Redirect to login page
   } catch(error) {
     console.error("Error during logout : ", error);
   }
-  
-
+  // Remove tokens and user data
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('user');
+  sessionStorage.removeItem('userData');
+  // Notify listeners
+  window.dispatchEvent(new Event('auth-changed'));
 };
 
 const clearClientCookies = () => {
