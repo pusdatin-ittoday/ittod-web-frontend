@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { isAuthenticated, logoutUser } from '../api/user';
 
 class Navbar extends Component {
   constructor(props) {
@@ -9,18 +10,58 @@ class Navbar extends Component {
       isHomePage: true,
       dropdownOpen: false,
       isLoggedIn: false,
+      loading: true, // Add loading state
     };
   }
-  componentDidMount() {
-    // Cek status login dari localStorage
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    this.setState({ isLoggedIn });
 
-    window.addEventListener('scroll', this.handleScroll);
-    window.addEventListener('resize', this.handleResize);
-    window.addEventListener('popstate', this.checkIfHomePage);
-    this.checkIfHomePage();
+  async componentDidMount() {
+    window.addEventListener('auth-changed', this.updateAuthStatus);
+    window.addEventListener('focus', this.updateAuthStatus);
+    await this.updateAuthStatus();
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('auth-changed', this.updateAuthStatus);
+    window.removeEventListener('focus', this.updateAuthStatus);
+  }
+
+  updateAuthStatus = async () => {
+    const isLoggedIn = await isAuthenticated();
+    this.setState({ isLoggedIn, loading: false }); // Set loading to false after check
+  }
+
+  renderMobileMenu = () => {
+    const { isLoggedIn } = this.state;
+    const navLinkBase = "hover:text-pink-400 transition-all duration-300";
+    if (isLoggedIn) {
+      return (
+        <>
+          <li className="block lg:hidden">
+            <a href="/dashboard/beranda" className={navLinkBase}>Dashboard</a>
+          </li>
+          <li className="block lg:hidden">
+            <span onClick={this.handleLogout} className={`${navLinkBase} cursor-pointer`}>Logout</span>
+          </li>
+        </>
+      );
+    } else {
+      return (
+        <li className="block lg:hidden mt-2">
+          <button
+            onClick={this.navigateToLogin}
+            className="w-full text-center font-dm-sans font-bold custom-button-bg text-white py-2 px-7 rounded-lg shadow-md button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+          >
+            Login
+          </button>
+        </li>
+      );
+    }
+  }
+
+  handleLogout = async () => {
+    await logoutUser();
+    window.location.replace('/login'); // Use replace to avoid back navigation
+  };
 
   handleClick = () => {
     this.setState((prevState) => ({ active: !prevState.active }));
@@ -49,9 +90,11 @@ class Navbar extends Component {
     const targetElement = document.getElementById(targetId);
     if (this.state.isHomePage && targetElement) {
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Do NOT update window.location.hash
     } else {
       sessionStorage.setItem('scrollToSectionId', targetId);
-      window.location.href = `/#${targetId}`;
+      window.location.href = '/';
+      // Do NOT add #${targetId} to the URL
     }
   };
 
@@ -62,12 +105,6 @@ class Navbar extends Component {
     }
   };
 
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
-    window.removeEventListener('resize', this.handleResize);
-    window.removeEventListener('popstate', this.checkIfHomePage);
-  }
-
   navigateToHome = () => {
     window.location.href = '/';
   };
@@ -76,23 +113,17 @@ class Navbar extends Component {
     window.location.href = '/login';
   };
 
-  handleLogout = () => {
-    // Menghapus status login dari localStorage dan memperbarui state
-    localStorage.setItem('isLoggedIn', 'false');
-    this.setState({ isLoggedIn: false });
-    // console.log('Logout clicked');
-  };
-
   toggleDropdown = () => {
     this.setState((prevState) => ({ dropdownOpen: !prevState.dropdownOpen }));
   };
 
   render() {
-    const { active, scroll, dropdownOpen, isLoggedIn } = this.state;
-    const isDashboard = ['/beranda', '/ikut-lomba', '/ikut-event', '/edit-profil', '/dashboard'].some((path) => window.location.pathname.includes(path));
-
+    const { active, scroll, dropdownOpen, isLoggedIn, loading } = this.state;
     const scrollActive = scroll ? 'backdrop-blur-md py-3 bg-black/20 shadow-md' : 'bg-transparent py-2';
     const navLinkBase = 'font-dm-sans font-medium opacity-100 text-white nav-text-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer';
+
+    // Prevent UI flicker: don't render login/logout until loading is false
+    if (loading) return null;
 
     return (
       <div className={`navbar fixed w-full transition-all duration-300 z-[999] ${scrollActive}`}>
@@ -119,7 +150,7 @@ class Navbar extends Component {
             >
               <li>
                 <a
-                  href="/#hero"
+                  href="/#"
                   onClick={(e) => this.handleSectionLinkClick(e, 'hero')}
                   className={navLinkBase}
                 >
@@ -155,41 +186,12 @@ class Navbar extends Component {
               </li>
 
               {/* Menu Login/Profile untuk mobile */}
-              {isLoggedIn && isDashboard && (
-                <>
-                  <li className="block lg:hidden">
-                    <a
-                      href="/dashboard"
-                      className={navLinkBase}
-                    >
-                      Dashboard
-                    </a>
-                  </li>
-                  <li className="block lg:hidden">
-                    <span
-                      onClick={this.handleLogout}
-                      className={navLinkBase + ' cursor-pointer'}
-                    >
-                      Logout
-                    </span>
-                  </li>
-                </>
-              )}
-              {!isLoggedIn && (
-                <li className="block lg:hidden mt-2">
-                  <button
-                    onClick={this.navigateToLogin}
-                    className="w-full text-center font-dm-sans font-bold custom-button-bg text-white py-2 px-7 rounded-lg shadow-md button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
-                  >
-                    Login
-                  </button>
-                </li>
-              )}
+              {this.renderMobileMenu()}
             </ul>
 
             {/* Dropdown Profil untuk Desktop */}
             <div className="hidden lg:block relative ">
-              {isLoggedIn ? (
+              {isLoggedIn ? (   
                 <div className="relative ">
                   <button
                     onClick={this.toggleDropdown}
@@ -198,20 +200,20 @@ class Navbar extends Component {
                     <img
                       src="/profile.svg"
                       alt="Profile"
-                      className="w-8 h-8 rounded-full"
+                      className="w-8 h-8 input-rounded-full cursor-pointer hover:scale-105 transition duration-300 ease-in-out"
                     />
                   </button>
                   {dropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-40 bg-[#6a316c] text-white rounded-lg shadow-lg py-2 z-50">
+                    <div className="font-dm-sans absolute right-0 mt-2 w-40 bg-[#302044] text-white rounded-lg shadow-lg py-2 z-50">
                       <a
-                        href="/dashboard"
-                        className="block px-4 py-2 font-dm-sans hover:text-pink-400 cursor-pointer"
+                        href="/dashboard/beranda"
+                        className="block px-4 py-2 font-dm-sans hover:text-pink-400 cursor-pointer transition duration-300 ease-in-out hover:scale-105"
                       >
                         Dashboard
                       </a>
                       <button
                         onClick={this.handleLogout}
-                        className="block w-full text-left px-4 py-2 font-dm-sans hover:text-pink-400 cursor-pointer"
+                        className="block w-full text-left px-4 py-2 font-dm-sans hover:text-pink-400 transition duration-300 ease-in-out cursor-pointer hover:scale-105"
                       >
                         Logout
                       </button>

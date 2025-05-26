@@ -1,42 +1,67 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { getCurrentUser } from "../../api/user";
 
 const AuthCallback = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Ambil token dari URL (kalau ada)
+        // 1. Check for token in URL query parameters (for JWT-based flows)
         const params = new URLSearchParams(window.location.search);
         const token = params.get("token");
 
-        if (token) {
-          // Simpen token ke localStorage
-          localStorage.setItem("token", token);
-          localStorage.setItem("isLoggedIn", "true");
-          navigate("/dashboard");
+        // Try to get user data (cookie-based or token-based)
+        const result = await getCurrentUser();
+
+        if (result.success) {
+          // Notify app of auth state change
+          window.dispatchEvent(new Event("auth-changed"));
+          localStorage.removeItem('redirectAfterAuth');
+          navigate("/dashboard/beranda");
         } else {
-          // Kalau backend pake cookie, bisa cek user langsung
-          const res = await axios.get("/api/auth/me", { withCredentials: true });
-          if (res.data) {
-            navigate("/dashboard");
-          } else {
-            throw new Error("User not found");
-          }
+          throw new Error(result.error || "Could not get user information");
         }
       } catch (err) {
-        console.error("Login gagal:", err);
-        localStorage.removeItem("isLoggedIn", "false");
-        navigate("/login");
+        console.error("Auth callback error:", err);
+        setError(typeof err === 'object' ? err.message : String(err) || "Authentication failed");
+        setTimeout(() => navigate("/login"), 3000);
+      } finally {
+        setLoading(false);
       }
     };
 
     handleCallback();
   }, [navigate]);
 
-  return <p className="text-white text-center mt-10">Logging in with Google...</p>;
+  // Show loading or error UI
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#2A1138]">
+        <div className="bg-red-600/90 text-white p-4 rounded-lg shadow-lg max-w-md w-full text-center">
+          <p>{error}</p>
+          <p className="text-sm mt-2">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#2A1138]">
+      {loading ? (
+        <>
+          <div className="w-16 h-16 border-4 border-t-[#AC6871] border-r-[#AC6871] border-b-transparent border-l-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-white text-xl">Processing authentication...</p>
+          <p className="text-gray-400 text-sm mt-2">Please wait while we verify your credentials</p>
+        </>
+      ) : (
+        <p className="text-white text-xl">Authentication successful! Redirecting...</p>
+      )}
+    </div>
+  );
 };
 
 export default AuthCallback;

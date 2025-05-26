@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PiTargetBold } from 'react-icons/pi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { joinTeam } from '../../../utils/api/competition';
 
 const events = [
   {
@@ -49,7 +50,7 @@ const IkutLomba = ({ title, description, image, registerLink }) => (
     <div className="flex gap-5">
       <Link to={registerLink}>
         <button
-          className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm">
+            className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer">
           Daftar Sekarang
         </button>
       </Link>
@@ -58,49 +59,43 @@ const IkutLomba = ({ title, description, image, registerLink }) => (
 );
 
 const CompRegisCard = () => {
+  const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [teamId, setTeamId] = useState('');
+  const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Berhasil join team dengan ID: ${teamId}`);
-    window.location.href = '/dashboard';
+    setLoading(true);
+    joinTeam(teamId)
+    .then((response) => {
+      console.log(response);
+    }).catch((error) => {
+      console.error(error);
+    }).finally(() => {
+      setLoading(false);
+      navigate('/dashboard/beranda');
+      // window.location.href = "/dashboard"
+      // setShowForm(false);
+      // setTeamId('');
+    });
+
   };
-
-  // logic dengan back end :
-  // const handleSubmit = async (e) => {
-  //     e.preventDefault();
-
-  //     try {
-  //       const response = await fetch(`/api/teams/validate?id=${teamId}`);
-  //       const data = await response.json();
-
-  //       if (data.valid) {
-  //         alert(`Berhasil join team dengan ID: ${teamId}`);
-  //         window.location.href = '/';
-  //       } else {
-  //         alert('ID Team tidak valid. Coba lagi atau hubungi admin.');
-  //       }
-  //     } catch (error) {
-  //       console.error('Terjadi kesalahan saat validasi:', error);
-  //       alert('Gagal memvalidasi ID Team. Coba lagi nanti.');
-  //     }
-  //   };
-
   return (
     <div className="h-[500px] w-full lg:w-[650px] bg-[#7b446c] rounded-lg shadow-lg flex flex-col p-6 border-[#dfb4d7]/60">
       {/* Header */}
       <div className="flex flex-row items-start justify-between mb-4 pb-2 border-b border-[#dfb4d7]/60">
         <div className="flex flex-col">
-          <div className="flex items-center mb-1">
-            <PiTargetBold className="text-2xl text-white mr-2" />
-            <h2 className="text-xl font-bold text-white">Kompetisi yang Tersedia</h2>
+          <div className="flex items-center mb-1.5">
+            <PiTargetBold className="text-2xl input-text-glow  drop-shadow-[0_1px_6px_#FFE6FC] text-white mr-2" />
+            <h2 className="text-xl font-bold text-white input-text-glow drop-shadow-[0_1px_1px_#FFE6FC]">Kompetisi yang Tersedia</h2>
           </div>
           <p className="text-sm pl-1 text-gray-300 ml-7">Pilih dan daftar kompetisi sesuai minat kamu!</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="custom-button-bg px-4 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold mb-4"
+          className="custom-button-bg px-4 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold mb-4 cursor-pointer"
         >
           Join Team
         </button>
@@ -112,7 +107,7 @@ const CompRegisCard = () => {
           onSubmit={handleSubmit}
           className="text-white mb-4 p-4 bg-[#302044] rounded-lg shadow-lg"
         >
-          <p className="text-sm text-red-500 mb-2">Pastikan anda sudah yakin. Jika ada kesalahan, hubungi admin.</p>
+          <p className="text-sm text-red-500 mb-2">Pastikan anda sudah yakin. Jika ada kesalahan, hubungi adminn.</p>
           <input
             type="text"
             value={teamId}
@@ -124,6 +119,7 @@ const CompRegisCard = () => {
           <div className="flex gap-2">
             <button
               type="submit"
+              disabled={loading}
               className="text-white custom-button-bg px-4 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold"
             >
               Submit
@@ -134,7 +130,7 @@ const CompRegisCard = () => {
                 setTeamId('');
                 setShowForm(false);
               }}
-              className="bg-gray-300 hover:bg-gray-400 transition duration-300 ease-in-out hover:scale-105 text-black px-4 py-2 rounded mr-2"
+              className="cursor-pointer bg-gray-300 hover:bg-gray-400 transition duration-300 ease-in-out hover:scale-105 text-black px-4 py-2 rounded mr-2"
             >
               Batal
             </button>

@@ -9,6 +9,7 @@ import { IoMdSchool } from "react-icons/io";
 import { FaSchool } from "react-icons/fa6";
 import { FaAddressCard } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { FaImage } from "react-icons/fa";
 import axios from 'axios';
 
 class EditProfile extends Component {
@@ -27,10 +28,11 @@ class EditProfile extends Component {
             nama_sekolah: "",
             KTM: null,
             showErrorBox: false,
+            twibbon: null,
             errorFields: [],
             ktmFileName: "",
-            isLoading: true,
-            error: null
+            twibbonFileName: "",
+            showProgressRestoredMessage: false
         };
 
         this.fieldLabels = {
@@ -45,7 +47,9 @@ class EditProfile extends Component {
             pendidikan_lainnya: "Status Pendidikan Lainnya",
             nama_sekolah: "Nama Sekolah/Institusi",
             KTM: "Kartu Institusi",
+            twibbon: "Twibbon"
         };
+        this.twibbonInputRef = React.createRef();
     }
 
     componentDidMount() {
@@ -58,18 +62,54 @@ class EditProfile extends Component {
                 withCredentials: true
             });
             
+            // First check for saved form progress
+            const savedProgress = localStorage.getItem('formProgress');
+            if (savedProgress) {
+                const formData = JSON.parse(savedProgress);
+
+                // If saved data exists and is less than 1 hour old, use it
+                const lastUpdated = new Date(formData.lastUpdated);
+                const oneHourAgo = new Date();
+                oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+
+                if (lastUpdated > oneHourAgo) {
+                    this.setState({
+                        full_name: formData.full_name || "",
+                        birth_date: formData.birth_date || "",
+                        phone_number: formData.phone_number || "",
+                        jenis_kelamin: formData.jenis_kelamin || "",
+                        id_line: formData.id_line || "",
+                        id_discord: formData.id_discord || "",
+                        id_instagram: formData.id_instagram || "",
+                        pendidikan: formData.pendidikan || "",
+                        pendidikan_lainnya: formData.pendidikan_lainnya || "",
+                        nama_sekolah: formData.nama_sekolah || "",
+                        ktmFileName: formData.ktmFileName || "",
+                        twibbonFileName: formData.twibbonFileName || "",
+                        showProgressRestoredMessage: true
+
+                    });
+                    setTimeout(() => {
+                        this.setState({ showProgressRestoredMessage: false });
+                    }, 5000);
+
+                    return; // Don't load from sessionStorage if we restored from localStorage
+                }
+            }
+
+            // If no recent form progress, load from sessionStorage as normal
             const userData = response.data;
-            
+
             // Extract pendidikan data and determine if it's "lainnya"
             let pendidikan = userData.pendidikan || "";
             let pendidikan_lainnya = "";
-            
+
             // Check if pendidikan is one of the standard options
             if (pendidikan && !["sma", "mahasiswa", "lainnya"].includes(pendidikan)) {
                 pendidikan_lainnya = pendidikan;
                 pendidikan = "lainnya";
             }
-            
+
             // Update state with retrieved data
             this.setState({
                 full_name: userData.full_name || "",
@@ -82,12 +122,86 @@ class EditProfile extends Component {
                 pendidikan: pendidikan,
                 pendidikan_lainnya: pendidikan_lainnya,
                 nama_sekolah: userData.nama_sekolah || "",
+                ktmFileName: userData.ktmFileName || "",
+                twibbonFileName: userData.twibbonFileName || ""
                 ktmFileName: userData.ktm_key || "",
                 isLoading: false
             });
-            
+
             console.log("User data loaded from API:", userData);
         } catch (error) {
+            console.error("Error loading data:", error);
+        }
+    };
+
+    clearFormProgress = () => {
+        localStorage.removeItem('formProgress');
+    };
+
+    handleTwibbonFileChange = (file) => {
+        if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
+            this.setState({
+                twibbon: file,
+                twibbonFileName: file.name // Update filename in state
+            }, () => {
+                // Save current state to localStorage after file change
+                this.saveFormProgress();
+            });
+        } else if (file) {
+            alert("Ukuran file maksimal 2MB.");
+            if (this.twibbonInputRef.current) {
+                this.twibbonInputRef.current.value = "";
+            }
+            // Don't clear Twibbon state if there was a previous valid file
+        }
+    }
+
+
+    handleTwibbonFileDrop = (e) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        this.handleTwibbonFileChange(file);
+    }
+
+    handleTwibbonFileInputChange = (e) => {
+        const file = e.target.files[0];
+        this.handleTwibbonFileChange(file);
+    }
+
+    saveFormProgress = () => {
+        const {
+            full_name,
+            birth_date,
+            phone_number,
+            jenis_kelamin,
+            id_line,
+            id_discord,
+            id_instagram,
+            pendidikan,
+            pendidikan_lainnya,
+            nama_sekolah,
+            ktmFileName,
+            twibbonFileName
+        } = this.state;
+
+        // Save all non-file data (we can't store actual File objects in localStorage)
+        const formProgress = {
+            full_name,
+            birth_date,
+            phone_number,
+            jenis_kelamin,
+            id_line,
+            id_discord,
+            id_instagram,
+            pendidikan,
+            pendidikan_lainnya,
+            nama_sekolah,
+            ktmFileName,
+            twibbonFileName,
+            lastUpdated: new Date().toISOString()
+        };
+
+        localStorage.setItem('formProgress', JSON.stringify(formProgress));
             console.error("Error loading user data from API:", error);
             this.setState({
                 error: "Failed to load user data",
@@ -98,14 +212,25 @@ class EditProfile extends Component {
 
     handleChange = (e) => {
         const { name, type, value, files } = e.target;
-        this.setState({ [name]: type === "file" ? files[0] : value });
-    };
 
+        // Use type to determine the value to set
+        const newValue = type === "file" ? files[0] : value;
+
+        this.setState({
+            [name]: newValue
+        }, () => {
+            // Save current state to localStorage after each change
+            this.saveFormProgress();
+        });
+    };
     handleFileChange = (file) => {
         if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
-            this.setState({ 
+            this.setState({
                 KTM: file,
                 ktmFileName: file.name // Update filename in state
+            }, () => {
+                // Save current state to localStorage after file change
+                this.saveFormProgress();
             });
         } else if (file) {
             alert("Ukuran file maksimal 2MB.");
@@ -141,7 +266,9 @@ class EditProfile extends Component {
             pendidikan_lainnya,
             nama_sekolah,
             KTM,
-            ktmFileName
+            ktmFileName,
+            twibbon,
+            twibbonFileName
         } = this.state;
 
         const emptyFieldsList = [];
@@ -224,6 +351,44 @@ class EditProfile extends Component {
         } catch (error) {
             console.error("Error updating profile:", error);
             this.setState({
+                showErrorBox: false,
+                errorFields: [],
+            });
+
+            console.log("Form Submitted Successfully!");
+            console.log("Submitted Data:", this.state);
+
+            // Save user data to sessionStorage
+            const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
+
+            // Update userData with form data
+            const updatedUserData = {
+                ...userData,
+                name: full_name,
+                birth_date,
+                phone: phone_number,          // unify with DashboardLayout expectation
+                phone_number,                 // optionally keep the old key for backward-compat
+                jenis_kelamin,
+                id_line,
+                id_discord,
+                id_instagram,
+                pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
+                nama_sekolah,
+                ktmFileName: KTM ? KTM.name : ktmFileName, // Save the filename of the KTM
+                twibbonFileName: twibbon ? twibbon.name : twibbonFileName // Save the filename of the Twibbon
+            };
+            sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
+
+            // If there's a new KTM file, you might want to handle it differently
+            // For example, you might want to upload it to a server
+            // But for now, we'll just store its filename in sessionStorage
+
+            // Set flag for profile completion
+            sessionStorage.setItem("profileUpdateStatus", "success");
+            sessionStorage.setItem("profileComplete", "true");
+
+            this.clearFormProgress();
+            window.location.href = "/dashboard/beranda"; // Redirect to dashboard after submission
                 showErrorBox: true,
                 errorFields: ["Failed to update profile. Please try again."]
             });
@@ -248,6 +413,8 @@ class EditProfile extends Component {
             nama_sekolah,
             KTM,
             ktmFileName,
+            twibbon,
+            twibbonFileName,
             showErrorBox,
             errorFields,
             isLoading,
@@ -318,7 +485,7 @@ class EditProfile extends Component {
                                 name="birth_date"
                                 value={birth_date}
                                 onChange={this.handleChange}
-                                className={`pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.birth_date) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
+                                className={`cursor-pointer pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.birth_date) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
                             />
                         </div>
 
@@ -344,7 +511,7 @@ class EditProfile extends Component {
                                 name="jenis_kelamin"
                                 value={jenis_kelamin}
                                 onChange={this.handleChange}
-                                className={`pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.jenis_kelamin) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
+                                className={`cursor-pointer pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.jenis_kelamin) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
                             >
                                 <option value="">Pilih</option>
                                 <option value="L">Laki-laki</option>
@@ -405,7 +572,7 @@ class EditProfile extends Component {
                                 name="pendidikan"
                                 value={pendidikan}
                                 onChange={this.handleChange}
-                                className={`pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.pendidikan) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
+                                className={`cursor-pointer pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.pendidikan) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
                             >
                                 <option value="">Pilih</option>
                                 <option value="sma">SMA/SMK</option>
@@ -439,7 +606,7 @@ class EditProfile extends Component {
                                 placeholder="Nama Sekolah/Institusi"
                                 value={nama_sekolah}
                                 onChange={this.handleChange}
-                                className={`pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.nama_sekolah) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
+                                className={`cursor-pointer pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.nama_sekolah) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
                             />
                         </div>
 
@@ -477,10 +644,43 @@ class EditProfile extends Component {
                             )}
                         </div>
 
+                        {/* Upload Twibbon */}
+                        <div className="mb-3 col-span-full">
+                            <label className="block text-sm font-bold mb-2">
+                                Twibbon (jpg/png, max 2MB)
+                                {twibbonFileName && !twibbon && (
+                                    <span className="text-sm font-normal ml-2 text-gray-300">
+                                        (File yang telah diunggah: {twibbonFileName})
+                                    </span>
+                                )}
+                            </label>
+                            <div
+                                className={`border-2 border-dashed ${errorFields.includes(this.fieldLabels.twibbon) ? 'border-red-500' : 'border-pink-400'} rounded-md p-6 text-center ${errorFields.includes(this.fieldLabels.twibbon) ? 'bg-red-100' : 'bg-gray-100'} text-white bg-white/10 hover:bg-white/20 transition duration-300 hover:scale-102 cursor-pointer w-full min-h-24 flex items-center justify-center`}
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={this.handleTwibbonFileDrop}
+                                onClick={() => this.twibbonInputRef.current && this.twibbonInputRef.current.click()}
+                            >
+                                <FaImage className="mr-2 text-xl text-pink-300 group-hover:text-pink-200'" />
+                                <div className="w-full overflow-hidden text-ellipsis">
+                                    <p className="truncate">{twibbon ? twibbon.name : (twibbonFileName || "Drop file di sini atau klik untuk pilih file")}</p>
+                                </div>
+                                <input
+                                    type="file"
+                                    name="Twibbon"
+                                    accept=".jpg,.jpeg,.png"
+                                    ref={this.twibbonInputRef}
+                                    onChange={this.handleTwibbonFileInputChange}
+                                    style={{ display: "none" }}
+                                />
+                            </div>
+                            {errorFields.includes(this.fieldLabels.twibbon) && (
+                                <p className="text-red-300 text-xs mt-1">File Twibbon wajib diunggah.</p>
+                            )}
+                        </div>
                         {/* Tombol */}
                         <div className="col-span-full flex justify-end mt-6">
                             <Link
-                                to="/dashboard"
+                                to="/dashboard/beranda"
                                 className="bg-gray-300 hover:bg-gray-400 transition duration-300 ease-in-out hover:scale-105 text-black px-4 py-2 rounded mr-2"
                             >
                                 Batal
@@ -519,7 +719,27 @@ class EditProfile extends Component {
                         </ul>
                     </div>
                 )}
+
+                {/* Progress Restored Message */}
+                {this.state.showProgressRestoredMessage && (
+                    <div className="fixed top-5 right-5 bg-green-600/90 text-white p-4 rounded-lg shadow-lg max-w-xs w-full z-50 animate-fade-in-down">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                <span>Form progress restored!</span>
+                            </div>
+                            <button onClick={() => this.setState({ showProgressRestoredMessage: false })} className="bg-green-700/85 hover:bg-green-800/85 rounded-full p-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
+
         );
     }
 }
