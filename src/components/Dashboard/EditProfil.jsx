@@ -30,7 +30,7 @@ class EditProfile extends Component {
             showErrorBox: false,
             twibbon: null,
             errorFields: [],
-            ktmFileName: "",
+            ktm_key: "",
             twibbonFileName: "",
             showProgressRestoredMessage: false
         };
@@ -82,7 +82,7 @@ class EditProfile extends Component {
                         pendidikan: formData.pendidikan || "",
                         pendidikan_lainnya: formData.pendidikan_lainnya || "",
                         nama_sekolah: formData.nama_sekolah || "",
-                        ktmFileName: formData.ktmFileName || "",
+                        ktm_key: formData.ktm_key || "",
                         twibbonFileName: formData.twibbonFileName || "",
                         showProgressRestoredMessage: true
                     });
@@ -117,7 +117,7 @@ class EditProfile extends Component {
                 pendidikan: pendidikan,
                 pendidikan_lainnya: pendidikan_lainnya,
                 nama_sekolah: userData.nama_sekolah || "",
-                ktmFileName: userData.ktm_key || "", // Use ktm_key from API
+                ktm_key: userData.ktm_key || "",
                 twibbonFileName: userData.twibbonFileName || "",
                 isLoading: false
             });
@@ -178,7 +178,7 @@ class EditProfile extends Component {
             pendidikan,
             pendidikan_lainnya,
             nama_sekolah,
-            ktmFileName,
+            ktm_key,
             twibbonFileName
         } = this.state;
 
@@ -194,7 +194,7 @@ class EditProfile extends Component {
             pendidikan,
             pendidikan_lainnya,
             nama_sekolah,
-            ktmFileName,
+            ktm_key,
             twibbonFileName,
             lastUpdated: new Date().toISOString()
         };
@@ -219,7 +219,7 @@ class EditProfile extends Component {
         if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
             this.setState({
                 KTM: file,
-                ktmFileName: file.name // Update filename in state
+                ktm_key: file.name // Update filename in state
             }, () => {
                 // Save current state to localStorage after file change
                 this.saveFormProgress();
@@ -258,7 +258,7 @@ class EditProfile extends Component {
             pendidikan_lainnya,
             nama_sekolah,
             KTM,
-            ktmFileName,
+            ktm_key,
             twibbon,
             twibbonFileName
         } = this.state;
@@ -279,7 +279,7 @@ class EditProfile extends Component {
         };
 
         // Validate KTM if there's no existing file AND no new file
-        if (!ktmFileName && !KTM) {
+        if (!ktm_key && !KTM) {
             fieldsToValidate.KTM = "";
         }
 
@@ -345,9 +345,8 @@ class EditProfile extends Component {
                 // Update userData with form data
                 const updatedUserData = {
                     ...userData,
-                    name: full_name,
+                    full_name: full_name,
                     birth_date,
-                    phone: phone_number,
                     phone_number,
                     jenis_kelamin,
                     id_line,
@@ -355,7 +354,7 @@ class EditProfile extends Component {
                     id_instagram,
                     pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
                     nama_sekolah,
-                    ktmFileName: KTM ? KTM.name : ktmFileName,
+                    ktm_key: KTM ? KTM.name : ktm_key,
                     twibbonFileName: twibbon ? twibbon.name : twibbonFileName
                 };
                 sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
@@ -393,7 +392,7 @@ class EditProfile extends Component {
             pendidikan_lainnya,
             nama_sekolah,
             KTM,
-            ktmFileName,
+            ktm_key,
             twibbon,
             twibbonFileName,
             showErrorBox,
@@ -431,7 +430,7 @@ class EditProfile extends Component {
         }
 
         // Determine what to display in the KTM upload area
-        const ktmDisplayText = KTM ? KTM.name : (ktmFileName || "Drop file di sini atau klik untuk pilih file");
+        const ktmDisplayText = KTM ? KTM.name : (ktm_key || "Drop file di sini atau klik untuk pilih file");
 
         return (
             <div className="flex items-center justify-center relative">
@@ -595,9 +594,9 @@ class EditProfile extends Component {
                         <div className="mb-3 col-span-full">
                             <label className="block text-sm font-bold mb-2">
                                 Kartu Institusi (jpg/png, max 2MB)
-                                {ktmFileName && !KTM && (
+                                {ktm_key && !KTM && (
                                     <span className="text-sm font-normal ml-2 text-gray-300">
-                                        (File yang telah diunggah: {ktmFileName})
+                                        (File yang telah diunggah: {ktm_key})
                                     </span>
                                 )}
                             </label>
