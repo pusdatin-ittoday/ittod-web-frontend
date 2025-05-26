@@ -91,7 +91,7 @@ export const initiateGoogleLogin = () => {
  * Check if the user is logged in based on cookie presence
  * @returns {boolean} Whether the user is logged in
  */
-export const isAuthenticated = async () => {
+export const isAuthenticated = () => {
   const cookie = document.cookie;
   return /(^|;\s*)(authToken|session|connect\.sid|s%3A)=/.test(cookie);
 };
