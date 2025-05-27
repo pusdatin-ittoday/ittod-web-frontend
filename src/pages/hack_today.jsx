@@ -10,11 +10,17 @@ const Hack_Today = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
+  const handleGuidebook = () => {
+    window.open("https://ipb.link/hacktoday-rulebook-2025", "_blank");
+  };
+
   const timeline = [
     { title: 'Pendaftaran Batch 1', date: '27 Mei 2025 - 20 Juni 2025' },
     { title: 'Pendaftaran Batch 2', date: '25 Juni 2025 - 28 Juli 2025' },
     { title: 'Warm Up', date: '2 Agustus 2025' },
-    { title: 'Penyisihan', date: '27 September 2025' },
+    { title: 'Penyisihan', date: '10 Agustus 2025' },
+    { title: 'Pengumuman Finalis', date: '10 September 2025' },
+    { title: 'Babak Final & Awarding', date: '27 September 2025' },
   ];
 
   return (
@@ -37,7 +43,7 @@ const Hack_Today = () => {
 
           {/* Tombol */}
           <div className="flex justify-center gap-4 mb-8 md:mb-10">
-            <button className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-3 px-4 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer">Guidebook</button>
+            <button onClick={handleGuidebook} className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-3 px-4 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer">Guidebook</button>
             <button className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-3 px-4 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
               Daftar Sekarang
             </button>
