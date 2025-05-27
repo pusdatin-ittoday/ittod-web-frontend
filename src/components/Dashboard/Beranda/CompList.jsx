@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaList, FaUser, FaUpload, FaImage, FaReceipt } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
-import { getCurrentUser, getUserCompetitions } from "../../../api/user"; // Update imports to include getUserCompetitions
+import { getCurrentUser, getUserCompetitions } from "../../../api/user";
 
 const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, loading }) => {
     const [showUploadModal, setShowUploadModal] = useState(false);
@@ -15,7 +15,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
     const pembayaranInputRef = useRef(null);
 
     const handleVerifyClick = (compKey) => {
-        // Reset file states when opening modal for a fresh upload attempt
         setPembayaran(null);
         if (pembayaranInputRef.current) pembayaranInputRef.current.value = "";
         setCurrentCompKey(compKey);
@@ -33,7 +32,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
             onVerify(currentCompKey, pembayaran);
         }
 
-        // Reset form dan tutup modal
         setPembayaran(null);
         setShowUploadModal(false);
         setCurrentCompKey(null);
@@ -45,16 +43,23 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
         }
     };
 
-    const filteredCompetitions = Object.entries(competitions || {}).filter(([, data]) => {
+    // Perbaikan: pastikan competitions adalah objek
+    // Jika backend mengirim array, ubah ke objek dengan key unik (id atau teamID)
+    let competitionsObj = competitions;
+    if (Array.isArray(competitions)) {
+        competitionsObj = Object.fromEntries(
+            competitions.map(item => [item.teamID || item.id, item])
+        );
+    }
+
+    const filteredCompetitions = Object.entries(competitionsObj || {}).filter(([, data]) => {
         if (!data || !data.anggota || !Array.isArray(data.anggota)) {
             return false;
         }
         return data.anggota.some(member => member && member.nama === currentUser);
     });
 
-
     const renderCompetition = (key, data) => {
-        // Check if current user is in this competition and needs verification
         const currentMember = data.anggota.find(member => member.nama === currentUser);
         const needsVerification = currentMember && !currentMember.verified;
 
@@ -62,8 +67,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
             <div key={key} className="mb-6 pb-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-md px-4 py-3 text-white hover:scale-101 hover:bg-white/20 transition duration-300 ease-in-out">
                 <div className="flex justify-between items-start">
                     <h3 className="text-xl font-semibold mb-1">{data.jenisLomba}</h3>
-
-                    {/* Verification button inside each card */}
                     {needsVerification && (
                         <button
                             onClick={() => handleVerifyClick(key)}
@@ -73,14 +76,12 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                         </button>
                     )}
                 </div>
-
                 <p className="text-sm mb-1">
                     <span className="font-semibold">Team Name:</span> {data.teamName || "-"}
                 </p>
                 <p className="text-sm mb-3">
                     <span className="font-semibold">Team ID:</span> {data.teamID || "-"}
                 </p>
-
                 {data.anggota.map((anggota, idx) => (
                     <div key={idx} className="flex items-center gap-4 mb-1">
                         <p className="flex-1">
@@ -89,13 +90,11 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                                 {anggota.nama}
                             </span>
                         </p>
-
                         <span className={`font-bold ${anggota.verified ? "text-green-400/90" : "text-red-400/90"}`}>
                             {anggota.verified ? "Verified" : "Not Verified"}
                         </span>
                     </div>
                 ))}
-
                 <p className="mt-2 font-semibold">
                     Team Status:{" "}
                     <span className={data.anggota.every((a) => a.verified) ? "text-green-400/90" : "text-red-400/90"}>
@@ -108,7 +107,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
 
     return (
         <div className="max-w-full lg:w-[650px] font-dm-sans p-6 bg-[#7b446c] rounded-lg shadow-md h-[500px] flex flex-col">
-            {/* Header section remains the same */}
             <div className="border-b border-[#dfb4d7]/60 mb-4">
                 <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-5">
@@ -117,7 +115,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             Halo, {name}!
                         </h2>
                     </div>
-
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleEditUserClick}
@@ -128,11 +125,9 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                     </div>
                 </div>
             </div>
-
             <h3 className="text-lg font-bold mb-2 flex items-center gap-2 text-white">
                 <FaList className="text-xl" /> My Competitions
             </h3>
-
             <div className="overflow-y-auto flex-1 px-4 py-2 custom-scrollbar">
                 {filteredCompetitions.length > 0 ? (
                     filteredCompetitions.map(([key, data]) => renderCompetition(key, data))
@@ -142,8 +137,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                     </div>
                 )}
             </div>
-
-            {/* Upload Modal - unchanged */}
+            {/* Upload Modal */}
             {showUploadModal && (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
                     <div className="bg-[#7b446c]/95 border border-white/30 p-6 rounded-lg w-full max-w-md text-white">
@@ -151,9 +145,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                         <p className="text-sm mb-6 text-center text-gray-300">
                             Mohon unggah  pembayaran untuk verifikasi tim kamu.
                         </p>
-
                         <div className="space-y-4">
-                            {/* Payment Proof Upload - unchanged */}
                             <div>
                                 <label className="block text-sm font-medium mb-2">
                                     Upload Bukti Pembayaran
@@ -192,7 +184,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                                                     setAlertMessage("Ukuran file Pembayaran maksimal 2MB.");
                                                     setShowAlert(true);
                                                     setPembayaran(null);
-                                                    e.target.value = ""; // Reset file input
+                                                    e.target.value = "";
                                                 } else {
                                                     setPembayaran(file);
                                                 }
@@ -205,8 +197,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                                 </div>
                             </div>
                         </div>
-
-                        {/* Buttons - unchanged */}
                         <div className="flex gap-3 mt-6">
                             <button
                                 onClick={() => setShowUploadModal(false)}
@@ -224,8 +214,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                     </div>
                 </div>
             )}
-
-            {/* Alert - unchanged */}
             {showAlert && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
                     <div className="bg-[#7b446c]/95 border border-white/30 p-4 rounded-lg max-w-xs w-full text-white shadow-lg">
@@ -246,10 +234,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
     );
 };
 
-
-// Komponen CompListPage DIKEMBALIKAN KE VERSI ASLI ANDA
 const CompListPage = () => {
-    // Initialize competitions state properly
     const [competitions, setCompetitions] = useState({});
     const [userData, setUserData] = useState({ name: "" });
     const [loading, setLoading] = useState(true);
@@ -259,40 +244,38 @@ const CompListPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch both user profile and competitions in parallel
                 const [userResponse, competitionsResponse] = await Promise.all([
                     getCurrentUser(),
                     getUserCompetitions()
                 ]);
-                
-                // Process user data
                 if (userResponse.success && userResponse.data) {
                     const fullName = userResponse.data.full_name || userResponse.data.name || "User";
                     setUserData({ name: fullName });
                     setCurrentUser(fullName);
                 }
-                
-                // Process competitions data
                 if (competitionsResponse.success && competitionsResponse.data) {
-                    setCompetitions(competitionsResponse.data);
+                    let compData = competitionsResponse.data;
+                    if (Array.isArray(compData)) {
+                        compData = Object.fromEntries(
+                            compData.map(item => [item.teamID || item.id, item])
+                        );
+                    }
+                    setCompetitions(compData);
                 } else {
+                    setCompetitions({});
                     console.error("Failed to fetch competitions:", competitionsResponse.error);
                 }
             } catch (error) {
+                setCompetitions({});
                 console.error("Error fetching data:", error);
             } finally {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, []);
 
     const handleVerify = (compKey, pembayaran) => {
-        console.log("Verifying for competition:", compKey);
-        console.log("Pembayaran:", pembayaran.name);
-
-        // Update verification status in competitions
         setCompetitions(prevCompetitions => {
             const updated = { ...prevCompetitions };
             if (updated[compKey]) {
