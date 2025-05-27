@@ -84,7 +84,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                     <span className="font-semibold">Team Name:</span> {data.teamName || "-"}
                 </p>
                 <p className="text-sm mb-3">
-                    <span className="font-semibold">Team ID:</span> {data.teamID || "-"}
+                    <span className="font-semibold">Team Join Code:</span> {data.teamJoinCode || "-"}
                 </p>
 
                 {data.members.map((anggota, idx) => (
