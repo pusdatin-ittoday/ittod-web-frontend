@@ -346,11 +346,11 @@ class EditProfile extends Component {
             
             // Send both files with the field name 'image'
             if (KTM && ktmChanged) {
-                formData.append('image', KTM);
+                formData.append('profileImage', KTM);
             }
             
             if (twibbon && twibbonChanged) {
-                formData.append('image', twibbon);
+                formData.append('userTwibbon', twibbon);
             }
 
             const response = await instance.patch('/api/user', formData, {
