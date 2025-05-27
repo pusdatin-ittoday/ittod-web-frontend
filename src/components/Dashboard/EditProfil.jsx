@@ -282,13 +282,6 @@ class EditProfile extends Component {
             twibbonChanged
         } = this.state;
 
-        console.log('Submit state:', {
-            KTM,
-            twibbon,
-            ktmChanged,
-            twibbonChanged
-        });
-
         const emptyFieldsList = [];
 
         // Validation
