@@ -10,7 +10,8 @@ import { FaSchool } from "react-icons/fa6";
 import { FaAddressCard } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaImage } from "react-icons/fa";
-import instance from "../../api/axios";
+import { fetchUserProfile, updateUserProfile, uploadTwibbon, uploadImage, getImageUrl } from "../../api/user";
+import { useNavigate } from "react-router-dom";
 
 class EditProfile extends Component {
     constructor(props) {
@@ -24,7 +25,6 @@ class EditProfile extends Component {
             id_discord: "",
             id_instagram: "",
             pendidikan: "",
-            pendidikan_lainnya: "",
             nama_sekolah: "",
             KTM: null,
             showErrorBox: false,
@@ -32,7 +32,9 @@ class EditProfile extends Component {
             errorFields: [],
             ktm_key: "",
             twibbonFileName: "",
-            showProgressRestoredMessage: false
+            showProgressRestoredMessage: false,
+            isLoading: true,
+            error: null
         };
 
         this.fieldLabels = {
@@ -44,7 +46,6 @@ class EditProfile extends Component {
             id_discord: "ID Discord",
             id_instagram: "ID Instagram",
             pendidikan: "Status Pendidikan",
-            pendidikan_lainnya: "Status Pendidikan Lainnya",
             nama_sekolah: "Nama Sekolah/Institusi",
             KTM: "Kartu Institusi",
             twibbon: "Twibbon"
@@ -58,71 +59,40 @@ class EditProfile extends Component {
 
     loadUserData = async () => {
         try {
-            const response = await instance.get('/api/user');
-            
-            // First check for saved form progress
-            const savedProgress = localStorage.getItem('formProgress');
-            if (savedProgress) {
-                const formData = JSON.parse(savedProgress);
+            const response = await fetchUserProfile();
 
-                // If saved data exists and is less than 1 hour old, use it
-                const lastUpdated = new Date(formData.lastUpdated);
-                const oneHourAgo = new Date();
-                oneHourAgo.setHours(oneHourAgo.getHours() - 1);
-
-                if (lastUpdated > oneHourAgo) {
-                    this.setState({
-                        full_name: formData.full_name || "",
-                        birth_date: formData.birth_date || "",
-                        phone_number: formData.phone_number || "",
-                        jenis_kelamin: formData.jenis_kelamin || "",
-                        id_line: formData.id_line || "",
-                        id_discord: formData.id_discord || "",
-                        id_instagram: formData.id_instagram || "",
-                        pendidikan: formData.pendidikan || "",
-                        pendidikan_lainnya: formData.pendidikan_lainnya || "",
-                        nama_sekolah: formData.nama_sekolah || "",
-                        ktm_key: formData.ktm_key || "",
-                        twibbonFileName: formData.twibbonFileName || "",
-                        showProgressRestoredMessage: true
-                    });
-                    setTimeout(() => {
-                        this.setState({ showProgressRestoredMessage: false });
-                    }, 5000);
-
-                    return; // Don't load from API if we restored from localStorage
-                }
+            if (!response.success) {
+                throw new Error(response.error);
             }
 
-            // If no recent form progress, load from API
             const userData = response.data;
-            
-            // Extract pendidikan data and determine if it's "lainnya"
             let pendidikan = userData.pendidikan || "";
-            let pendidikan_lainnya = "";
+            if (!["sma", "mahasiswa", "lainnya"].includes(pendidikan)) {
+                pendidikan = "";
+            }
 
-            if (pendidikan && !["sma", "mahasiswa", "lainnya"].includes(pendidikan)) {
-                pendidikan_lainnya = pendidikan;
-                pendidikan = "lainnya";
+            // Format birth_date ke yyyy-MM-dd jika ada
+            let birth_date = "";
+            if (userData.birth_date) {
+                // Jika sudah yyyy-MM-dd, tetap; jika ISO, ambil bagian tanggal
+                birth_date = userData.birth_date.slice(0, 10);
             }
 
             this.setState({
                 full_name: userData.full_name || "",
-                birth_date: userData.birth_date || "",
+                birth_date: birth_date,
                 phone_number: userData.phone_number || "",
                 jenis_kelamin: userData.jenis_kelamin || "",
                 id_line: userData.id_line || "",
                 id_discord: userData.id_discord || "",
                 id_instagram: userData.id_instagram || "",
                 pendidikan: pendidikan,
-                pendidikan_lainnya: pendidikan_lainnya,
                 nama_sekolah: userData.nama_sekolah || "",
                 ktm_key: userData.ktm_key || "",
                 twibbonFileName: userData.twibbonFileName || "",
                 isLoading: false
             });
 
-            console.log("User data loaded from API:", userData);
         } catch (error) {
             console.error("Error loading data:", error);
             this.setState({
@@ -140,9 +110,8 @@ class EditProfile extends Component {
         if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
             this.setState({
                 twibbon: file,
-                twibbonFileName: file.name // Update filename in state
+                twibbonFileName: file.name
             }, () => {
-                // Save current state to localStorage after file change
                 this.saveFormProgress();
             });
         } else if (file) {
@@ -150,10 +119,8 @@ class EditProfile extends Component {
             if (this.twibbonInputRef.current) {
                 this.twibbonInputRef.current.value = "";
             }
-            // Don't clear Twibbon state if there was a previous valid file
         }
     }
-
 
     handleTwibbonFileDrop = (e) => {
         e.preventDefault();
@@ -176,13 +143,11 @@ class EditProfile extends Component {
             id_discord,
             id_instagram,
             pendidikan,
-            pendidikan_lainnya,
             nama_sekolah,
             ktm_key,
             twibbonFileName
         } = this.state;
 
-        // Save all non-file data (we can't store actual File objects in localStorage)
         const formProgress = {
             full_name,
             birth_date,
@@ -192,7 +157,6 @@ class EditProfile extends Component {
             id_discord,
             id_instagram,
             pendidikan,
-            pendidikan_lainnya,
             nama_sekolah,
             ktm_key,
             twibbonFileName,
@@ -204,24 +168,22 @@ class EditProfile extends Component {
 
     handleChange = (e) => {
         const { name, type, value, files } = e.target;
-
-        // Use type to determine the value to set
         const newValue = type === "file" ? files[0] : value;
-
         this.setState({
-            [name]: newValue
+            [name]: newValue,
+            showErrorBox: false,
+            errorFields: []
         }, () => {
-            // Save current state to localStorage after each change
             this.saveFormProgress();
         });
     };
+
     handleFileChange = (file) => {
         if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
             this.setState({
                 KTM: file,
-                ktm_key: file.name // Update filename in state
+                ktm_key: file.name
             }, () => {
-                // Save current state to localStorage after file change
                 this.saveFormProgress();
             });
         } else if (file) {
@@ -229,7 +191,6 @@ class EditProfile extends Component {
             if (this.fileInput) {
                 this.fileInput.value = "";
             }
-            // Don't clear KTM state if there was a previous valid file
         }
     }
 
@@ -246,6 +207,7 @@ class EditProfile extends Component {
 
     handleSubmit = async (e) => {
         e.preventDefault();
+        this.setState({ isLoading: true }); 
         const {
             full_name,
             birth_date,
@@ -255,7 +217,6 @@ class EditProfile extends Component {
             id_discord,
             id_instagram,
             pendidikan,
-            pendidikan_lainnya,
             nama_sekolah,
             KTM,
             ktm_key,
@@ -278,25 +239,17 @@ class EditProfile extends Component {
             nama_sekolah,
         };
 
-        // Validate KTM if there's no existing file AND no new file
         if (!ktm_key && !KTM) {
             fieldsToValidate.KTM = "";
         }
 
         for (const key in fieldsToValidate) {
-            if (fieldsToValidate[key] === "" || fieldsToValidate[key] === null) {
+            if (
+                fieldsToValidate[key] === "" ||
+                fieldsToValidate[key] === null ||
+                (typeof fieldsToValidate[key] === "string" && fieldsToValidate[key].trim() === "")
+            ) {
                 emptyFieldsList.push(this.fieldLabels[key]);
-            }
-        }
-
-        // Special validation for 'pendidikan_lainnya'
-        if (pendidikan === "lainnya" && (!pendidikan_lainnya || pendidikan_lainnya.trim() === "")) {
-            if (!emptyFieldsList.includes(this.fieldLabels.pendidikan_lainnya)) {
-                emptyFieldsList.push(this.fieldLabels.pendidikan_lainnya);
-            }
-            const pendidikanIndex = emptyFieldsList.indexOf(this.fieldLabels.pendidikan);
-            if (pendidikanIndex > -1 && pendidikan !== "") {
-                emptyFieldsList.splice(pendidikanIndex, 1);
             }
         }
 
@@ -304,13 +257,47 @@ class EditProfile extends Component {
             this.setState({
                 showErrorBox: true,
                 errorFields: emptyFieldsList,
+                isLoading: false
             });
             return;
         }
 
         try {
+            let ktmKeyToSend = ktm_key;
+            let twibbonKeyToSend = twibbonFileName;
+
+            // Upload KTM jika ada file baru
+            if (KTM) {
+                const ktmUpload = await uploadImage(KTM);
+                if (ktmUpload.success) {
+                    ktmKeyToSend = ktmUpload.data.key || ktmUpload.data.filename || ktmUpload.data.url;
+                } else {
+                    this.setState({
+                        showErrorBox: true,
+                        errorFields: ["Gagal upload KTM: " + (ktmUpload.error || "Unknown error")],
+                        isLoading: false
+                    });
+                    return;
+                }
+            }
+
+            // Upload Twibbon jika ada file baru
+            if (twibbon) {
+                const twibbonUpload = await uploadImage(twibbon);
+                if (twibbonUpload.success) {
+                    twibbonKeyToSend = twibbonUpload.data.key || twibbonUpload.data.filename || twibbonUpload.data.url;
+                } else {
+                    this.setState({
+                        showErrorBox: true,
+                        errorFields: ["Gagal upload Twibbon: " + (twibbonUpload.error || "Unknown error")],
+                        isLoading: false
+                    });
+                    return;
+                }
+            }
+
+            // Kirim data profil ke backend
             const formData = new FormData();
-            // Only append non-empty values
             if (full_name) formData.append('full_name', full_name);
             if (birth_date) formData.append('birth_date', birth_date);
             if (phone_number) formData.append('phone_number', phone_number);
@@ -318,59 +305,52 @@ class EditProfile extends Component {
             if (id_line) formData.append('id_line', id_line);
             if (id_discord) formData.append('id_discord', id_discord);
             if (id_instagram) formData.append('id_instagram', id_instagram);
-            if (pendidikan === "lainnya" && pendidikan_lainnya) {
-                formData.append('pendidikan', pendidikan_lainnya);
-            } else if (pendidikan) {
-                formData.append('pendidikan', pendidikan);
-            }
+            if (pendidikan) formData.append('pendidikan', pendidikan);
             if (nama_sekolah) formData.append('nama_sekolah', nama_sekolah);
-            
-            if (KTM) {
-                formData.append('image', KTM);
-            }
-            if (twibbon) {
-                formData.append('twibbon', twibbon);
-            }
+            if (ktmKeyToSend) formData.append('ktm_key', ktmKeyToSend);
+            if (twibbonKeyToSend) formData.append('twibbon_key', twibbonKeyToSend);
 
-            const response = await instance.patch('/api/user', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            const response = await updateUserProfile(formData);
 
-            if (response.data.success) {
-                // Save user data to sessionStorage
+            if (
+                response &&
+                (response.success ||
+                 response.message?.toLowerCase().includes("success"))
+            ) {
                 const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
-                
-                // Update userData with form data
                 const updatedUserData = {
                     ...userData,
-                    full_name: full_name,
+                    full_name,
                     birth_date,
                     phone_number,
                     jenis_kelamin,
                     id_line,
                     id_discord,
                     id_instagram,
-                    pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
+                    pendidikan,
                     nama_sekolah,
-                    ktm_key: KTM ? KTM.name : ktm_key,
-                    twibbonFileName: twibbon ? twibbon.name : twibbonFileName
+                    ktm_key: ktmKeyToSend,
+                    twibbonFileName: twibbonKeyToSend
                 };
                 sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
                 sessionStorage.setItem("profileUpdateStatus", "success");
                 sessionStorage.setItem("profileComplete", "true");
 
                 this.clearFormProgress();
-                window.location.href = "/dashboard/beranda";
+                this.props.navigate("/dashboard/beranda");
             } else {
-                throw new Error(response.data.message || "Failed to update profile");
+                this.setState({
+                    showErrorBox: true,
+                    errorFields: [response.error || "Failed to update profile. Please try again."],
+                    isLoading: false
+                });
             }
         } catch (error) {
             console.error("Error updating profile:", error);
             this.setState({
                 showErrorBox: true,
-                errorFields: ["Failed to update profile. Please try again."]
+                errorFields: ["Failed to update profile. Please try again."],
+                isLoading: false
             });
         }
     };
@@ -389,7 +369,6 @@ class EditProfile extends Component {
             id_discord,
             id_instagram,
             pendidikan,
-            pendidikan_lainnya,
             nama_sekolah,
             KTM,
             ktm_key,
@@ -421,15 +400,14 @@ class EditProfile extends Component {
         }
 
         let genderIcon;
-        if (jenis_kelamin === "L") {
+        if (jenis_kelamin === "laki2") {
             genderIcon = <IoIosMale className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />;
-        } else if (jenis_kelamin === "P") {
+        } else if (jenis_kelamin === "perempuan") {
             genderIcon = <IoIosFemale className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />;
         } else {
             genderIcon = <PiGenderIntersex className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />;
         }
 
-        // Determine what to display in the KTM upload area
         const ktmDisplayText = KTM ? KTM.name : (ktm_key || "Drop file di sini atau klik untuk pilih file");
 
         return (
@@ -494,8 +472,8 @@ class EditProfile extends Component {
                                 className={`cursor-pointer pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.jenis_kelamin) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
                             >
                                 <option value="">Pilih</option>
-                                <option value="L">Laki-laki</option>
-                                <option value="P">Perempuan</option>
+                                <option value="laki2">Laki-laki</option>
+                                <option value="perempuan">Perempuan</option>
                             </select>
                         </div>
 
@@ -561,21 +539,6 @@ class EditProfile extends Component {
                             </select>
                         </div>
 
-                        {/* Conditional field for 'lainnya' */}
-                        {pendidikan === "lainnya" && (
-                            <div className="mb-3 relative">
-                                <label className="block text-sm font-bold mb-2">Tulis Status Pendidikan Anda</label>
-                                <input
-                                    type="text"
-                                    name="pendidikan_lainnya"
-                                    placeholder="Contoh: Fresh graduate, sedang kerja, dll"
-                                    value={pendidikan_lainnya}
-                                    onChange={this.handleChange}
-                                    className={`py-2 px-4 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.pendidikan_lainnya) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
-                                />
-                            </div>
-                        )}
-
                         {/* Nama Sekolah */}
                         <div className={`mb-3 relative ${pendidikan !== 'lainnya' ? 'lg:col-start-2' : ''}`}>
                             <label className="block text-sm font-bold mb-2">Nama Sekolah/Institusi</label>
@@ -608,7 +571,7 @@ class EditProfile extends Component {
                             >
                                 <FaAddressCard className="mr-2 text-xl text-pink-300 group-hover:text-pink-200'" />
                                 <div className="w-full overflow-hidden text-ellipsis">
-                                    <p className="truncate">{ktmDisplayText}</p>
+                                    <p className="truncate">{KTM ? KTM.name : (ktm_key || "Drop file di sini atau klik untuk pilih file")}</p>
                                 </div>
                                 <input
                                     type="file"
@@ -706,7 +669,7 @@ class EditProfile extends Component {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm 3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
                                 <span>Form progress restored!</span>
                             </div>
@@ -719,9 +682,13 @@ class EditProfile extends Component {
                     </div>
                 )}
             </div>
-
         );
     }
 }
 
-export default EditProfile;
+function EditProfileWrapper(props) {
+    const navigate = useNavigate();
+    return <EditProfile {...props} navigate={navigate} />;
+}
+
+export default EditProfileWrapper;

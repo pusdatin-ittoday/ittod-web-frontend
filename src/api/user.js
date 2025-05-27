@@ -270,23 +270,21 @@ export const verifyEmail = async (token) => {
  * @param {string} email - User's email address
  * @returns {Promise<Object>} Result of the resend attempt
  */
-// export const resendVerificationEmail = async (email) => {
-//   try {
-//     const response = await instance.post('/api/auth/resend-verification', { email });
-//     return {
-//       success: true,
-//       message: response.data.message || "Email verifikasi telah dikirim!"
-//     };
-//   } catch (error) {
-//     console.error("Resend verification error:", error);
-//     return {
-//       success: false,
-//       error: error.response?.data?.message || 
-//              error.response?.data?.error || 
-//              "Gagal mengirim email verifikasi."
-//     };
-//   }
-// };
+export const resendVerificationEmail = async (email) => {
+  try {
+    const response = await instance.post("https://ittoday.web.id/api/auth/resend-verification-email", { email });
+
+    return {
+      success: true,
+      message: response.data.message || "Email verifikasi telah dikirim ulang.",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.error || "Terjadi kesalahan saat mengirim email verifikasi.",
+    };
+  }
+};
 
 /**
  * Get the competitions that the current user has joined
@@ -327,18 +325,35 @@ export const getAnnouncements = async () => {
   }
 };
 
-export const resendVerificationEmail = async (email) => {
+/**
+ * Get current user's profile (for EditProfil)
+ */
+export const fetchUserProfile = async () => {
   try {
-    const response = await instance.post("https://ittoday.web.id/api/auth/resend-verification-email", { email });
-
-    return {
-      success: true,
-      message: response.data.message || "Email verifikasi telah dikirim ulang.",
-    };
+    const response = await instance.get('/api/user');
+    return { success: true, data: response.data };
   } catch (error) {
     return {
       success: false,
-      error: error.response?.data?.error || "Terjadi kesalahan saat mengirim email verifikasi.",
+      error: error.response?.data?.message || "Failed to load user data"
+    };
+  }
+};
+
+/**
+ * Update user profile (for EditProfil)
+ * @param {FormData} formData - Data diri + KTM (image)
+ */
+export const updateUserProfile = async (formData) => {
+  try {
+    const response = await instance.patch('/api/user', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return { success: response.data.success, data: response.data, message: response.data.message };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to update profile"
     };
   }
 };
@@ -369,3 +384,55 @@ export const registerEvent = async ({ eventId, institutionName, phoneNumber }) =
     throw error;
   }
 }
+
+/**
+ * Upload twibbon file (for EditProfil)
+ * @param {FormData} formData - Hanya field 'image' untuk twibbon
+ */
+export const uploadTwibbon = async (formData) => {
+  try {
+    const response = await instance.put('/api/user/twibbon', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return { success: response.data.success, data: response.data, message: response.data.message };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to upload twibbon"
+    };
+  }
+};
+
+/**
+ * Upload image to /api/images/
+ * @param {File} file - File gambar (jpg/png)
+ * @returns {Promise<Object>} Hasil upload
+ */
+export const uploadImage = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await instance.post('/api/images/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to upload image"
+    };
+  }
+};
+
+/**
+ * Get image URL from key (for KTM/Twibbon)
+ * @param {string} key
+ * @returns {string}
+ */
+export const getImageUrl = (key) => {
+  if (!key) return "";
+  // Gunakan baseURL dari instance axios
+  const baseUrl = instance.defaults.baseURL?.replace(/\/$/, "") || "";
+  return `${baseUrl}/api/images/${key}`;
+};
