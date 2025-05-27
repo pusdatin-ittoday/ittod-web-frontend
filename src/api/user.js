@@ -329,7 +329,7 @@ export const getAnnouncements = async () => {
 
 export const resendVerificationEmail = async (email) => {
   try {
-    const response = await instance.post("https://ittoday.web.id/api/auth/resend-verification-email", { email });
+    const response = await instance.post("api/auth/resend-verification-email", { email });
 
     return {
       success: true,
@@ -346,7 +346,7 @@ export const resendVerificationEmail = async (email) => {
 // join team
 export const joinTeam = async (teamCode) => {
   try {
-    const res = await instance.post("https://ittoday.web.id/api/competition/join", {
+    const res = await instance.post("api/competition/join", {
       team_code: teamCode
     });
     return res;
@@ -358,7 +358,7 @@ export const joinTeam = async (teamCode) => {
 
 export const registerEvent = async ({ eventId, institutionName, phoneNumber }) => {
   try {
-    const res = await instance.post("http://localhost:3000/api/event/join", {
+    const res = await instance.post("api/event/join", {
       event_id: eventId,
       institution_name: institutionName,
       phone_number: phoneNumber
