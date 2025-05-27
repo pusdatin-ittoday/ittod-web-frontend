@@ -8,9 +8,15 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-center md:text-left">
           {/* BAGIAN KIRI */}
           <div className="flex flex-col items-center md:items-start justify-start space-y-1">
-            <h2 className="text-xl font-bold hover:text-pink-400 cursor-pointer font-dm-playfair">IT TODAY 2025</h2>
-            <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">Departemen Ilmu Komputer</p>
-            <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">IPB University</p>
+            <h2 className="text-xl font-bold hover:text-pink-400 cursor-pointer font-dm-playfair">
+              IT TODAY 2025
+            </h2>
+            <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">
+              Departemen Ilmu Komputer
+            </p>
+            <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">
+              IPB University
+            </p>
           </div>
 
           {/* BAGIAN KANAN */}
@@ -34,6 +40,12 @@ const Footer = () => {
                 className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
               >
                 Workshop
+              </Link>
+              <Link
+                to="/event/bootcamp"
+                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+              >
+                Bootcamp
               </Link>
             </div>
 
@@ -81,17 +93,26 @@ const Footer = () => {
 
               <div className="grid grid-cols-3 gap-4 justify-items-center">
                 {[
-                  { icon: 'facebook.svg', url: 'https://www.facebook.com/people/Ittoday-Ipb/pfbid023SS24sTjuCxJhY4Q61jr9FKxHfGEMvAQrpjBJWbj9LpdygyCtHwyhWxy7jMtcrCkl/' },
-                  { icon: 'line.svg', url: 'https://line.me/R/ti/p/@ukd0443x' },
-                  { icon: 'instagram.svg', url: 'https://www.instagram.com/ittoday_ipb/' },
-                  { icon: 'linkedin.svg', url: 'https://www.linkedin.com/in/it-today-462b51188/' },
-                  { icon: 'x.svg', url: 'https://x.com/ittoday_ipb' },
-                  { icon: 'tiktok.svg', url: 'https://www.tiktok.com/@ittoday_ipb' },
+                  {
+                    icon: "facebook.svg",
+                    url: "https://www.facebook.com/people/Ittoday-Ipb/pfbid023SS24sTjuCxJhY4Q61jr9FKxHfGEMvAQrpjBJWbj9LpdygyCtHwyhWxy7jMtcrCkl/",
+                  },
+                  { icon: "line.svg", url: "https://line.me/R/ti/p/@ukd0443x" },
+                  {
+                    icon: "instagram.svg",
+                    url: "https://www.instagram.com/ittoday_ipb/",
+                  },
+                  {
+                    icon: "linkedin.svg",
+                    url: "https://www.linkedin.com/company/ittoday/",
+                  },
+                  { icon: "x.svg", url: "https://x.com/ittoday_ipb" },
+                  {
+                    icon: "tiktok.svg",
+                    url: "https://www.tiktok.com/@ittoday_ipb",
+                  },
                 ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex justify-center"
-                  >
+                  <div key={i} className="flex justify-center">
                     <a href={item.url}>
                       <div className="w-6 h-6 flex items-center justify-center rounded-md hover:scale-155 transition duration-300 ease-in-out">
                         <img
@@ -115,10 +136,12 @@ const Footer = () => {
                 KONTAK KAMI
               </a>
 
-              <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer whitespace-nowrap">ittoday2025@gmail.com</p>
+              <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer whitespace-nowrap">
+                pr@ittoday.web.id
+              </p>
 
               <a
-                href="https://wa.me/+6281210242743"
+                href="https://wa.me/+6281256518375"
                 className="font-dm-sans hover:text-pink-400 cursor-pointer text-sm"
               >
                 +6281210242743
