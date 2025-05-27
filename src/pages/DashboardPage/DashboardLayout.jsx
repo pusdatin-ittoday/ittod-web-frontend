@@ -7,6 +7,7 @@ import Beranda from "../../components/Dashboard/Beranda/Beranda";
 import IkutLomba from "../../components/Dashboard/IkutLomba/IkutLomba";
 import IkutEvent from "../../components/Dashboard/IkutEvent/IkutEvent";
 import SubmitLomba from "../../components/Dashboard/SubmitLomba/SubmitLomba";
+import instance from "../../api/axios";
 
 import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md"; // Added MdCheckCircleOutline
 
@@ -71,58 +72,54 @@ class DashboardLayout extends Component {
   // Dalam DashboardLayout.js, tambahkan kode berikut:
 
   // Modifikasi checkUserDataCompleteness
-  checkUserDataCompleteness = () => {
-    // Check if profile is marked as complete
-    const isProfileComplete = sessionStorage.getItem("profileComplete") === "true";
+  checkUserDataCompleteness = async () => {
+    try {
+      const response = await instance.get('/api/user');
+      const userData = response.data;
 
-    if (isProfileComplete) {
-      // If profile is complete, show success alert instead of incomplete data alert
-      this.setState({
-        showAlert: false,
-        showSuccessAlert: true,
-        successAlertMessage: "Data sudah lengkap!",
-        successAlertPosition: {
-          x: 20,
-          y: window.innerHeight - 150,
-        }
-      });
-      return;
-    }
+      const requiredFields = [
+        { key: "full_name", label: "Nama Lengkap" },
+        { key: "email", label: "Email" },
+        { key: "phone_number", label: "Nomor Telepon" },
+        { key: "birth_date", label: "Tanggal Lahir" },
+        { key: "jenis_kelamin", label: "Jenis Kelamin" },
+        { key: "pendidikan", label: "Status Pendidikan" },
+        { key: "nama_sekolah", label: "Nama Sekolah/Institusi" }
+      ];
 
-    // Existing code to check incomplete fields
-    const userData = JSON.parse(sessionStorage.getItem("userData")) || {};
-    const requiredFields = [
-      { key: "name", label: "Nama Lengkap" },
-      { key: "email", label: "Email" },
-      { key: "phone", label: "Nomor Telepon" },
-      { key: "birth_date", label: "Tanggal Lahir" },
-      { key: "jenis_kelamin", label: "Jenis Kelamin" },
-      { key: "pendidikan", label: "Status Pendidikan" },
-      { key: "nama_sekolah", label: "Nama Sekolah/Institusi" }
-    ];
+      const incompleteFields = requiredFields.filter(field =>
+        !userData[field.key] || String(userData[field.key]).trim() === ""
+      );
 
-    const incompleteFields = requiredFields.filter(field =>
-      !userData[field.key] || String(userData[field.key]).trim() === ""
-    );
-
-    if (incompleteFields.length > 0) {
+      if (incompleteFields.length > 0) {
+        this.setState({
+          showAlert: true,
+          incompleteFields: incompleteFields,
+          alertPosition: {
+            x: 20,
+            y: window.innerHeight - (150 + incompleteFields.length * 20),
+          },
+          showSuccessAlert: false
+        });
+      } else {
+        this.setState({
+          showAlert: false,
+          incompleteFields: [],
+          showSuccessAlert: true,
+          successAlertMessage: "Data sudah lengkap!"
+        });
+      }
+    } catch (error) {
+      console.error("Error checking user data completeness:", error);
+      // If there's an error, we'll show the incomplete data alert
       this.setState({
         showAlert: true,
-        incompleteFields: incompleteFields,
+        incompleteFields: [{ label: "Error loading user data" }],
         alertPosition: {
           x: 20,
-          y: window.innerHeight - (150 + incompleteFields.length * 20),
+          y: window.innerHeight - 150,
         },
-        showSuccessAlert: false // Ensure success alert is hidden
-      });
-    } else {
-      // If all fields are complete but profileComplete flag is not set
-      sessionStorage.setItem("profileComplete", "true");
-      this.setState({
-        showAlert: false,
-        incompleteFields: [],
-        showSuccessAlert: true,
-        successAlertMessage: "Data sudah lengkap!"
+        showSuccessAlert: false
       });
     }
   };

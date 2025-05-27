@@ -30,9 +30,11 @@ class EditProfile extends Component {
             showErrorBox: false,
             twibbon: null,
             errorFields: [],
-            ktm_key: "",
             twibbonFileName: "",
-            showProgressRestoredMessage: false
+            ktmFileName: "",
+            showProgressRestoredMessage: false,
+            ktmChanged: false,
+            twibbonChanged: false
         };
 
         this.fieldLabels = {
@@ -82,8 +84,8 @@ class EditProfile extends Component {
                         pendidikan: formData.pendidikan || "",
                         pendidikan_lainnya: formData.pendidikan_lainnya || "",
                         nama_sekolah: formData.nama_sekolah || "",
-                        ktm_key: formData.ktm_key || "",
                         twibbonFileName: formData.twibbonFileName || "",
+                        ktmFileName: formData.ktmFileName || "",
                         showProgressRestoredMessage: true
                     });
                     setTimeout(() => {
@@ -106,9 +108,28 @@ class EditProfile extends Component {
                 pendidikan = "lainnya";
             }
 
+            // Format birth_date if it exists
+            let formattedBirthDate = "";
+            if (userData.birth_date) {
+                // If it's already in YYYY-MM-DD format, use it directly
+                if (/^\d{4}-\d{2}-\d{2}$/.test(userData.birth_date)) {
+                    formattedBirthDate = userData.birth_date;
+                } else {
+                    // Try to parse and format the date
+                    try {
+                        const date = new Date(userData.birth_date);
+                        if (!isNaN(date.getTime())) {
+                            formattedBirthDate = date.toISOString().split('T')[0];
+                        }
+                    } catch (e) {
+                        console.error("Error formatting birth date:", e);
+                    }
+                }
+            }
+
             this.setState({
                 full_name: userData.full_name || "",
-                birth_date: userData.birth_date || "",
+                birth_date: formattedBirthDate,
                 phone_number: userData.phone_number || "",
                 jenis_kelamin: userData.jenis_kelamin || "",
                 id_line: userData.id_line || "",
@@ -117,8 +138,8 @@ class EditProfile extends Component {
                 pendidikan: pendidikan,
                 pendidikan_lainnya: pendidikan_lainnya,
                 nama_sekolah: userData.nama_sekolah || "",
-                ktm_key: userData.ktm_key || "",
                 twibbonFileName: userData.twibbonFileName || "",
+                ktmFileName: userData.ktmFileName || "",
                 isLoading: false
             });
 
@@ -140,7 +161,7 @@ class EditProfile extends Component {
         if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
             this.setState({
                 twibbon: file,
-                twibbonFileName: file.name // Update filename in state
+                twibbonChanged: true
             }, () => {
                 // Save current state to localStorage after file change
                 this.saveFormProgress();
@@ -150,7 +171,6 @@ class EditProfile extends Component {
             if (this.twibbonInputRef.current) {
                 this.twibbonInputRef.current.value = "";
             }
-            // Don't clear Twibbon state if there was a previous valid file
         }
     }
 
@@ -178,11 +198,10 @@ class EditProfile extends Component {
             pendidikan,
             pendidikan_lainnya,
             nama_sekolah,
-            ktm_key,
             twibbonFileName
         } = this.state;
 
-        // Save all non-file data (we can't store actual File objects in localStorage)
+        // Save all non-file data
         const formProgress = {
             full_name,
             birth_date,
@@ -194,8 +213,8 @@ class EditProfile extends Component {
             pendidikan,
             pendidikan_lainnya,
             nama_sekolah,
-            ktm_key,
             twibbonFileName,
+            ktmFileName: this.state.KTM ? this.state.KTM.name : this.state.ktmFileName,
             lastUpdated: new Date().toISOString()
         };
 
@@ -219,7 +238,7 @@ class EditProfile extends Component {
         if (file && file.size <= 2 * 1024 * 1024) { // 2MB limit
             this.setState({
                 KTM: file,
-                ktm_key: file.name // Update filename in state
+                ktmChanged: true
             }, () => {
                 // Save current state to localStorage after file change
                 this.saveFormProgress();
@@ -229,7 +248,6 @@ class EditProfile extends Component {
             if (this.fileInput) {
                 this.fileInput.value = "";
             }
-            // Don't clear KTM state if there was a previous valid file
         }
     }
 
@@ -258,10 +276,18 @@ class EditProfile extends Component {
             pendidikan_lainnya,
             nama_sekolah,
             KTM,
-            ktm_key,
             twibbon,
-            twibbonFileName
+            twibbonFileName,
+            ktmChanged,
+            twibbonChanged
         } = this.state;
+
+        console.log('Submit state:', {
+            KTM,
+            twibbon,
+            ktmChanged,
+            twibbonChanged
+        });
 
         const emptyFieldsList = [];
 
@@ -278,8 +304,8 @@ class EditProfile extends Component {
             nama_sekolah,
         };
 
-        // Validate KTM if there's no existing file AND no new file
-        if (!ktm_key && !KTM) {
+        // Validate KTM if no file is selected
+        if (!KTM) {
             fieldsToValidate.KTM = "";
         }
 
@@ -325,11 +351,13 @@ class EditProfile extends Component {
             }
             if (nama_sekolah) formData.append('nama_sekolah', nama_sekolah);
             
-            if (KTM) {
+            // Send both files with the field name 'image'
+            if (KTM && ktmChanged) {
                 formData.append('image', KTM);
             }
-            if (twibbon) {
-                formData.append('twibbon', twibbon);
+            
+            if (twibbon && twibbonChanged) {
+                formData.append('image', twibbon);
             }
 
             const response = await instance.patch('/api/user', formData, {
@@ -338,7 +366,8 @@ class EditProfile extends Component {
                 }
             });
 
-            if (response.data.success) {
+            // Check for both success boolean and success message
+            if (response.data.success || response.data.message?.includes('success')) {
                 // Save user data to sessionStorage
                 const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
                 
@@ -354,8 +383,8 @@ class EditProfile extends Component {
                     id_instagram,
                     pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
                     nama_sekolah,
-                    ktm_key: KTM ? KTM.name : ktm_key,
-                    twibbonFileName: twibbon ? twibbon.name : twibbonFileName
+                    twibbonFileName: twibbon ? twibbon.name : twibbonFileName,
+                    ktmFileName: KTM ? KTM.name : userData.ktmFileName
                 };
                 sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
                 sessionStorage.setItem("profileUpdateStatus", "success");
@@ -392,7 +421,6 @@ class EditProfile extends Component {
             pendidikan_lainnya,
             nama_sekolah,
             KTM,
-            ktm_key,
             twibbon,
             twibbonFileName,
             showErrorBox,
@@ -421,16 +449,16 @@ class EditProfile extends Component {
         }
 
         let genderIcon;
-        if (jenis_kelamin === "L") {
+        if (jenis_kelamin === "laki2") {
             genderIcon = <IoIosMale className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />;
-        } else if (jenis_kelamin === "P") {
+        } else if (jenis_kelamin === "perempuan") {
             genderIcon = <IoIosFemale className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />;
         } else {
             genderIcon = <PiGenderIntersex className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />;
         }
 
         // Determine what to display in the KTM upload area
-        const ktmDisplayText = KTM ? KTM.name : (ktm_key || "Drop file di sini atau klik untuk pilih file");
+        const ktmDisplayText = KTM ? KTM.name : (this.state.ktmFileName || "Drop file di sini atau klik untuk pilih file");
 
         return (
             <div className="flex items-center justify-center relative">
@@ -494,8 +522,8 @@ class EditProfile extends Component {
                                 className={`cursor-pointer pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.jenis_kelamin) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
                             >
                                 <option value="">Pilih</option>
-                                <option value="L">Laki-laki</option>
-                                <option value="P">Perempuan</option>
+                                <option value="laki2">Laki-laki</option>
+                                <option value="perempuan">Perempuan</option>
                             </select>
                         </div>
 
@@ -594,11 +622,6 @@ class EditProfile extends Component {
                         <div className="mb-3 col-span-full">
                             <label className="block text-sm font-bold mb-2">
                                 Kartu Institusi (jpg/png, max 2MB)
-                                {ktm_key && !KTM && (
-                                    <span className="text-sm font-normal ml-2 text-gray-300">
-                                        (File yang telah diunggah: {ktm_key})
-                                    </span>
-                                )}
                             </label>
                             <div
                                 className={`border-2 border-dashed ${errorFields.includes(this.fieldLabels.KTM) ? 'border-red-500' : 'border-pink-400'} rounded-md p-6 text-center ${errorFields.includes(this.fieldLabels.KTM) ? 'bg-red-100' : 'bg-gray-100'} text-white bg-white/10 hover:bg-white/20 transition duration-300 hover:scale-102 cursor-pointer w-full min-h-24 flex items-center justify-center`}
