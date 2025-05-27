@@ -30,7 +30,7 @@ const Announcement = () => {
     }, []);
 
     return (
-        <div className="max-w-full py-4 flex flex-col bg-[#7b446c] text-white rounded-lg shadow-md lg:w-[250px] h-[500px] font-dm-sans overflow-hidden">
+        <div className="w-full py-4 flex flex-col bg-[#7b446c] text-white rounded-lg shadow-md h-[500px] font-dm-sans overflow-hidden lg:w-[250px]">
             {/* Header */}
             <div className="border-b border-[#dfb4d7]/60 mb-3 w-full">
                     <div className="px-4 py-2.5 text-lg font-bold text-center flex items-center justify-center">

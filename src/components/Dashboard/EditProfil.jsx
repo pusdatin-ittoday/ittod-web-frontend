@@ -11,6 +11,15 @@ import { FaAddressCard } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaImage } from "react-icons/fa";
 import instance from "../../api/axios";
+import { getImageUrlFromR2, uploadImageToR2 } from "../../api/user";
+
+// Helper to get original filename from R2 key
+const getOriginalFileName = (key) => {
+  if (!key) return "";
+  const parts = key.split("_");
+  // Remove the UUID part, join the rest (handles underscores in filenames)
+  return parts.slice(1).join("_");
+};
 
 class EditProfile extends Component {
     constructor(props) {
@@ -138,8 +147,9 @@ class EditProfile extends Component {
                 pendidikan: pendidikan,
                 pendidikan_lainnya: pendidikan_lainnya,
                 nama_sekolah: userData.nama_sekolah || "",
-                twibbonFileName: userData.twibbonFileName || "",
-                ktmFileName: userData.ktmFileName || "",
+                // Take the key from API and store it
+                ktmFileName: userData.ktm_key || "",
+                twibbonFileName: userData.twibbon_key || "",
                 isLoading: false
             });
 
@@ -263,6 +273,7 @@ class EditProfile extends Component {
     }
 
     handleSubmit = async (e) => {
+        console.log("Submitted")
         e.preventDefault();
         const {
             full_name,
@@ -282,6 +293,8 @@ class EditProfile extends Component {
             twibbonChanged
         } = this.state;
 
+        console.log("jenis_kelamin value:", jenis_kelamin, "| type:", typeof jenis_kelamin);
+
         const emptyFieldsList = [];
 
         // Validation
@@ -289,13 +302,17 @@ class EditProfile extends Component {
             full_name,
             birth_date,
             phone_number,
-            jenis_kelamin,
             id_line,
             id_discord,
             id_instagram,
             pendidikan,
             nama_sekolah,
         };
+
+        // Validate jenis_kelamin: must be "laki2" or "perempuan"
+        if (jenis_kelamin !== "laki2" && jenis_kelamin !== "perempuan") {
+            emptyFieldsList.push(this.fieldLabels.jenis_kelamin);
+        }
 
         // Validate KTM if no file is selected
         if (!KTM) {
@@ -328,8 +345,8 @@ class EditProfile extends Component {
         }
 
         try {
+            // 1. Submit profile data and KTM (if changed)
             const formData = new FormData();
-            // Only append non-empty values
             if (full_name) formData.append('full_name', full_name);
             if (birth_date) formData.append('birth_date', birth_date);
             if (phone_number) formData.append('phone_number', phone_number);
@@ -345,25 +362,57 @@ class EditProfile extends Component {
             if (nama_sekolah) formData.append('nama_sekolah', nama_sekolah);
             
             if (KTM && ktmChanged) {
-                formData.append('profileImage', KTM);
+                formData.append('profileImage', KTM); // <-- use 'profileImage'
             }
             
-            if (twibbon && twibbonChanged) {
-                formData.append('userTwibbon', twibbon);
-            }
-
             const response = await instance.patch('/api/user', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
 
-            // Check for both success boolean and success message
+            // Log the formData entries
+            for (let pair of formData.entries()) {
+              console.log('PATCH /api/user:', pair[0], pair[1]);
+            }
+
+            // 2. If Twibbon changed, upload it separately
+            if (twibbon && twibbonChanged) {
+                const twibbonForm = new FormData();
+                twibbonForm.append('userTwibbon', twibbon); // <-- use 'userTwibbon'
+                await instance.put('/api/user/twibbon', twibbonForm, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+                // Log the twibbonForm entries
+                for (let pair of twibbonForm.entries()) {
+                  console.log('PUT /api/user/twibbon:', pair[0], pair[1]);
+                }
+            }
+
+            // 3. Upload KTM to R2 if changed
+            let ktmR2Key = this.state.ktmFileName;
+            if (KTM && ktmChanged) {
+                const r2Res = await uploadImageToR2(KTM);
+                if (r2Res.success && r2Res.data.key) {
+                    ktmR2Key = r2Res.data.key;
+                    this.setState({ ktmFileName: ktmR2Key });
+                }
+            }
+
+            // 4. Upload Twibbon to R2 if changed
+            let twibbonR2Key = this.state.twibbonFileName;
+            if (twibbon && twibbonChanged) {
+                const r2Res = await uploadImageToR2(twibbon);
+                if (r2Res.success && r2Res.data.key) {
+                    twibbonR2Key = r2Res.data.key;
+                    this.setState({ twibbonFileName: twibbonR2Key });
+                }
+            }
+
+            // Save user data to sessionStorage
             if (response.data.success || response.data.message?.includes('success')) {
-                // Save user data to sessionStorage
                 const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
-                
-                // Update userData with form data
                 const updatedUserData = {
                     ...userData,
                     full_name: full_name,
@@ -375,13 +424,12 @@ class EditProfile extends Component {
                     id_instagram,
                     pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
                     nama_sekolah,
-                    twibbonFileName: twibbon ? twibbon.name : twibbonFileName,
-                    ktmFileName: KTM ? KTM.name : userData.ktmFileName
+                    twibbonFileName: twibbonR2Key,
+                    ktmFileName: ktmR2Key
                 };
                 sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
                 sessionStorage.setItem("profileUpdateStatus", "success");
                 sessionStorage.setItem("profileComplete", "true");
-
                 this.clearFormProgress();
                 window.location.href = "/dashboard/beranda";
             } else {
@@ -415,6 +463,7 @@ class EditProfile extends Component {
             KTM,
             twibbon,
             twibbonFileName,
+            ktmFileName,
             showErrorBox,
             errorFields,
             isLoading,
@@ -450,17 +499,19 @@ class EditProfile extends Component {
         }
 
         // Determine what to display in the KTM upload area
-        const ktmDisplayText = KTM ? KTM.name : (this.state.ktmFileName || "Drop file di sini atau klik untuk pilih file");
+        const ktmDisplayText = KTM ? KTM.name : (ktmFileName || "Drop file di sini atau klik untuk pilih file");
+        const ktmImageUrl = getImageUrlFromR2(ktmFileName);
+        const twibbonImageUrl = getImageUrlFromR2(twibbonFileName);
 
         return (
             <div className="flex items-center justify-center relative">
                 <div className="min-h-screen bg-[#7b446c] mx-10 lg:mx-auto lg:my-20 p-6 rounded-md shadow-md text-white w-full max-w-4xl">
-                    <h1 className="text-2xl font-bold mb-6 text-center">Edit Profil</h1>
+                    <h1 className="text-2xl input-text-glow text-white drop-shadow-[0_1px_1px_#FFE6FC] font-bold mb-6 text-center">Edit Profil</h1>
                     <form
                         onSubmit={this.handleSubmit}
                         className="grid grid-cols-1 lg:grid-cols-2 gap-6 font-dm-sans"
                     >
-                        <h2 className="text-lg font-semibold mb-4 col-span-full">Data Diri</h2>
+                        <h2 className="text-lg font-semibold mb-4 col-span-full input-text-glow text-white drop-shadow-[0_1px_1px_#FFE6FC]">Data Diri</h2>
 
                         {/* Nama Lengkap */}
                         <div className="mb-3 relative">
@@ -562,7 +613,7 @@ class EditProfile extends Component {
                         </div>
 
                         {/* Data Institusi Section */}
-                        <h2 className="text-lg font-semibold mt-4 mb-4 col-span-full">Data Institusi</h2>
+                        <h2 className="text-lg font-semibold mt-4 mb-4 col-span-full input-text-glow text-white drop-shadow-[0_1px_1px_#FFE6FC]">Data Institusi</h2>
 
                         {/* Pendidikan */}
                         <div className="mb-3 relative">
@@ -623,7 +674,13 @@ class EditProfile extends Component {
                             >
                                 <FaAddressCard className="mr-2 text-xl text-pink-300 group-hover:text-pink-200'" />
                                 <div className="w-full overflow-hidden text-ellipsis">
-                                    <p className="truncate">{ktmDisplayText}</p>
+                                    <p className="truncate">
+                                        {KTM
+                                            ? KTM.name
+                                            : (ktmFileName
+                                                ? getOriginalFileName(ktmFileName)
+                                                : "Drop file di sini atau klik untuk pilih file")}
+                                    </p>
                                 </div>
                                 <input
                                     type="file"
@@ -634,8 +691,19 @@ class EditProfile extends Component {
                                     style={{ display: "none" }}
                                 />
                             </div>
+                            {/* Show previous image title if exists */}
+                            {ktmFileName && !KTM && (
+                                <div className="text-xs text-gray-200 mt-1">
+                                    Foto yang diupload sebelumnya: <span className="font-semibold">{getOriginalFileName(ktmFileName)}</span>
+                                </div>
+                            )}
                             {errorFields.includes(this.fieldLabels.KTM) && (
                                 <p className="text-red-300 text-xs mt-1">File Kartu Institusi wajib diunggah.</p>
+                            )}
+                            {ktmImageUrl && (
+                                <div className="mt-2 flex justify-center">
+                                    <img src={ktmImageUrl} alt="KTM" className="max-h-64 rounded shadow" /> {/* dari max-h-32 ke max-h-64 */}
+                                </div>
                             )}
                         </div>
 
@@ -643,11 +711,6 @@ class EditProfile extends Component {
                         <div className="mb-3 col-span-full">
                             <label className="block text-sm font-bold mb-2">
                                 Twibbon (jpg/png, max 2MB)
-                                {twibbonFileName && !twibbon && (
-                                    <span className="text-sm font-normal ml-2 text-gray-300">
-                                        (File yang telah diunggah: {twibbonFileName})
-                                    </span>
-                                )}
                             </label>
                             <div
                                 className={`border-2 border-dashed ${errorFields.includes(this.fieldLabels.twibbon) ? 'border-red-500' : 'border-pink-400'} rounded-md p-6 text-center ${errorFields.includes(this.fieldLabels.twibbon) ? 'bg-red-100' : 'bg-gray-100'} text-white bg-white/10 hover:bg-white/20 transition duration-300 hover:scale-102 cursor-pointer w-full min-h-24 flex items-center justify-center`}
@@ -657,7 +720,13 @@ class EditProfile extends Component {
                             >
                                 <FaImage className="mr-2 text-xl text-pink-300 group-hover:text-pink-200'" />
                                 <div className="w-full overflow-hidden text-ellipsis">
-                                    <p className="truncate">{twibbon ? twibbon.name : (twibbonFileName || "Drop file di sini atau klik untuk pilih file")}</p>
+                                    <p className="truncate">
+                                        {twibbon
+                                            ? twibbon.name
+                                            : (twibbonFileName
+                                                ? getOriginalFileName(twibbonFileName)
+                                                : "Drop file di sini atau klik untuk pilih file")}
+                                    </p>
                                 </div>
                                 <input
                                     type="file"
@@ -668,8 +737,19 @@ class EditProfile extends Component {
                                     style={{ display: "none" }}
                                 />
                             </div>
+                            {/* Show previous image title if exists */}
+                            {twibbonFileName && !twibbon && (
+                                <div className="text-xs text-gray-200 mt-1">
+                                    Foto yang diupload sebelumnya: <span className="font-semibold">{getOriginalFileName(twibbonFileName)}</span>
+                                </div>
+                            )}
                             {errorFields.includes(this.fieldLabels.twibbon) && (
                                 <p className="text-red-300 text-xs mt-1">File Twibbon wajib diunggah.</p>
+                            )}
+                            {twibbonImageUrl && (
+                                <div className="mt-2 flex justify-center">
+                                    <img src={twibbonImageUrl} alt="Twibbon" className="max-h-64 rounded shadow" /> {/* dari max-h-32 ke max-h-64 */}
+                                </div>
                             )}
                         </div>
                         {/* Tombol */}
