@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Navbar from '../components/Navbar';
 import { BiLogoWhatsapp } from "react-icons/bi";
 import { FaSchool } from "react-icons/fa";
+import { MdErrorOutline } from "react-icons/md";
 import { registerEvent } from "../utils/api/event";
 
 const workshopOptions = [
@@ -17,10 +18,10 @@ const whatsappLink = {
     machineLearning: "https://chat.whatsapp.com/FbcLPUztaQEEm6qn1ZjZep",
     seminar: "https://chat.whatsapp.com/GrFDVvBC1weDWY4kA4MO7T",
     bootcamp: "https://chat.whatsapp.com/ED4bnW4VCJC7KRPYmUHRwN",
-}
+};
 
 const DaftarEvent = () => {
-    const { target } = useParams(); // ambil dari path parameter
+    const { target } = useParams();
     const navigate = useNavigate();
 
     const [institution, setInstitution] = useState("");
@@ -29,7 +30,9 @@ const DaftarEvent = () => {
     const [workshopChoice, setWorkshopChoice] = useState("");
     const [loading, setLoading] = useState(false);
     const [linkWhatsapp, setLinkWhatsapp] = useState("");
-
+    const [showAlert, setShowAlert] = useState(false);
+    const [incompleteFields, setIncompleteFields] = useState([]);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         if (target === "workshop") {
@@ -49,37 +52,60 @@ const DaftarEvent = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!institution.trim() || !whatsapp.trim()) {
-            alert("Mohon isi semua data terlebih dahulu.");
-            return;
-        }
-        if (target === "workshop" && !workshopChoice) {
-            alert("Mohon pilih jenis workshop.");
+        setError("");
+        setShowAlert(false);
+
+        const missingFields = [];
+        if (!institution.trim()) missingFields.push({ label: "Institusi" });
+        if (!whatsapp.trim()) missingFields.push({ label: "Nomor WhatsApp" });
+        if (target === "workshop" && !workshopChoice) missingFields.push({ label: "Bidang Workshop" });
+
+        const internationalFormatRegex = /^\+\d+$/;
+        if (whatsapp.trim() && !internationalFormatRegex.test(whatsapp)) {
+            setIncompleteFields([{ label: "Nomor WhatsApp harus dalam format internasional (misalnya: +628123456789)." }]);
+            setShowAlert(true);
             return;
         }
 
-        // setSubmitted(true);
+        if (missingFields.length > 0) {
+            setIncompleteFields(missingFields);
+            setShowAlert(true);
+            return;
+        }
+
         setLoading(true);
 
+        const eventId = target === "workshop"
+            ? workshopChoice
+            : target === "bootcamp"
+                ? "bootcamp"
+                : target === "national-seminar"
+                    ? "seminar"
+                    : target;
+
         registerEvent({
-            eventId: workshopChoice,
+            eventId,
             intitutionName: institution,
             phoneNumber: whatsapp,
         }).then((response) => {
-            console.log(response)
+            console.log(response);
             setSubmitted(true);
         }).catch((error) => {
             console.error(error);
+            setError("Anda sudah mendaftarkan diri!");
         }).finally(() => {
             setLoading(false);
         });
+    };
+
+    const closeAlert = () => {
+        setShowAlert(false);
     };
 
     return (
         <>
             <Navbar />
             <div className="min-h-screen flex flex-col items-center justify-center p-6 background: linear-gradient(135deg, #5c3b5c, #2e263c, #a86b8290); text-white font-dm-sans">
-
                 <div className="max-w-md w-full bg-[#7b446c] rounded-lg shadow-lg p-6">
                     <h2 className="text-2xl font-bold mb-4 text-center">
                         Form Pendaftaran {target || "Event"}
@@ -87,11 +113,11 @@ const DaftarEvent = () => {
 
                     {submitted ? (
                         <div className="flex flex-col text-center text-green-300 font-semibold gap-3">
-                            <p className="">Terima kasih telah mendaftar. Silahkan masuk ke grup whatsapp melalui link berikut: </p>
+                            <p>Terima kasih telah mendaftar. Silahkan masuk ke grup whatsapp melalui link berikut:</p>
                             <a href={linkWhatsapp} target="_blank" className="text-blue-400 mb-3">Link Whatsapp</a>
                             <button
                                 onClick={() => {
-                                    navigate("/dashboard");
+                                    navigate("/dashboard/ikut-event");
                                 }}
                                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
                             >
@@ -114,7 +140,7 @@ const DaftarEvent = () => {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm mb-1">Nomor WhatsAppp</label>
+                                <label className="block text-sm mb-1">Nomor WhatsApp</label>
                                 <div className="flex items-center bg-white rounded-md px-3 py-2">
                                     <BiLogoWhatsapp className="text-black mr-2" size={20} />
                                     <input
@@ -127,7 +153,6 @@ const DaftarEvent = () => {
                                 </div>
                             </div>
 
-                            {/* Dropdown khusus untuk WORKSHOP */}
                             {target === "workshop" && (
                                 <div>
                                     <label className="block text-sm mb-1">Pilih Bidang Workshop</label>
@@ -147,10 +172,9 @@ const DaftarEvent = () => {
                                 </div>
                             )}
 
-
                             <div className="buttons flex flex-row justify-end">
                                 <a
-                                    onClick={() => navigate("/dashboard/beranda")}
+                                        onClick={() => navigate("/dashboard/ikut-event")}
                                     className="bg-gray-300 hover:bg-gray-400 transition duration-300 ease-in-out hover:scale-105 text-black px-4 py-2 rounded mr-2 cursor-pointer"
                                 >
                                     Batal
@@ -166,8 +190,40 @@ const DaftarEvent = () => {
                         </form>
                     )}
                 </div>
+                {error && (
+                    <p className="text-red-500 text-sm mt-2">{error}</p>
+                )}
+                {showAlert && (
+                    <div
+                        className="bg-red-600/80 text-white px-6 py-4 rounded-lg shadow-xl max-w-md"
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onTouchStart={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex justify-between items-start mb-2 gap-5">
+                            <h3 className="font-bold text-lg">
+                                <div className="flex items-center">
+                                    <MdErrorOutline className="text-xl mr-2" />
+                                    Data belum lengkap!
+                                </div>
+                            </h3>
+                            <button
+                                onClick={closeAlert}
+                                className="bg-red-700/85 hover:bg-red-800/85 rounded-full p-1 transition-colors"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p className="text-sm mb-2">Mohon untuk lengkapi data diri Anda:</p>
+                        <ul className="list-disc pl-5 text-sm space-y-1">
+                            {incompleteFields.map((field, index) => (
+                                <li key={index}>{field.label}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
-
         </>
     );
 };
