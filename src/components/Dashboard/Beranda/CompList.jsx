@@ -96,16 +96,16 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             </span>
                         </p>
 
-                        <span className={`font-bold ${anggota.verified ? "text-green-400/90" : "text-red-400/90"}`}>
-                            {anggota.verified ? "Verified" : "Not Verified"}
+                        <span className={`font-bold ${anggota.isRegistrationComplete ? "text-green-400/90" : "text-red-400/90"}`}>
+                            {anggota.isRegistrationComplete ? "Verified" : "Not Verified"}
                         </span>
                     </div>
                 ))}
 
                 <p className="mt-2 font-semibold">
                     Team Status:{" "}
-                    <span className={data.members.every((a) => a.verified) ? "text-green-400/90" : "text-red-400/90"}>
-                        {data.members.every((a) => a.verified) ? "Verified" : "Not Verified"}
+                    <span className={data.isVerified ? "text-green-400/90" : "text-red-400/90"}>
+                        {data.isVerified ? "Verified" : "Not Verified"}
                     </span>
                 </p>
             </div>
