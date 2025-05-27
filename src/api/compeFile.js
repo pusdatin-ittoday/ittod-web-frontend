@@ -22,3 +22,21 @@ export const upsertCompetitionFile = async (data) => {
     };
   }
 };
+
+export const postCompePayment = async (data) => {
+  try {
+    const response = await instance.post("/api/competition/payment", data);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error uploading competition payment:", error);
+    return {
+      success: false,
+      error: error.response?.data?.message || 
+             error.response?.data?.error || 
+             "Failed to upload competition image. Please try again."
+    };
+  }
+}

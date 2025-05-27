@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaList, FaUser, FaUpload, FaImage, FaReceipt } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { getCurrentUser, getUserCompetitions } from "../../../api/user"; // Update imports to include getUserCompetitions
+import { postCompePayment } from "../../../api/compeFile";
 
 const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, loading }) => {
     const [showUploadModal, setShowUploadModal] = useState(false);
@@ -53,7 +54,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
         // console.log("Competition Members:", data.members);
         return data.members.some(member => member && member.fullName === currentUser);
     });
-
 
     // useEffect(() => {
     //     console.log("Filtered Competitions:", filteredCompetitions);
@@ -296,23 +296,36 @@ const CompListPage = () => {
         fetchData();
     }, []);
 
-    const handleVerify = (compKey, pembayaran) => {
-        console.log("Verifying for competition:", compKey);
-        console.log("Pembayaran:", pembayaran.name);
+    const handleVerify = async (compKey, pembayaran) => {
+        try {
+            setLoading(true);
 
-        // Update verification status in competitions
-        setCompetitions(prevCompetitions => {
-            const updated = { ...prevCompetitions };
-            if (updated[compKey]) {
-                updated[compKey] = {
-                    ...updated[compKey],
-                    anggota: updated[compKey].anggota.map(member =>
-                        member.nama === currentUser ? { ...member, verified: true } : member
-                    )
-                };
-            }
-            return updated;
-        });
+            const formData = new FormData();
+            formData.append("team_id", competitions[compKey].teamID);
+            formData.append("image", pembayaran);
+
+            const result = await postCompePayment(formData);
+
+            if (result.success){
+                // Update verification status in competitions
+                setCompetitions(prevCompetitions => {
+                const updated = { ...prevCompetitions };
+                if (updated[compKey]) {
+                    updated[compKey] = {
+                        ...updated[compKey],
+                        anggota: updated[compKey].members.map(member =>
+                            member.fullName === currentUser ? { ...member, verified: true } : member
+                        )
+                    };
+                } 
+                return updated;})}
+        } catch (error) {
+            console.error("Error during verification:", error);
+            // Show alert or handle error
+            return;
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleEditUser = () => {
