@@ -8,7 +8,7 @@ import { registerEvent } from "../utils/api/event";
 
 const workshopOptions = [
     "Cyber Security",
-    "UI/UX",
+    "ui/ux",
     "Machine Learning",
 ];
 
@@ -18,6 +18,17 @@ const whatsappLink = {
     machineLearning: "https://chat.whatsapp.com/FbcLPUztaQEEm6qn1ZjZep",
     seminar: "https://chat.whatsapp.com/GrFDVvBC1weDWY4kA4MO7T",
     bootcamp: "https://chat.whatsapp.com/ED4bnW4VCJC7KRPYmUHRwN",
+};
+
+const eventIdMapping = {
+  // Workshop mappings
+  "Cyber Security": "Cyber Security", // Change to your production ID
+  "ui/ux": "UI/UX", // Change to your production ID
+  "Machine Learning": "Machine Learning", // Change to your production ID
+
+  // Other event types
+  "bootcamp": "bootcamp", // Change to your production ID
+  "seminar": "seminar", // Change to your production ID
 };
 
 const DaftarEvent = () => {
@@ -51,50 +62,61 @@ const DaftarEvent = () => {
     }, [target, workshopChoice]);
 
     const handleSubmit = (e) => {
-        e.preventDefault();
-        setError("");
-        setShowAlert(false);
+      e.preventDefault();
+      setError("");
+      setShowAlert(false);
 
-        const missingFields = [];
-        if (!institution.trim()) missingFields.push({ label: "Institusi" });
-        if (!whatsapp.trim()) missingFields.push({ label: "Nomor WhatsApp" });
-        if (target === "workshop" && !workshopChoice) missingFields.push({ label: "Bidang Workshop" });
+      const missingFields = [];
+      if (!institution.trim()) missingFields.push({ label: "Institusi" });
+      if (!whatsapp.trim()) missingFields.push({ label: "Nomor WhatsApp" });
+      if (target === "workshop" && !workshopChoice)
+        missingFields.push({ label: "Bidang Workshop" });
 
-        const internationalFormatRegex = /^\+\d+$/;
-        if (whatsapp.trim() && !internationalFormatRegex.test(whatsapp)) {
-            setIncompleteFields([{ label: "Nomor WhatsApp harus dalam format internasional (misalnya: +628123456789)." }]);
-            setShowAlert(true);
-            return;
-        }
+      const internationalFormatRegex = /^\+\d+$/;
+      if (whatsapp.trim() && !internationalFormatRegex.test(whatsapp)) {
+        setIncompleteFields([
+          {
+            label:
+              "Nomor WhatsApp harus dalam format internasional (misalnya: +628123456789).",
+          },
+        ]);
+        setShowAlert(true);
+        return;
+      }
 
-        if (missingFields.length > 0) {
-            setIncompleteFields(missingFields);
-            setShowAlert(true);
-            return;
-        }
+      if (missingFields.length > 0) {
+        setIncompleteFields(missingFields);
+        setShowAlert(true);
+        return;
+      }
 
-        setLoading(true);
+      setLoading(true);
 
-        const eventId = target === "workshop"
-            ? workshopChoice
-            : target === "bootcamp"
-                ? "bootcamp"
-                : target === "national-seminar"
-                    ? "seminar"
-                    : target;
+      // Determine the event ID using the mapping
+      let eventId;
+      if (target === "workshop") {
+        eventId = eventIdMapping[workshopChoice] || workshopChoice;
+      } else {
+        eventId =
+          eventIdMapping[target === "national-seminar" ? "seminar" : target] ||
+          target;
+      }
 
-        registerEvent({
-            eventId,
-            intitutionName: institution,
-            phoneNumber: whatsapp,
-        }).then((response) => {
-            console.log(response);
-            setSubmitted(true);
-        }).catch((error) => {
-            console.error(error);
-            setError("Anda sudah mendaftarkan diri!");
-        }).finally(() => {
-            setLoading(false);
+      registerEvent({
+        eventId,
+        intitutionName: institution,
+        phoneNumber: whatsapp,
+      })
+        .then((response) => {
+          console.log(response);
+          setSubmitted(true);
+        })
+        .catch((error) => {
+          console.error(error);
+          setError("Anda sudah mendaftarkan diri!");
+        })
+        .finally(() => {
+          setLoading(false);
         });
     };
 

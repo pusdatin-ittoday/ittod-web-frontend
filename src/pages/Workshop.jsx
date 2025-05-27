@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import TimelineLomba from '../components/TimeLineLomba';
 import ContactUs from './ContactUs';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentUser } from '../api/user';
 
 const Workshop = () => {
   const navigate = useNavigate();
@@ -11,14 +12,32 @@ const Workshop = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
+
+  useEffect(() => {
+    getCurrentUser()
+      .then((response) => {
+        if (response.success) {
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('userId', response.data.id);
+        } else {
+          localStorage.setItem('isLoggedIn', 'false');
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching current user:', error);
+        localStorage.setItem('isLoggedIn', 'false');
+      });
+    }, []);
+  
   const handleDaftarClick = () => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     if (isLoggedIn === 'true') {
-      navigate('/ikut-event');
+      navigate("/daftar-event/workshop");
     } else {
-      navigate('/login?redirectTo=ikut-event');
+      navigate('/login?redirectTo=/dashboard/ikut-event');
     }
   };
+
   const timeline = [
     { title: 'Workshop 1 & 2', date: '31 Agustus 2025' },
     { title: 'Workshop 3', date: '7 September 2025' },
@@ -43,7 +62,6 @@ const Workshop = () => {
 
           {/* Tombol */}
           <div className="flex justify-center gap-4 mb-8 md:mb-10">
-            <button className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-3 px-4 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer">Guidebook</button>
             <button onClick={handleDaftarClick}
               className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-3 px-4 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
               Daftar Sekarang
