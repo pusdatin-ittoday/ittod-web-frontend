@@ -144,7 +144,7 @@ const Footer = () => {
                 href="https://wa.me/+6281256518375"
                 className="font-dm-sans hover:text-pink-400 cursor-pointer text-sm"
               >
-                +6281210242743
+                +6281256518375
               </a>
             </div>
           </div>
