@@ -344,7 +344,6 @@ class EditProfile extends Component {
             }
             if (nama_sekolah) formData.append('nama_sekolah', nama_sekolah);
             
-            // Send both files with the field name 'image'
             if (KTM && ktmChanged) {
                 formData.append('profileImage', KTM);
             }
@@ -628,7 +627,7 @@ class EditProfile extends Component {
                                 </div>
                                 <input
                                     type="file"
-                                    name="KTM"
+                                    name="profileImage"
                                     accept=".jpg,.jpeg,.png"
                                     ref={(ref) => (this.fileInput = ref)}
                                     onChange={this.handleFileInputChange}
@@ -662,7 +661,7 @@ class EditProfile extends Component {
                                 </div>
                                 <input
                                     type="file"
-                                    name="Twibbon"
+                                    name="userTwibbon"
                                     accept=".jpg,.jpeg,.png"
                                     ref={this.twibbonInputRef}
                                     onChange={this.handleTwibbonFileInputChange}
