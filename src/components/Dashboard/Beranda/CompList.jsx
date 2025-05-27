@@ -46,22 +46,28 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
     };
 
     const filteredCompetitions = Object.entries(competitions || {}).filter(([, data]) => {
-        if (!data || !data.anggota || !Array.isArray(data.anggota)) {
+        if (!data || !data.members || !Array.isArray(data.members)) {
             return false;
         }
-        return data.anggota.some(member => member && member.nama === currentUser);
+        console.log("Current User:", currentUser);
+        console.log("Competition Members:", data.members);
+        return data.members.some(member => member && member.fullName === currentUser);
     });
 
 
+    useEffect(() => {
+        console.log("Filtered Competitions:", filteredCompetitions);
+    },);
+
     const renderCompetition = (key, data) => {
         // Check if current user is in this competition and needs verification
-        const currentMember = data.anggota.find(member => member.nama === currentUser);
+        const currentMember = data.members.find(member => member.fullName === currentUser);
         const needsVerification = currentMember && !currentMember.verified;
 
         return (
             <div key={key} className="mb-6 pb-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-md px-4 py-3 text-white hover:scale-101 hover:bg-white/20 transition duration-300 ease-in-out">
                 <div className="flex justify-between items-start">
-                    <h3 className="text-xl font-semibold mb-1">{data.jenisLomba}</h3>
+                    <h3 className="text-xl font-semibold mb-1">{data.competitionName}</h3>
 
                     {/* Verification button inside each card */}
                     {needsVerification && (
@@ -81,12 +87,12 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                     <span className="font-semibold">Team ID:</span> {data.teamID || "-"}
                 </p>
 
-                {data.anggota.map((anggota, idx) => (
+                {data.members.map((anggota, idx) => (
                     <div key={idx} className="flex items-center gap-4 mb-1">
                         <p className="flex-1">
                             {idx === 0 ? "👑 Ketua" : "👤 Anggota"}:{" "}
-                            <span className={anggota.nama === currentUser ? "font-bold text-white" : ""}>
-                                {anggota.nama}
+                            <span className={anggota.fullName === currentUser ? "font-bold text-white" : ""}>
+                                {anggota.fullName}
                             </span>
                         </p>
 
@@ -98,8 +104,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
 
                 <p className="mt-2 font-semibold">
                     Team Status:{" "}
-                    <span className={data.anggota.every((a) => a.verified) ? "text-green-400/90" : "text-red-400/90"}>
-                        {data.anggota.every((a) => a.verified) ? "Verified" : "Not Verified"}
+                    <span className={data.members.every((a) => a.verified) ? "text-green-400/90" : "text-red-400/90"}>
+                        {data.members.every((a) => a.verified) ? "Verified" : "Not Verified"}
                     </span>
                 </p>
             </div>
@@ -275,6 +281,8 @@ const CompListPage = () => {
                 // Process competitions data
                 if (competitionsResponse.success && competitionsResponse.data) {
                     setCompetitions(competitionsResponse.data);
+                    console.log("Competitions fetched successfully:", competitionsResponse.data);
+                    console.log("Competitions fetched type:", typeof competitionsResponse.data);
                 } else {
                     console.error("Failed to fetch competitions:", competitionsResponse.error);
                 }
