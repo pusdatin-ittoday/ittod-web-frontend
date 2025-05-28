@@ -15,10 +15,10 @@ import { getImageUrlFromR2, uploadImageToR2 } from "../../api/user";
 
 // Helper to get original filename from R2 key
 const getOriginalFileName = (key) => {
-  if (!key) return "";
-  const parts = key.split("_");
-  // Remove the UUID part, join the rest (handles underscores in filenames)
-  return parts.slice(1).join("_");
+    if (!key) return "";
+    const parts = key.split("_");
+    // Remove the UUID part, join the rest (handles underscores in filenames)
+    return parts.slice(1).join("_");
 };
 
 class EditProfile extends Component {
@@ -70,44 +70,8 @@ class EditProfile extends Component {
     loadUserData = async () => {
         try {
             const response = await instance.get('/api/user');
-            
-            // First check for saved form progress
-            const savedProgress = localStorage.getItem('formProgress');
-            if (savedProgress) {
-                const formData = JSON.parse(savedProgress);
-
-                // If saved data exists and is less than 1 hour old, use it
-                const lastUpdated = new Date(formData.lastUpdated);
-                const oneHourAgo = new Date();
-                oneHourAgo.setHours(oneHourAgo.getHours() - 1);
-
-                if (lastUpdated > oneHourAgo) {
-                    this.setState({
-                        full_name: formData.full_name || "",
-                        birth_date: formData.birth_date || "",
-                        phone_number: formData.phone_number || "",
-                        jenis_kelamin: formData.jenis_kelamin || "",
-                        id_line: formData.id_line || "",
-                        id_discord: formData.id_discord || "",
-                        id_instagram: formData.id_instagram || "",
-                        pendidikan: formData.pendidikan || "",
-                        pendidikan_lainnya: formData.pendidikan_lainnya || "",
-                        nama_sekolah: formData.nama_sekolah || "",
-                        twibbonFileName: formData.twibbonFileName || "",
-                        ktmFileName: formData.ktmFileName || "",
-                        showProgressRestoredMessage: true
-                    });
-                    setTimeout(() => {
-                        this.setState({ showProgressRestoredMessage: false });
-                    }, 5000);
-
-                    return; // Don't load from API if we restored from localStorage
-                }
-            }
-
-            // If no recent form progress, load from API
             const userData = response.data;
-            
+
             // Extract pendidikan data and determine if it's "lainnya"
             let pendidikan = userData.pendidikan || "";
             let pendidikan_lainnya = "";
@@ -120,11 +84,9 @@ class EditProfile extends Component {
             // Format birth_date if it exists
             let formattedBirthDate = "";
             if (userData.birth_date) {
-                // If it's already in YYYY-MM-DD format, use it directly
                 if (/^\d{4}-\d{2}-\d{2}$/.test(userData.birth_date)) {
                     formattedBirthDate = userData.birth_date;
                 } else {
-                    // Try to parse and format the date
                     try {
                         const date = new Date(userData.birth_date);
                         if (!isNaN(date.getTime())) {
@@ -147,9 +109,10 @@ class EditProfile extends Component {
                 pendidikan: pendidikan,
                 pendidikan_lainnya: pendidikan_lainnya,
                 nama_sekolah: userData.nama_sekolah || "",
-                // Take the key from API and store it
                 ktmFileName: userData.ktm_key || "",
                 twibbonFileName: userData.twibbon_key || "",
+                KTM: null,         // reset file state
+                twibbon: null,     // reset file state
                 isLoading: false
             });
 
@@ -208,6 +171,7 @@ class EditProfile extends Component {
             pendidikan,
             pendidikan_lainnya,
             nama_sekolah,
+            ktmFileName,
             twibbonFileName
         } = this.state;
 
@@ -224,7 +188,7 @@ class EditProfile extends Component {
             pendidikan_lainnya,
             nama_sekolah,
             twibbonFileName,
-            ktmFileName: this.state.KTM ? this.state.KTM.name : this.state.ktmFileName,
+            ktmFileName,
             lastUpdated: new Date().toISOString()
         };
 
@@ -287,6 +251,7 @@ class EditProfile extends Component {
             pendidikan_lainnya,
             nama_sekolah,
             KTM,
+            ktmFileName,
             twibbon,
             twibbonFileName,
             ktmChanged,
@@ -315,10 +280,13 @@ class EditProfile extends Component {
         }
 
         // Validate KTM if no file is selected
-        if (!KTM) {
+        if (!KTM && !ktmFileName) {
             fieldsToValidate.KTM = "";
         }
 
+        if (!twibbon && !twibbonFileName) {
+            fieldsToValidate.twibbon = "";
+        }
         for (const key in fieldsToValidate) {
             if (fieldsToValidate[key] === "" || fieldsToValidate[key] === null) {
                 emptyFieldsList.push(this.fieldLabels[key]);
@@ -354,17 +322,19 @@ class EditProfile extends Component {
             if (id_line) formData.append('id_line', id_line);
             if (id_discord) formData.append('id_discord', id_discord);
             if (id_instagram) formData.append('id_instagram', id_instagram);
-            if (pendidikan === "lainnya" && pendidikan_lainnya) {
-                formData.append('pendidikan', pendidikan_lainnya);
-            } else if (pendidikan) {
+            if (pendidikan && pendidikan !== "lainnya") {
                 formData.append('pendidikan', pendidikan);
             }
+            // Untuk "lainnya", simpan di field terpisah atau abaikan
+            if (pendidikan === "lainnya" && pendidikan_lainnya) {
+                formData.append('pendidikan_custom', pendidikan_lainnya);
+            }
             if (nama_sekolah) formData.append('nama_sekolah', nama_sekolah);
-            
+
             if (KTM && ktmChanged) {
                 formData.append('profileImage', KTM); // <-- use 'profileImage'
             }
-            
+
             const response = await instance.patch('/api/user', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -373,7 +343,7 @@ class EditProfile extends Component {
 
             // Log the formData entries
             for (let pair of formData.entries()) {
-              console.log('PATCH /api/user:', pair[0], pair[1]);
+                console.log('PATCH /api/user:', pair[0], pair[1]);
             }
 
             // 2. If Twibbon changed, upload it separately
@@ -386,7 +356,7 @@ class EditProfile extends Component {
 
                 // Log the twibbonForm entries
                 for (let pair of twibbonForm.entries()) {
-                  console.log('PUT /api/user/twibbon:', pair[0], pair[1]);
+                    console.log('PUT /api/user/twibbon:', pair[0], pair[1]);
                 }
             }
 
