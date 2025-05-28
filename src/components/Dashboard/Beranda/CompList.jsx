@@ -67,7 +67,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
         return (
             <div key={key} className="mb-6 pb-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-md px-4 py-3 text-white hover:scale-101 hover:bg-white/20 transition duration-300 ease-in-out">
                 <div className="flex justify-between items-start">
-                    <h3 className="text-xl font-semibold mb-1">{data.competitionName}</h3>
+                    <h3 className="text-lg sm:text-xl font-semibold mb-1">{data.competitionName}</h3>
 
                     {/* Verification button inside each card */}
                     {needsVerification && (
