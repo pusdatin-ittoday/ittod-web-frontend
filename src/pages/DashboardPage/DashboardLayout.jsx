@@ -28,7 +28,7 @@ class DashboardLayout extends Component {
         y: window.innerHeight - 300,
       },
       isDragging: false,
-      dragOffset: { x: 0, y: 0 },
+      dragOffset: { x: 0, y: 0 }, 
       showSuccessAlert: false, // <-- NEW: For success alert
       successAlertMessage: "", // <-- NEW: Message for success alert
       successAlertPosition: { // <-- NEW: Position for success alert (can be different)
@@ -277,7 +277,7 @@ class DashboardLayout extends Component {
       <div className="flex min-h-screen text-white font-dm-sans">
         <Navbar />
         <div className="flex flex-col lg:flex-row w-full">
-          <aside className="mt-20 ml-6">
+          <aside className="mt-20 mr-5 ml-6">
             <Sidebar active={active} setActive={this.setActive} />
           </aside>
           <main className="flex-1 px-6 py-4">

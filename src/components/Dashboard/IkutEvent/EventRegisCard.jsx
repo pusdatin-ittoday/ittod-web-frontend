@@ -35,13 +35,13 @@ const IkutEvent = ({ title, description, image }) => (
         </div>
 
         <div className="text-center max-w-[250px] mt-2">
-            <h3 className="decoration-white/50 white-text-glow text-2xl mb-5 font-bold">{title}</h3>
-            <p className="text-sm">{description}</p>
+            <h3 className="decoration-white/50 font-bold leading-normal font-playfair text-sm sm:text-xl lg:text-xl md:text-base mb-2 sm:mb-3 md:mb-4 font-bold text-glow-beranda">{title}</h3>
+            <p className="text-xs sm:text-sm">{description}</p>
         </div>
 
         <div className="flex gap-5">
             <Link
-                className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm inline-block text-center cursor-pointer"
+                className="mt-3 sm:mt-4 button-hover custom-button-bg text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-xs sm:text-sm inline-block text-center cursor-pointer"
                 to={`/daftar-event/${title.toLowerCase().replace(/\s+/g, "-")}`}
             >
                 Daftar Sekarang
