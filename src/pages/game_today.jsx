@@ -46,7 +46,7 @@ const Game_Today = () => {
   const timeline = [
     { title: 'Pendaftaran Batch 1', date: '27 Mei 2025 - 20 Juni 2025' },
     { title: 'Pendaftaran Batch 2', date: '25 Juni 2025 - 28 Juli 2025' },
-    { title: 'Batas Submisi', date: '5 September 2025' },
+    { title: 'Batas Submisi', date: '1 September 2025' },
     { title: 'Pengumuman Finalis', date: '10 September 2025' },
     { title: 'Babak Final & Award', date: '27 September 2025' },
   ];
