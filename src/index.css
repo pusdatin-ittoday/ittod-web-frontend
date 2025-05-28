@@ -1,7 +1,7 @@
 /* font */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap&font-display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap&font-display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap&font-display=swap');
 @import 'tailwindcss';
 @tailwind utilities;
 
@@ -18,6 +18,7 @@
 
   .font-dm-sans {
     font-family: 'DM Sans', sans-serif;
+    font-display: swap;
   }
 
   /* shadow untuk Beranda */
@@ -98,6 +99,7 @@
     color: #fff;
     text-align: center;
     font-family: 'Playfair Display', serif;
+    font-display: swap;
     font-size: 25px;
     font-style: normal;
     font-weight: 700;
@@ -111,6 +113,7 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  font-display: swap;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
@@ -126,6 +129,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Poppins', sans-serif;
+  font-display: swap;
   /* background-color: #302044; */
   background: linear-gradient(135deg, #5c3b5c, #2e263c, #a86b8290);
   color: white;
