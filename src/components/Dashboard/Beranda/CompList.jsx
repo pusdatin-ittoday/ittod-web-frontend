@@ -118,8 +118,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
             <div className="border-b border-[#dfb4d7]/60 mb-4">
                 <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-5">
-                        <FaUser className="text-2xl input-text-glow text-white drop-shadow-[0_1px_6px_#FFE6FC]" />
-                        <h2 className="text-2xl font-bold input-text-glow tracking-wide transform transition duration-500 hover:scale-102 text-white drop-shadow-[0_1px_1px_#FFE6FC]">
+                        <FaUser className="text-xl sm:text-2xl input-text-glow text-white drop-shadow-[0_1px_6px_#FFE6FC]" />
+                        <h2 className="text-xl sm:text-2xl font-bold input-text-glow tracking-wide transform transition duration-500 hover:scale-102 text-white drop-shadow-[0_1px_1px_#FFE6FC]">
                             Halo, {name}!
                         </h2>
                     </div>
@@ -127,7 +127,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleEditUserClick}
-                            className="cursor-pointer custom-button-bg px-3 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold"
+                            className="custom-button-bg px-2 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm rounded button-hover transition duration-300 hover:scale-105 font-semibold mb-4 cursor-pointer"
                         >
                             Edit Data
                         </button>
@@ -135,15 +135,15 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                 </div>
             </div>
 
-            <h3 className="text-lg font-bold mb-2 flex items-center gap-2 text-white">
-                <FaList className="text-xl" /> My Competitions
+            <h3 className="text-sm sm:text-lg font-bold mb-2 flex items-center gap-2 text-white">
+                <FaList className="text-sm sm:text-xl" /> My Competitions
             </h3>
 
             <div className="overflow-y-auto flex-1 px-4 py-2 custom-scrollbar">
                 {filteredCompetitions.length > 0 ? (
                     filteredCompetitions.map(([key, data]) => renderCompetition(key, data))
                 ) : (
-                    <div className="text-center text-white/70 py-8">
+                    <div className="text-xs sm:text-sm text-center text-white/70 py-8">
                         <p>Kamu belum ikut kompetisi apapun.</p>
                     </div>
                 )}
@@ -155,7 +155,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                     <div className="bg-[#7b446c]/95 border border-white/30 p-6 rounded-lg w-full max-w-md text-white">
                         <h3 className="text-xl font-bold mb-2 text-center">Upload Verification Files</h3>
                         <p className="text-sm mb-6 text-center text-gray-300">
-                            Mohon unggah  pembayaran untuk verifikasi tim kamu.
+                            Mohon unggah pembayaran untuk verifikasi tim kamu.
                         </p>
 
                         <div className="space-y-4">

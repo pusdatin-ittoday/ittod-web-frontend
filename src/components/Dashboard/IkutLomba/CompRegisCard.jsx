@@ -31,8 +31,8 @@ const events = [
 ];
 
 const IkutLomba = ({ title, description, image, registerLink }) => (
-  <div className="font-dm-sans flex flex-col items-center text-white">
-    <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1]">
+  <div className="font-dm-sans flex flex-col items-center justify-between w-full max-w-[220px] min-h-[340px] text-white">
+    <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1] flex-shrink-0">
       {image ? (
         <img
           src={image}
@@ -43,17 +43,22 @@ const IkutLomba = ({ title, description, image, registerLink }) => (
         <div className="w-full h-full bg-black"></div>
       )}
     </div>
-    <div className="text-center max-w-[200px]">
-      <h3 className="decoration-white/50 white-text-glow text-2xl mb-5 font-bold">{title}</h3>
-      <p className="text-sm">{description}</p>
-    </div>
-    <div className="flex gap-5">
-      <Link to={registerLink}>
-        <button
-          className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer">
-          Daftar Sekarang
-        </button>
-      </Link>
+    <div className="flex-1 flex flex-col justify-start items-center gap-4 w-full">
+      <div className="flex flex-col justify-between items-center w-full h-[140px] py-4">
+        <div className="text-center w-full flex flex-col justify-start mb-1 sm:mb-4">
+          <h3 className="decoration-white/50 leading-tight font-playfair text-sm sm:text-xl lg:text-xl mb-1 sm:mb-2 font-bold text-glow-beranda">{title}</h3>
+          <p className="text-xs sm:text-sm leading-relaxed">{description}</p>
+        </div>
+
+        <div className="w-full flex justify-center mt-auto">
+          <Link to={registerLink}>
+            <button
+              className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer">
+              Daftar Sekarang
+            </button>
+          </Link>
+        </div>
+      </div>
     </div>
   </div>
 );
@@ -88,14 +93,14 @@ const CompRegisCard = () => {
       <div className="flex flex-row items-start justify-between mb-4 pb-2 border-b border-[#dfb4d7]/60">
         <div className="flex flex-col">
           <div className="flex items-center mb-1.5">
-            <PiTargetBold className="text-2xl input-text-glow  drop-shadow-[0_1px_6px_#FFE6FC] text-white mr-2" />
-            <h2 className="text-xl font-bold text-white input-text-glow drop-shadow-[0_1px_1px_#FFE6FC]">Kompetisi yang Tersedia</h2>
+            <PiTargetBold className="text-sm sm:text-2xl input-text-glow  drop-shadow-[0_1px_6px_#FFE6FC] text-white mr-2" />
+            <h2 className="text-sm sm:text-xl font-bold text-white input-text-glow drop-shadow-[0_1px_1px_#FFE6FC]">Kompetisi yang Tersedia</h2>
           </div>
-          <p className="text-sm pl-1 text-gray-300 ml-7">Pilih dan daftar kompetisi sesuai minat kamu!</p>
+          <p className="text-xs sm:text-sm pl-1 text-gray-300 ml-4 sm:ml-7">Pilih dan daftar kompetisi sesuai minat kamu!</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="custom-button-bg px-4 py-1 rounded button-hover transition duration-300 hover:scale-105 font-semibold mb-4 cursor-pointer"
+          className="custom-button-bg px-2 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm rounded button-hover transition duration-300 hover:scale-105 font-semibold mb-4 ml-2 cursor-pointer"
         >
           Join Team
         </button>

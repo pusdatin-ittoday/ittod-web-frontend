@@ -44,10 +44,10 @@ const Announcement = () => {
         <div className="flex-1 overflow-hidden px-4 py-2">
           <div className="h-full overflow-y-auto pr-2 space-y-2 custom-scrollbar">
             {loading ? (
-              <div className="text-center text-gray-300">Loading...</div>
+              <div className="text-center  text-gray-300"><span className="text-xs sm:text-sm">Loading...</span></div>
             ) : announcements.length === 0 ? (
               <div className="text-center text-gray-300">
-                Belum ada pengumuman.
+                <span className="text-xs sm:text-sm">Belum ada pengumuman.</span>
               </div>
             ) : (
               announcements.map((announcement) => (

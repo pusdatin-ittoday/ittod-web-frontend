@@ -84,7 +84,9 @@ class DashboardLayout extends Component {
         { key: "birth_date", label: "Tanggal Lahir" },
         { key: "jenis_kelamin", label: "Jenis Kelamin" },
         { key: "pendidikan", label: "Status Pendidikan" },
-        { key: "nama_sekolah", label: "Nama Sekolah/Institusi" }
+        { key: "nama_sekolah", label: "Nama Sekolah/Institusi" },
+        {key: "ktm_key", label: "Kartu Institusi"},
+        {key: "twibbon_key", label: "Twibbon"},
       ];
 
       const incompleteFields = requiredFields.filter(field =>
