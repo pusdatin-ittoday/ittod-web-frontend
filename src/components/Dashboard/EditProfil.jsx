@@ -15,10 +15,10 @@ import { getImageUrlFromR2, uploadImageToR2 } from "../../api/user";
 
 // Helper to get original filename from R2 key
 const getOriginalFileName = (key) => {
-  if (!key) return "";
-  const parts = key.split("_");
-  // Remove the UUID part, join the rest (handles underscores in filenames)
-  return parts.slice(1).join("_");
+    if (!key) return "";
+    const parts = key.split("_");
+    // Remove the UUID part, join the rest (handles underscores in filenames)
+    return parts.slice(1).join("_");
 };
 
 class EditProfile extends Component {
@@ -33,7 +33,6 @@ class EditProfile extends Component {
             id_discord: "",
             id_instagram: "",
             pendidikan: "",
-            pendidikan_lainnya: "",
             nama_sekolah: "",
             KTM: null,
             showErrorBox: false,
@@ -55,7 +54,6 @@ class EditProfile extends Component {
             id_discord: "ID Discord",
             id_instagram: "ID Instagram",
             pendidikan: "Status Pendidikan",
-            pendidikan_lainnya: "Status Pendidikan Lainnya",
             nama_sekolah: "Nama Sekolah/Institusi",
             KTM: "Kartu Institusi",
             twibbon: "Twibbon"
@@ -70,61 +68,17 @@ class EditProfile extends Component {
     loadUserData = async () => {
         try {
             const response = await instance.get('/api/user');
-            
-            // First check for saved form progress
-            const savedProgress = localStorage.getItem('formProgress');
-            if (savedProgress) {
-                const formData = JSON.parse(savedProgress);
-
-                // If saved data exists and is less than 1 hour old, use it
-                const lastUpdated = new Date(formData.lastUpdated);
-                const oneHourAgo = new Date();
-                oneHourAgo.setHours(oneHourAgo.getHours() - 1);
-
-                if (lastUpdated > oneHourAgo) {
-                    this.setState({
-                        full_name: formData.full_name || "",
-                        birth_date: formData.birth_date || "",
-                        phone_number: formData.phone_number || "",
-                        jenis_kelamin: formData.jenis_kelamin || "",
-                        id_line: formData.id_line || "",
-                        id_discord: formData.id_discord || "",
-                        id_instagram: formData.id_instagram || "",
-                        pendidikan: formData.pendidikan || "",
-                        pendidikan_lainnya: formData.pendidikan_lainnya || "",
-                        nama_sekolah: formData.nama_sekolah || "",
-                        twibbonFileName: formData.twibbonFileName || "",
-                        ktmFileName: formData.ktmFileName || "",
-                        showProgressRestoredMessage: true
-                    });
-                    setTimeout(() => {
-                        this.setState({ showProgressRestoredMessage: false });
-                    }, 5000);
-
-                    return; // Don't load from API if we restored from localStorage
-                }
-            }
-
-            // If no recent form progress, load from API
             const userData = response.data;
-            
-            // Extract pendidikan data and determine if it's "lainnya"
-            let pendidikan = userData.pendidikan || "";
-            let pendidikan_lainnya = "";
 
-            if (pendidikan && !["sma", "mahasiswa", "lainnya"].includes(pendidikan)) {
-                pendidikan_lainnya = pendidikan;
-                pendidikan = "lainnya";
-            }
+            // Simply use pendidikan as-is
+            let pendidikan = userData.pendidikan || "";
 
             // Format birth_date if it exists
             let formattedBirthDate = "";
             if (userData.birth_date) {
-                // If it's already in YYYY-MM-DD format, use it directly
                 if (/^\d{4}-\d{2}-\d{2}$/.test(userData.birth_date)) {
                     formattedBirthDate = userData.birth_date;
                 } else {
-                    // Try to parse and format the date
                     try {
                         const date = new Date(userData.birth_date);
                         if (!isNaN(date.getTime())) {
@@ -145,11 +99,11 @@ class EditProfile extends Component {
                 id_discord: userData.id_discord || "",
                 id_instagram: userData.id_instagram || "",
                 pendidikan: pendidikan,
-                pendidikan_lainnya: pendidikan_lainnya,
                 nama_sekolah: userData.nama_sekolah || "",
-                // Take the key from API and store it
                 ktmFileName: userData.ktm_key || "",
                 twibbonFileName: userData.twibbon_key || "",
+                KTM: null,         // reset file state
+                twibbon: null,     // reset file state
                 isLoading: false
             });
 
@@ -173,7 +127,6 @@ class EditProfile extends Component {
                 twibbon: file,
                 twibbonChanged: true
             }, () => {
-                // Save current state to localStorage after file change
                 this.saveFormProgress();
             });
         } else if (file) {
@@ -183,7 +136,6 @@ class EditProfile extends Component {
             }
         }
     }
-
 
     handleTwibbonFileDrop = (e) => {
         e.preventDefault();
@@ -206,8 +158,8 @@ class EditProfile extends Component {
             id_discord,
             id_instagram,
             pendidikan,
-            pendidikan_lainnya,
             nama_sekolah,
+            ktmFileName,
             twibbonFileName
         } = this.state;
 
@@ -221,10 +173,9 @@ class EditProfile extends Component {
             id_discord,
             id_instagram,
             pendidikan,
-            pendidikan_lainnya,
             nama_sekolah,
             twibbonFileName,
-            ktmFileName: this.state.KTM ? this.state.KTM.name : this.state.ktmFileName,
+            ktmFileName,
             lastUpdated: new Date().toISOString()
         };
 
@@ -250,7 +201,6 @@ class EditProfile extends Component {
                 KTM: file,
                 ktmChanged: true
             }, () => {
-                // Save current state to localStorage after file change
                 this.saveFormProgress();
             });
         } else if (file) {
@@ -272,8 +222,17 @@ class EditProfile extends Component {
         this.handleFileChange(file);
     }
 
+    // Add a helper function to check upload status
+    checkUploadStatus = () => {
+        const { KTM, ktmFileName, twibbon, twibbonFileName } = this.state;
+        
+        return {
+            ktmMissing: !KTM && !ktmFileName,
+            twibbonMissing: !twibbon && !twibbonFileName
+        };
+    }
+
     handleSubmit = async (e) => {
-        console.log("Submitted")
         e.preventDefault();
         const {
             full_name,
@@ -284,16 +243,17 @@ class EditProfile extends Component {
             id_discord,
             id_instagram,
             pendidikan,
-            pendidikan_lainnya,
             nama_sekolah,
             KTM,
+            ktmFileName,
             twibbon,
             twibbonFileName,
             ktmChanged,
             twibbonChanged
         } = this.state;
 
-        console.log("jenis_kelamin value:", jenis_kelamin, "| type:", typeof jenis_kelamin);
+        // Check upload status
+        const uploadStatus = this.checkUploadStatus();
 
         const emptyFieldsList = [];
 
@@ -314,25 +274,20 @@ class EditProfile extends Component {
             emptyFieldsList.push(this.fieldLabels.jenis_kelamin);
         }
 
-        // Validate KTM if no file is selected
-        if (!KTM) {
+        // Validate KTM if no file is selected AND no existing file
+        if (uploadStatus.ktmMissing) {
             fieldsToValidate.KTM = "";
         }
 
+        // Validate Twibbon if no file is selected AND no existing file
+        if (uploadStatus.twibbonMissing) {
+            fieldsToValidate.twibbon = "";
+        }
+
+        // Check other required fields
         for (const key in fieldsToValidate) {
             if (fieldsToValidate[key] === "" || fieldsToValidate[key] === null) {
                 emptyFieldsList.push(this.fieldLabels[key]);
-            }
-        }
-
-        // Special validation for 'pendidikan_lainnya'
-        if (pendidikan === "lainnya" && (!pendidikan_lainnya || pendidikan_lainnya.trim() === "")) {
-            if (!emptyFieldsList.includes(this.fieldLabels.pendidikan_lainnya)) {
-                emptyFieldsList.push(this.fieldLabels.pendidikan_lainnya);
-            }
-            const pendidikanIndex = emptyFieldsList.indexOf(this.fieldLabels.pendidikan);
-            if (pendidikanIndex > -1 && pendidikan !== "") {
-                emptyFieldsList.splice(pendidikanIndex, 1);
             }
         }
 
@@ -354,59 +309,63 @@ class EditProfile extends Component {
             if (id_line) formData.append('id_line', id_line);
             if (id_discord) formData.append('id_discord', id_discord);
             if (id_instagram) formData.append('id_instagram', id_instagram);
-            if (pendidikan === "lainnya" && pendidikan_lainnya) {
-                formData.append('pendidikan', pendidikan_lainnya);
-            } else if (pendidikan) {
+            if (pendidikan) {
                 formData.append('pendidikan', pendidikan);
             }
             if (nama_sekolah) formData.append('nama_sekolah', nama_sekolah);
-            
+
+            // Only append KTM if it's changed
             if (KTM && ktmChanged) {
-                formData.append('profileImage', KTM); // <-- use 'profileImage'
+                formData.append('profileImage', KTM);
             }
-            
+
             const response = await instance.patch('/api/user', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
 
-            // Log the formData entries
-            for (let pair of formData.entries()) {
-              console.log('PATCH /api/user:', pair[0], pair[1]);
-            }
-
-            // 2. If Twibbon changed, upload it separately
+            // 2. If Twibbon changed, upload it separately to the twibbon API
             if (twibbon && twibbonChanged) {
                 const twibbonForm = new FormData();
-                twibbonForm.append('userTwibbon', twibbon); // <-- use 'userTwibbon'
-                await instance.put('/api/user/twibbon', twibbonForm, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-
-                // Log the twibbonForm entries
-                for (let pair of twibbonForm.entries()) {
-                  console.log('PUT /api/user/twibbon:', pair[0], pair[1]);
+                twibbonForm.append('userTwibbon', twibbon);
+                
+                try {
+                    const twibbonResponse = await instance.put('/api/user/twibbon', twibbonForm, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                } catch (twibbonError) {
+                    console.error("❌ Twibbon upload failed:", twibbonError);
+                    console.error("Twibbon error response:", twibbonError.response?.data);
+                    // Continue with the rest of the process even if twibbon fails
                 }
             }
 
             // 3. Upload KTM to R2 if changed
             let ktmR2Key = this.state.ktmFileName;
             if (KTM && ktmChanged) {
-                const r2Res = await uploadImageToR2(KTM);
-                if (r2Res.success && r2Res.data.key) {
-                    ktmR2Key = r2Res.data.key;
-                    this.setState({ ktmFileName: ktmR2Key });
+                try {
+                    const r2Res = await uploadImageToR2(KTM);
+                    if (r2Res.success && r2Res.data.key) {
+                        ktmR2Key = r2Res.data.key;
+                        this.setState({ ktmFileName: ktmR2Key });
+                    }
+                } catch (r2Error) {
+                    console.error("❌ KTM R2 upload error:", r2Error);
                 }
             }
 
             // 4. Upload Twibbon to R2 if changed
             let twibbonR2Key = this.state.twibbonFileName;
             if (twibbon && twibbonChanged) {
-                const r2Res = await uploadImageToR2(twibbon);
-                if (r2Res.success && r2Res.data.key) {
-                    twibbonR2Key = r2Res.data.key;
-                    this.setState({ twibbonFileName: twibbonR2Key });
+                try {
+                    const r2Res = await uploadImageToR2(twibbon);
+                    if (r2Res.success && r2Res.data.key) {
+                        twibbonR2Key = r2Res.data.key;
+                        this.setState({ twibbonFileName: twibbonR2Key });
+                    }
+                } catch (r2Error) {
+                    console.error("❌ Twibbon R2 upload error:", r2Error);
                 }
             }
 
@@ -422,7 +381,7 @@ class EditProfile extends Component {
                     id_line,
                     id_discord,
                     id_instagram,
-                    pendidikan: pendidikan === "lainnya" ? pendidikan_lainnya : pendidikan,
+                    pendidikan: pendidikan,
                     nama_sekolah,
                     twibbonFileName: twibbonR2Key,
                     ktmFileName: ktmR2Key
@@ -436,10 +395,11 @@ class EditProfile extends Component {
                 throw new Error(response.data.message || "Failed to update profile");
             }
         } catch (error) {
-            console.error("Error updating profile:", error);
+            console.error("❌ Error updating profile:", error);
+            console.error("Error response:", error.response?.data);
             this.setState({
                 showErrorBox: true,
-                errorFields: ["Failed to update profile. Please try again."]
+                errorFields: [error.response?.data?.message || "Failed to update profile. Please try again."]
             });
         }
     };
@@ -458,7 +418,6 @@ class EditProfile extends Component {
             id_discord,
             id_instagram,
             pendidikan,
-            pendidikan_lainnya,
             nama_sekolah,
             KTM,
             twibbon,
@@ -498,8 +457,6 @@ class EditProfile extends Component {
             genderIcon = <PiGenderIntersex className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />;
         }
 
-        // Determine what to display in the KTM upload area
-        const ktmDisplayText = KTM ? KTM.name : (ktmFileName || "Drop file di sini atau klik untuk pilih file");
         const ktmImageUrl = getImageUrlFromR2(ktmFileName);
         const twibbonImageUrl = getImageUrlFromR2(twibbonFileName);
 
@@ -632,23 +589,8 @@ class EditProfile extends Component {
                             </select>
                         </div>
 
-                        {/* Conditional field for 'lainnya' */}
-                        {pendidikan === "lainnya" && (
-                            <div className="mb-3 relative">
-                                <label className="block text-sm font-bold mb-2">Tulis Status Pendidikan Anda</label>
-                                <input
-                                    type="text"
-                                    name="pendidikan_lainnya"
-                                    placeholder="Contoh: Fresh graduate, sedang kerja, dll"
-                                    value={pendidikan_lainnya}
-                                    onChange={this.handleChange}
-                                    className={`py-2 px-4 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871] ${errorFields.includes(this.fieldLabels.pendidikan_lainnya) ? 'ring-2 ring-red-500 border-red-500' : ''}`}
-                                />
-                            </div>
-                        )}
-
                         {/* Nama Sekolah */}
-                        <div className={`mb-3 relative ${pendidikan !== 'lainnya' ? 'lg:col-start-2' : ''}`}>
+                        <div className="mb-3 relative lg:col-start-2">
                             <label className="block text-sm font-bold mb-2">Nama Sekolah/Institusi</label>
                             <FaSchool className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
                             <input
@@ -691,7 +633,6 @@ class EditProfile extends Component {
                                     style={{ display: "none" }}
                                 />
                             </div>
-                            {/* Show previous image title if exists */}
                             {ktmFileName && !KTM && (
                                 <div className="text-xs text-gray-200 mt-1">
                                     Foto yang diupload sebelumnya: <span className="font-semibold">{getOriginalFileName(ktmFileName)}</span>
@@ -702,7 +643,7 @@ class EditProfile extends Component {
                             )}
                             {ktmImageUrl && (
                                 <div className="mt-2 flex justify-center">
-                                    <img src={ktmImageUrl} alt="KTM" className="max-h-64 rounded shadow" /> {/* dari max-h-32 ke max-h-64 */}
+                                    <img src={ktmImageUrl} alt="KTM" className="max-h-64 rounded shadow" />
                                 </div>
                             )}
                         </div>
@@ -737,7 +678,6 @@ class EditProfile extends Component {
                                     style={{ display: "none" }}
                                 />
                             </div>
-                            {/* Show previous image title if exists */}
                             {twibbonFileName && !twibbon && (
                                 <div className="text-xs text-gray-200 mt-1">
                                     Foto yang diupload sebelumnya: <span className="font-semibold">{getOriginalFileName(twibbonFileName)}</span>
@@ -748,10 +688,11 @@ class EditProfile extends Component {
                             )}
                             {twibbonImageUrl && (
                                 <div className="mt-2 flex justify-center">
-                                    <img src={twibbonImageUrl} alt="Twibbon" className="max-h-64 rounded shadow" /> {/* dari max-h-32 ke max-h-64 */}
+                                    <img src={twibbonImageUrl} alt="Twibbon" className="max-h-64 rounded shadow" />
                                 </div>
                             )}
                         </div>
+
                         {/* Tombol */}
                         <div className="col-span-full flex justify-end mt-6">
                             <Link
@@ -814,7 +755,6 @@ class EditProfile extends Component {
                     </div>
                 )}
             </div>
-
         );
     }
 }

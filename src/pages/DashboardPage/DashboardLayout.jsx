@@ -28,7 +28,7 @@ class DashboardLayout extends Component {
         y: window.innerHeight - 300,
       },
       isDragging: false,
-      dragOffset: { x: 0, y: 0 },
+      dragOffset: { x: 0, y: 0 }, 
       showSuccessAlert: false, // <-- NEW: For success alert
       successAlertMessage: "", // <-- NEW: Message for success alert
       successAlertPosition: { // <-- NEW: Position for success alert (can be different)
@@ -84,7 +84,9 @@ class DashboardLayout extends Component {
         { key: "birth_date", label: "Tanggal Lahir" },
         { key: "jenis_kelamin", label: "Jenis Kelamin" },
         { key: "pendidikan", label: "Status Pendidikan" },
-        { key: "nama_sekolah", label: "Nama Sekolah/Institusi" }
+        { key: "nama_sekolah", label: "Nama Sekolah/Institusi" },
+        {key: "ktm_key", label: "Kartu Institusi"},
+        {key: "twibbon_key", label: "Twibbon"},
       ];
 
       const incompleteFields = requiredFields.filter(field =>
@@ -277,7 +279,7 @@ class DashboardLayout extends Component {
       <div className="flex min-h-screen text-white font-dm-sans">
         <Navbar />
         <div className="flex flex-col lg:flex-row w-full">
-          <aside className="mt-20 ml-6">
+          <aside className="mt-20 mr-5 ml-6">
             <Sidebar active={active} setActive={this.setActive} />
           </aside>
           <main className="flex-1 px-6 py-4">
@@ -294,9 +296,9 @@ class DashboardLayout extends Component {
             onTouchStart={(e) => this.handleTouchStart(e, "incomplete")}
           >
             <div className="flex justify-between items-start mb-2 gap-5">
-              <h3 className="font-bold text-lg">
+              <h3 className="font-bold text-sm sm:text-lg">
                 <div className="flex items-center">
-                  <MdErrorOutline className="text-xl mr-2" />
+                  <MdErrorOutline className="text-sm sm:text-xl mr-2" />
                   Data belum lengkap!
                 </div>
               </h3>
@@ -304,13 +306,13 @@ class DashboardLayout extends Component {
                 onClick={this.closeAlert}
                 className="bg-red-700/85 hover:bg-red-800/85 rounded-full p-1 transition-colors"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </button>
             </div>
-            <p className="text-sm mb-2">Mohon untuk lengkapi data diri Anda :</p>
-            <ul className="list-disc pl-5 text-sm space-y-1">
+            <p className="text-xs sm:text-sm mb-2">Mohon untuk lengkapi data diri Anda :</p>
+            <ul className="list-disc pl-5 text-xs sm:text-sm space-y-1">
               {incompleteFields.map((field, index) => (
                 <li key={index}>{field.label}</li>
               ))}
@@ -321,7 +323,7 @@ class DashboardLayout extends Component {
         {/* Alert for successful data save or complete data */}
         {showSuccessAlert && (
           <div
-            className="bg-green-600/90 text-white px-6 py-4 rounded-lg shadow-xl max-w-sm"
+            className="bg-green-600/90 text-white text-sm sm:text-xl px-4 py-2 sm:px-6 sm:py-4 rounded-lg shadow-xl max-w-sm"
             style={successAlertStyle}
             onMouseDown={(e) => this.handleMouseDown(e, "success")}
             onTouchStart={(e) => this.handleTouchStart(e, "success")}
@@ -329,7 +331,7 @@ class DashboardLayout extends Component {
             <div className="flex justify-between items-center mb-1 gap-4">
               <h3 className="font-semibold text-md">
                 <div className="flex items-center">
-                  <MdCheckCircleOutline className="text-xl mr-2" />
+                  <MdCheckCircleOutline className="text-sm sm:text-xl mr-2" />
                   {successAlertMessage}
                 </div>
               </h3>
@@ -337,7 +339,7 @@ class DashboardLayout extends Component {
                 onClick={this.closeSuccessAlert}
                 className="bg-green-700/85 hover:bg-green-800/85 rounded-full p-1 transition-colors"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </button>
