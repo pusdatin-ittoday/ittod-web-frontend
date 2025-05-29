@@ -331,7 +331,7 @@ const CompListPage = () => {
     };
 
     const handleEditUser = () => {
-        navigate("/dashboard/edit-profile");
+        navigate("/edit-profile");
     };
 
     return (

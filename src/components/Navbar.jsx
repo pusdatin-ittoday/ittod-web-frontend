@@ -17,12 +17,17 @@ class Navbar extends Component {
   async componentDidMount() {
     window.addEventListener('auth-changed', this.updateAuthStatus);
     window.addEventListener('focus', this.updateAuthStatus);
+    window.addEventListener('scroll', this.handleScroll); // Add scroll listener
+    window.addEventListener('resize', this.handleResize); // Add resize listener
     await this.updateAuthStatus();
+    this.checkIfHomePage();
   }
 
   componentWillUnmount() {
     window.removeEventListener('auth-changed', this.updateAuthStatus);
     window.removeEventListener('focus', this.updateAuthStatus);
+    window.removeEventListener('scroll', this.handleScroll); // Remove scroll listener
+    window.removeEventListener('resize', this.handleResize); // Remove resize listener
   }
 
   updateAuthStatus = async () => {
@@ -119,7 +124,7 @@ class Navbar extends Component {
 
   render() {
     const { active, scroll, dropdownOpen, isLoggedIn, loading } = this.state;
-    const scrollActive = scroll ? 'backdrop-blur-md py-3 bg-black/20 shadow-md' : 'bg-transparent py-2';
+    const scrollActive = scroll ? 'backdrop-blur-xl py-3 bg-black/10 border-black/10 shadow-lg' : 'bg-transparent py-2';
     const navLinkBase = 'font-dm-sans font-medium opacity-100 text-white nav-text-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer';
 
     // Prevent UI flicker: don't render login/logout until loading is false
@@ -144,9 +149,9 @@ class Navbar extends Component {
 
             {/* Menu List */}
             <ul
-              className={`flex lg:gap-12 flex-col gap-3 absolute top-full right-0 mt-1 z-[9999] w-48 px-4 py-4 rounded-lg shadow-lg bg-[#6a316c] font-bold text-white text-[17px] transition-all duration-300 ease-in-out
+              className={`flex lg:gap-12 flex-col gap-3 absolute top-full right-0 mt-1 z-[9999] w-48 px-4 py-4 rounded-lg shadow-lg backdrop-blur-md bg-[#6a316c]/90 border border-white/20 font-bold text-white text-[17px] transition-all duration-300 ease-in-out
               ${active ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}
-              lg:opacity-100 lg:visible lg:pointer-events-auto lg:static lg:flex-row lg:gap-12 lg:shadow-none lg:bg-transparent lg:w-auto lg:h-full lg:p-0 lg:text-white lg:transition-none lg:items-center lg:mt-0 lg:translate-y-0`}
+              lg:opacity-100 lg:visible lg:pointer-events-auto lg:static lg:flex-row lg:gap-12 lg:shadow-none lg:bg-transparent lg:backdrop-blur-none lg:border-none lg:w-auto lg:h-full lg:p-0 lg:text-white lg:transition-none lg:items-center lg:mt-0 lg:translate-y-0`}
             >
               <li>
                 <a
@@ -204,7 +209,7 @@ class Navbar extends Component {
                     />
                   </button>
                   {dropdownOpen && (
-                    <div className="font-dm-sans absolute right-0 mt-2 w-40 bg-[#302044] text-white rounded-lg shadow-lg py-2 z-50">
+                    <div className="font-dm-sans absolute right-0 mt-2 w-40 backdrop-blur-md bg-[#302044]/90 border border-white/20 text-white rounded-lg shadow-lg py-2 z-50">
                       <a
                         href="/dashboard/beranda"
                         className="block px-4 py-2 font-dm-sans hover:text-pink-400 cursor-pointer transition duration-300 ease-in-out hover:scale-105"
