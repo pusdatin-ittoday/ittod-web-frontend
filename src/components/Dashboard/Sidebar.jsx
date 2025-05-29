@@ -30,7 +30,7 @@ const Sidebar = ({ active, setActive }) => {
                             setActive(item.id);
                             navigate(`/dashboard/${item.id}`);
                         }}
-                        className={`px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 lg:py-2 xl:py-3
+                        className={`px-4 sm:px-6 md:px-8 py-1 sm:py-2.5 md:py-3 lg:px-8 lg:text-start lg:py-2 xl:py-3 xl:px-10
                             text-xs sm:text-sm md:text-base lg:text-sm xl:text-base
                             rounded-md lg:font-medium text-center sm:text-left button-hover 
                             transition duration-300 ease-in-out cursor-pointer

@@ -134,12 +134,12 @@ const CompSubmitCard = () => {
       <div className="flex flex-col items-start mb-4 pb-2 border-b border-[#dfb4d7]/60">
         <div className="flex flex-col">
           <div className="flex items-center mb-1.5">
-            <TfiClipboard className="text-xl text-white mr-2 drop-shadow-[0_1px_8px_#FFE6FC] input-text-glow" />
-            <h2 className="text-xl lg:text-xl font-bold text-white input-text-glow drop-shadow-[0_1px_12px_#FFE6FC]">
-              Upload Karya Terbaikmu di Sini
+            <TfiClipboard className="text-sm sm:text-2xl input-text-glow  drop-shadow-[0_1px_6px_#FFE6FC] text-white mr-2" />
+            <h2 className="text-sm sm:text-xl font-bold text-white input-text-glow drop-shadow-[0_1px_1px_#FFE6FC]">
+              Upload Karya Terbaikmu
             </h2>
           </div>
-          <p className="text-sm text-gray-200 ml-7">
+          <p className="text-xs sm:text-sm pl-1 text-gray-300 ml-4.5 sm:ml-7">
             Pastikan Karyamu Sudah Siap!
           </p>
         </div>
@@ -164,9 +164,9 @@ const CompSubmitCard = () => {
         </div>
       ) : noCompetitions ? (
         <div className="flex-1 flex flex-col justify-center items-center text-center px-4">
-          <MdInfo className="text-5xl text-pink-300 mb-3" />
-          <h3 className="text-white text-xl font-bold mb-2">Tidak ada lomba yang bisa disubmit</h3>
-          <p className="text-gray-300">Kamu belum terdaftar pada lomba yang memiliki submission. Daftar lomba terlebih dahulu untuk dapat mengunggah karya.</p>
+          <MdInfo className="text-4xl sm:text-5xl text-pink-300 mb-3" />
+          <h3 className="text-white text-lg sm:text-xl font-bold mb-2">Tidak ada lomba yang bisa disubmit</h3>
+          <p className="text-gray-300 text-xs sm:text-xm">Kamu belum terdaftar pada lomba yang memiliki submission. Daftar lomba terlebih dahulu untuk dapat mengunggah karya.</p>
         </div>
       ) : (
         /* Grid daftar kompetisi dengan scroll */

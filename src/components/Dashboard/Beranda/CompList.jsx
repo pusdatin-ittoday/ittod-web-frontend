@@ -50,14 +50,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
         if (!data || !data.members || !Array.isArray(data.members)) {
             return false;
         }
-        // console.log("Current User:", currentUser);
-        // console.log("Competition Members:", data.members);
         return data.members.some(member => member && member.fullName === currentUser);
     });
-
-    // useEffect(() => {
-    //     console.log("Filtered Competitions:", filteredCompetitions);
-    // },);
 
     const renderCompetition = (key, data) => {
         // Check if current user is in this competition and needs verification
