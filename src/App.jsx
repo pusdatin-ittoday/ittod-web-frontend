@@ -21,7 +21,6 @@ import EditProfile from './components/Dashboard/EditProfil';
 import Seminar from './pages/seminar';
 import Bootcamp from './pages/Bootcamp';
 import Workshop from './pages/Workshop';
-import SubmitLomba from './components/Dashboard/SubmitLomba/SubmitLomba';
 import Submit_Gametoday from './pages/CompSubmission/Submit_Gametoday';
 import Submit_Uxtoday from './pages/CompSubmission/Submit_Uxtoday';
 import Submit_Minetoday from './pages/CompSubmission/Submit_Minetoday';
