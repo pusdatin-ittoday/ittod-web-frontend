@@ -80,12 +80,22 @@ export const loginUser = async (credentials) => {
 
 //Initiate Google OAuth login
 export const initiateGoogleLogin = () => {
-  // Save redirect path for after login
-  localStorage.setItem('redirectAfterAuth', '/dashboard/beranda');
+  // Save current location for redirect after login
+  const currentPath = window.location.pathname;
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectTo = urlParams.get('redirectTo');
+  
+  if (redirectTo) {
+    localStorage.setItem('redirectAfterAuth', decodeURIComponent(redirectTo));
+  } else if (currentPath !== '/login' && currentPath !== '/register') {
+    localStorage.setItem('redirectAfterAuth', currentPath);
+  } else {
+    localStorage.setItem('redirectAfterAuth', '/dashboard/beranda');
+  }
 
   // Redirect to Google OAuth endpoint
   window.location.href = `${cleanApiUrl}/api/auth/google`;
-};
+}
 
 /**
  * Check if the user is logged in by calling the backend status endpoint
@@ -377,4 +387,41 @@ export const uploadImageToR2 = async (file) => {
 export const getImageUrlFromR2 = (key) => {
   if (!key) return "";
   return `${cleanApiUrl}/api/images/${key}`;
+};
+
+// Add this function to handle Google auth callback
+export const handleGoogleAuthCallback = async () => {
+  try {
+    const response = await instance.get('/api/auth/google/callback', { withCredentials: true });
+    
+    if (response.data.success) {
+      // Dispatch auth change event
+      window.dispatchEvent(new Event('auth-changed'));
+      return {
+        success: true,
+        data: response.data
+      };
+    } else {
+      return {
+        success: false,
+        error: response.data.error || 'Google authentication failed'
+      };
+    }
+  } catch (error) {
+    console.error("Google auth callback error:", error);
+    
+    // Check if it's an account conflict error
+    if (error.response?.data?.error === 'ACCOUNT_EXISTS_WITH_EMAIL') {
+      return {
+        success: false,
+        error: 'ACCOUNT_EXISTS_WITH_EMAIL',
+        message: 'Akun kamu sudah teregistrasi dengan email dan password. Silakan login menggunakan email dan password.'
+      };
+    }
+    
+    return {
+      success: false,
+      error: error.response?.data?.error || 'Google authentication failed'
+    };
+  }
 };

@@ -10,25 +10,47 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // 1. Check for token in URL query parameters (for JWT-based flows)
+        // Check URL parameters for errors from backend
         const params = new URLSearchParams(window.location.search);
-        const token = params.get("token");
+        const urlError = params.get("error");
+        
+        if (urlError) {
+          // Check if it's an account conflict error
+          if (urlError === 'account_exists' || urlError === 'email_exists' || urlError.includes('already_registered')) {
+            // Redirect to login with account conflict message
+            navigate('/login?error=' + encodeURIComponent('Akun kamu sudah teregistrasi dengan email dan password. Silakan login menggunakan email dan password.'));
+            return;
+          } else {
+            // Other errors
+            const errorMessage = decodeURIComponent(urlError);
+            navigate('/login?error=' + encodeURIComponent(errorMessage));
+            return;
+          }
+        }
 
-        // Try to get user data (cookie-based or token-based)
-        const result = await getCurrentUser();
-
-        if (result.success) {
+        // If no error, try to get user data to confirm successful login
+        const userResponse = await getCurrentUser();
+        
+        if (userResponse.success) {
           // Notify app of auth state change
           window.dispatchEvent(new Event("auth-changed"));
+          
+          // Get redirect path
+          const redirectPath = localStorage.getItem('redirectAfterAuth') || '/dashboard/beranda';
           localStorage.removeItem('redirectAfterAuth');
-          navigate("/dashboard/beranda");
+          
+          navigate(redirectPath);
         } else {
-          throw new Error(result.error || "Could not get user information");
+          throw new Error("Authentication verification failed");
         }
       } catch (err) {
         console.error("Auth callback error:", err);
-        setError(typeof err === 'object' ? err.message : String(err) || "Authentication failed");
-        setTimeout(() => navigate("/login"), 3000);
+        setError(err.message);
+        
+        // Redirect to login with error after a delay
+        setTimeout(() => {
+          navigate('/login?error=' + encodeURIComponent('Terjadi kesalahan saat login dengan Google. Silakan coba lagi.'));
+        }, 3000);
       } finally {
         setLoading(false);
       }
@@ -37,31 +59,30 @@ const AuthCallback = () => {
     handleCallback();
   }, [navigate]);
 
-  // Show loading or error UI
-  if (error) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#2A1138]">
-        <div className="bg-red-600/90 text-white p-4 rounded-lg shadow-lg max-w-md w-full text-center">
-          <p>{error}</p>
-          <p className="text-sm mt-2">Redirecting to login...</p>
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-lg">Memproses login Google...</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#2A1138]">
-      {loading ? (
-        <>
-          <div className="w-16 h-16 border-4 border-t-[#AC6871] border-r-[#AC6871] border-b-transparent border-l-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-white text-xl">Processing authentication...</p>
-          <p className="text-gray-400 text-sm mt-2">Please wait while we verify your credentials</p>
-        </>
-      ) : (
-        <p className="text-white text-xl">Authentication successful! Redirecting...</p>
-      )}
-    </div>
-  );
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#2A1138]">
+        <div className="text-white text-center max-w-md">
+          <p className="text-lg mb-4">Terjadi kesalahan:</p>
+          <p className="text-red-400 mb-4">{error}</p>
+          <p className="text-sm">Mengalihkan ke halaman login...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default AuthCallback;

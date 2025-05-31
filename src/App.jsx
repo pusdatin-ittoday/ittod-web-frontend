@@ -1,6 +1,7 @@
 // App.js
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import ProtectedRoute from './pages/protectedRoute';
 import Home from './pages/LandingPage/Home';
 import Login from './pages/LoginPage/Login';
 import Register from './pages/LoginPage/Register';
@@ -20,7 +21,6 @@ import EditProfile from './components/Dashboard/EditProfil';
 import Seminar from './pages/seminar';
 import Bootcamp from './pages/Bootcamp';
 import Workshop from './pages/Workshop';
-import SubmitLomba from './components/Dashboard/SubmitLomba/SubmitLomba';
 import Submit_Gametoday from './pages/CompSubmission/Submit_Gametoday';
 import Submit_Uxtoday from './pages/CompSubmission/Submit_Uxtoday';
 import Submit_Minetoday from './pages/CompSubmission/Submit_Minetoday';
@@ -50,22 +50,67 @@ const App = () => {
           <Route path="/timeline" element={<TimelineUmum />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/edit-profile" element={<EditProfile />} />
-  
 
-          {/* Dashboard Routes */}
-          <Route path="/dashboard/beranda" element={<DashboardWrapper />} />
-          <Route path="/dashboard/ikut-lomba" element={<DashboardWrapper />} />
-          <Route path="/dashboard/ikut-event" element={<DashboardWrapper />} />
-          <Route path="/dashboard/submit-lomba" element={<DashboardWrapper />} />
-          <Route path="/submit-gametoday" element={<Submit_Gametoday />} />
-          <Route path="/submit-uxtoday" element={<Submit_Uxtoday />} />
-          <Route path="/submit-minetoday" element={<Submit_Minetoday />} />
 
-          {/* Registration Routes */}
-          <Route path="/register-hacktoday" element={<RegistHackToday />} />
-          <Route path="/register-gametoday" element={<RegistGametoday />} />
-          <Route path="/register-minetoday" element={<RegistMineToday />} />
-          <Route path="/register-uxtoday" element={<RegistUXToday />} />
+          {/* Protected Dashboard Routes */}
+          <Route path="/dashboard/beranda" element={
+            <ProtectedRoute>
+              <DashboardWrapper />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/ikut-lomba" element={
+            <ProtectedRoute>
+              <DashboardWrapper />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/ikut-event" element={
+            <ProtectedRoute>
+              <DashboardWrapper />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/submit-lomba" element={
+            <ProtectedRoute>
+              <DashboardWrapper />
+            </ProtectedRoute>
+          } />
+          <Route path="/submit-gametoday" element={
+            <ProtectedRoute>
+              <Submit_Gametoday />
+            </ProtectedRoute>
+          } />
+          <Route path="/submit-uxtoday" element={
+            <ProtectedRoute>
+              <Submit_Uxtoday />
+            </ProtectedRoute>
+          } />
+          <Route path="/submit-minetoday" element={
+            <ProtectedRoute>
+              <Submit_Minetoday />
+            </ProtectedRoute>
+          } />
+
+
+          {/* Protected Registration Routes */}
+          <Route path="/register-hacktoday" element={
+            <ProtectedRoute>
+              <RegistHackToday />
+            </ProtectedRoute>
+          } />
+          <Route path="/register-gametoday" element={
+            <ProtectedRoute>
+              <RegistGametoday />
+            </ProtectedRoute>
+          } />
+          <Route path="/register-minetoday" element={
+            <ProtectedRoute>
+              <RegistMineToday />
+            </ProtectedRoute>
+          } />
+          <Route path="/register-uxtoday" element={
+            <ProtectedRoute>
+              <RegistUXToday />
+            </ProtectedRoute>
+          } />
 
           {/* Competition/Event Pages */}
           <Route path="/competition" element={<Lomba />} />
@@ -77,7 +122,13 @@ const App = () => {
           <Route path="/event/national_seminar" element={<Seminar />} />
           <Route path="/event/bootcamp" element={<Bootcamp />} />
           <Route path="/event/workshop" element={<Workshop />} />
-          <Route path="/daftar-event/:target" element={<DaftarEvent />} />
+
+          {/* Protected Event Registration */}
+          <Route path="/daftar-event/:target" element={
+            <ProtectedRoute>
+              <DaftarEvent />
+            </ProtectedRoute>
+          } />
 
         </Routes>
       </BrowserRouter>
