@@ -63,7 +63,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-4">
                     <div className="flex-1">
                         <h3 className="text-base sm:text-lg lg:text-xl font-semibold mb-1 leading-tight">{data.competitionName}</h3>
-                        
+
                         <div className="space-y-1 text-xs sm:text-sm">
                             <p>
                                 <span className="font-semibold">Team Name:</span> {data.teamName || "-"}
@@ -163,7 +163,11 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                     <div className="bg-[#7b446c]/95 border border-white/30 p-4 sm:p-6 rounded-lg w-full max-w-md text-white">
                         <h3 className="text-lg sm:text-xl font-bold mb-2 text-center">Upload Verification Files</h3>
                         <p className="text-xs sm:text-sm mb-4 sm:mb-6 text-center text-gray-300">
-                            Mohon unggah pembayaran untuk verifikasi tim kamu.
+                            Mohon unggah pembayaran untuk verifikasi tim kamu.<br />
+                            Info Rekening:<br />
+                            Blu by BCA DIGITAL<br />
+                            0027 4625 4702<br />
+                            a/n M Althaf Faiz Rafianto
                         </p>
 
                         <div className="space-y-4">
@@ -274,7 +278,7 @@ const CompListPage = () => {
                     getCurrentUser(),
                     getUserCompetitions()
                 ]);
-                
+
                 if (userResponse.success && userResponse.data) {
                     const fullName = userResponse.data.full_name || userResponse.data.name || "User";
                     setUserData({ name: fullName });
@@ -283,7 +287,7 @@ const CompListPage = () => {
                     setUserData({ name: "User" });
                     setCurrentUser("User");
                 }
-                
+
                 if (competitionsResponse.success && competitionsResponse.data) {
                     setCompetitions(competitionsResponse.data);
                 }
