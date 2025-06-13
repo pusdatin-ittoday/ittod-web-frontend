@@ -225,7 +225,7 @@ class EditProfile extends Component {
     // Add a helper function to check upload status
     checkUploadStatus = () => {
         const { KTM, ktmFileName, twibbon, twibbonFileName } = this.state;
-        
+
         return {
             ktmMissing: !KTM && !ktmFileName,
             twibbonMissing: !twibbon && !twibbonFileName
@@ -329,7 +329,7 @@ class EditProfile extends Component {
             if (twibbon && twibbonChanged) {
                 const twibbonForm = new FormData();
                 twibbonForm.append('userTwibbon', twibbon);
-                
+
                 try {
                     const twibbonResponse = await instance.put('/api/user/twibbon', twibbonForm, {
                         headers: { 'Content-Type': 'multipart/form-data' }
@@ -653,6 +653,9 @@ class EditProfile extends Component {
                             <label className="block text-sm font-bold mb-2">
                                 Twibbon (jpg/png, max 2MB)
                             </label>
+                            <div className="mb-2 text-sm flex justify-left text-yellow-400">
+                            Untuk sementara, belum tersedia twibbon. Silahkan upload file placeholder pada bagian twibbon berupa meme/gambar untuk mencegah error ({`<2MB`}).
+                            </div>
                             <div
                                 className={`border-2 border-dashed ${errorFields.includes(this.fieldLabels.twibbon) ? 'border-red-500' : 'border-pink-400'} rounded-md p-6 text-center ${errorFields.includes(this.fieldLabels.twibbon) ? 'bg-red-100' : 'bg-gray-100'} text-white bg-white/10 hover:bg-white/20 transition duration-300 hover:scale-102 cursor-pointer w-full min-h-24 flex items-center justify-center`}
                                 onDragOver={(e) => e.preventDefault()}
