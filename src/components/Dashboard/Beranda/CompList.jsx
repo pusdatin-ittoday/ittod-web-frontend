@@ -157,39 +157,44 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
             </div>
 
             {/* Modal Upload */}
-                        {showUploadModal && (
-                            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
-                                <div className="bg-[#7b446c]/95 border border-white/30 p-4 sm:p-6 rounded-lg w-full max-w-md text-white">
-                                    <h3 className="text-lg sm:text-xl font-bold mb-2 text-center">
-                                        Upload Bukti Pembayaran
-                                    </h3>
-                                    <p className="text-xs sm:text-sm mb-4 sm:mb-3 text-left text-gray-300">
-                                        Silakan upload bukti pembayaran untuk verifikasi tim kamu.<br />
-                                        <span className="font-semibold">Informasi Rekening:</span><br />
+            {showUploadModal && (
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-2 sm:px-4">
+                    <div className="bg-[#7b446c]/95 p-4 sm:p-6 rounded-lg w-full max-w-md text-white max-h-[80vh] overflow-y-auto custom-scrollbar">
+                        <h3 className="text-lg sm:text-xl font-bold mb-2 text-center input-text-glow tracking-wide transform transition duration-500 hover:scale-102">
+                            Upload Bukti Pembayaran
+                        </h3>
+                        <div className="mb-4 sm:mb-6">
+                            <div className="mb-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-md px-3 sm:px-4 py-3 text-white">
+                                <div className="mb-3">
+                                    <p className="text-xs sm:text-sm font-bold text-pink-300 mb-1">Informasi Rekening:</p>
+                                    <div className="bg-[#7b446c]/60 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/90 font-mono shadow-inner">
                                         Blu by BCA DIGITAL<br />
-                                        <span className="font-mono">0027 4625 4702</span><br />
-                                        a/n M Althaf Faiz Rafianto<br />
-                                    </p>
-                                    <div className="mb-4 sm:mb-6">
-                                        <p className="text-xs sm:text-sm text-left text-gray-300 font-semibold mb-1">
-                                            Kode Kompetisi:
-                                        </p>
-                                        <ul className="text-xs sm:text-sm text-left text-gray-300 list-disc list-inside ml-2">
-                                            <li>01 : HackToday</li>
-                                            <li>02 : GameToday</li>
-                                            <li>03 : UXToday</li>
-                                            <li>04 : Minetoday</li>
-                                        </ul>
-                                        <p className="text-xs sm:text-sm text-left text-gray-300 mb-1">
-                                            <b>Harga Batch 1:</b> Rp 80.000<br />
-                                            <b>Harga Batch 2:</b> Rp 100.000
-                                        </p>
-                                        <p className="text-xs sm:text-sm text-left text-gray-300 mb-1">
-                                            Contoh: Ryan harus bayar sebanyak 80.000 rupiah jika Ryan ingin ikut GameToday pada Batch 1. Ryan harus transfer <b>80.002</b> Rupiah ke Althaf Faiz Rafianto.
-                                        </p>
+                                        <span className="text-lg  font-bold tracking-widest text-pink-100">0027 4625 4702</span><br />
+                                        <span className="text-xs sm:text-sm font-semibold text-pink-100">a/n M Althaf Faiz Rafianto</span>
                                     </div>
-                                    <div className="space-y-4">
-                                        {/* Upload Bukti Pembayaran */}
+                                </div>
+                                <div className="mb-3">
+                                    <p className="text-xs sm:text-sm font-bold text-pink-300 mb-1">Kode Kompetisi:</p>
+                                    <ul className="text-xs sm:text-sm text-white/90 grid grid-cols-2 gap-x-4 list-none pl-0">
+                                        <li><span className="font-bold text-pink-100">01</span> : HackToday</li>
+                                        <li><span className="font-bold text-pink-100">02</span> : GameToday</li>
+                                        <li><span className="font-bold text-pink-100">03</span> : UXToday</li>
+                                        <li><span className="font-bold text-pink-100">04</span> : Minetoday</li>
+                                    </ul>
+                                </div>
+                                <div className="mb-3">
+                                    <p className="text-xs sm:text-sm text-white/90 mb-1">
+                                        <b className="text-pink-100">Harga Batch 1:</b> Rp 80.000<br />
+                                        <b className="text-pink-100">Harga Batch 2:</b> Rp 100.000
+                                    </p>
+                                </div>
+                                <div className="bg-white/10 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/80 italic shadow-inner">
+                                    <span className="font-bold text-pink-100">Contoh:</span> Ryan harus bayar sebanyak <span className="font-bold text-pink-100">80.000</span> rupiah jika Ryan ingin ikut <span className="font-bold text-pink-100">GameToday</span> pada Batch 1. Ryan harus transfer <span className="font-bold text-pink-100">80.002</span> Rupiah ke Althaf Faiz Rafianto.
+                                </div>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            {/* Upload Bukti Pembayaran */}
                             <div>
                                 <label className="block text-xs sm:text-sm font-medium mb-2">
                                     Upload Bukti Pembayaran
