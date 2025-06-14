@@ -122,7 +122,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
 
     return (
         <div className="max-w-full lg:w-[650px] font-dm-sans p-4 sm:p-6 bg-[#7b446c] rounded-lg shadow-md h-[400px] sm:h-[500px] flex flex-col">
-            {/* Header section */}
+            {/* Bagian Header */}
             <div className="border-b border-[#dfb4d7]/60 mb-4">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-2">
                     <div className="flex items-center gap-3 sm:gap-5">
@@ -131,7 +131,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             Halo, {name}!
                         </h2>
                     </div>
-
                     <div className="flex items-center">
                         <button
                             onClick={handleEditUserClick}
@@ -144,7 +143,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
             </div>
 
             <h3 className="text-sm sm:text-base lg:text-lg font-bold mb-3 flex items-center gap-2 text-white">
-                <FaList className="text-sm sm:text-base lg:text-xl" /> My Competitions
+                <FaList className="text-sm sm:text-base lg:text-xl" /> Kompetisi Saya
             </h3>
 
             <div className="overflow-y-auto flex-1 px-1 sm:px-2 py-2 custom-scrollbar">
@@ -157,25 +156,44 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                 )}
             </div>
 
-            {/* Upload Modal */}
-            {showUploadModal && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
-                    <div className="bg-[#7b446c]/95 border border-white/30 p-4 sm:p-6 rounded-lg w-full max-w-md text-white">
-                        <h3 className="text-lg sm:text-xl font-bold mb-2 text-center">Upload Verification Files</h3>
-                        <p className="text-xs sm:text-sm mb-4 sm:mb-6 text-center text-gray-300">
-                            Mohon unggah pembayaran untuk verifikasi tim kamu.<br />
-                            Info Rekening:<br />
-                            Blu by BCA DIGITAL<br />
-                            0027 4625 4702<br />
-                            a/n M Althaf Faiz Rafianto
-                        </p>
-
-                        <div className="space-y-4">
-                            {/* Payment Proof Upload */}
+            {/* Modal Upload */}
+                        {showUploadModal && (
+                            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
+                                <div className="bg-[#7b446c]/95 border border-white/30 p-4 sm:p-6 rounded-lg w-full max-w-md text-white">
+                                    <h3 className="text-lg sm:text-xl font-bold mb-2 text-center">
+                                        Upload Bukti Pembayaran
+                                    </h3>
+                                    <p className="text-xs sm:text-sm mb-4 sm:mb-3 text-left text-gray-300">
+                                        Silakan upload bukti pembayaran untuk verifikasi tim kamu.<br />
+                                        <span className="font-semibold">Informasi Rekening:</span><br />
+                                        Blu by BCA DIGITAL<br />
+                                        <span className="font-mono">0027 4625 4702</span><br />
+                                        a/n M Althaf Faiz Rafianto<br />
+                                    </p>
+                                    <div className="mb-4 sm:mb-6">
+                                        <p className="text-xs sm:text-sm text-left text-gray-300 font-semibold mb-1">
+                                            Kode Kompetisi:
+                                        </p>
+                                        <ul className="text-xs sm:text-sm text-left text-gray-300 list-disc list-inside ml-2">
+                                            <li>01 : HackToday</li>
+                                            <li>02 : GameToday</li>
+                                            <li>03 : UXToday</li>
+                                            <li>04 : Minetoday</li>
+                                        </ul>
+                                        <p className="text-xs sm:text-sm text-left text-gray-300 mb-1">
+                                            <b>Harga Batch 1:</b> Rp 80.000<br />
+                                            <b>Harga Batch 2:</b> Rp 100.000
+                                        </p>
+                                        <p className="text-xs sm:text-sm text-left text-gray-300 mb-1">
+                                            Contoh: Ryan harus bayar sebanyak 80.000 rupiah jika Ryan ingin ikut GameToday pada Batch 1. Ryan harus transfer <b>80.002</b> Rupiah ke Althaf Faiz Rafianto.
+                                        </p>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {/* Upload Bukti Pembayaran */}
                             <div>
                                 <label className="block text-xs sm:text-sm font-medium mb-2">
                                     Upload Bukti Pembayaran
-                                    <span className="text-xs text-gray-400 ml-1">(JPG/PNG/PDF, max 2MB)</span>
+                                    <span className="text-xs text-gray-400 ml-1">(JPG/PNG/PDF, maks 2MB)</span>
                                 </label>
                                 <div
                                     className="border-2 border-dashed border-pink-400 rounded-md p-3 sm:p-4 text-center bg-white/10 hover:bg-white/20 cursor-pointer w-full min-h-[60px] sm:min-h-[80px] flex flex-col items-center justify-center gap-1 relative group transition duration-300 hover:scale-105"
@@ -198,7 +216,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                                 >
                                     <FaReceipt className={`text-xl sm:text-2xl mb-1 ${pembayaran ? 'text-green-400' : 'text-pink-300 group-hover:text-pink-200'}`} />
                                     <span className="truncate text-xs w-full px-2">
-                                        {pembayaran ? pembayaran.name : "Drop file or click to select"}
+                                        {pembayaran ? pembayaran.name : "Drop file atau klik untuk memilih"}
                                     </span>
                                     <input
                                         type="file"
@@ -224,13 +242,13 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             </div>
                         </div>
 
-                        {/* Buttons */}
+                        {/* Tombol */}
                         <div className="flex gap-3 mt-4 sm:mt-6">
                             <button
                                 onClick={() => setShowUploadModal(false)}
                                 className="cursor-pointer flex-1 py-2 text-black bg-gray-300 rounded hover:bg-gray-400 transition duration-300 ease-in-out hover:scale-105 text-sm"
                             >
-                                Cancel
+                                Batal
                             </button>
                             <button
                                 onClick={handleUploadSubmit}
