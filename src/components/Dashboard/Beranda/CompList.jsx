@@ -20,9 +20,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
     useEffect(() => {
         const waitingMessages = [
             "Menunggu Verifikasi",
-            "Sedang Diproses", 
-            "Mohon Tunggu",
-            "Verifikasi Berlangsung"
         ];
         
         let currentIndex = 0;
@@ -129,10 +126,10 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                     </div>
                 </div>
 
-                {/* Members section */}
+                {/* Members section - tanpa status verifikasi per anggota */}
                 <div className="mt-3 space-y-1">
                     {data.members.map((anggota, idx) => (
-                        <div key={idx} className="flex items-center justify-between gap-2 sm:gap-4">
+                        <div key={idx} className="flex items-center gap-2 sm:gap-4">
                             <p className="text-xs sm:text-sm flex-1 min-w-0">
                                 <span className="inline-block w-12 sm:w-16 lg:w-20 flex-shrink-0">
                                     {idx === 0 ? "👑 Ketua" : "👤 Anggota"}:
@@ -141,10 +138,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                                     {anggota.fullName}
                                 </span>
                             </p>
-
-                            <span className={`text-xs sm:text-sm font-bold flex-shrink-0 ${anggota.isRegistrationComplete ? "text-green-400/90" : "text-red-400/90"}`}>
-                                {anggota.isRegistrationComplete ? "✓ Data Lengkap" : "✗ Data Belum Lengkap"}
-                            </span>
                         </div>
                     ))}
                 </div>
@@ -342,12 +335,25 @@ const CompListPage = () => {
         const processedCompetitions = {};
         
         Object.entries(data).forEach(([key, comp]) => {
-            const isVerified = comp.isVerified;
+            // CEK: Simpan ID tim yang sudah upload untuk persistensi
+            const teamID = comp.teamID;
+            
+            // Tambahkan local storage untuk menyimpan tim yang sudah upload
+            const uploadedTeams = JSON.parse(localStorage.getItem('uploadedTeams') || '{}');
+            
+            // Cek status verifikasi dari berbagai sumber
+            const isVerified = comp.is_verified || comp.isVerified;
             const hasPaymentProof = Boolean(comp.payment_proof_id);
-            const isPendingVerification = !isVerified && hasPaymentProof;
+            
+            // Tim menunggu verifikasi jika:
+            // 1. Belum terverifikasi, dan
+            // 2. Sudah upload bukti pembayaran ATAU tercatat di localStorage
+            const isPendingVerification = !isVerified && (hasPaymentProof || uploadedTeams[teamID]);
             
             processedCompetitions[key] = {
                 ...comp,
+                // Normalisasi nama property agar konsisten
+                isVerified: isVerified,
                 pendingVerification: isPendingVerification
             };
         });
@@ -453,6 +459,15 @@ const CompListPage = () => {
             const result = await postCompePayment(formData);
 
             if (result.success) {
+                // Simpan tim ke localStorage agar status tidak hilang
+                try {
+                    const uploadedTeams = JSON.parse(localStorage.getItem('uploadedTeams') || '{}');
+                    uploadedTeams[teamID] = true;
+                    localStorage.setItem('uploadedTeams', JSON.stringify(uploadedTeams));
+                } catch (e) {
+                    console.error("Error saving to localStorage:", e);
+                }
+                
                 // Segera update UI untuk menampilkan "Menunggu Verifikasi"
                 setCompetitions(prevCompetitions => {
                     const updated = { ...prevCompetitions };
@@ -465,8 +480,8 @@ const CompListPage = () => {
                     return updated;
                 });
                 
-                // Refresh data dari server setelah beberapa saat
-                setTimeout(refreshCompetitionData, 2000);
+                // Delay refresh lebih lama untuk memberi waktu server memproses
+                setTimeout(refreshCompetitionData, 5000);
                 return result;
             }
             
