@@ -11,7 +11,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [currentCompKey, setCurrentCompKey] = useState(null);
-
+    const [verifyWaitingText, setVerifyWaitingText] = useState("Menunggu Verifikasi");
+    
     // Refs for file inputs
     const pembayaranInputRef = useRef(null);
 
@@ -86,10 +87,15 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
     });
 
     const renderCompetition = (key, data) => {
-        // Check if current user is in this competition and needs verification
-        const currentMember = data.members.find(member => member.fullName === currentUser);
-        const needsVerification = currentMember && !currentMember.verified && !currentMember.pendingVerification;
-        const isPendingVerification = currentMember && currentMember.pendingVerification && !currentMember.verified;
+        // Check if current user is the team leader (first member)
+        const isTeamLeader = data.members[0]?.fullName === currentUser;
+        
+        // Check verification status at team level
+        const isTeamVerified = data.isVerified;
+        const isPendingVerification = data.pendingVerification;
+        
+        // Only team leader can upload payment proof if team isn't verified
+        const needsVerification = isTeamLeader && !isTeamVerified && !isPendingVerification;
 
         return (
             <div key={key} className="mb-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-md px-3 sm:px-4 py-3 text-white hover:scale-101 hover:bg-white/20 transition duration-300 ease-in-out">
@@ -107,31 +113,28 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                         </div>
                     </div>
 
-                    {/* Verification button */}
-                    {needsVerification && (
-                        <div className="flex-shrink-0">
+                    {/* Verification status display with improved logic */}
+                    <div className="flex-shrink-0">
+                        {needsVerification && (
                             <button
                                 onClick={() => handleVerifyClick(key)}
                                 className="custom-button-bg px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full sm:w-auto"
                             >
-                                <FaUpload className="inline mr-1" /> Verify
+                                <FaUpload className="inline mr-1" /> Verifikasi
                             </button>
-                        </div>
-                    )}
-                    {isPendingVerification && (
-                        <div className="flex-shrink-0">
-                            <span className="px-3 py-1 rounded bg-yellow-400/20 text-yellow-300 text-xs sm:text-sm font-semibold">
-                                Menunggu Verifikasi
+                        )}
+                        {isPendingVerification && (
+                            <span className="px-3 py-1 rounded bg-yellow-400/20 text-yellow-300 text-xs sm:text-sm font-semibold flex items-center transition-all duration-300">
+                                <span className="animate-pulse mr-1">⌛</span> 
+                                {verifyWaitingText}
                             </span>
-                        </div>
-                    )}
-                    {currentMember && currentMember.verified && (
-                        <div className="flex-shrink-0">
+                        )}
+                        {isTeamVerified && (
                             <span className="px-3 py-1 rounded bg-green-400/20 text-green-300 text-xs sm:text-sm font-semibold">
-                                Sudah Diverifikasi
+                                <span className="mr-1">✓</span> Sudah Diverifikasi
                             </span>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
 
                 {/* Members section */}
@@ -148,7 +151,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             </p>
 
                             <span className={`text-xs sm:text-sm font-bold flex-shrink-0 ${anggota.isRegistrationComplete ? "text-green-400/90" : "text-red-400/90"}`}>
-                                {anggota.isRegistrationComplete ? "✓ Verified" : "✗ Not Verified"}
+                                {anggota.isRegistrationComplete ? "✓ Data Lengkap" : "✗ Data Belum Lengkap"}
                             </span>
                         </div>
                     ))}
@@ -158,15 +161,15 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                 <div className="mt-3 pt-2 border-t border-white/20">
                     <p className="text-xs sm:text-sm font-semibold">
                         Team Status:{" "}
-                        <span className={data.isVerified ? "text-green-400/90" : "text-red-400/90"}>
-                            {data.isVerified ? "Verified" : "Not Verified"}
+                        <span className={isTeamVerified ? "text-green-400/90" : "text-red-400/90"}>
+                            {isTeamVerified ? "Verified" : "Not Verified"}
                         </span>
                     </p>
                 </div>
             </div>
         );
     };
-
+    
     return (
         <div className="max-w-full lg:w-[650px] font-dm-sans p-4 sm:p-6 bg-[#7b446c] rounded-lg shadow-md h-[400px] sm:h-[500px] flex flex-col">
             {/* Bagian Header */}
@@ -341,6 +344,53 @@ const CompListPage = () => {
     const [currentUser, setCurrentUser] = useState("");
     const navigate = useNavigate();
 
+    // Add this function to refresh competition data
+    const refreshCompetitionData = async () => {
+        try {
+            setLoading(true);
+            const competitionsResponse = await getUserCompetitions();
+            
+            // Log response untuk debugging
+            console.log("API response:", competitionsResponse);
+            
+            if (competitionsResponse.success && competitionsResponse.data) {
+                const processedCompetitions = {};
+                
+                Object.entries(competitionsResponse.data).forEach(([key, comp]) => {
+                    // Log untuk memeriksa struktur data kompetisi
+                    console.log(`Team ${comp.teamName} data:`, comp);
+                    
+                    // Cek apakah tim sudah terverifikasi
+                    const isVerified = comp.isVerified;
+                    
+                    // Cek apakah tim sudah mengupload bukti pembayaran
+                    // Periksa semua kemungkinan nama field untuk bukti pembayaran
+                    const hasPaymentProof = comp.payment_proof_id 
+                    
+                    // Tim menunggu verifikasi jika sudah upload bukti tapi belum diverifikasi
+                    const isPendingVerification = !isVerified && hasPaymentProof;
+                    
+                    console.log(`Team ${comp.teamName} verification status:`, {
+                        isVerified, 
+                        hasPaymentProof, 
+                        isPendingVerification
+                    });
+                    
+                    processedCompetitions[key] = {
+                        ...comp,
+                        pendingVerification: isPendingVerification
+                    };
+                });
+                
+                setCompetitions(processedCompetitions);
+            }
+        } catch (error) {
+            console.error("Error refreshing competition data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -359,7 +409,31 @@ const CompListPage = () => {
                 }
 
                 if (competitionsResponse.success && competitionsResponse.data) {
-                    setCompetitions(competitionsResponse.data);
+                    console.log("Initial competitions data:", competitionsResponse.data);
+                    
+                    const processedCompetitions = {};
+                    
+                    Object.entries(competitionsResponse.data).forEach(([key, comp]) => {
+                        // PENTING: Gunakan logika yang sama dengan refreshCompetitionData
+                        // untuk menghindari inkonsistensi
+                        const isVerified = comp.isVerified;
+                        
+                        // Cek status pembayaran dengan cara yang sama
+                        const hasPaymentProof = 
+                            comp.payment_proof_id || 
+                            comp.paymentProofId || 
+                            comp.payment_status === 'PENDING' || 
+                            comp.paymentStatus === 'PENDING';
+                        
+                        const isPendingVerification = !isVerified && hasPaymentProof;
+                        
+                        processedCompetitions[key] = {
+                            ...comp,
+                            pendingVerification: isPendingVerification
+                        };
+                    });
+                    
+                    setCompetitions(processedCompetitions);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -371,6 +445,11 @@ const CompListPage = () => {
         };
 
         fetchData();
+        
+        // Refresh setiap 20 detik untuk memeriksa status verifikasi
+        const refreshInterval = setInterval(refreshCompetitionData, 20000);
+        
+        return () => clearInterval(refreshInterval);
     }, []);
 
     const handleVerify = async (compKey, pembayaran) => {
@@ -425,23 +504,26 @@ const CompListPage = () => {
             });
 
             const result = await postCompePayment(formData);
+            console.log("Upload payment result:", result);
 
             if (result.success) {
+                // Segera update UI untuk menampilkan "Menunggu Verifikasi" tanpa menunggu refresh
                 setCompetitions(prevCompetitions => {
                     const updated = { ...prevCompetitions };
                     if (updated[compKey]) {
                         updated[compKey] = {
                             ...updated[compKey],
-                            members: updated[compKey].members.map(member =>
-                                member.fullName === currentUser
-                                    ? { ...member, pendingVerification: true }
-                                    : member
-                            )
+                            pendingVerification: true
                         };
                     }
                     return updated;
                 });
+                
+                // Refresh data dari server setelah beberapa saat
+                setTimeout(refreshCompetitionData, 2000);
+                return result;
             }
+            
             return result;
         } catch (error) {
             console.error("Error during verification:", error);
