@@ -11,25 +11,9 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [currentCompKey, setCurrentCompKey] = useState(null);
-    const [verifyWaitingText, setVerifyWaitingText] = useState("Menunggu Verifikasi");
     
     // Refs for file inputs
     const pembayaranInputRef = useRef(null);
-
-    // Efek rotasi teks menunggu verifikasi
-    useEffect(() => {
-        const waitingMessages = [
-            "Menunggu Verifikasi",
-        ];
-        
-        let currentIndex = 0;
-        const interval = setInterval(() => {
-            currentIndex = (currentIndex + 1) % waitingMessages.length;
-            setVerifyWaitingText(waitingMessages[currentIndex]);
-        }, 2000);
-        
-        return () => clearInterval(interval);
-    }, []);
 
     const handleVerifyClick = (compKey) => {
         // Reset file states when opening modal for a fresh upload attempt
@@ -115,7 +99,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                         {isPendingVerification && (
                             <span className="px-3 py-1 rounded bg-yellow-400/20 text-yellow-300 text-xs sm:text-sm font-semibold flex items-center transition-all duration-300">
                                 <span className="animate-pulse mr-1">⌛</span> 
-                                {verifyWaitingText}
+                                Menunggu Verifikasi
                             </span>
                         )}
                         {isTeamVerified && (
