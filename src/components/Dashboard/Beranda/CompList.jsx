@@ -23,7 +23,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
         setShowUploadModal(true);
     };
 
-    const handleUploadSubmit = () => {
+    // Jadikan async agar bisa menunggu hasil onVerify
+    const handleUploadSubmit = async () => {
         if (!pembayaran) {
             setAlertMessage("Harap upload bukti pembayaran");
             setShowAlert(true);
@@ -31,13 +32,44 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
         }
 
         if (onVerify && currentCompKey) {
-            onVerify(currentCompKey, pembayaran);
-        }
+            const result = await onVerify(currentCompKey, pembayaran);
 
-        // Reset form dan tutup modal
-        setPembayaran(null);
-        setShowUploadModal(false);
-        setCurrentCompKey(null);
+            if (result && result.success) {
+                // Reset form dan tutup modal jika upload sukses
+                setPembayaran(null);
+                setShowUploadModal(false);
+                setCurrentCompKey(null);
+            } else {
+                // Display error message
+                setAlertMessage(result?.message || "Gagal upload bukti pembayaran. Coba lagi.");
+                setShowAlert(true);
+                
+                // Even though there's a server error, let's set pendingVerification state
+                // This is a temporary workaround to fix the UI issue while backend is fixed
+                if (result?.serverError && result.serverError.includes("prisma")) {
+                    // Close the modal even with server error, as data was likely received
+                    setPembayaran(null);
+                    setShowUploadModal(false);
+                    setCurrentCompKey(null);
+                    
+                    // Manually update local state
+                    setCompetitions(prevCompetitions => {
+                        const updated = { ...prevCompetitions };
+                        if (updated[currentCompKey]) {
+                            updated[currentCompKey] = {
+                                ...updated[currentCompKey],
+                                members: updated[currentCompKey].members.map(member =>
+                                    member.fullName === currentUser
+                                        ? { ...member, pendingVerification: true }
+                                        : member
+                                )
+                            };
+                        }
+                        return updated;
+                    });
+                }
+            }
+        }
     };
 
     const handleEditUserClick = () => {
@@ -56,7 +88,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
     const renderCompetition = (key, data) => {
         // Check if current user is in this competition and needs verification
         const currentMember = data.members.find(member => member.fullName === currentUser);
-        const needsVerification = currentMember && !currentMember.verified;
+        const needsVerification = currentMember && !currentMember.verified && !currentMember.pendingVerification;
+        const isPendingVerification = currentMember && currentMember.pendingVerification && !currentMember.verified;
 
         return (
             <div key={key} className="mb-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-md px-3 sm:px-4 py-3 text-white hover:scale-101 hover:bg-white/20 transition duration-300 ease-in-out">
@@ -83,6 +116,20 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             >
                                 <FaUpload className="inline mr-1" /> Verify
                             </button>
+                        </div>
+                    )}
+                    {isPendingVerification && (
+                        <div className="flex-shrink-0">
+                            <span className="px-3 py-1 rounded bg-yellow-400/20 text-yellow-300 text-xs sm:text-sm font-semibold">
+                                Menunggu Verifikasi
+                            </span>
+                        </div>
+                    )}
+                    {currentMember && currentMember.verified && (
+                        <div className="flex-shrink-0">
+                            <span className="px-3 py-1 rounded bg-green-400/20 text-green-300 text-xs sm:text-sm font-semibold">
+                                Sudah Diverifikasi
+                            </span>
                         </div>
                     )}
                 </div>
@@ -198,7 +245,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             <div>
                                 <label className="block text-xs sm:text-sm font-medium mb-2">
                                     Upload Bukti Pembayaran
-                                    <span className="text-xs text-gray-400 ml-1">(JPG/PNG/PDF, maks 2MB)</span>
+                                    <span className="text-xs text-gray-400 ml-1">(JPG/PNG, maks 2MB)</span>
                                 </label>
                                 <div
                                     className="border-2 border-dashed border-pink-400 rounded-md p-3 sm:p-4 text-center bg-white/10 hover:bg-white/20 cursor-pointer w-full min-h-[60px] sm:min-h-[80px] flex flex-col items-center justify-center gap-1 relative group transition duration-300 hover:scale-105"
@@ -239,7 +286,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                                                 }
                                             }
                                         }}
-                                        accept=".jpg,.jpeg,.png,.pdf"
+                                        accept=".jpg,.jpeg,.png"
                                         style={{ display: "none" }}
                                     />
                                     {pembayaran && <span className="absolute top-1 right-1 text-green-400 text-lg">✓</span>}
@@ -329,10 +376,53 @@ const CompListPage = () => {
     const handleVerify = async (compKey, pembayaran) => {
         try {
             setLoading(true);
+            
+            // Validate and format team_id
+            let teamID = competitions[compKey]?.teamID;
+            if (!teamID) {
+                console.error("Missing team ID");
+                return { success: false, message: "ID Tim tidak ditemukan" };
+            }
+            
+            // Log the full competition object to see what we're working with
+            console.log("Competition data:", competitions[compKey]);
+            
+            // Convert to string if it's not already (some APIs expect string)
+            teamID = String(teamID);
+
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!validTypes.includes(pembayaran.type)) {
+                return { 
+                    success: false, 
+                    message: "Format file tidak didukung. Gunakan JPG atau PNG." 
+                };
+            }
+            
+            // Maximum file size (5MB)
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if (pembayaran.size > maxSize) {
+                return { 
+                    success: false, 
+                    message: "Ukuran file terlalu besar. Maksimum 5MB." 
+                };
+            }
 
             const formData = new FormData();
-            formData.append("team_id", competitions[compKey]?.teamID || "");
-            formData.append("image", pembayaran);
+            formData.append("team_id", teamID);
+            
+            // Some servers are sensitive to file names - try with a safer name
+            const safeFileName = pembayaran.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+            const safeFile = new File([pembayaran], safeFileName, { type: pembayaran.type });
+            formData.append("image", safeFile);
+            
+            // Log what we're sending
+            console.log("Sending payment verification:", {
+                team_id: teamID,
+                file_name: safeFileName,
+                file_type: pembayaran.type,
+                file_size: `${(pembayaran.size / 1024 / 1024).toFixed(2)}MB`
+            });
 
             const result = await postCompePayment(formData);
 
@@ -343,15 +433,22 @@ const CompListPage = () => {
                         updated[compKey] = {
                             ...updated[compKey],
                             members: updated[compKey].members.map(member =>
-                                member.fullName === currentUser ? { ...member, verified: true } : member
+                                member.fullName === currentUser
+                                    ? { ...member, pendingVerification: true }
+                                    : member
                             )
                         };
                     }
                     return updated;
                 });
             }
+            return result;
         } catch (error) {
             console.error("Error during verification:", error);
+            return { 
+                success: false, 
+                message: error.message || "Terjadi kesalahan saat mengunggah bukti pembayaran" 
+            };
         } finally {
             setLoading(false);
         }

@@ -23,20 +23,35 @@ export const upsertCompetitionFile = async (data) => {
   }
 };
 
-export const postCompePayment = async (data) => {
+export const postCompePayment = async (formData) => {
   try {
-    const response = await instance.post("/api/competition/payment", data);
-    return {
-      success: true,
-      data: response.data
-    };
+    const response = await instance.post("/api/competition/payment", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        // Make sure the auth token is included
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return { success: true, data: response.data };
   } catch (error) {
     console.error("Error uploading competition payment:", error);
-    return {
-      success: false,
-      error: error.response?.data?.message || 
-             error.response?.data?.error || 
-             "Failed to upload competition image. Please try again."
+    
+    // Get more detailed error information
+    const serverError = error.response?.data?.message || error.message;
+    console.error("Server error details:", error.response?.data);
+    
+    // Return a user-friendly message based on error type
+    if (error.response?.status === 500) {
+      return { 
+        success: false, 
+        message: "Server error: Terjadi masalah pada sistem. Silakan hubungi admin.",
+        serverError: serverError
+      };
+    }
+    
+    return { 
+      success: false, 
+      message: serverError || "Terjadi kesalahan saat mengunggah bukti pembayaran" 
     };
   }
-}
+};
