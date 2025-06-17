@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaList, FaUser, FaUpload, FaImage, FaReceipt } from "react-icons/fa";
+import { FaList, FaUser, FaUpload, FaReceipt } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { getCurrentUser, getUserCompetitions } from "../../../api/user";
 import { postCompePayment } from "../../../api/compeFile";
@@ -16,6 +16,24 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
     // Refs for file inputs
     const pembayaranInputRef = useRef(null);
 
+    // Efek rotasi teks menunggu verifikasi
+    useEffect(() => {
+        const waitingMessages = [
+            "Menunggu Verifikasi",
+            "Sedang Diproses", 
+            "Mohon Tunggu",
+            "Verifikasi Berlangsung"
+        ];
+        
+        let currentIndex = 0;
+        const interval = setInterval(() => {
+            currentIndex = (currentIndex + 1) % waitingMessages.length;
+            setVerifyWaitingText(waitingMessages[currentIndex]);
+        }, 2000);
+        
+        return () => clearInterval(interval);
+    }, []);
+
     const handleVerifyClick = (compKey) => {
         // Reset file states when opening modal for a fresh upload attempt
         setPembayaran(null);
@@ -24,7 +42,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
         setShowUploadModal(true);
     };
 
-    // Jadikan async agar bisa menunggu hasil onVerify
     const handleUploadSubmit = async () => {
         if (!pembayaran) {
             setAlertMessage("Harap upload bukti pembayaran");
@@ -44,31 +61,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                 // Display error message
                 setAlertMessage(result?.message || "Gagal upload bukti pembayaran. Coba lagi.");
                 setShowAlert(true);
-                
-                // Even though there's a server error, let's set pendingVerification state
-                // This is a temporary workaround to fix the UI issue while backend is fixed
-                if (result?.serverError && result.serverError.includes("prisma")) {
-                    // Close the modal even with server error, as data was likely received
-                    setPembayaran(null);
-                    setShowUploadModal(false);
-                    setCurrentCompKey(null);
-                    
-                    // Manually update local state
-                    setCompetitions(prevCompetitions => {
-                        const updated = { ...prevCompetitions };
-                        if (updated[currentCompKey]) {
-                            updated[currentCompKey] = {
-                                ...updated[currentCompKey],
-                                members: updated[currentCompKey].members.map(member =>
-                                    member.fullName === currentUser
-                                        ? { ...member, pendingVerification: true }
-                                        : member
-                                )
-                            };
-                        }
-                        return updated;
-                    });
-                }
             }
         }
     };
@@ -170,6 +162,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
         );
     };
     
+    // Rendering komponen
     return (
         <div className="max-w-full lg:w-[650px] font-dm-sans p-4 sm:p-6 bg-[#7b446c] rounded-lg shadow-md h-[400px] sm:h-[500px] flex flex-col">
             {/* Bagian Header */}
@@ -344,45 +337,32 @@ const CompListPage = () => {
     const [currentUser, setCurrentUser] = useState("");
     const navigate = useNavigate();
 
-    // Add this function to refresh competition data
+    // Fungsi untuk memproses data kompetisi dan status verifikasi
+    const processCompetitionsData = (data) => {
+        const processedCompetitions = {};
+        
+        Object.entries(data).forEach(([key, comp]) => {
+            const isVerified = comp.isVerified;
+            const hasPaymentProof = Boolean(comp.payment_proof_id);
+            const isPendingVerification = !isVerified && hasPaymentProof;
+            
+            processedCompetitions[key] = {
+                ...comp,
+                pendingVerification: isPendingVerification
+            };
+        });
+        
+        return processedCompetitions;
+    };
+
+    // Fungsi untuk memperbarui data kompetisi
     const refreshCompetitionData = async () => {
         try {
             setLoading(true);
             const competitionsResponse = await getUserCompetitions();
             
-            // Log response untuk debugging
-            console.log("API response:", competitionsResponse);
-            
             if (competitionsResponse.success && competitionsResponse.data) {
-                const processedCompetitions = {};
-                
-                Object.entries(competitionsResponse.data).forEach(([key, comp]) => {
-                    // Log untuk memeriksa struktur data kompetisi
-                    console.log(`Team ${comp.teamName} data:`, comp);
-                    
-                    // Cek apakah tim sudah terverifikasi
-                    const isVerified = comp.isVerified;
-                    
-                    // Cek apakah tim sudah mengupload bukti pembayaran
-                    // Periksa semua kemungkinan nama field untuk bukti pembayaran
-                    const hasPaymentProof = comp.payment_proof_id 
-                    
-                    // Tim menunggu verifikasi jika sudah upload bukti tapi belum diverifikasi
-                    const isPendingVerification = !isVerified && hasPaymentProof;
-                    
-                    console.log(`Team ${comp.teamName} verification status:`, {
-                        isVerified, 
-                        hasPaymentProof, 
-                        isPendingVerification
-                    });
-                    
-                    processedCompetitions[key] = {
-                        ...comp,
-                        pendingVerification: isPendingVerification
-                    };
-                });
-                
-                setCompetitions(processedCompetitions);
+                setCompetitions(processCompetitionsData(competitionsResponse.data));
             }
         } catch (error) {
             console.error("Error refreshing competition data:", error);
@@ -391,6 +371,7 @@ const CompListPage = () => {
         }
     };
 
+    // Efek untuk mengambil data awal dan menyiapkan interval refresh
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -409,31 +390,7 @@ const CompListPage = () => {
                 }
 
                 if (competitionsResponse.success && competitionsResponse.data) {
-                    console.log("Initial competitions data:", competitionsResponse.data);
-                    
-                    const processedCompetitions = {};
-                    
-                    Object.entries(competitionsResponse.data).forEach(([key, comp]) => {
-                        // PENTING: Gunakan logika yang sama dengan refreshCompetitionData
-                        // untuk menghindari inkonsistensi
-                        const isVerified = comp.isVerified;
-                        
-                        // Cek status pembayaran dengan cara yang sama
-                        const hasPaymentProof = 
-                            comp.payment_proof_id || 
-                            comp.paymentProofId || 
-                            comp.payment_status === 'PENDING' || 
-                            comp.paymentStatus === 'PENDING';
-                        
-                        const isPendingVerification = !isVerified && hasPaymentProof;
-                        
-                        processedCompetitions[key] = {
-                            ...comp,
-                            pendingVerification: isPendingVerification
-                        };
-                    });
-                    
-                    setCompetitions(processedCompetitions);
+                    setCompetitions(processCompetitionsData(competitionsResponse.data));
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -452,24 +409,20 @@ const CompListPage = () => {
         return () => clearInterval(refreshInterval);
     }, []);
 
+    // Handle verifikasi dan upload bukti pembayaran
     const handleVerify = async (compKey, pembayaran) => {
         try {
             setLoading(true);
             
-            // Validate and format team_id
             let teamID = competitions[compKey]?.teamID;
             if (!teamID) {
-                console.error("Missing team ID");
                 return { success: false, message: "ID Tim tidak ditemukan" };
             }
             
-            // Log the full competition object to see what we're working with
-            console.log("Competition data:", competitions[compKey]);
-            
-            // Convert to string if it's not already (some APIs expect string)
+            // Convert to string if it's not already
             teamID = String(teamID);
 
-            // Validate file type
+            // Validasi file
             const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
             if (!validTypes.includes(pembayaran.type)) {
                 return { 
@@ -478,36 +431,29 @@ const CompListPage = () => {
                 };
             }
             
-            // Maximum file size (5MB)
-            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            // Maximum file size (2MB)
+            const maxSize = 2 * 1024 * 1024; // 2MB
             if (pembayaran.size > maxSize) {
                 return { 
                     success: false, 
-                    message: "Ukuran file terlalu besar. Maksimum 5MB." 
+                    message: "Ukuran file terlalu besar. Maksimum 2MB." 
                 };
             }
 
+            // Persiapkan data untuk dikirim
             const formData = new FormData();
             formData.append("team_id", teamID);
             
-            // Some servers are sensitive to file names - try with a safer name
+            // Normalisasi nama file
             const safeFileName = pembayaran.name.replace(/[^a-zA-Z0-9.-]/g, '_');
             const safeFile = new File([pembayaran], safeFileName, { type: pembayaran.type });
             formData.append("image", safeFile);
-            
-            // Log what we're sending
-            console.log("Sending payment verification:", {
-                team_id: teamID,
-                file_name: safeFileName,
-                file_type: pembayaran.type,
-                file_size: `${(pembayaran.size / 1024 / 1024).toFixed(2)}MB`
-            });
 
+            // Kirim data ke API
             const result = await postCompePayment(formData);
-            console.log("Upload payment result:", result);
 
             if (result.success) {
-                // Segera update UI untuk menampilkan "Menunggu Verifikasi" tanpa menunggu refresh
+                // Segera update UI untuk menampilkan "Menunggu Verifikasi"
                 setCompetitions(prevCompetitions => {
                     const updated = { ...prevCompetitions };
                     if (updated[compKey]) {
