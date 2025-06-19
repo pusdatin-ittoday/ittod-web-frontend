@@ -84,7 +84,7 @@ export const initiateGoogleLogin = () => {
   const currentPath = window.location.pathname;
   const urlParams = new URLSearchParams(window.location.search);
   const redirectTo = urlParams.get('redirectTo');
-  
+
   if (redirectTo) {
     localStorage.setItem('redirectAfterAuth', decodeURIComponent(redirectTo));
   } else if (currentPath !== '/login' && currentPath !== '/register') {
@@ -393,7 +393,7 @@ export const getImageUrlFromR2 = (key) => {
 export const handleGoogleAuthCallback = async () => {
   try {
     const response = await instance.get('/api/auth/google/callback', { withCredentials: true });
-    
+
     if (response.data.success) {
       // Dispatch auth change event
       window.dispatchEvent(new Event('auth-changed'));
@@ -409,7 +409,7 @@ export const handleGoogleAuthCallback = async () => {
     }
   } catch (error) {
     console.error("Google auth callback error:", error);
-    
+
     // Check if it's an account conflict error
     if (error.response?.data?.error === 'ACCOUNT_EXISTS_WITH_EMAIL') {
       return {
@@ -418,7 +418,7 @@ export const handleGoogleAuthCallback = async () => {
         message: 'Akun kamu sudah teregistrasi dengan email dan password. Silakan login menggunakan email dan password.'
       };
     }
-    
+
     return {
       success: false,
       error: error.response?.data?.error || 'Google authentication failed'
