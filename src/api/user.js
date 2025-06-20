@@ -366,7 +366,7 @@ export const uploadImageToR2 = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await instance.put('/api/images/', formData, {
+    const response = await instance.post('/api/images/', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return { success: true, data: response.data }; // response.data should include the key
