@@ -11,7 +11,7 @@ import { FaAddressCard } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaImage } from "react-icons/fa";
 import instance from "../../api/axios";
-import { getImageUrlFromR2, uploadImageToR2 } from "../../api/user";
+import { getImageUrlFromR2 } from "../../api/user";
 
 // Helper to get original filename from R2 key
 const getOriginalFileName = (key) => {
@@ -341,34 +341,6 @@ class EditProfile extends Component {
                 }
             }
 
-            // 3. Upload KTM to R2 if changed
-            let ktmR2Key = this.state.ktmFileName;
-            if (KTM && ktmChanged) {
-                try {
-                    const r2Res = await uploadImageToR2(KTM);
-                    if (r2Res.success && r2Res.data.key) {
-                        ktmR2Key = r2Res.data.key;
-                        this.setState({ ktmFileName: ktmR2Key });
-                    }
-                } catch (r2Error) {
-                    console.error("❌ KTM R2 upload error:", r2Error);
-                }
-            }
-
-            // 4. Upload Twibbon to R2 if changed
-            let twibbonR2Key = this.state.twibbonFileName;
-            if (twibbon && twibbonChanged) {
-                try {
-                    const r2Res = await uploadImageToR2(twibbon);
-                    if (r2Res.success && r2Res.data.key) {
-                        twibbonR2Key = r2Res.data.key;
-                        this.setState({ twibbonFileName: twibbonR2Key });
-                    }
-                } catch (r2Error) {
-                    console.error("❌ Twibbon R2 upload error:", r2Error);
-                }
-            }
-
             // Save user data to sessionStorage
             if (response.data.success || response.data.message?.includes('success')) {
                 const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
@@ -382,9 +354,7 @@ class EditProfile extends Component {
                     id_discord,
                     id_instagram,
                     pendidikan: pendidikan,
-                    nama_sekolah,
-                    twibbonFileName: twibbonR2Key,
-                    ktmFileName: ktmR2Key
+                    nama_sekolah
                 };
                 sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
                 sessionStorage.setItem("profileUpdateStatus", "success");
