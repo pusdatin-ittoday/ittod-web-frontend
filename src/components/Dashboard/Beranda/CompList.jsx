@@ -111,9 +111,9 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                         {needsVerification && (
                             <button
                                 onClick={() => handleVerifyClick(key)}
-                                className="custom-button-bg px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full sm:w-auto"
+                                className="cursor-pointer custom-button-bg px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full sm:w-auto"
                             >
-                                <FaUpload className="inline mr-1" /> Verifikasi
+                                <FaUpload className="inline mr-1 " /> Verifikasi
                             </button>
                         )}
                         {isPendingVerification && (
