@@ -31,6 +31,8 @@ import RegistMineToday from "./pages/CompeRegisPage/RegistMinetoday.jsx";
 import RegistHackToday from "./pages/CompeRegisPage/RegistHacktoday.jsx";
 import RegistUXToday from "./pages/CompeRegisPage/RegistUXtoday.jsx";
 import AuthCallback from './components/Login/AuthCallback';
+import FallbackNoRegist from './pages/Fallback/FallbackNoRegist.jsx';
+import FallbackNotFound from './pages/Fallback/FallbackNotFound.jsx';
 
 const App = () => {
   return (
@@ -51,6 +53,9 @@ const App = () => {
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/edit-profile" element={<EditProfile />} />
 
+          {/*Fallback Routes*/}
+          <Route path="/registration-unavailable" element={<FallbackNoRegist />} />
+          <Route path="*" element={<FallbackNotFound />} />
 
           {/* Protected Dashboard Routes */}
           <Route path="/dashboard/beranda" element={

@@ -176,14 +176,17 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             }`}>
                                 {anggota.isRegistrationComplete ? (
                                     <>
-                                        <RiVerifiedBadgeFill className="text-lg sm:text-sm mb-1 mr-1 sm:mb-0 sm:mr-1.5" />
-                                        <span className="text-center sm:text-left text-xs sm:text-sm">Data Lengkap</span>
+                                        <p className="flex flex-col sm:flex-row items-center gap-1">
+                                            <RiVerifiedBadgeFill className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
+                                            <span className="hidden sm:inline text-center text-xs sm:text-sm sm:text-left ">Data Lengkap</span>
+                                        </p>
                                     </>
                                 ) : (
                                     <>
                                         <p className="flex flex-col sm:flex-row items-center gap-1">
-                                            <MdErrorOutline className="text-lg sm:text-sm mb-1 sm:mb-0 sm:mr-1.5" /><span className="text-center sm:text-left text-xs sm:text-sm">Data Belum</span>
-                                            <span>Lengkap</span>
+                                            <MdErrorOutline className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
+                                            <span className="hidden sm:inline text-center sm:text-left text-xs sm:text-sm">Data Belum</span>
+                                            <span className="hidden sm:inline">Lengkap</span>
                                         </p>
                                     </>
                                 )}
