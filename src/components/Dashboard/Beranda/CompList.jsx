@@ -393,12 +393,14 @@ const CompListPage = () => {
 
             // Cek status verifikasi dari berbagai sumber
             const isVerified = comp.is_verified || comp.isVerified;
-            const hasPaymentProof = Boolean(comp.payment_proof_id);
+            
+            // Check if user upload payment proof through API through payment_proof_id
+            const hasPaymentProof = Boolean(comp.paymentProofID);
 
             // Tim menunggu verifikasi jika:
             // 1. Belum terverifikasi, dan
-            // 2. Sudah upload bukti pembayaran ATAU tercatat di localStorage
-            const isPendingVerification = !isVerified && (hasPaymentProof || uploadedTeams[teamID]);
+            // 2. Sudah upload bukti pembayaran melalui API ATAU tercatat di localStorage
+            const isPendingVerification = !isVerified && hasPaymentProof;
 
             let updatedMembers = [];
 
@@ -589,11 +591,33 @@ const CompListPage = () => {
                 // Delay refresh lebih lama untuk memberi waktu server memproses
                 setTimeout(refreshCompetitionData, 5000);
                 return result;
+            } else {
+                // Jika API gagal, kembalikan error yang lebih spesifik
+                return {
+                    success: false,
+                    message: result.message || "Gagal mengunggah bukti pembayaran. Silakan coba lagi."
+                };
             }
 
-            return result;
         } catch (error) {
             console.error("Error during verification:", error);
+            
+            // Handle network errors
+            if (error.name === 'NetworkError' || !navigator.onLine) {
+                return {
+                    success: false,
+                    message: "Koneksi internet bermasalah. Silakan cek koneksi dan coba lagi."
+                };
+            }
+            
+            // Handle timeout errors
+            if (error.name === 'TimeoutError' || error.code === 'ECONNABORTED') {
+                return {
+                    success: false,
+                    message: "Waktu upload habis. Silakan coba lagi."
+                };
+            }
+            
             return {
                 success: false,
                 message: error.message || "Terjadi kesalahan saat mengunggah bukti pembayaran"
