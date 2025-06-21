@@ -12,7 +12,7 @@ const FallbackNoRegist = () => {
                 <h1 className="font-dm-sans input-text-glow text-pink-400 text-5xl font-bold">Oops!</h1>
                 <div className="text-center max-w-md">
                     <p className="font-dm-sans text-base md:text-lg leading-relaxed text-pink-100 drop-shadow-[0_0_10px_#ffffff77] mb-3">
-                        Pendaftaran <span className="font-bold text-pink-300">Batch-1</span> sudah ditutup nih! 
+                        Pendaftaran <span className="font-bold text-pink-300 border-b-2">Batch-1</span> sudah ditutup nih! 
                     </p>
                     <p className="font-dm-sans text-sm md:text-base leading-relaxed text-pink-200 drop-shadow-[0_0_10px_#ffffff77]">
                         Tetap pantau update terbaru kami untuk batch selanjutnya ya! 🚀

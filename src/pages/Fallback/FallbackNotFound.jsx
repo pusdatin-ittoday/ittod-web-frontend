@@ -14,7 +14,7 @@ const FallbackNotFound= () => {
                 </div>
                 <div className="text-center max-w-md">
                     <p className="font-dm-sans text-base md:text-lg leading-relaxed text-pink-100 drop-shadow-[0_0_10px_#ffffff77] mb-3">
-                        Halaman yang kamu tuju <span className="font-bold text-pink-300">gak ketemu</span> nih! 
+                        Halaman yang kamu tuju <span className="font-bold text-pink-300 border-b-2 border-pink-300">gak ketemu</span> nih! 
                     </p>
                     <p className="font-dm-sans text-sm md:text-base leading-relaxed text-pink-200 drop-shadow-[0_0_10px_#ffffff77]">
                         Kok kamu bisa masuk ke sini sih?
