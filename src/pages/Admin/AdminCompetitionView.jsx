@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import SidebarAdmin from '../../components/SidebarAdmin';
+import { getCompetitionList, getCompetitionById } from '../../api/admin';
 
 const AdminCompetitionView = () => {
-  const [selected, setSelected] = useState('HackToday');
+  const [competitionList, setCompetitionList] = useState([]);
+  const [selected, setSelected] = useState('');
   const [competitionData, setCompetitionData] = useState({
     detail: {},
     timeline: [],
@@ -16,61 +18,33 @@ const AdminCompetitionView = () => {
     return `${day}-${month}-${year}`;
   };
 
+  // Ambil list kompetisi saat pertama kali load
   useEffect(() => {
-    // TODO: Ganti dummy data ke fetch() dari backend setelah endpoint siap
-    const dummyData = {
-      HackToday: {
-        detail: {
-          title: 'HackToday 2025',
-          description: 'Kompetisi hackathon untuk pelajar dan mahasiswa.',
-          guidebook: 'https://example.com/hacktoday-guidebook.pdf',
-          contact: 'https://wa.me/6281234567890',
-        },
-        timeline: [
-          { name: 'Pendaftaran', date: '2025-06-01' },
-          { name: 'Seleksi', date: '2025-06-10' },
-          { name: 'Final', date: '2025-06-20' },
-        ],
-      },
-      GameToday: {
-        detail: {
-          title: 'GameToday 2025',
-          description: 'Turnamen game dan pembuatan game interaktif.',
-          guidebook: 'https://example.com/gametoday-guidebook.pdf',
-          contact: 'https://wa.me/6289876543210',
-        },
-        timeline: [
-          { name: 'Registrasi', date: '2025-07-01' },
-          { name: 'Penyisihan', date: '2025-07-10' },
-        ],
-      },
-      UxToday: {
-        detail: {
-          title: 'UxToday 2025',
-          description: 'Kompetisi desain antarmuka pengguna (UI/UX).',
-          guidebook: 'https://example.com/uxtoday-guidebook.pdf',
-          contact: 'https://wa.me/6281122334455',
-        },
-        timeline: [
-          { name: 'Open Submission', date: '2025-08-01' },
-          { name: 'Penjurian', date: '2025-08-15' },
-        ],
-      },
-      MineToday: {
-        detail: {
-          title: 'MineToday 2025',
-          description: 'Kompetisi inovasi pertambangan modern.',
-          guidebook: 'https://example.com/minetoday-guidebook.pdf',
-          contact: 'https://wa.me/6285566778899',
-        },
-        timeline: [
-          { name: 'Kick-off', date: '2025-09-01' },
-          { name: 'Presentasi', date: '2025-09-20' },
-        ],
-      },
+    const fetchList = async () => {
+      try {
+        const res = await getCompetitionList();
+        const list = res.data;
+        setCompetitionList(list);
+        setSelected(list[0]); // default pilih pertama
+      } catch (err) {
+        console.error('Gagal ambil daftar kompetisi:', err);
+      }
     };
+    fetchList();
+  }, []);
 
-    setCompetitionData(dummyData[selected]);
+  // Ambil detail berdasarkan kompetisi yang dipilih
+  useEffect(() => {
+    if (!selected) return;
+    const fetchData = async () => {
+      try {
+        const res = await getCompetitionById(selected);
+        setCompetitionData(res.data);
+      } catch (err) {
+        console.error('Gagal ambil data kompetisi:', err);
+      }
+    };
+    fetchData();
   }, [selected]);
 
   return (
@@ -82,8 +56,10 @@ const AdminCompetitionView = () => {
         onChange={(e) => setSelected(e.target.value)}
         className="mb-4 px-4 py-2 border border-black text-black bg-white rounded"
       >
-        {['HackToday', 'GameToday', 'UxToday', 'MineToday'].map((comp) => (
-          <option key={comp} value={comp}>{comp}</option>
+        {competitionList.map((comp) => (
+          <option key={comp} value={comp}>
+            {comp}
+          </option>
         ))}
       </select>
 
@@ -101,24 +77,24 @@ const AdminCompetitionView = () => {
             <td className="border border-black p-2">{competitionData.detail.title}</td>
             <td className="border border-black p-2">{competitionData.detail.description}</td>
             <td className="border border-black p-2">
-             <a
-  href={competitionData.detail.guidebook}
-  className="text-blue-600 underline hover:text-blue-800"
-  target="_blank"
-  rel="noopener noreferrer">
-  Link
-</a>
+              <a
+                href={competitionData.detail.guidebook}
+                className="text-blue-600 underline hover:text-blue-800"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Link
+              </a>
             </td>
             <td className="border border-black p-2">
-             <a
-  href={competitionData.detail.contact}
-  className="text-blue-600 underline hover:text-blue-800"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  WA
-</a>
-
+              <a
+                href={competitionData.detail.contact}
+                className="text-blue-600 underline hover:text-blue-800"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WA
+              </a>
             </td>
           </tr>
         </tbody>
