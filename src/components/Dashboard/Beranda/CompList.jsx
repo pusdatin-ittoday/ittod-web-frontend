@@ -213,8 +213,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-2">
                     <div className="flex items-center gap-3 sm:gap-5">
                         <FaUser className="text-lg sm:text-xl lg:text-2xl input-text-glow text-white drop-shadow-[0_1px_6px_#FFE6FC]" />
-                        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold input-text-glow tracking-wide transform transition duration-500 hover:scale-102 text-white drop-shadow-[0_1px_1px_#FFE6FC]">
-                            Halo, {name}!
+                        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold input-text-glow tracking-wide transform transition duration-500 hover:scale-102">
+                            <span className="text-white drop-shadow-[0_1px_1px_#FFB6C1] input-text-glow">Halo, </span><span className="text-pink-300 drop-shadow-[0_1px_5px_#FF69B4]">{name}!</span>
                         </h2>
                     </div>
                     <div className="flex items-center">
