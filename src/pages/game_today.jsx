@@ -6,9 +6,11 @@ import PrizepoolSection from '../components/Prizepool';
 import ContactUs from './ContactUs';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from '../api/user';
+import { useRegisStatus } from '../hooks/useRegisStatus';
 
 const Game_Today = () => {
   const navigate = useNavigate();
+  const isRegisOpen = useRegisStatus("gametoday");
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -33,7 +35,7 @@ const Game_Today = () => {
   const handleDaftarClick = () => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
     if (isLoggedIn === "true") {
-      navigate("/register-gametoday");
+      isRegisOpen ? navigate("/register-gametoday") : navigate("/registration-unavailable");
     } else {
       navigate("/login?redirectTo=/dashboard/ikut-event");
     }

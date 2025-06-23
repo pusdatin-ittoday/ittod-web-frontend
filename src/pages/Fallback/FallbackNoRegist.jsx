@@ -1,8 +1,10 @@
 import React from "react";
 import Navbar from "../../components/Navbar";
 import { IoArrowUndoCircle } from "react-icons/io5";
+import { useBatch } from "../../hooks/useRegisStatus";
 
 const FallbackNoRegist = () => {
+    const batch = useBatch();
     return (
         <div className="font-dm-sans flex flex-col min-h-screen items-center justify-center h-screen">
             <div className="fixed top-0 left-0 right-0 z-50">
@@ -12,7 +14,7 @@ const FallbackNoRegist = () => {
                 <h1 className="font-dm-sans input-text-glow text-pink-400 text-5xl font-bold">Oops!</h1>
                 <div className="text-center max-w-md">
                     <p className="font-dm-sans text-base md:text-lg leading-relaxed text-pink-100 drop-shadow-[0_0_10px_#ffffff77] mb-3">
-                        Pendaftaran <span className="font-bold text-pink-300 border-b-2">Batch-1</span> sudah ditutup nih! 
+                        Pendaftaran <span className="font-bold text-pink-300 border-b-2">{batch}</span> sudah ditutup nih! 
                     </p>
                     <p className="font-dm-sans text-sm md:text-base leading-relaxed text-pink-200 drop-shadow-[0_0_10px_#ffffff77]">
                         Tetap pantau update terbaru kami untuk batch selanjutnya ya! 🚀

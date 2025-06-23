@@ -6,10 +6,12 @@ import PrizepoolSection from '../components/Prizepool';
 import ContactUs from './ContactUs';
 import { getCurrentUser } from '../api/user';
 import { useNavigate } from 'react-router-dom';
+import { useRegisStatus } from '../hooks/useRegisStatus';
 
 const Mine_Today = () => {
   const navigate = useNavigate();
-
+  const isRegisOpen = useRegisStatus("minetoday");
+  
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
@@ -33,7 +35,7 @@ const Mine_Today = () => {
   const handleDaftarClick = () => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
     if (isLoggedIn === "true") {
-      navigate("/register-minetoday");
+      isRegisOpen ? navigate("/register-minetoday") : navigate("/registration-unavailable");
     } else {
       navigate("/login?redirectTo=/dashboard/ikut-event");
     }

@@ -3,6 +3,7 @@ import { PiTargetBold } from 'react-icons/pi';
 import { FaUsers } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { joinTeam } from "../../../api/user";
+import { useRegisStatus } from '../../../hooks/useRegisStatus';
 
 const events = [
   {
@@ -31,7 +32,10 @@ const events = [
   },
 ];
 
-const IkutLomba = ({ title, description, image, registerLink }) => (
+const IkutLomba = ({ title, description, image, registerLink }) => {
+  const isRegisOpen = useRegisStatus(title.toLowerCase());
+  return (
+
   <div className="font-dm-sans flex flex-col items-center justify-between w-full max-w-[220px] min-h-[340px] text-white">
     <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1] flex-shrink-0">
       {image ? (
@@ -52,7 +56,7 @@ const IkutLomba = ({ title, description, image, registerLink }) => (
         </div>
 
         <div className="w-full flex justify-center mt-auto">
-          <Link to={registerLink}>
+          <Link to={isRegisOpen ? registerLink : '/registration-unavailable'}>
             <button
               className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer">
               Daftar Sekarang
@@ -62,7 +66,7 @@ const IkutLomba = ({ title, description, image, registerLink }) => (
       </div>
     </div>
   </div>
-);
+)};
 
 const CompRegisCard = () => {
   const navigate = useNavigate();
