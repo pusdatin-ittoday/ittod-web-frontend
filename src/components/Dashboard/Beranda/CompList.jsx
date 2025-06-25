@@ -186,7 +186,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                                         <p className="flex flex-col sm:flex-row items-center gap-1">
                                             <MdErrorOutline className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
                                             <span className="hidden sm:inline text-center sm:text-left text-xs sm:text-sm">Data Belum</span>
-                                            <span className="hidden sm:inline">Lengkap</span>
+                                            <span className="hidden sm:inline">Lengkap/Pending</span>
                                         </p>
                                     </>
                                 )}
