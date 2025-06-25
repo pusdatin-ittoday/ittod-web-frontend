@@ -273,12 +273,12 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                                 </div>
                                 <div className="mb-3">
                                     <p className="text-xs sm:text-sm text-white/90 mb-1">
-                                        <b className="text-pink-100">Harga Batch 1:</b> Rp 80.000<br />
+                                        <b className="text-pink-100 line-through">Harga Batch 1:</b><span className="line-through">Rp 80.000</span><br />
                                         <b className="text-pink-100">Harga Batch 2:</b> Rp 100.000
                                     </p>
                                 </div>
-                                <div className="bg-white/10 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/80 italic shadow-inner">
-                                    <span className="font-bold text-pink-100">Contoh:</span> Ryan harus bayar sebanyak <span className="font-bold text-pink-100">80.000</span> rupiah jika Ryan ingin ikut <span className="font-bold text-pink-100">GameToday</span> pada Batch 1. Ryan harus transfer <span className="font-bold text-pink-100">80.002</span> Rupiah ke Althaf Faiz Rafianto.
+                                <div className="bg-white/10 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/80 italic shadow-inner text-justify">
+                                    <span className="font-bold text-pink-100">Contoh:</span> Ryan harus bayar sebanyak <span className="font-bold text-pink-100">100.000</span> rupiah jika Ryan ingin ikut <span className="font-bold text-pink-100">GameToday</span> pada Batch-2. Ryan harus transfer <span className="font-bold text-pink-100">100.002</span> Rupiah ke Althaf Faiz Rafianto.
                                 </div>
                             </div>
                         </div>
