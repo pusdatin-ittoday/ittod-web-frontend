@@ -7,6 +7,7 @@ import Beranda from "../../components/Dashboard/Beranda/Beranda";
 import IkutLomba from "../../components/Dashboard/IkutLomba/IkutLomba";
 import IkutEvent from "../../components/Dashboard/IkutEvent/IkutEvent";
 import SubmitLomba from "../../components/Dashboard/SubmitLomba/SubmitLomba";
+import { getCurrentUser } from "../../api/user";
 import instance from "../../api/axios";
 
 import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md"; // Added MdCheckCircleOutline
@@ -32,9 +33,14 @@ class DashboardLayout extends Component {
       showSuccessAlert: false, // <-- NEW: For success alert
       successAlertMessage: "", // <-- NEW: Message for success alert
       successAlertPosition: { // <-- NEW: Position for success alert (can be different)
-        x: window.innerWidth - 370, // Example: Top right
-        y: 80, // Example: Below navbar
-      }
+        x: 20, // Bottom left
+        y: window.innerHeight - 120, // Above the bottom, adjust as needed
+      },
+      alertType: null, // 'incomplete', 'pending', 'complete'
+      pendingAlertPosition: {
+        x: 20,
+        y: window.innerHeight - 220, // Stacked above incomplete alert
+      },
     };
   }
 
@@ -69,14 +75,13 @@ class DashboardLayout extends Component {
     this.setState({ active: tab });
   };
 
-  // Dalam DashboardLayout.js, tambahkan kode berikut:
-
   // Modifikasi checkUserDataCompleteness
   checkUserDataCompleteness = async () => {
     try {
-      const response = await instance.get('/api/user');
+      const response = await getCurrentUser();
       const userData = response.data;
 
+      // Required fields as in EditProfil
       const requiredFields = [
         { key: "full_name", label: "Nama Lengkap" },
         { key: "email", label: "Email" },
@@ -85,38 +90,54 @@ class DashboardLayout extends Component {
         { key: "jenis_kelamin", label: "Jenis Kelamin" },
         { key: "pendidikan", label: "Status Pendidikan" },
         { key: "nama_sekolah", label: "Nama Sekolah/Institusi" },
-        {key: "ktm_key", label: "Kartu Institusi"},
-        {key: "twibbon_key", label: "Twibbon"},
+        { key: "ktm_key", label: "Kartu Institusi" },
+        { key: "twibbon_key", label: "Twibbon" },
       ];
 
       const incompleteFields = requiredFields.filter(field =>
         !userData[field.key] || String(userData[field.key]).trim() === ""
       );
 
+      let alertType = null;
+      let showAlert = false;
+      let showSuccessAlert = false;
+      let successAlertMessage = "";
+
       if (incompleteFields.length > 0) {
-        this.setState({
-          showAlert: true,
-          incompleteFields: incompleteFields,
-          alertPosition: {
-            x: 20,
-            y: window.innerHeight - (150 + incompleteFields.length * 20),
-          },
-          showSuccessAlert: false
-        });
-      } else {
-        this.setState({
-          showAlert: false,
-          incompleteFields: [],
-          showSuccessAlert: true,
-          successAlertMessage: "Data sudah lengkap!"
-        });
+        // Case 1: Data belum lengkap
+        alertType = 'incomplete';
+        showAlert = true;
+        showSuccessAlert = false;
+      } else if (userData.is_registration_complete === 0 || userData.is_registration_complete === false) {
+        // Case 2: Data sedang diperiksa
+        alertType = 'pending';
+        showAlert = true;
+        showSuccessAlert = false;
+      } else if (userData.is_registration_complete === 1 || userData.is_registration_complete === true) {
+        // Case 3: Data lengkap
+        alertType = 'complete';
+        showAlert = false;
+        showSuccessAlert = true;
+        successAlertMessage = "Data sudah lengkap!";
       }
+
+      this.setState({
+        showAlert,
+        incompleteFields,
+        alertType,
+        showSuccessAlert,
+        successAlertMessage,
+        alertPosition: {
+          x: 20,
+          y: window.innerHeight - (150 + incompleteFields.length * 20),
+        },
+      });
     } catch (error) {
       console.error("Error checking user data completeness:", error);
-      // If there's an error, we'll show the incomplete data alert
       this.setState({
         showAlert: true,
         incompleteFields: [{ label: "Error loading user data" }],
+        alertType: 'incomplete',
         alertPosition: {
           x: 20,
           y: window.innerHeight - 150,
@@ -168,12 +189,18 @@ class DashboardLayout extends Component {
   handleMouseDown = (e, alertType = "incomplete") => {
     e.preventDefault();
     const rect = e.currentTarget.getBoundingClientRect();
-    const currentPosition = alertType === "success" ? this.state.successAlertPosition : this.state.alertPosition;
-
+    let currentPosition;
+    if (alertType === "success") {
+      currentPosition = this.state.successAlertPosition;
+    } else if (alertType === "pending") {
+      currentPosition = this.state.pendingAlertPosition;
+    } else {
+      currentPosition = this.state.alertPosition;
+    }
     this.setState({
-      isDragging: alertType, // Store which alert is being dragged
+      isDragging: alertType,
       dragOffset: {
-        x: e.clientX - currentPosition.x, // Use current position of the specific alert
+        x: e.clientX - currentPosition.x,
         y: e.clientY - currentPosition.y
       }
     });
@@ -182,10 +209,14 @@ class DashboardLayout extends Component {
   handleTouchStart = (e, alertType = "incomplete") => {
     e.preventDefault();
     const touch = e.touches[0];
-    const rect = e.currentTarget.getBoundingClientRect();
-    const currentPosition = alertType === "success" ? this.state.successAlertPosition : this.state.alertPosition;
-
-
+    let currentPosition;
+    if (alertType === "success") {
+      currentPosition = this.state.successAlertPosition;
+    } else if (alertType === "pending") {
+      currentPosition = this.state.pendingAlertPosition;
+    } else {
+      currentPosition = this.state.alertPosition;
+    }
     this.setState({
       isDragging: alertType,
       dragOffset: {
@@ -199,15 +230,12 @@ class DashboardLayout extends Component {
     if (!this.state.isDragging) return;
     const newX = e.clientX - this.state.dragOffset.x;
     const newY = e.clientY - this.state.dragOffset.y;
-
     if (this.state.isDragging === "success") {
-      this.setState({
-        successAlertPosition: { x: newX, y: newY }
-      });
+      this.setState({ successAlertPosition: { x: newX, y: newY } });
+    } else if (this.state.isDragging === "pending") {
+      this.setState({ pendingAlertPosition: { x: newX, y: newY } });
     } else if (this.state.isDragging === "incomplete") {
-      this.setState({
-        alertPosition: { x: newX, y: newY }
-      });
+      this.setState({ alertPosition: { x: newX, y: newY } });
     }
   };
 
@@ -216,15 +244,12 @@ class DashboardLayout extends Component {
     const touch = e.touches[0];
     const newX = touch.clientX - this.state.dragOffset.x;
     const newY = touch.clientY - this.state.dragOffset.y;
-
     if (this.state.isDragging === "success") {
-      this.setState({
-        successAlertPosition: { x: newX, y: newY }
-      });
+      this.setState({ successAlertPosition: { x: newX, y: newY } });
+    } else if (this.state.isDragging === "pending") {
+      this.setState({ pendingAlertPosition: { x: newX, y: newY } });
     } else if (this.state.isDragging === "incomplete") {
-      this.setState({
-        alertPosition: { x: newX, y: newY }
-      });
+      this.setState({ alertPosition: { x: newX, y: newY } });
     }
   };
 
@@ -257,7 +282,7 @@ class DashboardLayout extends Component {
   // Tambahkan kode berikut untuk mengubah tampilan success alert di DashboardLayout.js
 
   render() {
-    const { active, showAlert, incompleteFields, alertPosition, isDragging, showSuccessAlert, successAlertMessage, successAlertPosition } = this.state;
+    const { active, showAlert, incompleteFields, alertPosition, isDragging, showSuccessAlert, successAlertMessage, successAlertPosition, alertType, pendingAlertPosition } = this.state;
 
     const incompleteAlertStyle = {
       position: 'fixed',
@@ -275,6 +300,26 @@ class DashboardLayout extends Component {
       cursor: isDragging === 'success' ? 'grabbing' : 'grab',
     };
 
+    const pendingAlertStyle = {
+      position: 'fixed',
+      left: `${pendingAlertPosition.x}px`,
+      top: `${pendingAlertPosition.y}px`,
+      zIndex: 1000,
+      cursor: isDragging === 'pending' ? 'grabbing' : 'grab',
+    };
+
+    // Determine alert color and message
+    let alertBg = 'bg-red-600/80';
+    let alertTitle = 'Data belum lengkap!';
+    let alertIcon = <MdErrorOutline className="text-sm sm:text-xl mr-2" />;
+    let alertDesc = 'Mohon untuk lengkapi data diri Anda :';
+    if (alertType === 'pending') {
+      alertBg = 'bg-yellow-400/90 text-yellow-900';
+      alertTitle = 'Data sedang diperiksa';
+      alertIcon = <MdErrorOutline className="text-sm sm:text-xl mr-2" />;
+      alertDesc = 'Mohon untuk menunggu';
+    }
+
     return (
       <div className="flex min-h-screen text-white font-dm-sans">
         <Navbar />
@@ -287,10 +332,10 @@ class DashboardLayout extends Component {
           </main>
         </div>
 
-        {/* Alert for incomplete data */}
-        {showAlert && (
+        {/* Alert for incomplete or pending data */}
+        {showAlert && alertType === 'incomplete' && (
           <div
-            className="bg-red-600/80 text-white px-6 py-4 rounded-lg shadow-xl max-w-md"
+            className={`${alertBg} text-white px-6 py-4 rounded-lg shadow-xl max-w-md`}
             style={incompleteAlertStyle}
             onMouseDown={(e) => this.handleMouseDown(e, "incomplete")}
             onTouchStart={(e) => this.handleTouchStart(e, "incomplete")}
@@ -298,25 +343,52 @@ class DashboardLayout extends Component {
             <div className="flex justify-between items-start mb-2 gap-5">
               <h3 className="font-bold text-sm sm:text-lg">
                 <div className="flex items-center">
-                  <MdErrorOutline className="text-sm sm:text-xl mr-2" />
-                  Data belum lengkap!
+                  {alertIcon}
+                  {alertTitle}
                 </div>
               </h3>
               <button
                 onClick={this.closeAlert}
-                className="bg-red-700/85 hover:bg-red-800/85 rounded-full p-1 transition-colors"
+                className="bg-black/20 hover:bg-black/40 rounded-full p-1 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </button>
             </div>
-            <p className="text-xs sm:text-sm mb-2">Mohon untuk lengkapi data diri Anda :</p>
-            <ul className="list-disc pl-5 text-xs sm:text-sm space-y-1">
-              {incompleteFields.map((field, index) => (
-                <li key={index}>{field.label}</li>
-              ))}
-            </ul>
+            <p className="text-xs sm:text-sm mb-2">{alertDesc}</p>
+            {alertType === 'incomplete' && (
+              <ul className="list-disc pl-5 text-xs sm:text-sm space-y-1">
+                {incompleteFields.map((field, index) => (
+                  <li key={index}>{field.label}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+        {showAlert && alertType === 'pending' && (
+          <div
+            className={`bg-yellow-400/90 text-yellow-900 px-6 py-4 rounded-lg shadow-xl max-w-md`}
+            style={pendingAlertStyle}
+            onMouseDown={(e) => this.handleMouseDown(e, "pending")}
+            onTouchStart={(e) => this.handleTouchStart(e, "pending")}
+          >
+            <div className="flex justify-between items-start mb-2 gap-5">
+              <h3 className="font-bold text-sm sm:text-lg">
+                <div className="flex items-center">
+                  <span className="spin-with-pause mr-1">⌛</span>
+                  Data sedang diperiksa
+                </div>
+              </h3>
+              <button
+                onClick={this.closeAlert}
+                className="bg-black/20 hover:bg-black/40 rounded-full p-1 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
           </div>
         )}
 
