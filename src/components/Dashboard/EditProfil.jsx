@@ -620,11 +620,17 @@ class EditProfile extends Component {
 
                         {/* Upload Twibbon */}
                         <div className="mb-3 col-span-full">
-                            <label className="block text-sm font-bold mb-2">
-                                Twibbon (jpg/png, max 2MB)
-                            </label>
-                            <div className="mb-2 text-sm flex justify-left text-yellow-400">
-                            Untuk sementara, belum tersedia twibbon. Silahkan upload file placeholder pada bagian twibbon berupa meme/gambar untuk mencegah error ({`<2MB`}).
+                            <div className="flex flex-col mb-3">
+                                <label className="block text-sm font-bold mb-2">
+                                    Twibbon (jpg/png, max 2MB)
+                                </label>
+                                <button 
+                                    type="button"
+                                    className="font-dm-sans text-white font-bold custom-button-bg button-hover transition duration-300 ease-in-out hover:scale-102 cursor-pointer px-4 py-2 rounded-md "
+                                    onClick={() => window.open("https://www.twibbonize.com/twibbon-ittoday-2025", "_blank")}
+                                    >
+                                        Link Twibbon
+                                </button>
                             </div>
                             <div
                                 className={`border-2 border-dashed ${errorFields.includes(this.fieldLabels.twibbon) ? 'border-red-500' : 'border-pink-400'} rounded-md p-6 text-center ${errorFields.includes(this.fieldLabels.twibbon) ? 'bg-red-100' : 'bg-gray-100'} text-white bg-white/10 hover:bg-white/20 transition duration-300 hover:scale-102 cursor-pointer w-full min-h-24 flex items-center justify-center`}
