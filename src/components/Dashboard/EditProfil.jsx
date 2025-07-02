@@ -626,7 +626,7 @@ class EditProfile extends Component {
                                 </label>
                                 <button 
                                     type="button"
-                                    className="text-sm sm:text-xl font-dm-sans text-white font-bold custom-button-bg button-hover transition duration-300 ease-in-out hover:scale-102 cursor-pointer px-4 py-2 rounded-md "
+                                    className="text-[15px] font-dm-sans text-white font-bold custom-button-bg button-hover transition duration-300 ease-in-out hover:scale-102 cursor-pointer px-4 py-2 rounded-md "
                                     onClick={() => window.open("https://www.twibbonize.com/twibbon-ittoday-2025", "_blank")}
                                     >
                                         Template Twibbon
