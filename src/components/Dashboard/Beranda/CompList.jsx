@@ -54,6 +54,10 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
         }
     };
 
+    const handleTwibbonClick = () => {
+        window.open("https://www.twibbonize.com/twibbon-ittoday-2025", "_blank");
+    };
+
     // Perbaikan filter kompetisi untuk mendukung members sebagai objek
     const filteredCompetitions = Object.entries(competitions || {}).filter(([, data]) => {
         if (!data || !data.members) {
@@ -220,7 +224,13 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             <span className="text-white drop-shadow-[0_1px_1px_#FFB6C1] input-text-glow">Halo, </span><span className="text-pink-300 drop-shadow-[0_1px_5px_#FF69B4]">{name}!</span>
                         </h2>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleTwibbonClick}
+                            className="custom-button-bg px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded button-hover transition duration-300 hover:scale-105 font-semibold cursor-pointer w-full sm:w-auto"
+                        >
+                            Twibbon 
+                        </button>
                         <button
                             onClick={handleEditUserClick}
                             className="custom-button-bg px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded button-hover transition duration-300 hover:scale-105 font-semibold cursor-pointer w-full sm:w-auto"
