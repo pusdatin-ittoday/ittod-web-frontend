@@ -38,7 +38,7 @@ const Bootcamp = () => {
     }
   };
   const timeline = [
-    { title: 'Bootcamp', date: '17, 24, 31 Agustus 2025 & 7 September 2025' },
+    { title: 'Bootcamp', date: '24 dan 31 Agustus 2025' },
   ];
 
   return (

@@ -39,8 +39,7 @@ const Workshop = () => {
   };
 
   const timeline = [
-    { title: 'Workshop 1 & 2', date: '31 Agustus 2025' },
-    { title: 'Workshop 3', date: '7 September 2025' },
+    { title: 'Workshop', date: '7 September 2025' },
   ];
   return (
     <>

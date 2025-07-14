@@ -45,9 +45,8 @@ const TimelineItem = ({ title, date, isFirst, isLast }) => {
 const TimelineUmum = () => {
   // List of timeline events
   var items = [
-    { title: "Bootcamp", date: "17, 24, 31 Agustus & 7 September 2025"},
-    { title: "Workshop 1 & 2", date: "31 Agustus 2025"},
-    { title: "Workshop 3", date: "7 September 2025"},
+    { title: "Bootcamp", date: " 24 dan 31 Agustus 2025"},
+    { title: "Workshop", date: "7 September 2025"},
     { title: "Seminar Nasional", date: "13 September 2025"},
     { title: "Final & Awarding", date: "27 September 2025"},
   ];
