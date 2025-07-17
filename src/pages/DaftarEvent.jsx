@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import { BiLogoWhatsapp } from "react-icons/bi";
 import { FaSchool } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
+import { FaWhatsapp } from "react-icons/fa";
 import { registerEvent } from "../utils/api/event";
 
 const workshopOptions = [
@@ -135,15 +136,17 @@ const DaftarEvent = () => {
 
                     {submitted ? (
                         <div className="flex flex-col text-center text-green-300 font-semibold gap-3">
-                            <p>Terima kasih telah mendaftar. Silahkan masuk ke grup whatsapp melalui link berikut:</p>
-                            <a href={linkWhatsapp} target="_blank" className="text-blue-400 mb-3">Link Whatsapp</a>
+                            <p>Terima kasih telah mendaftar. Silahkan masuk ke grup whatsapp melalui tombol berikut:</p>
+                            <button onClick={() => window.open(linkWhatsapp, "_blank")} className="bg-green-500 text-white px-4 py-2 rounded button-hover cursor-pointer hover:scale-102 transition duration-300">
+                                <FaWhatsapp className="inline mr-1" /> Grup Whatsapp
+                            </button>
                             <button
                                 onClick={() => {
                                     navigate("/dashboard/ikut-event");
                                 }}
-                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                                className="custom-button-bg text-white px-4 py-2 rounded button-hover cursor-pointer hover:scale-102 transition duration-300"
                             >
-                                Kembali ke Dashboard
+                                Kembali ke Beranda
                             </button>
                         </div>
                     ) : (

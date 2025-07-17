@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaList, FaUser, FaUpload, FaReceipt } from "react-icons/fa";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import { MdErrorOutline } from "react-icons/md";
+import { FaWhatsapp } from "react-icons/fa";
 import { getCurrentUser, getUserCompetitions } from "../../../api/user";
 import { postCompePayment } from "../../../api/compeFile";
 
@@ -151,9 +152,9 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             <div className="flex flex-row gap-2">
                                 <button
                                     onClick={() => handleWhatsappClick(competitionNameToKey[data.competitionName])}
-                                    className="cursor-pointer custom-button-bg px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full sm:w-auto"
+                                    className="cursor-pointer font-bold bg-green-500 text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full sm:w-auto"
                                 >
-                                    <FaUpload className="inline mr-1 " /> Grup Whatsapp
+                                    <FaWhatsapp className="inline mr-1 " /> Grup Whatsapp
                                 </button>
                                 <div className="text-center flex items-center gap-2 px-3 py-2 rounded bg-green-400/20 text-green-300 text-xs sm:text-sm font-semibold w-full sm:w-auto">
                                     <RiVerifiedBadgeFill className="text-lg" />
