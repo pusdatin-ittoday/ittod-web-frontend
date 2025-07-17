@@ -8,6 +8,8 @@ import { postCompePayment } from "../../../api/compeFile";
 
 
 const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, loading }) => {
+
+    
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [pembayaran, setPembayaran] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
@@ -76,6 +78,25 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
         return false;
     });
 
+    const linkWhatsapp = {
+        gameToday: "https://chat.whatsapp.com/DZ7vHHwgC6J6SLgJmTD949?mode=r_c",
+        uxToday: "https://chat.whatsapp.com/JVZ8EXWwCwf0YUdhxJYuEx",
+        hackToday: "https://chat.whatsapp.com/IXSPAbcNk3hJUEafPUWMAS?mode=ac_t",
+        mineToday: "https://chat.whatsapp.com/HBZ8a4VbYbi4v08b2t45h7?mode=r_c",
+    };
+
+    const competitionNameToKey = {
+        "Game Today": "gameToday",
+        "UX Today": "uxToday",
+        "Hack Today": "hackToday",
+        "Mine Today": "mineToday",
+    };
+
+    const handleWhatsappClick = (key) => {
+        console.log("Whatsapp key:", key);
+        window.open(linkWhatsapp[key], "_blank");
+    };
+
     const renderCompetition = (key, data) => {
         // Check dan pastikan members selalu dalam bentuk array untuk rendering
         const membersArray = Array.isArray(data.members)
@@ -100,16 +121,16 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
 
                         <div className="space-y-1 text-xs sm:text-sm">
                             <p className="flex items-center">
-                                <span className="font-semibold text-white/80 inline-block w-28">Team Name:</span> 
+                                <span className="font-semibold text-white/80 inline-block w-28">Team Name:</span>
                                 <span className="bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamName || "-"}</span>
                             </p>
                             <p className="flex items-center">
-                                <span className="font-semibold text-white/80 inline-block w-28">Join Code:</span> 
+                                <span className="font-semibold text-white/80 inline-block w-28">Join Code:</span>
                                 <span className="font-mono bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamJoinCode || "-"}</span>
                             </p>
                         </div>
                     </div>
-                    
+
                     {/* Verification status with improved styling */}
                     <div className="flex-shrink-0">
                         {needsVerification && (
@@ -127,11 +148,19 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             </span>
                         )}
                         {isTeamVerified && (
-                            <div className="flex items-center gap-2 px-3 py-2 rounded bg-green-400/20 text-green-300 text-xs sm:text-sm font-semibold">
-                                <RiVerifiedBadgeFill className="text-lg" />
-                                <span className="rounded text-xs sm:text-sm font-semibold">
-                                    Sudah Terverifikasi
-                                </span>
+                            <div className="flex flex-row gap-2">
+                                <button
+                                    onClick={() => handleWhatsappClick(competitionNameToKey[data.competitionName])}
+                                    className="cursor-pointer custom-button-bg px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full sm:w-auto"
+                                >
+                                    <FaUpload className="inline mr-1 " /> Grup Whatsapp
+                                </button>
+                                <div className="text-center flex items-center gap-2 px-3 py-2 rounded bg-green-400/20 text-green-300 text-xs sm:text-sm font-semibold w-full sm:w-auto">
+                                    <RiVerifiedBadgeFill className="text-lg" />
+                                    <span className="rounded text-xs sm:text-sm font-semibold">
+                                        Sudah Terverifikasi
+                                    </span>
+                                </div>
                             </div>
                         )}
                         {/* Show status info for team members */}
@@ -149,23 +178,21 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                 {/* Members section with improved styling */}
                 <div className="mt-4 space-y-2 bg-[#6b3a5c]/40 rounded-lg p-2">
                     {membersArray.map((anggota, idx) => (
-                        <div key={idx} className={`flex items-center justify-between gap-2 sm:gap-4 p-2 rounded-lg ${
-                            idx === 0 ? "bg-gradient-to-r from-amber-500/20 to-amber-600/5 border-l-2 border-amber-400" : 
-                            "bg-white/5 hover:bg-white/10 transition-all duration-200"
-                        }`}>
+                        <div key={idx} className={`flex items-center justify-between gap-2 sm:gap-4 p-2 rounded-lg ${idx === 0 ? "bg-gradient-to-r from-amber-500/20 to-amber-600/5 border-l-2 border-amber-400" :
+                                "bg-white/5 hover:bg-white/10 transition-all duration-200"
+                            }`}>
                             {/* For the member section - with vertical layout on mobile */}
                             <div className="flex items-start sm:items-center gap-2 flex-1 min-w-0">
-                                <div className={`w-7 h-7 flex items-center justify-center rounded-full ${
-                                    idx === 0 ? "bg-amber-400/30 text-amber-200" : "bg-purple-400/20 text-white/70"
-                                }`}>
+                                <div className={`w-7 h-7 flex items-center justify-center rounded-full ${idx === 0 ? "bg-amber-400/30 text-amber-200" : "bg-purple-400/20 text-white/70"
+                                    }`}>
                                     {idx === 0 ? "👑" : "👤"}
                                 </div>
                                 <div className="flex flex-col sm:flex-row sm:items-center text-xs sm:text-sm">
                                     <span className="font-medium text-white/70 mb-0.5 sm:mb-0 sm:inline-block sm:w-16 sm:pr-2">
                                         {idx === 0 ? "Ketua:" : "Anggota:"}
                                     </span>
-                                    <span className={anggota.fullName === currentUser ? 
-                                        "font-bold text-pink-300" : 
+                                    <span className={anggota.fullName === currentUser ?
+                                        "font-bold text-pink-300" :
                                         "text-white"}>
                                         {anggota.fullName}
                                     </span>
@@ -173,11 +200,10 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             </div>
 
                             {/* Status with vertical layout on mobile */}
-                            <div className={`text-xs sm:text-sm font-medium flex-shrink-0 flex flex-row items-center px-2 py-1.5 rounded-md ${
-                                anggota.isRegistrationComplete 
-                                ? "bg-green-500/20 text-green-300 border border-green-400/30" 
-                                : "bg-red-500/20 text-red-300 border border-red-400/30"
-                            }`}>
+                            <div className={`text-xs sm:text-sm font-medium flex-shrink-0 flex flex-row items-center px-2 py-1.5 rounded-md ${anggota.isRegistrationComplete
+                                    ? "bg-green-500/20 text-green-300 border border-green-400/30"
+                                    : "bg-red-500/20 text-red-300 border border-red-400/30"
+                                }`}>
                                 {anggota.isRegistrationComplete ? (
                                     <>
                                         <p className="flex flex-col sm:flex-row items-center gap-1">
@@ -229,7 +255,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
                             onClick={handleTwibbonClick}
                             className="custom-button-bg px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded button-hover transition duration-300 hover:scale-105 font-semibold cursor-pointer w-full sm:w-auto"
                         >
-                            Twibbon 
+                            Twibbon
                         </button>
                         <button
                             onClick={handleEditUserClick}
@@ -406,7 +432,7 @@ const CompListPage = () => {
 
             // Cek status verifikasi dari berbagai sumber
             const isVerified = comp.is_verified || comp.isVerified;
-            
+
             // Check if user upload payment proof through API through payment_proof_id
             const hasPaymentProof = Boolean(comp.paymentProofID);
 
@@ -489,11 +515,11 @@ const CompListPage = () => {
                     getCurrentUser(),
                     getUserCompetitions()
                 ]);
-                
+
                 if (userResponse.success && userResponse.data) {
                     const userData = userResponse.data;
                     const fullName = userData.full_name || userData.name || "User";
-                    
+
                     // Gunakan is_registration_complete yang sudah dikonfirmasi berfungsi
                     const isUserDataComplete = userData.is_registration_complete || false;
 
@@ -614,7 +640,7 @@ const CompListPage = () => {
 
         } catch (error) {
             console.error("Error during verification:", error);
-            
+
             // Handle network errors
             if (error.name === 'NetworkError' || !navigator.onLine) {
                 return {
@@ -622,7 +648,7 @@ const CompListPage = () => {
                     message: "Koneksi internet bermasalah. Silakan cek koneksi dan coba lagi."
                 };
             }
-            
+
             // Handle timeout errors
             if (error.name === 'TimeoutError' || error.code === 'ECONNABORTED') {
                 return {
@@ -630,7 +656,7 @@ const CompListPage = () => {
                     message: "Waktu upload habis. Silakan coba lagi."
                 };
             }
-            
+
             return {
                 success: false,
                 message: error.message || "Terjadi kesalahan saat mengunggah bukti pembayaran"
