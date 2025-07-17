@@ -5,6 +5,7 @@ import { BiLogoWhatsapp } from "react-icons/bi";
 import { FaSchool } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { registerEvent } from "../utils/api/event";
+import { getCurrentUser } from "../api/user";
 
 const workshopOptions = [
     "Cyber Security",
@@ -44,6 +45,20 @@ const DaftarEvent = () => {
     const [showAlert, setShowAlert] = useState(false);
     const [incompleteFields, setIncompleteFields] = useState([]);
     const [error, setError] = useState("");
+
+    // Fetch user data to pre-fill institution and whatsapp fields
+    useEffect(() => {
+        const fetchUser = async () => {
+            await getCurrentUser().then((response) => {
+                const userData = response.data;
+                if (userData) {
+                    setInstitution(userData.nama_sekolah || "");
+                    setWhatsapp(userData.phone_number || "");
+                } 
+            });
+        };
+        fetchUser();
+    }, [])
 
     useEffect(() => {
         if (target === "workshop") {
