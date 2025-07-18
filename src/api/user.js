@@ -366,6 +366,33 @@ export const getImageUrlFromR2 = (key) => {
   return `${cleanApiUrl}/api/images/${key}`;
 };
 
+/**
+ * Post an image to R2 storage
+*/
+export const postImageToR2 = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await instance.post(`${cleanApiUrl}/api/images/`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    // console.error("Error uploading image:", error);
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to upload image",
+    };
+  }
+};
+
 // Add this function to handle Google auth callback
 export const handleGoogleAuthCallback = async () => {
   try {
