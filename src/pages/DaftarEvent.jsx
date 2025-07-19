@@ -189,7 +189,7 @@ const DaftarEvent = () => {
 				bundling: bootcampBundling,
 			})
 				.then(() => {
-					uploadBootcampPayment(paymentFile);
+					return uploadBootcampPayment(paymentFile);
 				})
 				.then(() => {
 					setSubmitted(true);
