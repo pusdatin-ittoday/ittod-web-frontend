@@ -207,7 +207,7 @@ const DaftarEvent = () => {
 			// Use existing registerEvent function for non-file uploads
 			registerEvent({
 				eventId: eventId,
-				intitutionName: institution,
+				institutionName: institution,
 				phoneNumber: whatsapp,
 			})
 				.then(() => {
