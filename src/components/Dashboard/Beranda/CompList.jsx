@@ -278,7 +278,6 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
             <div className="overflow-y-auto flex-1 px-1 sm:px-2 py-2 custom-scrollbar">
                 {filteredCompetitions.length > 0 ? (
                     filteredCompetitions.map(([key, data]) => {
-                        console.log("data.competitionName:", data.competitionName);
                         return renderCompetition(key, data)
                     })
                 ) : (
