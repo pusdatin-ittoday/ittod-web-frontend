@@ -228,8 +228,8 @@ class FormLogin extends React.Component {
                 
                 {/* Add resend verification section */}
                 {needsVerification && (
-                    <div className="backdrop-blur-md  text-white px-4 py-3 rounded-lg relative mb-3 shadow-lg transition-all duration-300 ease-in-out">
-                        <div className="absolute inset-0 rounded-lg bg-gradient-to-b bg-white/30 border z-0"></div>
+                    <div className="backdrop-blur-md text-white px-4 py-3 rounded-lg relative mb-3 shadow-lg transition-all duration-300 ease-in-out">
+                        <div className="absolute inset-0 rounded-lg bg-gradient-to-b bg-white/30  z-0"></div>
                         <p className="text-xs font-medium relative z-10">Email belum diverifikasi.</p>
                         <button
                             type="button"
