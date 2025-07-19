@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import { BiLogoWhatsapp } from "react-icons/bi";
 import { FaSchool, FaFileUpload } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
+import { FaWhatsapp } from "react-icons/fa";
 import { registerEvent } from "../utils/api/event";
 import {
 	checkIpbOrMinetoday,
