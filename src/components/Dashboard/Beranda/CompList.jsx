@@ -87,14 +87,17 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
     };
 
     const competitionNameToKey = {
-        "Game Today": "gameToday",
-        "UX Today": "uxToday",
-        "Hack Today": "hackToday",
-        "Mine Today": "mineToday",
+        "GameToday": "gameToday",
+        "UXToday": "uxToday",
+        "HackToday": "hackToday",
+        "MineToday": "mineToday",
     };
 
     const handleWhatsappClick = (key) => {
-        console.log("Whatsapp key:", key);
+        if (!key || !linkWhatsapp[key]) {
+            alert("Grup Whatsapp tidak ditemukan untuk kompetisi ini.");
+            return;
+        }
         window.open(linkWhatsapp[key], "_blank");
     };
 
@@ -274,7 +277,10 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, 
 
             <div className="overflow-y-auto flex-1 px-1 sm:px-2 py-2 custom-scrollbar">
                 {filteredCompetitions.length > 0 ? (
-                    filteredCompetitions.map(([key, data]) => renderCompetition(key, data))
+                    filteredCompetitions.map(([key, data]) => {
+                        console.log("data.competitionName:", data.competitionName);
+                        return renderCompetition(key, data)
+                    })
                 ) : (
                     <div className="text-xs sm:text-sm text-center text-white/70 py-8">
                         <p>Kamu belum ikut kompetisi apapun.</p>
