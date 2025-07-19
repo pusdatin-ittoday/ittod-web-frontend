@@ -62,28 +62,30 @@ const DaftarEvent = () => {
 
 	// Fetch user data to pre-fill institution and whatsapp fields
 	useEffect(() => {
-		const fetchUser = async () => {
-			await getCurrentUser().then((response) => {
-				const userData = response.data;
-				if (userData) {
-					setInstitution(userData.nama_sekolah || "");
-					setWhatsapp(userData.phone_number || "");
-					setNeedsToPay(userData.needs_to_pay || true);
+		const initializeUserData = async () => {
+			try {
+				// Fetch user data
+				const userResponse = await getCurrentUser();
+				if (userResponse.data) {
+					setInstitution(userResponse.data.nama_sekolah || "");
+					setWhatsapp(userResponse.data.phone_number || "");
+					setNeedsToPay(userResponse.data.needs_to_pay ?? true);
 				}
-			});
-		};
-		const fetchIsIpbOrMineToday = async () => {
-			await checkIpbOrMinetoday().then((response) => {
-				const isIpbOrMineToday =
-					response.data.isIPB || response.data.isRegisteredToMinetoday;
-				if (isIpbOrMineToday) {
+
+				// Check IPB or MineToday status
+				const ipbResponse = await checkIpbOrMinetoday();
+				if (
+					ipbResponse.data?.isIPB ||
+					ipbResponse.data?.isRegisteredToMinetoday
+				) {
 					setNeedsToPay(false);
 				}
-			});
+			} catch (error) {
+				console.error("Error initializing user data:", error);
+			}
 		};
 
-		fetchUser();
-		fetchIsIpbOrMineToday();
+		initializeUserData();
 	}, []);
 
 	useEffect(() => {
