@@ -149,8 +149,6 @@ const DaftarEvent = () => {
 		if (!whatsapp.trim()) missingFields.push({ label: "Nomor WhatsApp" });
 		if (target === "workshop" && !workshopChoice)
 			missingFields.push({ label: "Bidang Workshop" });
-		if (target === "bootcamp" && !paymentFile && !paymentFileName)
-			missingFields.push({ label: "Bukti Pembayaran" });
 
 		const internationalFormatRegex = /^\+\d+$/;
 		if (whatsapp.trim() && !internationalFormatRegex.test(whatsapp)) {
