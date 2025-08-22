@@ -263,7 +263,6 @@ class EditProfile extends Component {
             birth_date,
             phone_number,
             id_line,
-            id_discord,
             id_instagram,
             pendidikan,
             nama_sekolah,
