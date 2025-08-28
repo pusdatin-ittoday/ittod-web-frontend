@@ -39,7 +39,7 @@ const Seminar = () => {
   };
 
   const timeline = [
-    { title: 'Seminar Nasional', date: '13 September 2025' },
+    { title: 'Seminar Nasional', date: '14 September 2025' },
   ];
 
   return (

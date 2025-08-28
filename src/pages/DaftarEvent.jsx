@@ -5,7 +5,7 @@ import { BiLogoWhatsapp } from "react-icons/bi";
 import { FaSchool, FaFileUpload } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
-import { registerEvent } from "../utils/api/event";
+import { registerEvent, getJoinEvent } from "../utils/api/event";
 import {
 	checkIpbOrMinetoday,
 	getCurrentUser,
@@ -50,6 +50,7 @@ const DaftarEvent = () => {
 	const [paymentFileName, setPaymentFileName] = useState("");
 	const [paymentFile, setPaymentFile] = useState(null);
 	const [submitted, setSubmitted] = useState(false);
+	const [alreadyRegistered, setAlreadyRegistered] = useState(false);
 	const [workshopChoice, setWorkshopChoice] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [linkWhatsapp, setLinkWhatsapp] = useState("");
@@ -104,6 +105,33 @@ const DaftarEvent = () => {
 			setLinkWhatsapp(whatsappLink.bootcamp);
 		}
 	}, [target, workshopChoice]);
+
+	// Check if user already registered for Bootcamp on load
+	useEffect(() => {
+		const checkExistingRegistration = async () => {
+			if (target !== "bootcamp") return;
+			try {
+				const res = await getJoinEvent();
+				const events = res?.data || res;
+				const list = events?.data || events?.events || events;
+				const isRegistered = Array.isArray(list)
+					? list.some((e) => {
+						const id = (e?.event_id || e?.id || e?.slug || "").toString().toLowerCase();
+						const name = (e?.event_name || e?.name || e?.title || "").toString().toLowerCase();
+						return id.includes("bootcamp") || name.includes("bootcamp");
+					})
+					: false;
+				if (isRegistered) {
+					setAlreadyRegistered(true);
+					setSubmitted(true);
+				}
+			} catch {
+				// ignore; user might have no events yet
+			}
+		};
+
+		checkExistingRegistration();
+	}, [target]);
 
 	// File handling methods similar to EditProfil
 	const handlePaymentFileChange = (file) => {
@@ -197,8 +225,8 @@ const DaftarEvent = () => {
 				})
 				.catch((error) => {
 					setError(
-						"Terjadi kesalahan saat mendaftar: " + error.message ||
-							"File gagal diunggah"
+						"Terjadi kesalahan saat mendaftar: " + 
+						(error.response?.data?.message || error.response?.data?.error || error.message || "File gagal diunggah")
 					);
 				})
 				.finally(() => {
@@ -216,8 +244,8 @@ const DaftarEvent = () => {
 				})
 				.catch((error) => {
 					setError(
-						"Terjadi kesalahan saat mendaftar: " + error.message ||
-							"Gagal mendaftar"
+						"Terjadi kesalahan saat mendaftar: " + 
+						(error.response?.data?.message || error.response?.data?.error || error.message || "Gagal mendaftar")
 					);
 				})
 				.finally(() => {
@@ -243,8 +271,9 @@ const DaftarEvent = () => {
 					{submitted ? (
 						<div className="flex flex-col text-center text-green-300 font-semibold gap-3">
 							<p>
-								Terima kasih telah mendaftar. Silahkan masuk ke grup whatsapp
-								melalui link berikut:
+								{alreadyRegistered
+									? "You're already registered."
+									: "Terima kasih telah mendaftar. Silahkan masuk ke grup whatsapp melalui link berikut:"}
 							</p>
 							<a
 								href={linkWhatsapp}

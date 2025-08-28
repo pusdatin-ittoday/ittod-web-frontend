@@ -47,7 +47,7 @@ const TimelineUmum = () => {
   var items = [
     { title: "Bootcamp", date: " 24 dan 31 Agustus 2025"},
     { title: "Workshop", date: "7 September 2025"},
-    { title: "Seminar Nasional", date: "13 September 2025"},
+    { title: "Seminar Nasional", date: "14 September 2025"},
     { title: "Final & Awarding", date: "27 September 2025"},
   ];
 
