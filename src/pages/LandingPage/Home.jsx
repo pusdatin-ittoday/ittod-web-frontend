@@ -19,15 +19,7 @@ const Home = () => {
 				id="hero"
 			>
 				<HeroCard Logo={"/collab-logo.webp"} />
-				<div className="mt-3">
-					<button
-						onClick={() => window.open("https://chat.whatsapp.com/JzRETO4AWayIwq6CzfUz85?mode=ems_copy_t")}
-						className="cursor-pointer font-bold bg-green-500 text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full sm:w-auto"
-					>
-						<FaWhatsapp className="inline mr-1 " /> Gabung dengan IT-Today 2025 x Sentral Komputer
-					</button>
-				</div>
-
+		
 				<div
 					className="flex flex-col items-center w-full px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 font-dm-sans"
 					id="about"

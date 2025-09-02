@@ -55,6 +55,7 @@ const DaftarEvent = () => {
 
 	const [needsToPay, setNeedsToPay] = useState(false);
 	const [institution, setInstitution] = useState("");
+	const [dateOfBirth, setDateOfBirth] = useState("");
 	const [whatsapp, setWhatsapp] = useState("");
 	const [paymentFileName, setPaymentFileName] = useState("");
 	const [paymentFile, setPaymentFile] = useState(null);
@@ -79,6 +80,9 @@ const DaftarEvent = () => {
 				const userResponse = await getCurrentUser();
 				if (userResponse.data) {
 					setInstitution(userResponse.data.nama_sekolah || "");
+					// Convert ISO date to yyyy-MM-dd format
+					const birthDate = userResponse.data.birth_date ? new Date(userResponse.data.birth_date).toISOString().split('T')[0] : "";
+					setDateOfBirth(birthDate);
 					setWhatsapp(userResponse.data.phone_number || "");
 					setNeedsToPay(userResponse.data.needs_to_pay ?? true);
 				}
@@ -188,6 +192,7 @@ const DaftarEvent = () => {
 
 		const missingFields = [];
 		if (!institution.trim()) missingFields.push({ label: "Institusi" });
+		if (!dateOfBirth) missingFields.push({ label: "Tanggal Lahir" });
 		if (!whatsapp.trim()) missingFields.push({ label: "Nomor WhatsApp" });
 		if (target === "workshop" && !workshopChoice)
 			missingFields.push({ label: "Bidang Workshop" });
@@ -252,6 +257,7 @@ const DaftarEvent = () => {
 				eventId: eventId,
 				institutionName: institution,
 				phoneNumber: whatsapp,
+				dateOfBirth: dateOfBirth ? new Date(dateOfBirth).toISOString().split('T')[0] : null,
 			})
 				.then(() => {
 					setSubmitted(true);
@@ -354,6 +360,18 @@ const DaftarEvent = () => {
 										onChange={(e) => setInstitution(e.target.value)}
 										className="flex-1 bg-white text-black outline-none"
 										placeholder="Nama Institusi"
+									/>
+								</div>
+							</div>
+							<div>
+								<label className="block text-sm mb-1">Tanggal Lahir</label>
+								<div className="flex items-center bg-white rounded-md px-3 py-2">
+									<input
+										type="date"
+										value={dateOfBirth}
+										onChange={(e) => setDateOfBirth(e.target.value)}
+										className="flex-1 bg-white text-black outline-none"
+										required
 									/>
 								</div>
 							</div>
