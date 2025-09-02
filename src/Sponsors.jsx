@@ -6,22 +6,27 @@ const Sponsors = () => {
 			name: "Sentral Komputer",
 			logo: "/sponsors/Logo-Sentral-Komputer.png",
 		},
+			{
+			name:"Acer",
+			logo: "/sponsors/Logo-Acer.png",
+		},
+		{
+			name: "Sentral Service",
+			logo: "/sponsors/Logo-Sentral_Service.png",
+		},
 		{
 			name: "Bangunindo",
 			logo: "/sponsors/Logo-Bangunindo.png",
-		},
-		{
-			name: "Intelligo.id",
-			logo: "/sponsors/Logo-Intelligo.png",
 		},
 		{
 			name:"Siloam Hospitals",
 			logo: "/sponsors/Logo-Siloam.png",
 		},
 		{
-			name:"Acer",
-			logo: "/sponsors/Logo-Acer.png",
-		}
+			name: "Intelligo.id",
+			logo: "/sponsors/Logo-Intelligo.png",
+		},
+	
 	];
 
 	return (
