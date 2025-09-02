@@ -8,9 +8,8 @@ import { getCurrentUser, getUserCompetitions } from "../../../api/user";
 import { postCompePayment } from "../../../api/compeFile";
 
 
-const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser, loading }) => {
+const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser}) => {
 
-    
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [pembayaran, setPembayaran] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
@@ -430,11 +429,6 @@ const CompListPage = () => {
         const processedCompetitions = {};
 
         Object.entries(data).forEach(([key, comp]) => {
-            // Simpan ID tim yang sudah upload untuk persistensi
-            const teamID = comp.teamID;
-
-            // Tambahkan local storage untuk menyimpan tim yang sudah upload
-            const uploadedTeams = JSON.parse(localStorage.getItem('uploadedTeams') || '{}');
 
             // Cek status verifikasi dari berbagai sumber
             const isVerified = comp.is_verified || comp.isVerified;
