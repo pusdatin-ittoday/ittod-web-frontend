@@ -3,12 +3,14 @@ import instance from "../../api/axios";
 export const registerEvent = async ({
 	eventId,
 	institutionName,
+	birthDate,
 	phoneNumber,
 }) => {
 	try {
 		const res = await instance.post("/api/event/join", {
 			event_id: eventId,
 			institution_name: institutionName,
+			birthDate:birthDate,
 			phone_number: phoneNumber,
 		});
 
