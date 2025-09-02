@@ -6,13 +6,13 @@ const Sponsors = () => {
 			name: "Sentral Komputer",
 			logo: "/sponsors/Logo-Sentral-Komputer.png",
 		},
-			{
-			name:"Acer",
-			logo: "/sponsors/Logo-Acer.png",
-		},
 		{
 			name: "Sentral Service",
 			logo: "/sponsors/Logo-Sentral_Service.png",
+		},
+		{
+			name:"Acer",
+			logo: "/sponsors/Logo-Acer.png",
 		},
 		{
 			name: "Bangunindo",
