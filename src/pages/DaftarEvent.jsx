@@ -23,6 +23,13 @@ const whatsappLink = {
 	bootcamp: "https://chat.whatsapp.com/ED4bnW4VCJC7KRPYmUHRwN",
 };
 
+// Map route target names to display names
+	const targetDisplayName = {
+		"bootcamp": "Bootcamp",
+		"national-seminar": "Seminar Nasional",
+		"workshop": "Workshop"
+	};
+
 const eventIdMapping = {
 	// Workshop mappings
 	"Cyber Security": "Cyber Security", // Change to your production ID
@@ -33,6 +40,8 @@ const eventIdMapping = {
 	bootcamp: "bootcamp", // Change to your production ID
 	seminar: "seminar", // Change to your production ID
 };
+
+
 
 const bootcampBundlingMapping = {
 	"Day 1": "day1",
@@ -57,7 +66,7 @@ const DaftarEvent = () => {
 	const [showAlert, setShowAlert] = useState(false);
 	const [incompleteFields, setIncompleteFields] = useState([]);
 	const [error, setError] = useState("");
-	const [hasCopied, setHasCopied] = useState(false);
+	const [hasCopied, setHasCopied] = useState({});
 	const [bootcampBundling, setBootcampBundling] = useState("");
 
 	const paymentFileInputRef = useRef(null);
@@ -106,10 +115,10 @@ const DaftarEvent = () => {
 		}
 	}, [target, workshopChoice]);
 
-	// Check if user already registered for Bootcamp on load
+	// Check if user already registered for Bootcamp or National Seminar on load
 	useEffect(() => {
 		const checkExistingRegistration = async () => {
-			if (target !== "bootcamp") return;
+			if (target !== "bootcamp" && target !== "national-seminar") return;
 			try {
 				const res = await getJoinEvent();
 				const events = res?.data || res;
@@ -118,7 +127,12 @@ const DaftarEvent = () => {
 					? list.some((e) => {
 						const id = (e?.event_id || e?.id || e?.slug || "").toString().toLowerCase();
 						const name = (e?.event_name || e?.name || e?.title || "").toString().toLowerCase();
-						return id.includes("bootcamp") || name.includes("bootcamp");
+						if (target === "bootcamp") {
+							return id.includes("bootcamp") || name.includes("bootcamp");
+						} else if (target === "national-seminar") {
+							return id.includes("seminar") || name.includes("seminar");
+						}
+						return false;
 					})
 					: false;
 				if (isRegistered) {
@@ -160,10 +174,10 @@ const DaftarEvent = () => {
 		handlePaymentFileChange(file);
 	};
 
-	const handleCopyToClipboard = (text) => {
+	const handleCopyToClipboard = (text, key) => {
 		navigator.clipboard.writeText(text).then(() => {
-			setHasCopied(true);
-			setTimeout(() => setHasCopied(false), 2000); // Reset after 2 seconds
+			setHasCopied((prev) => ({ ...prev, [key]: true }));
+			setTimeout(() => setHasCopied((prev) => ({ ...prev, [key]: false })), 2000);
 		});
 	};
 
@@ -225,7 +239,7 @@ const DaftarEvent = () => {
 				})
 				.catch((error) => {
 					setError(
-						"Terjadi kesalahan saat mendaftar: " + 
+						"Terjadi kesalahan saat mendaftar: " +
 						(error.response?.data?.message || error.response?.data?.error || error.message || "File gagal diunggah")
 					);
 				})
@@ -244,7 +258,7 @@ const DaftarEvent = () => {
 				})
 				.catch((error) => {
 					setError(
-						"Terjadi kesalahan saat mendaftar: " + 
+						"Terjadi kesalahan saat mendaftar: " +
 						(error.response?.data?.message || error.response?.data?.error || error.message || "Gagal mendaftar")
 					);
 				})
@@ -257,6 +271,7 @@ const DaftarEvent = () => {
 	const closeAlert = () => {
 		setShowAlert(false);
 	};
+	
 
 	return (
 		<>
@@ -265,37 +280,63 @@ const DaftarEvent = () => {
 				{/* Form Pendaftaran */}
 				<div className="max-w-3xl w-full h-full bg-[#7b446c] rounded-lg shadow-lg p-6">
 					<h2 className="text-2xl font-bold mb-4 text-center">
-						Form Pendaftaran {target || "Event"}
+						Form Pendaftaran {targetDisplayName[target || "Event"]}
 					</h2>
+					{error && error.includes("You already registered in this event!") && (
+						<div className="bg-red-600/80 text-white px-6 py-3 rounded-lg shadow-xl max-w-xl mx-auto mb-4 text-center">
+							<span className="font-bold">{error}</span>
+						</div>
+					)}
 
 					{submitted ? (
-						<div className="flex flex-col text-center text-green-300 font-semibold gap-3">
-							<p>
-								{alreadyRegistered
-									? "You're already registered."
-									: "Terima kasih telah mendaftar. Silahkan masuk ke grup whatsapp melalui link berikut:"}
-							</p>
-							<a
-								href={linkWhatsapp}
-								target="_blank"
-								className="text-blue-400 mb-3"
-							>
-								Masuk ke Grup Whatsapp
-							</a>
+						<div className="flex flex-col text-center  input-text-glow font-semibold gap-4">
+							<div className="flex flex-col gap-5">
+								<p>
+									{alreadyRegistered
+										? "You're already registered."
+										: "Terima kasih telah mendaftar. Silahkan masuk ke dua grup whatsapp berikut: "}
+								</p>
+								<div className="flex flex-col gap-3 w-full items-center">
+									<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl justify-center items-center">
+										<button
+											onClick={() => window.open(linkWhatsapp)}
+											className="w-full sm:w-auto flex-1 cursor-pointer font-bold bg-green-500 text-white px-2 py-2 sm:px-3 sm:py-2 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 min-w-[180px] max-w-[320px]"
+										>
+											<FaWhatsapp className="inline mr-1" /> Grup {targetDisplayName[target || "Event"]}
+										</button>
+										<button
+											onClick={() => {
+												handleCopyToClipboard(linkWhatsapp, "main");
+											}}
+											className="w-full sm:w-auto flex-shrink-0 bg-white text-green-400 px-4 py-2 rounded hover:bg-neutral-300 transition duration-300 min-w-[160px]"
+										>
+											{hasCopied.main ? "Link Disalin!" : "Salin Link Whatsapp"}
+										</button>
+									</div>
+									<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl justify-center items-center mt-2">
+										<button
+											onClick={() => window.open("https://chat.whatsapp.com/JzRETO4AWayIwq6CzfUz85?mode=ems_copy_t")}
+											className="w-full sm:w-auto flex-1 cursor-pointer font-bold bg-green-500 text-white px-2 py-2 sm:px-3 sm:py-2 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 min-w-[180px] max-w-[320px]"
+										>
+											<FaWhatsapp className="inline mr-1" /> Grup IT-Today 2025 x Sentral Komputer
+										</button>
+										<button
+											onClick={() => {
+												handleCopyToClipboard("https://chat.whatsapp.com/JzRETO4AWayIwq6CzfUz85?mode=ems_copy_t", "sentral");
+											}}
+											className="w-full sm:w-auto flex-shrink-0 bg-white text-green-400 px-4 py-2 rounded hover:bg-neutral-300 transition duration-300 min-w-[160px]"
+										>
+											{hasCopied.sentral ? "Link Disalin!" : "Salin Link Whatsapp"}
+										</button>
+									</div>
+								</div>
+							</div>
 							<div className="flex flex-row justify-center gap-4">
-								<button
-									onClick={() => {
-										handleCopyToClipboard(linkWhatsapp);
-									}}
-									className="bg-white text-blue-500 px-4 py-2 rounded hover:bg-neutral-300 transition duration-300"
-								>
-									{hasCopied ? "Link Disalin!" : "Salin Link Whatsapp"}
-								</button>
 								<button
 									onClick={() => {
 										navigate("/dashboard/ikut-event");
 									}}
-									className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+									className="custom-button-bg text-white px-4 py-2 rounded button-hover hover:scale-105 cursor-pointer transition duration-300"
 								>
 									Kembali ke Dashboard
 								</button>
@@ -475,8 +516,8 @@ const DaftarEvent = () => {
 												{paymentFile
 													? paymentFile.name
 													: paymentFileName
-													? paymentFileName
-													: "Drop file di sini atau klik untuk pilih file"}
+														? paymentFileName
+														: "Drop file di sini atau klik untuk pilih file"}
 											</p>
 										</div>
 										<input
@@ -515,7 +556,7 @@ const DaftarEvent = () => {
 						</form>
 					)}
 				</div>
-				{error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+				{/* Removed generic error message below the form. Error is now shown only in the styled alert below the title. */}
 				{showAlert && (
 					<div
 						className="bg-red-600/80 text-white px-6 py-4 rounded-lg shadow-xl max-w-md"
