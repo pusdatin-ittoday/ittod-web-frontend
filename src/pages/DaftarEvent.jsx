@@ -12,6 +12,7 @@ import {
 	registerToBootcamp,
 } from "../api/user";
 import { uploadBootcampPayment } from "../api/user";
+import FallbackEventCloseRegist from "./Fallback/FallbackCloseRegis";
 
 const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
 
@@ -24,11 +25,11 @@ const whatsappLink = {
 };
 
 // Map route target names to display names
-	const targetDisplayName = {
-		"bootcamp": "Bootcamp",
-		"national-seminar": "Seminar Nasional",
-		"workshop": "Workshop"
-	};
+const targetDisplayName = {
+	bootcamp: "Bootcamp",
+	"national-seminar": "Seminar Nasional",
+	workshop: "Workshop",
+};
 
 const eventIdMapping = {
 	// Workshop mappings
@@ -40,8 +41,6 @@ const eventIdMapping = {
 	bootcamp: "bootcamp", // Change to your production ID
 	seminar: "seminar", // Change to your production ID
 };
-
-
 
 const bootcampBundlingMapping = {
 	"Day 1": "day1",
@@ -81,7 +80,9 @@ const DaftarEvent = () => {
 				if (userResponse.data) {
 					setInstitution(userResponse.data.nama_sekolah || "");
 					// Convert ISO date to yyyy-MM-dd format
-					const birthDate = userResponse.data.birth_date ? new Date(userResponse.data.birth_date).toISOString().split('T')[0] : "";
+					const birthDate = userResponse.data.birth_date
+						? new Date(userResponse.data.birth_date).toISOString().split("T")[0]
+						: "";
 					setDateOfBirth(birthDate);
 					setWhatsapp(userResponse.data.phone_number || "");
 					setNeedsToPay(userResponse.data.needs_to_pay ?? true);
@@ -129,15 +130,19 @@ const DaftarEvent = () => {
 				const list = events?.data || events?.events || events;
 				const isRegistered = Array.isArray(list)
 					? list.some((e) => {
-						const id = (e?.event_id || e?.id || e?.slug || "").toString().toLowerCase();
-						const name = (e?.event_name || e?.name || e?.title || "").toString().toLowerCase();
-						if (target === "bootcamp") {
-							return id.includes("bootcamp") || name.includes("bootcamp");
-						} else if (target === "national-seminar") {
-							return id.includes("seminar") || name.includes("seminar");
-						}
-						return false;
-					})
+							const id = (e?.event_id || e?.id || e?.slug || "")
+								.toString()
+								.toLowerCase();
+							const name = (e?.event_name || e?.name || e?.title || "")
+								.toString()
+								.toLowerCase();
+							if (target === "bootcamp") {
+								return id.includes("bootcamp") || name.includes("bootcamp");
+							} else if (target === "national-seminar") {
+								return id.includes("seminar") || name.includes("seminar");
+							}
+							return false;
+					  })
 					: false;
 				if (isRegistered) {
 					setAlreadyRegistered(true);
@@ -181,7 +186,10 @@ const DaftarEvent = () => {
 	const handleCopyToClipboard = (text, key) => {
 		navigator.clipboard.writeText(text).then(() => {
 			setHasCopied((prev) => ({ ...prev, [key]: true }));
-			setTimeout(() => setHasCopied((prev) => ({ ...prev, [key]: false })), 2000);
+			setTimeout(
+				() => setHasCopied((prev) => ({ ...prev, [key]: false })),
+				2000
+			);
 		});
 	};
 
@@ -245,7 +253,10 @@ const DaftarEvent = () => {
 				.catch((error) => {
 					setError(
 						"Terjadi kesalahan saat mendaftar: " +
-						(error.response?.data?.message || error.response?.data?.error || error.message || "File gagal diunggah")
+							(error.response?.data?.message ||
+								error.response?.data?.error ||
+								error.message ||
+								"File gagal diunggah")
 					);
 				})
 				.finally(() => {
@@ -257,7 +268,9 @@ const DaftarEvent = () => {
 				eventId: eventId,
 				institutionName: institution,
 				phoneNumber: whatsapp,
-				dateOfBirth: dateOfBirth ? new Date(dateOfBirth).toISOString().split('T')[0] : null,
+				dateOfBirth: dateOfBirth
+					? new Date(dateOfBirth).toISOString().split("T")[0]
+					: null,
 			})
 				.then(() => {
 					setSubmitted(true);
@@ -265,7 +278,10 @@ const DaftarEvent = () => {
 				.catch((error) => {
 					setError(
 						"Terjadi kesalahan saat mendaftar: " +
-						(error.response?.data?.message || error.response?.data?.error || error.message || "Gagal mendaftar")
+							(error.response?.data?.message ||
+								error.response?.data?.error ||
+								error.message ||
+								"Gagal mendaftar")
 					);
 				})
 				.finally(() => {
@@ -277,7 +293,17 @@ const DaftarEvent = () => {
 	const closeAlert = () => {
 		setShowAlert(false);
 	};
-	
+
+	if (
+		new Date() >
+		(target === "workshop"
+			? new Date("2025-09-09T23:59:59")
+			: target === "bootcamp"
+			? new Date("2025-08-23T10:00:00")
+			: new Date("2025-09-12T23:59:59"))
+	) {
+		return <FallbackEventCloseRegist eventName={target} />;
+	}
 
 	return (
 		<>
@@ -308,7 +334,8 @@ const DaftarEvent = () => {
 											onClick={() => window.open(linkWhatsapp)}
 											className="w-full sm:w-auto flex-1 cursor-pointer font-bold bg-green-500 text-white px-2 py-2 sm:px-3 sm:py-2 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 min-w-[180px] max-w-[320px]"
 										>
-											<FaWhatsapp className="inline mr-1" /> Grup {targetDisplayName[target || "Event"]}
+											<FaWhatsapp className="inline mr-1" /> Grup{" "}
+											{targetDisplayName[target || "Event"]}
 										</button>
 										<button
 											onClick={() => {
@@ -321,18 +348,28 @@ const DaftarEvent = () => {
 									</div>
 									<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl justify-center items-center mt-2">
 										<button
-											onClick={() => window.open("https://chat.whatsapp.com/JzRETO4AWayIwq6CzfUz85?mode=ems_copy_t")}
+											onClick={() =>
+												window.open(
+													"https://chat.whatsapp.com/JzRETO4AWayIwq6CzfUz85?mode=ems_copy_t"
+												)
+											}
 											className="w-full sm:w-auto flex-1 cursor-pointer font-bold bg-green-500 text-white px-2 py-2 sm:px-3 sm:py-2 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 min-w-[180px] max-w-[320px]"
 										>
-											<FaWhatsapp className="inline mr-1" /> Grup IT-Today 2025 x Sentral Komputer
+											<FaWhatsapp className="inline mr-1" /> Grup IT-Today 2025
+											x Sentral Komputer
 										</button>
 										<button
 											onClick={() => {
-												handleCopyToClipboard("https://chat.whatsapp.com/JzRETO4AWayIwq6CzfUz85?mode=ems_copy_t", "sentral");
+												handleCopyToClipboard(
+													"https://chat.whatsapp.com/JzRETO4AWayIwq6CzfUz85?mode=ems_copy_t",
+													"sentral"
+												);
 											}}
 											className="w-full sm:w-auto flex-shrink-0 bg-white text-green-400 px-4 py-2 rounded hover:bg-neutral-300 transition duration-300 min-w-[160px]"
 										>
-											{hasCopied.sentral ? "Link Disalin!" : "Salin Link Whatsapp"}
+											{hasCopied.sentral
+												? "Link Disalin!"
+												: "Salin Link Whatsapp"}
 										</button>
 									</div>
 								</div>
@@ -534,8 +571,8 @@ const DaftarEvent = () => {
 												{paymentFile
 													? paymentFile.name
 													: paymentFileName
-														? paymentFileName
-														: "Drop file di sini atau klik untuk pilih file"}
+													? paymentFileName
+													: "Drop file di sini atau klik untuk pilih file"}
 											</p>
 										</div>
 										<input
