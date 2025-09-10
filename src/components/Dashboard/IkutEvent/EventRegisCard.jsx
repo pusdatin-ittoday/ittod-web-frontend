@@ -6,46 +6,59 @@ const events = [
     {
         title: "NATIONAL SEMINAR",
         description: "Wawasan menarik di bidang Teknologi Informasi!",
-        image: "/logo-event/SEMINAR-NASIONAL.webp"
+        image: "/logo-event/SEMINAR-NASIONAL.webp",
+        closeRegistrationDate: new Date("2025-09-12T23:59:59"),
     },
     {
         title: "BOOTCAMP",
         description: "Asah kemampuanmu dalam bidang Teknologi Informasi!",
-        image: "/logo-event/BOOTCAMP.webp"
+        image: "/logo-event/BOOTCAMP.webp",
+        closeRegistrationDate: new Date("2025-08-23T10:00:00"),
     },
     {
         title: "WORKSHOP",
         description: "Temui dengan para ahli di berbagai bidang IT!",
-        image: "/logo-event/WORKSHOP.webp"
+        image: "/logo-event/WORKSHOP.webp",
+        closeRegistrationDate: new Date("2025-09-05T23:59:59"),
     },
 ];
 
 const IkutEvent = ({ title, description, image }) => (
-    <div className="font-dm-sans flex flex-col items-center text-white">
-        <div className="w-full max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[250px] aspect-[5/4]">
-            {image ? (
-                <img
-                    src={image}
-                    alt={title}
-                    className="w-full h-full object-cover rounded-lg hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out"
-                />
-            ) : (
-                <div className="w-full h-full bg-black"></div>
-            )}
-        </div>
-        <div className="text-center max-w-[250px] mt-2">
-            <h3 className="decoration-white/50 leading-tight font-playfair text-sm sm:text-xl lg:text-xl mb-1 sm:mb-2 font-bold text-glow-beranda">{title}</h3>
-            <p className="text-xs sm:text-sm leading-relaxed">{description}</p>
-        </div>
-        <div className="flex gap-5">
-            <Link 
-                to={`/daftar-event/${title.toLowerCase().replace(/\s+/g, "-")}`}
-                className="mt-2 text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer text-center"
-            >
-                Daftar Sekarang
-            </Link>
-        </div>
-    </div>
+	<div className="font-dm-sans flex flex-col items-center text-white">
+		<div className="w-full max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[250px] aspect-[5/4]">
+			{image ? (
+				<img
+					src={image}
+					alt={title}
+					className="w-full h-full object-cover rounded-lg hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out"
+				/>
+			) : (
+				<div className="w-full h-full bg-black"></div>
+			)}
+		</div>
+		<div className="text-center max-w-[250px] mt-2">
+			<h3 className="decoration-white/50 leading-tight font-playfair text-sm sm:text-xl lg:text-xl mb-1 sm:mb-2 font-bold text-glow-beranda">
+				{title}
+			</h3>
+			<p className="text-xs sm:text-sm leading-relaxed">{description}</p>
+		</div>
+		<div className="flex gap-5">
+			{new Date() > events.find((event) => event.title === title).closeRegistrationDate ? (
+				<div
+					className="mt-2 text-xs sm:text-sm button-hover bg-red-500 text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer text-center"
+				>
+					Pendaftaran Ditutup
+				</div>
+			) : (
+				<Link
+					to={`/daftar-event/${title.toLowerCase().replace(/\s+/g, "-")}`}
+					className="mt-2 text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer text-center"
+				>
+					Daftar Sekarang
+				</Link>
+			)}
+		</div>
+	</div>
 );
 
 const EventRegisCard = () => (
