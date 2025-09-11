@@ -4,7 +4,7 @@ const Sponsors = () => {
 	const sponsors = [
 		{
 			name: "Sentral Komputer",
-			logo: "/sponsors/Logo-Sentral-Komputer.png",
+			logo: "/sponsors/Logo-Sentral-Komputer2.png",
 		},
 		{
 			name: "Sentral Service",
