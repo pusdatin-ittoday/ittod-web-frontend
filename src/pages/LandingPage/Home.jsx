@@ -18,7 +18,7 @@ const Home = () => {
 				className="min-h-screen flex flex-col justify-start items-center pt-20"
 				id="hero"
 			>
-				<HeroCard Logo={"/collab-logo.webp"} />
+				<HeroCard Logo={"/collab-logo2.webp"} />
 		
 				<div
 					className="flex flex-col items-center w-full px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 font-dm-sans"
