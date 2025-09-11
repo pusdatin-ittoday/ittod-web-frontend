@@ -15,6 +15,10 @@ const Sponsors = () => {
 			logo: "/sponsors/Logo-Acer.png",
 		},
 		{
+			name: "Nvidia",
+			logo: "/sponsors/nvidia.webp",
+		},
+		{
 			name: "Bangunindo",
 			logo: "/sponsors/Logo-Bangunindo.png",
 		},
