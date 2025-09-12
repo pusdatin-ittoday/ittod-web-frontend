@@ -7,7 +7,7 @@ const events = [
     title: "NATIONAL SEMINAR",
     description: "Wawasan menarik di bidang Teknologi Informasi!",
     image: "/logo-event/SEMINAR-NASIONAL.webp",
-    closeRegistrationDate: new Date("2025-09-12T14:00:00"),
+    closeRegistrationDate: new Date("2025-09-12T18:00:00"),
   },
   {
     title: "BOOTCAMP",
