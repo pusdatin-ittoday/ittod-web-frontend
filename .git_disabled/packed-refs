@@ -1,0 +1,9 @@
+# pack-refs with: peeled fully-peeled sorted 
+2a216106ca5b5b1945b09e95adb91273ab786173 refs/remotes/origin/admin-page
+910f8f17ccf1407d69a978ee6153373e1040f797 refs/remotes/origin/daulyoi/bootcamp-change
+95c919093f6c0cc323b6327acc6aa82465268b61 refs/remotes/origin/feat/error-handling
+d64a9d7c6f549321beb1c6991c2db7fa2f15e772 refs/remotes/origin/fix/seminar-registration
+238010f1435d044d3cad93a1e16d96c94b8878f5 refs/remotes/origin/main
+b6e636f69d63bfeb9b14671d9fc1c75d5fc89ff4 refs/remotes/origin/sponsors
+402a598575dcb903edb04e611cc2d7fc83e78f30 refs/remotes/origin/staging
+16b444e6280c7f8bbcde1825ef10224d5615418f refs/remotes/origin/troubleshooting
