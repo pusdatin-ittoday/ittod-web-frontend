@@ -120,12 +120,17 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
         const hasTeamError = data.verificationError && data.verificationError.trim() !== "";
         const isRejected = hasTeamError;
         
-        // Kalau dokumen ditolak (is_document_verified = 0), TIDAK ada "Menunggu Verifikasi"
+        // Check if any member has verification error (document rejected)
+        const membersWithErrors = membersArray.filter(m => m.verificationError && m.verificationError.trim() !== "");
+        const hasDocumentError = membersWithErrors.length > 0;
+        const documentErrorReason = hasDocumentError ? membersWithErrors[0].verificationError : null;
+        
+        // Kalau dokumen ditolak (is_document_verified = 0 ATAU ada anggota ditolak), TIDAK ada "Menunggu Verifikasi"
         // Karena verifikasi transaksi belum bisa dilakukan
-        const showPendingVerification = isDocumentVerified && isPendingVerification;
+        const showPendingVerification = isDocumentVerified && isPendingVerification && !isRejected && !hasDocumentError;
         
         // Kalau dokumen belum diverifikasi, tidak bisa upload pembayaran
-        const needsVerification = isTeamLeader && isDocumentVerified && !isTeamVerified && !isPendingVerification && !isRejected;
+        const needsVerification = isTeamLeader && isDocumentVerified && !isTeamVerified && !isPendingVerification && !isRejected && !hasDocumentError;
 
         return (
             <div key={key} className="mb-4 bg-gradient-to-br from-[#8a4d7b]/90 to-[#6b3a5c]/95 backdrop-blur-md border border-white/20 rounded-xl shadow-lg px-3 sm:px-4 py-3 text-white hover:scale-[1.01] hover:shadow-xl transition duration-300 ease-in-out">
@@ -177,8 +182,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 </div>
                             </div>
                         )}
-                        {/* Show rejected status with reason */}
-                        {isRejected && (
+                        {/* Show rejected status with reason (either team rejected or document rejected) */}
+                        {(isRejected || hasDocumentError) && (
                             <div className="flex flex-col gap-2">
                                 <div className="flex items-center gap-2 px-3 py-2 rounded bg-red-500/30 text-red-300 text-xs sm:text-sm font-semibold w-full">
                                     <MdErrorOutline className="text-lg" />
@@ -186,7 +191,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 </div>
                                 <div className="px-3 py-2 rounded bg-red-500/20 border border-red-400/40 text-red-200 text-xs w-full">
                                     <span className="font-semibold">Alasan: </span>
-                                    <span>{data.verificationError}</span>
+                                    <span>{isRejected ? data.verificationError : documentErrorReason}</span>
                                 </div>
                                 {isTeamLeader && (
                                     <button
@@ -199,7 +204,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                             </div>
                         )}
                         {/* Show status info for team members who are not leader */}
-                        {!isTeamLeader && !isTeamVerified && !isPendingVerification && !isRejected && (
+                        {!isTeamLeader && !isTeamVerified && !isPendingVerification && !isRejected && !hasDocumentError && (
                             <div className="flex items-center gap-2 px-3 py-2 rounded bg-red-400/30 text-red-300 text-xs sm:text-sm font-semibold">
                                 <MdErrorOutline className="text-lg" />
                                 <span className="rounded text-xs sm:text-sm font-semibold">
