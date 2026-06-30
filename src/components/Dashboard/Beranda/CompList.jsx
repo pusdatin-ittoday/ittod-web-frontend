@@ -115,15 +115,18 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
         // 2. Cek Transaksi (is_verified) - oleh admin keuangan
         
         const isTeamVerified = data.isVerified;
-        const isDocumentVerified = data.isDocumentVerified;
+        const isDocumentVerified = data.isDocumentVerified === 1;
         const isPendingVerification = data.pendingVerification;
         const hasTeamError = data.verificationError && data.verificationError.trim() !== "";
         const isRejected = hasTeamError;
         
         // Check if any member has verification error (document rejected)
         const membersWithErrors = membersArray.filter(m => m.verificationError && m.verificationError.trim() !== "");
-        const hasDocumentError = membersWithErrors.length > 0;
-        const documentErrorReason = hasDocumentError ? membersWithErrors[0].verificationError : null;
+        // Document rejection: is_document_verified = 0 OR ada member dengan verificationError
+        const hasDocumentError = !isDocumentVerified || membersWithErrors.length > 0;
+        const documentErrorReason = hasDocumentError ? 
+            (membersWithErrors.length > 0 ? membersWithErrors[0].verificationError : "Berkas ditolak") : 
+            null;
         
         // Kalau dokumen ditolak (is_document_verified = 0 ATAU ada anggota ditolak), TIDAK ada "Menunggu Verifikasi"
         // Karena verifikasi transaksi belum bisa dilakukan
