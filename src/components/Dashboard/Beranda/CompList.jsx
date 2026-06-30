@@ -462,16 +462,21 @@ const CompListPage = () => {
 
         Object.entries(data).forEach(([key, comp]) => {
 
-            // Cek status verifikasi dari berbagai sumber
+        // Cek status verifikasi dari berbagai sumber
             const isVerified = comp.is_verified || comp.isVerified;
 
             // Check if user upload payment proof through API through payment_proof_id
             const hasPaymentProof = Boolean(comp.paymentProofID);
 
+            // Check if payment was rejected
+            const hasVerificationError = comp.verification_error && comp.verification_error.trim() !== "";
+            const isRejected = hasVerificationError;
+
             // Tim menunggu verifikasi jika:
             // 1. Belum terverifikasi, dan
-            // 2. Sudah upload bukti pembayaran melalui API ATAU tercatat di localStorage
-            const isPendingVerification = !isVerified && hasPaymentProof;
+            // 2. Sudah upload bukti pembayaran, dan
+            // 3. TIDAK ada verification_error (artinya belum ditolak)
+            const isPendingVerification = !isVerified && hasPaymentProof && !isRejected;
 
             let updatedMembers = [];
 
