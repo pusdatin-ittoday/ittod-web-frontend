@@ -293,6 +293,15 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                         </p>
                     </div>
                 )}
+                {/* Reminder for document rejection - different message */}
+                {hasDocumentError && isTeamLeader && (
+                    <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-600/10 border border-yellow-400/30 shadow-inner">
+                        <p className="text-xs sm:text-sm text-yellow-300 flex items-center gap-2">
+                            <span className="text-lg p-1 bg-yellow-400/20 rounded-full">⚠️</span>
+                            <span>Silakan upload bukti berkas yang valid</span>
+                        </p>
+                    </div>
+                )}
                 {/* Reminder for team members who are not leaders */}
                 {!isTeamLeader && !isTeamVerified && !isPendingVerification && !isRejected && (
                     <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-600/10 border border-yellow-400/30 shadow-inner">
