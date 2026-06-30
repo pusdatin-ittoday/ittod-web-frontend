@@ -110,13 +110,22 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
         const isTeamLeader = membersArray[0]?.fullName === currentUser;
 
         // Check verification status at team level
+        // VERIFIKASI 2 LANGKAH:
+        // 1. Cek Berkas (is_document_verified) - oleh panitia
+        // 2. Cek Transaksi (is_verified) - oleh admin keuangan
+        
         const isTeamVerified = data.isVerified;
+        const isDocumentVerified = data.isDocumentVerified;
         const isPendingVerification = data.pendingVerification;
-        const hasVerificationError = data.verificationError && data.verificationError.trim() !== "";
-        const isRejected = hasVerificationError;
-
-        // Only team leader can upload payment proof if team isn't verified and not rejected
-        const needsVerification = isTeamLeader && !isTeamVerified && !isPendingVerification && !isRejected;
+        const hasTeamError = data.verificationError && data.verificationError.trim() !== "";
+        const isRejected = hasTeamError;
+        
+        // Kalau dokumen ditolak (is_document_verified = 0), TIDAK ada "Menunggu Verifikasi"
+        // Karena verifikasi transaksi belum bisa dilakukan
+        const showPendingVerification = isDocumentVerified && isPendingVerification;
+        
+        // Kalau dokumen belum diverifikasi, tidak bisa upload pembayaran
+        const needsVerification = isTeamLeader && isDocumentVerified && !isTeamVerified && !isPendingVerification && !isRejected;
 
         return (
             <div key={key} className="mb-4 bg-gradient-to-br from-[#8a4d7b]/90 to-[#6b3a5c]/95 backdrop-blur-md border border-white/20 rounded-xl shadow-lg px-3 sm:px-4 py-3 text-white hover:scale-[1.01] hover:shadow-xl transition duration-300 ease-in-out">
@@ -146,7 +155,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 <FaUpload className="inline mr-1 " /> Verifikasi
                             </button>
                         )}
-                        {isPendingVerification && (
+                        {showPendingVerification && (
                             <span className="px-3 py-2 rounded bg-yellow-400/20 text-yellow-300 text-xs sm:text-sm font-semibold flex items-center transition-all duration-300">
                                 <span className="spin-with-pause mr-1">⌛</span>
                                 Menunggu Verifikasi
