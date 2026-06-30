@@ -147,6 +147,18 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 <span className="font-semibold text-white/80 inline-block w-28">Join Code:</span>
                                 <span className="font-mono bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamJoinCode || "-"}</span>
                             </p>
+                            {/* Document rejection status - shown below Join Code */}
+                            {hasDocumentError && (
+                                <div className="mt-2 p-2 rounded bg-red-500/20 border border-red-400/40">
+                                    <div className="flex items-center gap-2 text-red-300 text-xs font-semibold">
+                                        <MdErrorOutline className="text-sm" />
+                                        <span>Ditolak</span>
+                                    </div>
+                                    <p className="text-red-200 text-[10px] mt-1">
+                                        Alasan: {documentErrorReason}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -182,8 +194,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 </div>
                             </div>
                         )}
-                        {/* Show rejected status with reason (either team rejected or document rejected) */}
-                        {(isRejected || hasDocumentError) && (
+                        {/* Transaction rejection status - shown on right side with upload button */}
+                        {isRejected && (
                             <div className="flex flex-col gap-2">
                                 <div className="flex items-center gap-2 px-3 py-2 rounded bg-red-500/30 text-red-300 text-xs sm:text-sm font-semibold w-full">
                                     <MdErrorOutline className="text-lg" />
@@ -191,10 +203,9 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 </div>
                                 <div className="px-3 py-2 rounded bg-red-500/20 border border-red-400/40 text-red-200 text-xs w-full">
                                     <span className="font-semibold">Alasan: </span>
-                                    <span>{isRejected ? data.verificationError : documentErrorReason}</span>
+                                    <span>{data.verificationError}</span>
                                 </div>
-                                {/* Upload button only for transaction rejection, not document rejection */}
-                                {isTeamLeader && isRejected && (
+                                {isTeamLeader && (
                                     <button
                                         onClick={() => handleVerifyClick(key)}
                                         className="cursor-pointer custom-button-bg px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full"
@@ -284,21 +295,12 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                     ))}
                 </div>
 
-                {/* Reminder for rejected teams - show upload button again */}
+                {/* Reminder for rejected transaction - show upload button again */}
                 {isRejected && isTeamLeader && (
                     <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-red-500/10 to-red-600/10 border border-red-400/30 shadow-inner">
                         <p className="text-xs sm:text-sm text-red-300 flex items-center gap-2">
                             <span className="text-lg p-1 bg-red-400/20 rounded-full">⚠️</span>
                             <span>Silakan upload bukti pembayaran yang valid</span>
-                        </p>
-                    </div>
-                )}
-                {/* Reminder for document rejection - different message */}
-                {hasDocumentError && isTeamLeader && (
-                    <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-600/10 border border-yellow-400/30 shadow-inner">
-                        <p className="text-xs sm:text-sm text-yellow-300 flex items-center gap-2">
-                            <span className="text-lg p-1 bg-yellow-400/20 rounded-full">⚠️</span>
-                            <span>Silakan upload bukti berkas yang valid</span>
                         </p>
                     </div>
                 )}
