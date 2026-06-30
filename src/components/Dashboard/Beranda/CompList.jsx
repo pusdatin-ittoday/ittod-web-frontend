@@ -124,8 +124,9 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
         const membersWithErrors = membersArray.filter(m => m.verificationError && m.verificationError.trim() !== "");
         // Document rejection: is_document_verified = 0 OR ada member dengan verificationError
         const hasDocumentError = !isDocumentVerified || membersWithErrors.length > 0;
+        // Prioritaskan team.verification_error (dari form "Alasan Penolakan"), baru member verificationError
         const documentErrorReason = hasDocumentError ? 
-            (membersWithErrors.length > 0 ? membersWithErrors[0].verificationError : "Berkas ditolak") : 
+            (data.verificationError?.trim() || membersWithErrors[0]?.verificationError || "Berkas ditolak") : 
             null;
         
         // Kalau dokumen ditolak (is_document_verified = 0 ATAU ada anggota ditolak), TIDAK ada "Menunggu Verifikasi"
