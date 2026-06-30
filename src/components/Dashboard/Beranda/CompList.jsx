@@ -112,9 +112,11 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
         // Check verification status at team level
         const isTeamVerified = data.isVerified;
         const isPendingVerification = data.pendingVerification;
+        const hasVerificationError = data.verificationError && data.verificationError.trim() !== "";
+        const isRejected = hasVerificationError;
 
-        // Only team leader can upload payment proof if team isn't verified
-        const needsVerification = isTeamLeader && !isTeamVerified && !isPendingVerification;
+        // Only team leader can upload payment proof if team isn't verified and not rejected
+        const needsVerification = isTeamLeader && !isTeamVerified && !isPendingVerification && !isRejected;
 
         return (
             <div key={key} className="mb-4 bg-gradient-to-br from-[#8a4d7b]/90 to-[#6b3a5c]/95 backdrop-blur-md border border-white/20 rounded-xl shadow-lg px-3 sm:px-4 py-3 text-white hover:scale-[1.01] hover:shadow-xl transition duration-300 ease-in-out">
@@ -166,8 +168,29 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 </div>
                             </div>
                         )}
-                        {/* Show status info for team members */}
-                        {!isTeamLeader && !isTeamVerified && !isPendingVerification && (
+                        {/* Show rejected status with reason */}
+                        {isRejected && (
+                            <div className="flex flex-col gap-2">
+                                <div className="flex items-center gap-2 px-3 py-2 rounded bg-red-500/30 text-red-300 text-xs sm:text-sm font-semibold w-full">
+                                    <MdErrorOutline className="text-lg" />
+                                    <span>Ditolak</span>
+                                </div>
+                                <div className="px-3 py-2 rounded bg-red-500/20 border border-red-400/40 text-red-200 text-xs w-full">
+                                    <span className="font-semibold">Alasan: </span>
+                                    <span>{data.verificationError}</span>
+                                </div>
+                                {isTeamLeader && (
+                                    <button
+                                        onClick={() => handleVerifyClick(key)}
+                                        className="cursor-pointer custom-button-bg px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full"
+                                    >
+                                        <FaUpload className="inline mr-1" /> Upload Ulang
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                        {/* Show status info for team members who are not leader */}
+                        {!isTeamLeader && !isTeamVerified && !isPendingVerification && !isRejected && (
                             <div className="flex items-center gap-2 px-3 py-2 rounded bg-red-400/30 text-red-300 text-xs sm:text-sm font-semibold">
                                 <MdErrorOutline className="text-lg" />
                                 <span className="rounded text-xs sm:text-sm font-semibold">
@@ -228,8 +251,17 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                     ))}
                 </div>
 
-                {/* Reminder for team members */}
-                {!isTeamLeader && !isTeamVerified && !isPendingVerification && (
+                {/* Reminder for rejected teams - show upload button again */}
+                {isRejected && isTeamLeader && (
+                    <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-red-500/10 to-red-600/10 border border-red-400/30 shadow-inner">
+                        <p className="text-xs sm:text-sm text-red-300 flex items-center gap-2">
+                            <span className="text-lg p-1 bg-red-400/20 rounded-full">⚠️</span>
+                            <span>Silakan upload bukti pembayaran yang valid</span>
+                        </p>
+                    </div>
+                )}
+                {/* Reminder for team members who are not leaders */}
+                {!isTeamLeader && !isTeamVerified && !isPendingVerification && !isRejected && (
                     <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-600/10 border border-yellow-400/30 shadow-inner">
                         <p className="text-xs sm:text-sm text-yellow-300 flex items-center gap-2">
                             <span className="text-lg p-1 bg-yellow-400/20 rounded-full">⚠️</span>
