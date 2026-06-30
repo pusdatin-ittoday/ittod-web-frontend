@@ -155,7 +155,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                         <span>Ditolak</span>
                                     </div>
                                     <p className="text-red-200 text-[10px] mt-1">
-                                        Alasan: {documentErrorReason}
+                                        Alasan: {documentErrorReason || "Berkas tidak valid"}
                                     </p>
                                 </div>
                             )}
