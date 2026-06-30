@@ -193,7 +193,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                     <span className="font-semibold">Alasan: </span>
                                     <span>{isRejected ? data.verificationError : documentErrorReason}</span>
                                 </div>
-                                {isTeamLeader && (
+                                {/* Upload button only for transaction rejection, not document rejection */}
+                                {isTeamLeader && isRejected && (
                                     <button
                                         onClick={() => handleVerifyClick(key)}
                                         className="cursor-pointer custom-button-bg px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full"
