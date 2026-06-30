@@ -195,7 +195,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                             </div>
                         )}
                         {/* Transaction rejection status - shown on right side with upload button */}
-                        {isRejected && (
+                        {/* Only show if NOT a document rejection */}
+                        {isRejected && !hasDocumentError && (
                             <div className="flex flex-col gap-2">
                                 <div className="flex items-center gap-2 px-3 py-2 rounded bg-red-500/30 text-red-300 text-xs sm:text-sm font-semibold w-full">
                                     <MdErrorOutline className="text-lg" />
@@ -296,7 +297,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                 </div>
 
                 {/* Reminder for rejected transaction - show upload button again */}
-                {isRejected && isTeamLeader && (
+                {/* Only show if NOT a document rejection */}
+                {isRejected && !hasDocumentError && isTeamLeader && (
                     <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-red-500/10 to-red-600/10 border border-red-400/30 shadow-inner">
                         <p className="text-xs sm:text-sm text-red-300 flex items-center gap-2">
                             <span className="text-lg p-1 bg-red-400/20 rounded-full">⚠️</span>
