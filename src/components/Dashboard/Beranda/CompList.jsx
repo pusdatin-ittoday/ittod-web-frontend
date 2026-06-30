@@ -226,27 +226,45 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                             </div>
 
                             {/* Status with vertical layout on mobile */}
-                            <div className={`text-xs sm:text-sm font-medium flex-shrink-0 flex flex-row items-center px-2 py-1.5 rounded-md ${anggota.isRegistrationComplete
-                                    ? "bg-green-500/20 text-green-300 border border-green-400/30"
-                                    : "bg-red-500/20 text-red-300 border border-red-400/30"
-                                }`}>
-                                {anggota.isRegistrationComplete ? (
-                                    <>
-                                        <p className="flex flex-col sm:flex-row items-center gap-1">
-                                            <RiVerifiedBadgeFill className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
-                                            <span className="hidden sm:inline text-center text-xs sm:text-sm sm:text-left ">Data Lengkap</span>
-                                        </p>
-                                    </>
-                                ) : (
-                                    <>
-                                        <p className="flex flex-col sm:flex-row items-center gap-1">
-                                            <MdErrorOutline className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
-                                            <span className="hidden sm:inline text-center sm:text-left text-xs sm:text-sm">Data Belum</span>
-                                            <span className="hidden sm:inline">Lengkap/Pending</span>
-                                        </p>
-                                    </>
-                                )}
-                            </div>
+                            {(() => {
+                                const hasMemberError = anggota.verificationError && anggota.verificationError.trim() !== "";
+                                if (hasMemberError) {
+                                    return (
+                                        <div className="text-xs sm:text-sm font-medium flex-shrink-0 flex flex-col items-start px-2 py-1.5 rounded-md bg-red-500/20 text-red-300 border border-red-400/30">
+                                            <p className="flex flex-col sm:flex-row items-center gap-1">
+                                                <MdErrorOutline className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
+                                                <span>Ditolak</span>
+                                            </p>
+                                            <span className="text-[10px] sm:text-xs ml-0 sm:ml-5 mt-0.5 text-red-200">
+                                                Alasan: {anggota.verificationError}
+                                            </span>
+                                        </div>
+                                    );
+                                }
+                                return (
+                                    <div className={`text-xs sm:text-sm font-medium flex-shrink-0 flex flex-row items-center px-2 py-1.5 rounded-md ${anggota.isRegistrationComplete
+                                            ? "bg-green-500/20 text-green-300 border border-green-400/30"
+                                            : "bg-red-500/20 text-red-300 border border-red-400/30"
+                                        }`}>
+                                        {anggota.isRegistrationComplete ? (
+                                            <>
+                                                <p className="flex flex-col sm:flex-row items-center gap-1">
+                                                    <RiVerifiedBadgeFill className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
+                                                    <span className="hidden sm:inline text-center text-xs sm:text-sm sm:text-left ">Data Lengkap</span>
+                                                </p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p className="flex flex-col sm:flex-row items-center gap-1">
+                                                    <MdErrorOutline className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
+                                                    <span className="hidden sm:inline text-center sm:text-left text-xs sm:text-sm">Data Belum</span>
+                                                    <span className="hidden sm:inline">Lengkap/Pending</span>
+                                                </p>
+                                            </>
+                                        )}
+                                    </div>
+                                );
+                            })()}
                         </div>
                     ))}
                 </div>
@@ -468,7 +486,7 @@ const CompListPage = () => {
             // Check if user upload payment proof through API through payment_proof_id
             const hasPaymentProof = Boolean(comp.paymentProofID);
 
-            // Check if payment was rejected
+            // Check if payment was rejected - PRIORITAS UTAMA
             const hasVerificationError = comp.verification_error && comp.verification_error.trim() !== "";
             const isRejected = hasVerificationError;
 
@@ -476,6 +494,7 @@ const CompListPage = () => {
             // 1. Belum terverifikasi, dan
             // 2. Sudah upload bukti pembayaran, dan
             // 3. TIDAK ada verification_error (artinya belum ditolak)
+            // Kalau ada verification_error, TIDAK AKAN menjadi pending, tapi REJECTED
             const isPendingVerification = !isVerified && hasPaymentProof && !isRejected;
 
             let updatedMembers = [];
