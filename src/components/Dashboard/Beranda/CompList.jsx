@@ -114,7 +114,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
         // 1. Cek Berkas (is_document_verified) - oleh panitia
         // 2. Cek Transaksi (is_verified) - oleh admin keuangan
         
-        const isTeamVerified = data.isVerified === 'approved';
+        const isTeamVerified = data.isVerified === true || data.isVerified === 'approved';
         const isDocumentVerified = data.isDocumentVerified === "approved";
         const isPendingVerification = data.pendingVerification;
         const hasTeamError = Boolean(data.verificationError && data.verificationError.trim() !== "");
