@@ -1,12 +1,24 @@
 import { useEffect, useState } from "react";
+import instance from "../api/axios";
 
 export function useRegisStatus(competitionKey) {
     const [isRegisOpen, setIsRegisOpen] = useState(null);
 
     useEffect(() => {
-        fetch("/config/registration-config.json")
-            .then(res => res.json())
-            .then(config => setIsRegisOpen(config[competitionKey]?.isRegisOpen ?? false));
+        if (!competitionKey) return;
+        
+        instance.get(`/api/events/${competitionKey}`)
+            .then(res => {
+                if (res.data && res.data.success) {
+                    setIsRegisOpen(!!res.data.data.is_active);
+                } else {
+                    setIsRegisOpen(false);
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching registration status:", err);
+                setIsRegisOpen(false);
+            });
     }, [competitionKey]);
 
     return isRegisOpen;
