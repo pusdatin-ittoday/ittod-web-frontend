@@ -29,6 +29,7 @@ The frontend provides the user interface for landing pages, event discovery, das
    - This ensures the UI accurately mirrors the configuration set dynamically via the database instead of local hardcoded config files.
    - Competition registration routes resolve an event ID or normalized title to the event returned by the API, ensuring the form heading displays the competition name instead of a UUID.
    - Registration forms use `participation_type`: `team` requires a team name, while `individual` allows direct registration without that field.
+   - The dashboard hides internal team names and join codes for individual competitions and labels the registered member as `Peserta`.
 3. **File Uploads & Submissions**:
    - Users upload payment proofs and competition deliverables via the UI.
    - The frontend bundles files as `FormData` and sends them via Axios to the backend, which securely validates and stores them in Cloudflare R2 Storage (and subsequently the MySQL database).

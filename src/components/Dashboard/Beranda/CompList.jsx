@@ -101,6 +101,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
     };
 
     const renderCompetition = (key, data) => {
+        const isIndividual = data.participationType === "individual";
+
         // Check dan pastikan members selalu dalam bentuk array untuk rendering
         const membersArray = Array.isArray(data.members)
             ? data.members
@@ -148,14 +150,18 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                         <h3 className="text-base sm:text-lg lg:text-xl font-semibold mb-1 leading-tight input-text-glow text-pink-100">{data.competitionName}</h3>
 
                         <div className="space-y-1 text-xs sm:text-sm">
-                            <p className="flex items-center">
-                                <span className="font-semibold text-white/80 inline-block w-28">Team Name:</span>
-                                <span className="bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamName || "-"}</span>
-                            </p>
-                            <p className="flex items-center">
-                                <span className="font-semibold text-white/80 inline-block w-28">Join Code:</span>
-                                <span className="font-mono bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamJoinCode || "-"}</span>
-                            </p>
+                            {!isIndividual && (
+                                <>
+                                    <p className="flex items-center">
+                                        <span className="font-semibold text-white/80 inline-block w-28">Team Name:</span>
+                                        <span className="bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamName || "-"}</span>
+                                    </p>
+                                    <p className="flex items-center">
+                                        <span className="font-semibold text-white/80 inline-block w-28">Join Code:</span>
+                                        <span className="font-mono bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamJoinCode || "-"}</span>
+                                    </p>
+                                </>
+                            )}
                             {/* Document rejection status - shown below Join Code */}
                             {hasDocumentError && (
                                 <div className="mt-2 p-2 rounded bg-red-500/20 border border-red-400/40">
@@ -251,7 +257,11 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 </div>
                                 <div className="flex flex-col sm:flex-row sm:items-center text-xs sm:text-sm">
                                     <span className="font-medium text-white/70 mb-0.5 sm:mb-0 sm:inline-block sm:w-16 sm:pr-2">
-                                        {idx === 0 ? "Ketua:" : "Anggota:"}
+                                        {isIndividual
+                                            ? "Peserta:"
+                                            : idx === 0
+                                              ? "Ketua:"
+                                              : "Anggota:"}
                                     </span>
                                     <span className={anggota.fullName === currentUser ?
                                         "font-bold text-pink-300" :
