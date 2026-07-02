@@ -13,6 +13,7 @@ const RegistCompetition = () => {
     const [NamaTim, setNamaTim] = useState("");
     const [competitionId, setCompetitionId] = useState(null);
     const [competitionTitle, setCompetitionTitle] = useState("");
+    const [participationType, setParticipationType] = useState("team");
     
     // UI reactivity states
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,12 +28,19 @@ const RegistCompetition = () => {
             setIsLoading(true);
             const res = await getPublicEvents("competition");
             if (res.success && res.data) {
+                const normalizedSlug = decodeURIComponent(
+                    competitionSlug || ""
+                ).toLowerCase();
                 const event = res.data.find(
-                    (e) => e.title.replace(/\s+/g, "").toLowerCase() === competitionSlug?.toLowerCase()
+                    (e) =>
+                        String(e.id).toLowerCase() === normalizedSlug ||
+                        e.title.replace(/\s+/g, "").toLowerCase() ===
+                            normalizedSlug
                 );
                 if (event) {
                     setCompetitionId(event.id);
                     setCompetitionTitle(event.title);
+                    setParticipationType(event.participation_type || "team");
                 } else {
                     // Fallback to title casing the slug for display if event not found
                     setCompetitionTitle(
@@ -62,22 +70,8 @@ const RegistCompetition = () => {
 
         const emptyFields = [];
 
-        const fieldLabels = {
-            NamaTim: "Nama tim",
-        };
-
-        const fieldsToValidate = {
-            NamaTim,
-        };
-
-        for (const key in fieldsToValidate) {
-            if (
-                !fieldsToValidate[key] ||
-                (typeof fieldsToValidate[key] === "string" &&
-                    fieldsToValidate[key].trim() === "")
-            ) {
-                emptyFields.push(fieldLabels[key]);
-            }
+        if (participationType === "team" && !NamaTim.trim()) {
+            emptyFields.push("Nama tim");
         }
 
         if (emptyFields.length > 0) {
@@ -101,7 +95,9 @@ const RegistCompetition = () => {
 
         const submissionData = {
             "competition_id": competitionId,
-            "team_name": NamaTim
+            ...(participationType === "team"
+                ? { "team_name": NamaTim.trim() }
+                : {}),
         };
 
         try {
@@ -122,7 +118,11 @@ const RegistCompetition = () => {
             
             // Show success message and redirect
             setAlertType("success");
-            setAlertMessage("Pendaftaran tim berhasil!");
+            setAlertMessage(
+                participationType === "individual"
+                    ? "Pendaftaran individu berhasil!"
+                    : "Pendaftaran tim berhasil!"
+            );
             setShowAlert(true);
             
             // Redirect after showing success message
@@ -158,21 +158,29 @@ const RegistCompetition = () => {
                         onSubmit={handleSubmit}
                         className="flex flex-col gap-4 font-dm-sans"
                     >
-                        <div className="mb-3 relative">
-                            <label htmlFor="NamaTim" className="block text-sm font-bold mb-2">
-                                Nama Tim
-                            </label>
-                            <MdGroups className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
-                            <input
-                                value={NamaTim}
-                                onChange={handleChange}
-                                id="NamaTim"
-                                name="NamaTim"
-                                type="text"
-                                placeholder="nama tim"
-                                className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]"
-                            />
-                        </div>
+                        {participationType === "individual" ? (
+                            <div className="mb-4 rounded-lg bg-white/10 p-4 text-center text-sm">
+                                Kompetisi ini menggunakan pendaftaran individu.
+                                Kamu dapat langsung menekan tombol daftar tanpa
+                                membuat tim.
+                            </div>
+                        ) : (
+                            <div className="mb-3 relative">
+                                <label htmlFor="NamaTim" className="block text-sm font-bold mb-2">
+                                    Nama Tim
+                                </label>
+                                <MdGroups className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
+                                <input
+                                    value={NamaTim}
+                                    onChange={handleChange}
+                                    id="NamaTim"
+                                    name="NamaTim"
+                                    type="text"
+                                    placeholder="nama tim"
+                                    className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]"
+                                />
+                            </div>
+                        )}
 
                         <div className="buttons flex flex-row justify-end">
                             <a
@@ -187,7 +195,11 @@ const RegistCompetition = () => {
                                 disabled={isSubmitting || !competitionId || isLoading}
                                 className={`custom-button-bg text-white px-4 py-2 rounded cursor-pointer ${isSubmitting || !competitionId || isLoading ? 'opacity-75 cursor-not-allowed' : 'button-hover transition duration-300 ease-in-out hover:scale-105'}`}
                             >
-                                {isSubmitting ? 'Mendaftar...' : 'Submit'}
+                                {isSubmitting
+                                    ? "Mendaftar..."
+                                    : participationType === "individual"
+                                      ? "Daftar"
+                                      : "Submit"}
                             </button>
                         </div>
                     </form>
