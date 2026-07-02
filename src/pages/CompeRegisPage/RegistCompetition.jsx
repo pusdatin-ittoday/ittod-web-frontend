@@ -32,10 +32,7 @@ const RegistCompetition = () => {
                     competitionSlug || ""
                 ).toLowerCase();
                 const event = res.data.find(
-                    (e) =>
-                        String(e.id).toLowerCase() === normalizedSlug ||
-                        e.title.replace(/\s+/g, "").toLowerCase() ===
-                            normalizedSlug
+                    (e) => e.id.toLowerCase() === competitionSlug?.toLowerCase()
                 );
                 if (event) {
                     setCompetitionId(event.id);
@@ -69,9 +66,24 @@ const RegistCompetition = () => {
         if (isSubmitting) return;
 
         const emptyFields = [];
+        const isIndividual = participationType === "individual";
 
-        if (participationType === "team" && !NamaTim.trim()) {
-            emptyFields.push("Nama tim");
+        const fieldLabels = {
+            NamaTim: isIndividual ? "Nama pendaftar" : "Nama tim",
+        };
+
+        const fieldsToValidate = {
+            NamaTim,
+        };
+
+        for (const key in fieldsToValidate) {
+            if (
+                !fieldsToValidate[key] ||
+                (typeof fieldsToValidate[key] === "string" &&
+                    fieldsToValidate[key].trim() === "")
+            ) {
+                emptyFields.push(fieldLabels[key]);
+            }
         }
 
         if (emptyFields.length > 0) {
@@ -158,29 +170,21 @@ const RegistCompetition = () => {
                         onSubmit={handleSubmit}
                         className="flex flex-col gap-4 font-dm-sans"
                     >
-                        {participationType === "individual" ? (
-                            <div className="mb-4 rounded-lg bg-white/10 p-4 text-center text-sm">
-                                Kompetisi ini menggunakan pendaftaran individu.
-                                Kamu dapat langsung menekan tombol daftar tanpa
-                                membuat tim.
-                            </div>
-                        ) : (
-                            <div className="mb-3 relative">
-                                <label htmlFor="NamaTim" className="block text-sm font-bold mb-2">
-                                    Nama Tim
-                                </label>
-                                <MdGroups className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
-                                <input
-                                    value={NamaTim}
-                                    onChange={handleChange}
-                                    id="NamaTim"
-                                    name="NamaTim"
-                                    type="text"
-                                    placeholder="nama tim"
-                                    className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]"
-                                />
-                            </div>
-                        )}
+                        <div className="mb-3 relative">
+                            <label htmlFor="NamaTim" className="block text-sm font-bold mb-2">
+                                {participationType === "individual" ? "Nama Pendaftar" : "Nama Tim"}
+                            </label>
+                            <MdGroups className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
+                            <input
+                                value={NamaTim}
+                                onChange={handleChange}
+                                id="NamaTim"
+                                name="NamaTim"
+                                type="text"
+                                placeholder={participationType === "individual" ? "nama pendaftar" : "nama tim"}
+                                className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]"
+                            />
+                        </div>
 
                         <div className="buttons flex flex-row justify-end">
                             <a

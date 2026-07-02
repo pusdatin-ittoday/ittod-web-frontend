@@ -4,8 +4,9 @@ import { FaUsers } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { joinTeam } from "../../../api/user";
 import { getPublicEvents } from "../../../api/eventPublic";
+import { registerTeam } from "../../../api/compe";
 
-const IkutLomba = ({ title, description, image, isActive, eventId }) => {
+const IkutLomba = ({ title, description, image, isActive, eventId, participationType, onRegisterIndividual }) => {
   return (
 
   <div className="font-dm-sans flex flex-col items-center justify-between w-full max-w-[220px] min-h-[340px] text-white">
@@ -32,6 +33,12 @@ const IkutLomba = ({ title, description, image, isActive, eventId }) => {
             <div className="text-xs sm:text-sm button-hover bg-red-500 text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer text-center">
               Pendaftaran Ditutup
             </div>
+          ) : participationType === 'individual' ? (
+            <button
+              onClick={() => onRegisterIndividual(eventId)}
+              className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer">
+              Daftar Sekarang
+            </button>
           ) : (
             <Link to={`/register-competition/${eventId.toLowerCase()}`}>
               <button
@@ -54,6 +61,35 @@ const CompRegisCard = () => {
   
   const [eventsData, setEventsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingRegister, setLoadingRegister] = useState(false);
+
+  const handleRegisterIndividual = async (eventId) => {
+    try {
+      setLoadingRegister(true);
+      const userRes = await import("../../../api/user").then(m => m.getCurrentUser());
+      if (!userRes.success || !userRes.data) {
+        alert("Gagal mendapatkan data user");
+        return;
+      }
+      const user = userRes.data;
+      
+      const res = await registerTeam({
+        competition_id: eventId,
+        team_name: user.name || user.email.split('@')[0]
+      });
+      
+      if (res.success) {
+        alert("Pendaftaran berhasil!");
+        window.location.href = "/dashboard/ikut-lomba";
+      } else {
+        alert(res.error || "Gagal mendaftar");
+      }
+    } catch (err) {
+      alert("Terjadi kesalahan sistem saat mendaftar");
+    } finally {
+      setLoadingRegister(false);
+    }
+  };
 
   React.useEffect(() => {
     const fetchEvents = async () => {
@@ -176,6 +212,8 @@ const CompRegisCard = () => {
                 image={`/logo-competition/${event.id.toUpperCase()}.webp`}
                 isActive={event.is_active}
                 eventId={event.id}
+                participationType={event.participation_type}
+                onRegisterIndividual={handleRegisterIndividual}
               />
             ))}
           </div>
