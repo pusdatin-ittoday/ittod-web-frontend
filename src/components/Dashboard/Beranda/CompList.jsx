@@ -65,17 +65,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
         if (!data || !data.members) {
             return false;
         }
-
-        // Handle members sebagai objek atau array
-        if (Array.isArray(data.members)) {
-            return data.members.some(member => member && member.fullName === currentUser);
-        } else if (typeof data.members === 'object') {
-            // Jika members adalah objek, periksa semua nilai
-            return Object.values(data.members).some(
-                member => member && member.fullName === currentUser
-            );
-        }
-        return false;
+        return true; // The backend already filters teams by the user's ID
     });
 
     const linkWhatsapp = {
@@ -148,12 +138,18 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                         <h3 className="text-base sm:text-lg lg:text-xl font-semibold mb-1 leading-tight input-text-glow text-pink-100">{data.competitionName}</h3>
 
                         <div className="space-y-1 text-xs sm:text-sm">
+                            {data.participationType !== "individual" && (
+                                <p className="flex items-center">
+                                    <span className="font-semibold text-white/80 inline-block w-28">
+                                        Team Name:
+                                    </span>
+                                    <span className="bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamName || "-"}</span>
+                                </p>
+                            )}
                             <p className="flex items-center">
-                                <span className="font-semibold text-white/80 inline-block w-28">Team Name:</span>
-                                <span className="bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamName || "-"}</span>
-                            </p>
-                            <p className="flex items-center">
-                                <span className="font-semibold text-white/80 inline-block w-28">Join Code:</span>
+                                <span className="font-semibold text-white/80 inline-block w-28">
+                                    {data.participationType === "individual" ? "Reg. Code:" : "Join Code:"}
+                                </span>
                                 <span className="font-mono bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamJoinCode || "-"}</span>
                             </p>
                             {/* Document rejection status - shown below Join Code */}
@@ -251,7 +247,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 </div>
                                 <div className="flex flex-col sm:flex-row sm:items-center text-xs sm:text-sm">
                                     <span className="font-medium text-white/70 mb-0.5 sm:mb-0 sm:inline-block sm:w-16 sm:pr-2">
-                                        {idx === 0 ? "Ketua:" : "Anggota:"}
+                                        {data.participationType === "individual" ? "Peserta:" : (idx === 0 ? "Ketua:" : "Anggota:")}
                                     </span>
                                     <span className={anggota.fullName === currentUser ?
                                         "font-bold text-pink-300" :

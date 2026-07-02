@@ -13,6 +13,7 @@ const RegistCompetition = () => {
     const [NamaTim, setNamaTim] = useState("");
     const [competitionId, setCompetitionId] = useState(null);
     const [competitionTitle, setCompetitionTitle] = useState("");
+    const [participationType, setParticipationType] = useState("team");
     
     // UI reactivity states
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,11 +29,12 @@ const RegistCompetition = () => {
             const res = await getPublicEvents("competition");
             if (res.success && res.data) {
                 const event = res.data.find(
-                    (e) => e.title.replace(/\s+/g, "").toLowerCase() === competitionSlug?.toLowerCase()
+                    (e) => e.id.toLowerCase() === competitionSlug?.toLowerCase()
                 );
                 if (event) {
                     setCompetitionId(event.id);
                     setCompetitionTitle(event.title);
+                    setParticipationType(event.participation_type || "team");
                 } else {
                     // Fallback to title casing the slug for display if event not found
                     setCompetitionTitle(
@@ -61,9 +63,10 @@ const RegistCompetition = () => {
         if (isSubmitting) return;
 
         const emptyFields = [];
+        const isIndividual = participationType === "individual";
 
         const fieldLabels = {
-            NamaTim: "Nama tim",
+            NamaTim: isIndividual ? "Nama pendaftar" : "Nama tim",
         };
 
         const fieldsToValidate = {
@@ -160,7 +163,7 @@ const RegistCompetition = () => {
                     >
                         <div className="mb-3 relative">
                             <label htmlFor="NamaTim" className="block text-sm font-bold mb-2">
-                                Nama Tim
+                                {participationType === "individual" ? "Nama Pendaftar" : "Nama Tim"}
                             </label>
                             <MdGroups className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
                             <input
@@ -169,7 +172,7 @@ const RegistCompetition = () => {
                                 id="NamaTim"
                                 name="NamaTim"
                                 type="text"
-                                placeholder="nama tim"
+                                placeholder={participationType === "individual" ? "nama pendaftar" : "nama tim"}
                                 className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]"
                             />
                         </div>
