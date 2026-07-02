@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { PiTargetBold } from 'react-icons/pi';
 import { FaUsers } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import { joinTeam } from "../../../api/user";
+import { getCurrentUser, joinTeam } from "../../../api/user";
 import { getPublicEvents } from "../../../api/eventPublic";
 import { registerTeam } from "../../../api/compe";
 
-const IkutLomba = ({ title, description, image, isActive, eventId, participationType, onRegisterIndividual }) => {
+const IkutLomba = ({ title, description, image, isActive, eventId, participationType, onRegisterIndividual, loadingRegister }) => {
   return (
 
   <div className="font-dm-sans flex flex-col items-center justify-between w-full max-w-[220px] min-h-[340px] text-white">
@@ -35,9 +35,11 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
             </div>
           ) : participationType === 'individual' ? (
             <button
-              onClick={() => onRegisterIndividual(eventId)}
-              className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer">
-              Daftar Sekarang
+              type="button"
+              disabled={loadingRegister}
+              onClick={() => onRegisterIndividual(eventId, title)}
+              className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60">
+              {loadingRegister ? 'Mendaftar...' : 'Daftar Sekarang'}
             </button>
           ) : (
             <Link to={`/register-competition/${eventId.toLowerCase()}`}>
@@ -63,10 +65,18 @@ const CompRegisCard = () => {
   const [loading, setLoading] = useState(true);
   const [loadingRegister, setLoadingRegister] = useState(false);
 
-  const handleRegisterIndividual = async (eventId) => {
+  const handleRegisterIndividual = async (eventId, eventTitle) => {
+    const confirmed = window.confirm(
+      `Apakah kamu yakin ingin mendaftar ${eventTitle}? Pendaftaran ini bersifat individu dan tidak menggunakan tim.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     try {
       setLoadingRegister(true);
-      const userRes = await import("../../../api/user").then(m => m.getCurrentUser());
+      const userRes = await getCurrentUser();
       if (!userRes.success || !userRes.data) {
         alert("Gagal mendapatkan data user");
         return;
@@ -84,7 +94,7 @@ const CompRegisCard = () => {
       } else {
         alert(res.error || "Gagal mendaftar");
       }
-    } catch (err) {
+    } catch {
       alert("Terjadi kesalahan sistem saat mendaftar");
     } finally {
       setLoadingRegister(false);
@@ -107,7 +117,7 @@ const CompRegisCard = () => {
     e.preventDefault();
     setLoadingJoin(true);
     joinTeam(teamId)
-      .then((response) => {
+      .then(() => {
         alert("Berhasil bergabung dengan tim!");
         setTeamId('');
         setShowForm(false);
@@ -204,7 +214,7 @@ const CompRegisCard = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-x-6 sm:gap-x-8 gap-y-6 justify-items-center">
-            {eventsData.map((event, idx) => (
+            {eventsData.map((event) => (
               <IkutLomba
                 key={event.id}
                 title={event.title}
@@ -214,6 +224,7 @@ const CompRegisCard = () => {
                 eventId={event.id}
                 participationType={event.participation_type}
                 onRegisterIndividual={handleRegisterIndividual}
+                loadingRegister={loadingRegister}
               />
             ))}
           </div>
