@@ -61,7 +61,11 @@ class DashboardLayout extends Component {
   };
 
   render() {
-    if (this.state.active === "ikut-event") {
+    const usesNeobrutalDashboard = ["ikut-event", "ikut-lomba"].includes(
+      this.state.active
+    );
+
+    if (usesNeobrutalDashboard) {
       return (
         <div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
           <DashboardNeoHeader />
@@ -76,7 +80,11 @@ class DashboardLayout extends Component {
             </aside>
 
             <main className="min-w-0 flex-1 px-4 py-8 sm:px-7 lg:px-10 lg:py-10">
-              <IkutEvent variant="neobrutal" />
+              {this.state.active === "ikut-event" ? (
+                <IkutEvent variant="neobrutal" />
+              ) : (
+                <IkutLomba variant="neobrutal" />
+              )}
             </main>
           </div>
 
