@@ -29,6 +29,7 @@ The frontend provides the user interface for landing pages, event discovery, das
    - This ensures the UI accurately mirrors the configuration set dynamically via the database instead of local hardcoded config files.
    - Competition registration routes resolve an event ID or normalized title to the event returned by the API, ensuring the form heading displays the competition name instead of a UUID.
    - Registration forms use `participation_type`: `team` requires a team name, while `individual` allows direct registration without that field.
+   - Competition detail pages apply the same rule: individual registration asks for confirmation and submits directly, while team registration opens the team-name form.
    - The dashboard hides internal team names and join codes for individual competitions and labels the registered member as `Peserta`.
    - Direct individual registration requires explicit user confirmation before the API request is sent, preventing accidental enrollment.
 3. **File Uploads & Submissions**:

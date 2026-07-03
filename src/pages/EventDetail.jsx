@@ -7,6 +7,7 @@ import PrizepoolSection from '../components/Prizepool';
 import ContactUs from './ContactUs';
 import { getCurrentUser } from '../api/user';
 import { getPublicEventById } from '../api/eventPublic';
+import { registerTeam } from '../api/compe';
 import { useRegisStatus } from '../hooks/useRegisStatus';
 
 const EventDetail = () => {
@@ -15,6 +16,7 @@ const EventDetail = () => {
   const [eventData, setEventData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const isRegisOpen = useRegisStatus(eventId);
 
@@ -60,11 +62,43 @@ const EventDetail = () => {
     }
   };
 
-  const handleDaftarClick = () => {
+  const handleDaftarClick = async () => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
     if (isLoggedIn === "true") {
       if (isRegisOpen) {
         if (eventData?.type === 'competition') {
+          if (eventData.participation_type === 'individual') {
+            const confirmed = window.confirm(
+              `Apakah kamu yakin ingin mendaftar ${eventData.title}? Pendaftaran ini bersifat individu dan tidak menggunakan tim.`
+            );
+
+            if (!confirmed) {
+              return;
+            }
+
+            try {
+              setIsRegistering(true);
+              const response = await registerTeam({
+                competition_id: eventData.id,
+              });
+
+              if (!response.success) {
+                throw new Error(response.error || 'Gagal mendaftar');
+              }
+
+              alert('Pendaftaran individu berhasil!');
+              navigate('/dashboard/ikut-lomba');
+            } catch (registrationError) {
+              alert(
+                registrationError.message ||
+                  'Terjadi kesalahan saat mendaftar kompetisi'
+              );
+            } finally {
+              setIsRegistering(false);
+            }
+            return;
+          }
+
           navigate(`/register-competition/${eventId}`);
         } else {
           navigate(`/daftar-event/${eventId}`);
@@ -73,7 +107,11 @@ const EventDetail = () => {
         navigate("/registration-unavailable");
       }
     } else {
-      navigate("/login?redirectTo=/dashboard/ikut-event");
+      const redirectPath =
+        eventData?.type === 'competition'
+          ? '/dashboard/ikut-lomba'
+          : '/dashboard/ikut-event';
+      navigate(`/login?redirectTo=${encodeURIComponent(redirectPath)}`);
     }
   };
 
@@ -148,8 +186,12 @@ const EventDetail = () => {
                 Guidebook
               </button>
             )}
-            <button onClick={handleDaftarClick} className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-3 px-4 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
-              Daftar Sekarang
+            <button
+              onClick={handleDaftarClick}
+              disabled={isRegistering}
+              className="font-dm-sans font-bold bg-gradient-to-r custom-button-bg text-white py-3 px-4 rounded-lg custom-button-shadow button-hover hover:scale-105 transition duration-300 ease-in-out cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isRegistering ? 'Mendaftar...' : 'Daftar Sekarang'}
             </button>
           </div>
 
