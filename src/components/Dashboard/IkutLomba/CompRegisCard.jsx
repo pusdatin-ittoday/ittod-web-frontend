@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getCurrentUser, joinTeam } from "../../../api/user";
 import { getPublicEvents } from "../../../api/eventPublic";
 import { registerTeam } from "../../../api/compe";
+import PaginationControls from "../PaginationControls";
 
 const NEO_CARD_COLORS = [
   "bg-[#e8fbef] text-[#156b3b]",
@@ -12,6 +13,7 @@ const NEO_CARD_COLORS = [
   "bg-[#ffe26b] text-[#191b1a]",
   "bg-[#555563] text-white",
 ];
+const ITEMS_PER_PAGE = 4;
 
 const IkutLomba = ({ title, description, image, isActive, eventId, participationType, onRegisterIndividual, loadingRegister, variant = "default", colorIndex = 0 }) => {
   if (variant === "neobrutal") {
@@ -116,6 +118,7 @@ const CompRegisCard = ({ variant = "default" }) => {
   const [eventsData, setEventsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingRegister, setLoadingRegister] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const handleRegisterIndividual = async (eventId, eventTitle) => {
     const confirmed = window.confirm(
@@ -159,11 +162,18 @@ const CompRegisCard = ({ variant = "default" }) => {
       const res = await getPublicEvents('competition');
       if (res.success && res.data) {
         setEventsData(res.data);
+        setCurrentPage(0);
       }
       setLoading(false);
     };
     fetchEvents();
   }, []);
+
+  const totalPages = Math.ceil(eventsData.length / ITEMS_PER_PAGE);
+  const visibleEvents = eventsData.slice(
+    currentPage * ITEMS_PER_PAGE,
+    (currentPage + 1) * ITEMS_PER_PAGE
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -273,8 +283,9 @@ const CompRegisCard = ({ variant = "default" }) => {
             </p>
           </div>
         ) : (
+          <>
           <div className="grid grid-cols-1 gap-7 py-7 md:grid-cols-2 lg:gap-8">
-            {eventsData.map((event, idx) => (
+            {visibleEvents.map((event, idx) => (
               <IkutLomba
                 key={event.id}
                 title={event.title}
@@ -286,10 +297,16 @@ const CompRegisCard = ({ variant = "default" }) => {
                 onRegisterIndividual={handleRegisterIndividual}
                 loadingRegister={loadingRegister}
                 variant="neobrutal"
-                colorIndex={idx}
+                colorIndex={currentPage * ITEMS_PER_PAGE + idx}
               />
             ))}
           </div>
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+          </>
         )}
       </section>
     );

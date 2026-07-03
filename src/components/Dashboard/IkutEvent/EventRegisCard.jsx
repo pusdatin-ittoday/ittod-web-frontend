@@ -3,8 +3,10 @@ import { BsCalendarEvent } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
 import { getPublicEvents } from "../../../api/eventPublic";
+import PaginationControls from "../PaginationControls";
 
 const NEO_CARD_COLORS = ["bg-[#e8fbef]", "bg-[#ffe26b]", "bg-[#565bc5] text-white"];
+const ITEMS_PER_PAGE = 4;
 
 const IkutEvent = ({ title, description, image, isActive, eventId, variant = "default", colorIndex = 0 }) => {
   if (variant === "neobrutal") {
@@ -77,6 +79,7 @@ const IkutEvent = ({ title, description, image, isActive, eventId, variant = "de
 const EventRegisCard = ({ variant = "default" }) => {
   const [eventsData, setEventsData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [currentPage, setCurrentPage] = React.useState(0);
 
   React.useEffect(() => {
     const fetchEvents = async () => {
@@ -84,11 +87,18 @@ const EventRegisCard = ({ variant = "default" }) => {
       const res = await getPublicEvents('non_competition');
       if (res.success && res.data) {
         setEventsData(res.data);
+        setCurrentPage(0);
       }
       setLoading(false);
     };
     fetchEvents();
   }, []);
+
+  const totalPages = Math.ceil(eventsData.length / ITEMS_PER_PAGE);
+  const visibleEvents = eventsData.slice(
+    currentPage * ITEMS_PER_PAGE,
+    (currentPage + 1) * ITEMS_PER_PAGE
+  );
 
   if (variant === "neobrutal") {
     return (
@@ -115,10 +125,12 @@ const EventRegisCard = ({ variant = "default" }) => {
             </p>
           </div>
         ) : (
+          <>
           <div className="grid grid-cols-1 gap-7 py-7 xl:grid-cols-2 xl:gap-8">
-            {eventsData.map((event, idx) => {
+            {visibleEvents.map((event, idx) => {
               const isLastOdd =
-                eventsData.length % 2 === 1 && idx === eventsData.length - 1;
+                visibleEvents.length % 2 === 1 && idx === visibleEvents.length - 1;
+              const absoluteIndex = currentPage * ITEMS_PER_PAGE + idx;
 
               return (
                 <div
@@ -136,12 +148,18 @@ const EventRegisCard = ({ variant = "default" }) => {
                     isActive={event.is_active}
                     eventId={event.id}
                     variant="neobrutal"
-                    colorIndex={idx}
+                    colorIndex={absoluteIndex}
                   />
                 </div>
               );
             })}
           </div>
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+          </>
         )}
       </section>
     );
