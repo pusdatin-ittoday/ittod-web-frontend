@@ -30,7 +30,7 @@ const Event = () => {
               key={evt.id}
               title={evt.title}
               description={evt.description}
-              imageSrc={`/logo-event/${evt.id.toUpperCase()}.webp`}
+              imageSrc={evt.logo_url || `/logo-event/${evt.id.toUpperCase()}.webp`}
               linkHref={`/event/${evt.id}`}
             />
           ))}

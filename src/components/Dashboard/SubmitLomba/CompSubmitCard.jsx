@@ -89,7 +89,7 @@ const CompSubmitCard = () => {
             .map(comp => ({
               id: comp.competitionId,
               title: comp.competitionName,
-              image: `/logo-competition/${comp.competitionId?.toUpperCase()}.webp`,
+              image: comp.logo_url || `/logo-competition/${comp.competitionId?.toUpperCase()}.webp`,
               submitLink: `submit-competition/${comp.competitionId}`
             }));
           

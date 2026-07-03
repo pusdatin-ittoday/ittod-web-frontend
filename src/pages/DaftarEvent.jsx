@@ -12,6 +12,7 @@ import {
 	registerToBootcamp,
 } from "../api/user";
 import { uploadBootcampPayment } from "../api/user";
+import { getPublicEvents } from "../api/eventPublic";
 import FallbackEventCloseRegist from "./Fallback/FallbackCloseRegis";
 
 const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
@@ -38,8 +39,8 @@ const eventIdMapping = {
 	"Machine Learning": "Machine Learning", // Change to your production ID
 
 	// Other event types
-	bootcamp: "bootcamp", // Change to your production ID
-	seminar: "seminar", // Change to your production ID
+	bootcamp: "Bootcamp", // Change to your production ID
+	seminar: "Seminar", // Change to your production ID
 };
 
 const bootcampBundlingMapping = {
@@ -68,6 +69,8 @@ const DaftarEvent = () => {
 	const [error, setError] = useState("");
 	const [hasCopied, setHasCopied] = useState({});
 	const [bootcampBundling, setBootcampBundling] = useState("");
+	const [isActive, setIsActive] = useState(true);
+	const [checkingActive, setCheckingActive] = useState(true);
 
 	const paymentFileInputRef = useRef(null);
 
@@ -154,6 +157,31 @@ const DaftarEvent = () => {
 		};
 
 		checkExistingRegistration();
+	}, [target]);
+
+	// Check if event is active from backend
+	useEffect(() => {
+		const checkActiveStatus = async () => {
+			if (target === "workshop") {
+				setCheckingActive(false);
+				return;
+			}
+			setCheckingActive(true);
+			try {
+				const res = await getPublicEvents("non_competition");
+				if (res.success && res.data) {
+					let eventId = eventIdMapping[target === "national-seminar" ? "seminar" : target] || target;
+					const event = res.data.find(e => e.id.toLowerCase() === eventId.toLowerCase());
+					if (event && event.is_active !== undefined) {
+						setIsActive(event.is_active);
+					}
+				}
+			} catch (e) {
+				console.error("Error checking event active status:", e);
+			}
+			setCheckingActive(false);
+		};
+		checkActiveStatus();
 	}, [target]);
 
 	// File handling methods similar to EditProfil
@@ -294,14 +322,11 @@ const DaftarEvent = () => {
 		setShowAlert(false);
 	};
 
-	if (
-		new Date() >
-		(target === "workshop"
-			? new Date("2025-09-09T23:59:59")
-			: target === "bootcamp"
-			? new Date("2025-08-23T10:00:00")
-			: new Date("2025-09-12T23:59:59"))
-	) {
+	if (checkingActive) {
+		return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
+	}
+
+	if (!isActive) {
 		return <FallbackEventCloseRegist eventName={target} />;
 	}
 

@@ -89,7 +89,7 @@ const EventRegisCard = () => {
                   <IkutEvent
                     title={event.title}
                     description={event.description}
-                    image={`/logo-event/${event.id.toUpperCase()}.webp`}
+                    image={event.logo_url || `/logo-event/${event.id.toUpperCase()}.webp`}
                     isActive={event.is_active}
                     eventId={event.id}
                   />
