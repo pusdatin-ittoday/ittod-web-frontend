@@ -188,6 +188,56 @@ const CompRegisCard = ({ variant = "default" }) => {
   };
 
   if (variant === "neobrutal") {
+    if (showForm) {
+      return (
+        <section className="min-h-[500px] border-[4px] border-[#191b1a] bg-[#f4f4f2] p-4 shadow-[8px_8px_0_#191b1a] sm:p-6 lg:p-8">
+          <div className="border-[3px] border-black bg-white p-6 shadow-[7px_7px_0_#191b1a] sm:p-8 lg:p-10">
+            <h1 className="text-2xl font-black sm:text-3xl">
+              Join Existing Team
+            </h1>
+            <p className="mt-2 text-sm font-semibold text-[#806400] sm:text-base">
+              Pastikan anda sudah yakin. Jika ada kesalahan, hubungi admin.
+            </p>
+
+            <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-5">
+              <label htmlFor="join-team-code" className="sr-only">
+                Join Code Tim
+              </label>
+              <input
+                id="join-team-code"
+                type="text"
+                value={teamId}
+                onChange={(e) => setTeamId(e.target.value)}
+                placeholder="Masukkan Join Code Tim"
+                className="w-full border-[3px] border-black bg-white px-5 py-4 text-base font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400 focus:bg-[#fff6bf]"
+                required
+              />
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="submit"
+                  disabled={loadingJoin}
+                  className="order-1 border-[3px] border-black bg-[#ffd400] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 sm:order-none"
+                >
+                  {loadingJoin ? "Submitting..." : "Submit"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTeamId("");
+                    setShowForm(false);
+                  }}
+                  className="border-[3px] border-black bg-[#eeeeee] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      );
+    }
+
     return (
       <section className="border-[4px] border-[#191b1a] bg-white p-5 shadow-[8px_8px_0_#191b1a] sm:p-7 lg:p-8">
         <div className="flex flex-col gap-4 border-b-2 border-dashed border-[#191b1a] pb-5 sm:flex-row sm:items-start sm:justify-between">
@@ -209,43 +259,6 @@ const CompRegisCard = ({ variant = "default" }) => {
             Join Team
           </button>
         </div>
-
-        {showForm && (
-          <div className="mt-6 border-[3px] border-black bg-[#e8fbef] p-5 shadow-[5px_5px_0_#191b1a]">
-            <h2 className="text-base font-black uppercase">Join Existing Team</h2>
-            <p className="mt-1 text-xs font-semibold text-[#a12d24]">
-              Pastikan kode tim sudah benar. Jika ada kesalahan, hubungi admin.
-            </p>
-
-            <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row">
-              <input
-                type="text"
-                value={teamId}
-                onChange={(e) => setTeamId(e.target.value)}
-                placeholder="Masukkan Join Code Tim"
-                className="min-w-0 flex-1 border-[3px] border-black bg-white px-4 py-3 text-sm font-bold text-black outline-none focus:bg-[#fff6bf]"
-                required
-              />
-              <button
-                type="submit"
-                disabled={loadingJoin}
-                className="border-[3px] border-black bg-[#ffd400] px-5 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {loadingJoin ? "Submitting..." : "Submit"}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setTeamId("");
-                  setShowForm(false);
-                }}
-                className="border-[3px] border-black bg-white px-5 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
-              >
-                Batal
-              </button>
-            </form>
-          </div>
-        )}
 
         {loading ? (
           <div className="flex min-h-[420px] items-center justify-center">

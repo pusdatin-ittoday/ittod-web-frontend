@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../../components/Navbar.jsx";
-import { MdGroups } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md";
 import { registerTeam } from "../../api/compe.js";
 import { getPublicEvents } from "../../api/eventPublic.js";
+import DashboardNeoHeader from "../../components/Dashboard/DashboardNeoHeader.jsx";
+import Sidebar from "../../components/Dashboard/Sidebar.jsx";
+import Footer from "../../components/Footer.jsx";
 
 const RegistCompetition = () => {
     const navigate = useNavigate();
@@ -28,9 +29,6 @@ const RegistCompetition = () => {
             setIsLoading(true);
             const res = await getPublicEvents("competition");
             if (res.success && res.data) {
-                const normalizedSlug = decodeURIComponent(
-                    competitionSlug || ""
-                ).toLowerCase();
                 const event = res.data.find(
                     (e) => e.id.toLowerCase() === competitionSlug?.toLowerCase()
                 );
@@ -157,65 +155,82 @@ const RegistCompetition = () => {
     };
 
     return (
-        <>
-            <Navbar />
-            <div className="min-h-screen flex items-center justify-center p-4">
-                <div className="bg-[#7b446c] text-white rounded-2xl shadow-lg p-8 max-w-3xl w-full">
-                    <h2 className="text-lg lg:text-2xl font-dm-sans font-bold text-center mb-6">
-                        {isLoading ? "Memuat..." : `Form Daftar ${competitionTitle}`}
-                    </h2>
+        <div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
+            <DashboardNeoHeader />
 
-                    {/* Form */}
-                    <form
-                        onSubmit={handleSubmit}
-                        className="flex flex-col gap-4 font-dm-sans"
-                    >
-                        <div className="mb-3 relative">
-                            <label htmlFor="NamaTim" className="block text-sm font-bold mb-2">
-                                {participationType === "individual" ? "Nama Pendaftar" : "Nama Tim"}
-                            </label>
-                            <MdGroups className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
-                            <input
-                                value={NamaTim}
-                                onChange={handleChange}
-                                id="NamaTim"
-                                name="NamaTim"
-                                type="text"
-                                placeholder={participationType === "individual" ? "nama pendaftar" : "nama tim"}
-                                className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]"
-                            />
-                        </div>
+            <div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[650px] lg:flex-row">
+                <aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
+                    <Sidebar
+                        active="ikut-lomba"
+                        setActive={() => {}}
+                        variant="neobrutal"
+                    />
+                </aside>
 
-                        <div className="buttons flex flex-row justify-end">
-                            <a
-                                onClick={() => navigate("/dashboard/ikut-lomba")}
-                                type="cancel"
-                                className="bg-gray-300 text-black px-4 py-2 rounded mr-2 cursor-pointer transition duration-300 hover:scale-105"
+                <main className="flex min-w-0 flex-1 items-start justify-center px-4 py-8 sm:px-7 lg:px-10 lg:py-10">
+                    <section className="w-full max-w-5xl border-[4px] border-black bg-[#f4f4f2] p-4 shadow-[8px_8px_0_#191b1a] sm:p-6 lg:p-8">
+                        <div className="border-[3px] border-black bg-white p-6 shadow-[7px_7px_0_#191b1a] sm:p-8 lg:p-10">
+                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#3f46b8]">
+                                {isLoading ? "Memuat kompetisi..." : competitionTitle}
+                            </p>
+                            <h1 className="mt-3 text-2xl font-black sm:text-3xl">
+                                {participationType === "individual" ? "Daftar Individu" : "Buat Tim"}
+                            </h1>
+                            <p className="mt-2 text-sm font-semibold text-[#806400] sm:text-base">
+                                {participationType === "individual"
+                                    ? "Pendaftaran ini bersifat individu dan tidak menggunakan tim."
+                                    : "Kamu akan secara otomatis menjadi ketua tim."}
+                            </p>
+
+                            <form
+                                onSubmit={handleSubmit}
+                                className="mt-7 flex flex-col gap-5"
                             >
-                                Batal
-                            </a>
-                            <button
-                                type="submit"
-                                disabled={isSubmitting || !competitionId || isLoading}
-                                className={`custom-button-bg text-white px-4 py-2 rounded cursor-pointer ${isSubmitting || !competitionId || isLoading ? 'opacity-75 cursor-not-allowed' : 'button-hover transition duration-300 ease-in-out hover:scale-105'}`}
-                            >
-                                {isSubmitting
-                                    ? "Mendaftar..."
-                                    : participationType === "individual"
-                                      ? "Daftar"
-                                      : "Submit"}
-                            </button>
+                                <label htmlFor="NamaTim" className="sr-only">
+                                    {participationType === "individual" ? "Nama Pendaftar" : "Nama Tim"}
+                                </label>
+                                <input
+                                    value={NamaTim}
+                                    onChange={handleChange}
+                                    id="NamaTim"
+                                    name="NamaTim"
+                                    type="text"
+                                    placeholder={participationType === "individual" ? "Masukkan Nama Pendaftar" : "Masukkan Nama Tim"}
+                                    className="w-full border-[3px] border-black bg-white px-5 py-4 text-base font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400 focus:bg-[#fff6bf]"
+                                />
+
+                                <div className="flex flex-col gap-3 sm:flex-row">
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting || !competitionId || isLoading}
+                                        className="order-1 border-[3px] border-black bg-[#ffd400] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 sm:order-none"
+                                    >
+                                        {isSubmitting
+                                            ? "Mendaftar..."
+                                            : participationType === "individual"
+                                              ? "Daftar"
+                                              : "Submit"}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate("/dashboard/ikut-lomba")}
+                                        className="border-[3px] border-black bg-[#eeeeee] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                    >
+                                        Batal
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                    </form>
-                </div>
+                    </section>
+                </main>
             </div>
 
             {/* Custom Alert Dialog */}
             {showAlert && (
-                <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black/50">
-                    <div className={`${alertType === 'error' ? 'bg-red-600/90' : 'bg-green-600/90'} text-white px-6 py-4 rounded-lg shadow-xl max-w-md`}>
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 p-4">
+                    <div className={`w-full max-w-md border-[4px] border-black px-6 py-5 text-black shadow-[8px_8px_0_#191b1a] ${alertType === 'error' ? 'bg-[#ff8c75]' : 'bg-[#b8f2cf]'}`}>
                         <div className="flex justify-between items-start mb-2 gap-5">
-                            <h3 className="font-bold text-lg">
+                            <h3 className="text-lg font-black uppercase">
                                 <div className="flex items-center">
                                     {alertType === 'error' ? (
                                         <>
@@ -231,15 +246,16 @@ const RegistCompetition = () => {
                                 </div>
                             </h3>
                             <button
+                                type="button"
                                 onClick={closeAlert}
-                                className={`${alertType === 'error' ? 'bg-red-700/85 hover:bg-red-800/85' : 'bg-green-700/85 hover:bg-green-800/85'} rounded-full p-1 transition-colors`}
+                                className="border-2 border-black bg-white p-1 transition-transform hover:-translate-y-0.5"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                                 </svg>
                             </button>
                         </div>
-                        <p className="text-sm mb-2">{alertMessage}</p>
+                        <p className="mb-2 text-sm font-semibold">{alertMessage}</p>
                         {alertType === 'error' && incompleteFields.length > 0 && (
                             <ul className="list-disc pl-5 text-sm space-y-1">
                                 {incompleteFields.map((field, index) => (
@@ -250,7 +266,9 @@ const RegistCompetition = () => {
                     </div>
                 </div>
             )}
-        </>
+
+            <Footer variant="neobrutal" />
+        </div>
     );
 };
 
