@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { BiLogoWhatsapp } from "react-icons/bi";
 import { FaSchool, FaFileUpload } from "react-icons/fa";
-import { MdErrorOutline } from "react-icons/md";
+import { MdCalendarMonth, MdErrorOutline } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 import { registerEvent, getJoinEvent } from "../utils/api/event";
 import {
@@ -14,6 +13,9 @@ import {
 import { uploadBootcampPayment } from "../api/user";
 import { getPublicEvents } from "../api/eventPublic";
 import FallbackEventCloseRegist from "./Fallback/FallbackCloseRegis";
+import DashboardNeoHeader from "../components/Dashboard/DashboardNeoHeader";
+import Sidebar from "../components/Dashboard/Sidebar";
+import Footer from "../components/Footer";
 
 const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
 
@@ -49,6 +51,21 @@ const bootcampBundlingMapping = {
 	"Day 1 + Day 2": "day1_day2",
 };
 
+const EventRegistrationShell = ({ children }) => (
+	<div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
+		<DashboardNeoHeader />
+		<div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[650px] lg:flex-row">
+			<aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
+				<Sidebar active="ikut-event" setActive={() => {}} variant="neobrutal" />
+			</aside>
+			<main className="flex min-w-0 flex-1 items-start justify-center px-4 py-8 sm:px-7 lg:px-10 lg:py-10">
+				{children}
+			</main>
+		</div>
+		<Footer variant="neobrutal" />
+	</div>
+);
+
 const DaftarEvent = () => {
 	const { target } = useParams();
 	const navigate = useNavigate();
@@ -71,6 +88,7 @@ const DaftarEvent = () => {
 	const [bootcampBundling, setBootcampBundling] = useState("");
 	const [isActive, setIsActive] = useState(true);
 	const [checkingActive, setCheckingActive] = useState(true);
+	const displayName = targetDisplayName[target] || target || "Event";
 
 	const paymentFileInputRef = useRef(null);
 
@@ -323,7 +341,13 @@ const DaftarEvent = () => {
 	};
 
 	if (checkingActive) {
-		return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
+		return (
+			<EventRegistrationShell>
+				<div className="border-[3px] border-black bg-[#ffd400] px-6 py-4 text-sm font-black uppercase shadow-[5px_5px_0_#191b1a]">
+					Loading...
+				</div>
+			</EventRegistrationShell>
+		);
 	}
 
 	if (!isActive) {
@@ -331,24 +355,27 @@ const DaftarEvent = () => {
 	}
 
 	return (
-		<>
-			<Navbar />
-			<div className="min-h-screen w-full h-full pt-24 space-x-4 flex flex-row items-center justify-center p-6 background: linear-gradient(135deg, #5c3b5c, #2e263c, #a86b8290); text-white font-dm-sans">
+		<EventRegistrationShell>
+			<div className="w-full max-w-5xl">
 				{/* Form Pendaftaran */}
-				<div className="max-w-3xl w-full h-full bg-[#7b446c] rounded-lg shadow-lg p-6">
-					<h2 className="text-2xl font-bold mb-4 text-center">
-						Form Pendaftaran {targetDisplayName[target || "Event"]}
-					</h2>
+				<section className="border-[4px] border-black bg-[#f4f4f2] p-4 shadow-[8px_8px_0_#191b1a] sm:p-6 lg:p-8">
+					<div className="border-[3px] border-black bg-white p-6 shadow-[7px_7px_0_#191b1a] sm:p-8 lg:p-10">
+					<p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#3f46b8]">
+						{displayName}
+					</p>
+					<h1 className="mt-3 text-2xl font-black sm:text-3xl">
+						Form Pendaftaran
+					</h1>
 					{error && error.includes("You already registered in this event!") && (
-						<div className="bg-red-600/80 text-white px-6 py-3 rounded-lg shadow-xl max-w-xl mx-auto mb-4 text-center">
+						<div className="mt-5 border-[3px] border-black bg-[#ff8c75] px-6 py-3 text-center text-sm font-bold shadow-[5px_5px_0_#191b1a]">
 							<span className="font-bold">{error}</span>
 						</div>
 					)}
 
 					{submitted ? (
-						<div className="flex flex-col text-center  input-text-glow font-semibold gap-4">
+						<div className="mt-7 flex flex-col gap-5 text-center font-semibold">
 							<div className="flex flex-col gap-5">
-								<p>
+								<p className="text-base font-black sm:text-lg">
 									{alreadyRegistered
 										? "You're already registered."
 										: "Terima kasih telah mendaftar. Silahkan masuk ke dua grup whatsapp berikut: "}
@@ -357,16 +384,16 @@ const DaftarEvent = () => {
 									<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl justify-center items-center">
 										<button
 											onClick={() => window.open(linkWhatsapp)}
-											className="w-full sm:w-auto flex-1 cursor-pointer font-bold bg-green-500 text-white px-2 py-2 sm:px-3 sm:py-2 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 min-w-[180px] max-w-[320px]"
+											className="w-full min-w-[180px] max-w-[320px] flex-1 cursor-pointer border-[3px] border-black bg-[#18c964] px-3 py-3 text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] sm:w-auto sm:text-sm"
 										>
 											<FaWhatsapp className="inline mr-1" /> Grup{" "}
-											{targetDisplayName[target || "Event"]}
+											{displayName}
 										</button>
 										<button
 											onClick={() => {
 												handleCopyToClipboard(linkWhatsapp, "main");
 											}}
-											className="w-full sm:w-auto flex-shrink-0 bg-white text-green-400 px-4 py-2 rounded hover:bg-neutral-300 transition duration-300 min-w-[160px]"
+											className="w-full min-w-[160px] flex-shrink-0 border-[3px] border-black bg-white px-4 py-3 text-xs font-black uppercase text-[#087a3d] shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 sm:w-auto sm:text-sm"
 										>
 											{hasCopied.main ? "Link Disalin!" : "Salin Link Whatsapp"}
 										</button>
@@ -378,7 +405,7 @@ const DaftarEvent = () => {
 													"https://chat.whatsapp.com/JzRETO4AWayIwq6CzfUz85?mode=ems_copy_t"
 												)
 											}
-											className="w-full sm:w-auto flex-1 cursor-pointer font-bold bg-green-500 text-white px-2 py-2 sm:px-3 sm:py-2 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 min-w-[180px] max-w-[320px]"
+											className="w-full min-w-[180px] max-w-[320px] flex-1 cursor-pointer border-[3px] border-black bg-[#18c964] px-3 py-3 text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] sm:w-auto sm:text-sm"
 										>
 											<FaWhatsapp className="inline mr-1" /> Grup IT-Today 2025
 											x Sentral Komputer
@@ -390,7 +417,7 @@ const DaftarEvent = () => {
 													"sentral"
 												);
 											}}
-											className="w-full sm:w-auto flex-shrink-0 bg-white text-green-400 px-4 py-2 rounded hover:bg-neutral-300 transition duration-300 min-w-[160px]"
+											className="w-full min-w-[160px] flex-shrink-0 border-[3px] border-black bg-white px-4 py-3 text-xs font-black uppercase text-[#087a3d] shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 sm:w-auto sm:text-sm"
 										>
 											{hasCopied.sentral
 												? "Link Disalin!"
@@ -404,48 +431,49 @@ const DaftarEvent = () => {
 									onClick={() => {
 										navigate("/dashboard/ikut-event");
 									}}
-									className="custom-button-bg text-white px-4 py-2 rounded button-hover hover:scale-105 cursor-pointer transition duration-300"
+									className="cursor-pointer border-[3px] border-black bg-[#ffd400] px-6 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#191b1a]"
 								>
 									Kembali ke Dashboard
 								</button>
 							</div>
 						</div>
 					) : (
-						<form onSubmit={handleSubmit} className="space-y-4">
+						<form onSubmit={handleSubmit} className="mt-7 space-y-5">
 							<div>
-								<label className="block text-sm mb-1">Institusi</label>
-								<div className="flex items-center bg-white rounded-md px-3 py-2">
-									<FaSchool className="text-black mr-2" size={20} />
+								<label className="mb-2 block text-xs font-black uppercase tracking-wide">Institusi</label>
+								<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
+									<FaSchool className="mr-3 shrink-0 text-[#4f5261]" size={21} />
 									<input
 										type="text"
 										value={institution}
 										onChange={(e) => setInstitution(e.target.value)}
-										className="flex-1 bg-white text-black outline-none"
-										placeholder="Nama Institusi"
+										className="min-w-0 flex-1 bg-transparent font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400"
+										placeholder="Nama Sekolah/Institusi"
 									/>
 								</div>
 							</div>
 							<div>
-								<label className="block text-sm mb-1">Tanggal Lahir</label>
-								<div className="flex items-center bg-white rounded-md px-3 py-2">
+								<label className="mb-2 block text-xs font-black uppercase tracking-wide">Tanggal Lahir</label>
+								<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
+									<MdCalendarMonth className="mr-3 shrink-0 text-[#4f5261]" size={23} />
 									<input
 										type="date"
 										value={dateOfBirth}
 										onChange={(e) => setDateOfBirth(e.target.value)}
-										className="flex-1 bg-white text-black outline-none"
+										className="min-w-0 flex-1 bg-transparent font-bold text-black outline-none"
 										required
 									/>
 								</div>
 							</div>
 							<div>
-								<label className="block text-sm mb-1">Nomor WhatsApp</label>
-								<div className="flex items-center bg-white rounded-md px-3 py-2">
-									<BiLogoWhatsapp className="text-black mr-2" size={20} />
+								<label className="mb-2 block text-xs font-black uppercase tracking-wide">Nomor WhatsApp</label>
+								<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
+									<BiLogoWhatsapp className="mr-3 shrink-0 text-[#4f5261]" size={22} />
 									<input
 										type="text"
 										value={whatsapp}
 										onChange={(e) => setWhatsapp(e.target.value)}
-										className="flex-1 bg-white text-black outline-none"
+										className="min-w-0 flex-1 bg-transparent font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400"
 										placeholder="Nomor WhatsApp"
 									/>
 								</div>
@@ -453,13 +481,13 @@ const DaftarEvent = () => {
 
 							{target === "workshop" && (
 								<div>
-									<label className="block text-sm mb-1">
+									<label className="mb-2 block text-xs font-black uppercase tracking-wide">
 										Pilih Bidang Workshop
 									</label>
 									<select
 										value={workshopChoice}
 										onChange={(e) => setWorkshopChoice(e.target.value)}
-										className="w-full px-3 py-2 rounded text-black bg-white"
+										className="w-full border-[3px] border-black bg-white px-4 py-3 font-bold text-black outline-none focus:bg-[#fff6bf]"
 										required
 									>
 										<option value="">-- Pilih Bidang --</option>
@@ -475,14 +503,14 @@ const DaftarEvent = () => {
 							{target === "bootcamp" && needsToPay && (
 								<div className="space-y-4">
 									<div>
-										<label className="block text-sm mb-1">Pilih Bundling</label>
+										<label className="mb-2 block text-xs font-black uppercase tracking-wide">Pilih Bundling</label>
 										<select
 											value={bootcampBundling}
 											onChange={(e) => {
 												setBootcampBundling(e.target.value);
 												console.log("Selected Bundling:", e.target.value);
 											}}
-											className="w-full px-3 py-2 rounded text-black bg-white"
+											className="w-full border-[3px] border-black bg-white px-4 py-3 font-bold text-black outline-none focus:bg-[#fff6bf]"
 											required
 										>
 											<option value="">-- Pilih Bundling --</option>
@@ -496,16 +524,16 @@ const DaftarEvent = () => {
 											)}
 										</select>
 									</div>
-									<label className="block text-sm font-bold mb-2">
+									<label className="mb-2 block text-xs font-black uppercase tracking-wide">
 										Upload Bukti Pembayaran (jpg/png/pdf, max 2MB)
 									</label>
 									<div className="mb-4 sm:mb-6">
-										<div className="mb-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-md px-3 sm:px-4 py-3 text-white">
+										<div className="mb-4 border-[3px] border-black bg-[#565bc5] px-4 py-4 text-white shadow-[5px_5px_0_#191b1a]">
 											<div className="mb-3">
 												<p className="text-xs sm:text-sm font-bold text-pink-300 mb-1">
 													Informasi Rekening:
 												</p>
-												<div className="bg-[#7b446c]/60 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/90 font-mono shadow-inner">
+											<div className="border-2 border-black bg-white px-3 py-3 font-mono text-xs text-black sm:text-sm">
 													Bank Mandiri
 													<br />
 													<div className="flex flex-row items-center">
@@ -582,7 +610,7 @@ const DaftarEvent = () => {
 										</div>
 									</div>
 									<div
-										className="border-2 border-dashed border-pink-400 rounded-md p-6 text-center bg-white/10 hover:bg-white/20 transition duration-300 hover:scale-102 cursor-pointer w-full min-h-24 flex items-center justify-center"
+									className="flex min-h-24 w-full cursor-pointer items-center justify-center border-[3px] border-dashed border-black bg-[#e8fbef] p-6 text-center font-bold text-black transition-transform hover:-translate-y-0.5"
 										onDragOver={(e) => e.preventDefault()}
 										onDrop={handlePaymentFileDrop}
 										onClick={() =>
@@ -590,7 +618,7 @@ const DaftarEvent = () => {
 											paymentFileInputRef.current.click()
 										}
 									>
-										<FaFileUpload className="mr-2 text-xl text-pink-300" />
+										<FaFileUpload className="mr-2 text-xl text-[#3f46b8]" />
 										<div className="w-full overflow-hidden text-ellipsis">
 											<p className="truncate">
 												{paymentFile
@@ -610,7 +638,7 @@ const DaftarEvent = () => {
 										/>
 									</div>
 									{paymentFileName && (
-										<div className="text-xs text-gray-200 mt-1">
+										<div className="mt-2 text-xs font-semibold text-gray-700">
 											File terpilih:{" "}
 											<span className="font-semibold">{paymentFileName}</span>
 										</div>
@@ -618,31 +646,34 @@ const DaftarEvent = () => {
 								</div>
 							)}
 
-							<div className="buttons flex flex-row justify-end">
-								<a
+							<div className="flex flex-col gap-3 pt-2 sm:flex-row">
+								<button
+									type="button"
 									onClick={() => navigate("/dashboard/ikut-event")}
-									className="bg-gray-300 hover:bg-gray-400 transition duration-300 ease-in-out hover:scale-105 text-black px-4 py-2 rounded mr-2 cursor-pointer"
+									className="border-[3px] border-black bg-[#eeeeee] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
 								>
 									Batal
-								</a>
+								</button>
 								<button
 									type="submit"
 									disabled={loading}
-									className="custom-button-bg text-white button-hover transition duration-300 ease-in-out hover:scale-105 px-4 py-2 rounded cursor-pointer"
+									className="order-first border-[3px] border-black bg-[#ffd400] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 sm:order-none"
 								>
 									Simpan
 								</button>
 							</div>
 						</form>
 					)}
-				</div>
+					</div>
+				</section>
 				{/* Removed generic error message below the form. Error is now shown only in the styled alert below the title. */}
 				{showAlert && (
 					<div
-						className="bg-red-600/80 text-white px-6 py-4 rounded-lg shadow-xl max-w-md"
+						className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 p-4"
 						onMouseDown={(e) => e.stopPropagation()}
 						onTouchStart={(e) => e.stopPropagation()}
 					>
+						<div className="w-full max-w-md border-[4px] border-black bg-[#ff8c75] px-6 py-5 text-black shadow-[8px_8px_0_#191b1a]">
 						<div className="flex justify-between items-start mb-2 gap-5">
 							<h3 className="font-bold text-lg">
 								<div className="flex items-center">
@@ -652,7 +683,7 @@ const DaftarEvent = () => {
 							</h3>
 							<button
 								onClick={closeAlert}
-								className="bg-red-700/85 hover:bg-red-800/85 rounded-full p-1 transition-colors"
+									className="border-2 border-black bg-white p-1 transition-transform hover:-translate-y-0.5"
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
@@ -674,10 +705,11 @@ const DaftarEvent = () => {
 								<li key={index}>{field.label}</li>
 							))}
 						</ul>
+						</div>
 					</div>
 				)}
 			</div>
-		</>
+		</EventRegistrationShell>
 	);
 };
 
