@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar.jsx";
 import { MdGroups } from "react-icons/md";
-import { IoMdPerson } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
-import { FaFileImage } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom";
 import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md";
 import { registerTeam } from "../../api/compe.js";
+import { getPublicEvents } from "../../api/eventPublic.js";
 
-const RegistMineToday = () => {
+const RegistCompetition = () => {
     const navigate = useNavigate();
+    const { competitionSlug } = useParams(); // e.g. "gametoday", "hacktoday"
 
     const [NamaTim, setNamaTim] = useState("");
+    const [competitionId, setCompetitionId] = useState(null);
+    const [competitionTitle, setCompetitionTitle] = useState("");
+    const [participationType, setParticipationType] = useState("team");
     
     // UI reactivity states
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,12 +21,42 @@ const RegistMineToday = () => {
     const [alertMessage, setAlertMessage] = useState("");
     const [alertType, setAlertType] = useState("error"); // "error" or "success"
     const [incompleteFields, setIncompleteFields] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCompetitionInfo = async () => {
+            setIsLoading(true);
+            const res = await getPublicEvents("competition");
+            if (res.success && res.data) {
+                const normalizedSlug = decodeURIComponent(
+                    competitionSlug || ""
+                ).toLowerCase();
+                const event = res.data.find(
+                    (e) => e.id.toLowerCase() === competitionSlug?.toLowerCase()
+                );
+                if (event) {
+                    setCompetitionId(event.id);
+                    setCompetitionTitle(event.title);
+                    setParticipationType(event.participation_type || "team");
+                } else {
+                    // Fallback to title casing the slug for display if event not found
+                    setCompetitionTitle(
+                        competitionSlug ? 
+                        competitionSlug.charAt(0).toUpperCase() + competitionSlug.slice(1) : 
+                        "Kompetisi"
+                    );
+                }
+            }
+            setIsLoading(false);
+        };
+        fetchCompetitionInfo();
+    }, [competitionSlug]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === "NamaTim") {
             setNamaTim(value);
-        }
+        } 
     };
 
     const handleSubmit = async (e) => {
@@ -33,9 +66,10 @@ const RegistMineToday = () => {
         if (isSubmitting) return;
 
         const emptyFields = [];
+        const isIndividual = participationType === "individual";
 
         const fieldLabels = {
-            NamaTim: "Nama tim",
+            NamaTim: isIndividual ? "Nama pendaftar" : "Nama tim",
         };
 
         const fieldsToValidate = {
@@ -63,16 +97,19 @@ const RegistMineToday = () => {
 
         setIsSubmitting(true);
 
-        // For file upload, you would typically upload to a storage service first
-        // and then use the file URL in the submission, but for this example we'll
-        // just register the team
-        
+        if (!competitionId) {
+            setAlertType("error");
+            setAlertMessage("Data kompetisi tidak ditemukan. Silakan muat ulang halaman.");
+            setShowAlert(true);
+            setIsSubmitting(false);
+            return;
+        }
+
         const submissionData = {
-            "competition_id": "minetoday",
-            "team_name": NamaTim,
-            // You can add additional fields here if the API supports them, such as:
-            // "leader_name": NamaKetuaTim,
-            // "payment_proof_url": "url_to_uploaded_file"
+            "competition_id": competitionId,
+            ...(participationType === "team"
+                ? { "team_name": NamaTim.trim() }
+                : {}),
         };
 
         try {
@@ -81,7 +118,7 @@ const RegistMineToday = () => {
             if (!response.success) {
                 throw new Error(response.error || "Failed to register team");
             }
-
+            
             console.log("Form Submitted Successfully!");
             console.log("Submitted Data:", submissionData);
 
@@ -93,7 +130,11 @@ const RegistMineToday = () => {
             
             // Show success message and redirect
             setAlertType("success");
-            setAlertMessage("Pendaftaran tim berhasil!");
+            setAlertMessage(
+                participationType === "individual"
+                    ? "Pendaftaran individu berhasil!"
+                    : "Pendaftaran tim berhasil!"
+            );
             setShowAlert(true);
             
             // Redirect after showing success message
@@ -121,7 +162,7 @@ const RegistMineToday = () => {
             <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="bg-[#7b446c] text-white rounded-2xl shadow-lg p-8 max-w-3xl w-full">
                     <h2 className="text-lg lg:text-2xl font-dm-sans font-bold text-center mb-6">
-                        Form Daftar MineToday
+                        {isLoading ? "Memuat..." : `Form Daftar ${competitionTitle}`}
                     </h2>
 
                     {/* Form */}
@@ -131,7 +172,7 @@ const RegistMineToday = () => {
                     >
                         <div className="mb-3 relative">
                             <label htmlFor="NamaTim" className="block text-sm font-bold mb-2">
-                                Nama Tim
+                                {participationType === "individual" ? "Nama Pendaftar" : "Nama Tim"}
                             </label>
                             <MdGroups className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
                             <input
@@ -140,7 +181,7 @@ const RegistMineToday = () => {
                                 id="NamaTim"
                                 name="NamaTim"
                                 type="text"
-                                placeholder="nama tim"
+                                placeholder={participationType === "individual" ? "nama pendaftar" : "nama tim"}
                                 className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]"
                             />
                         </div>
@@ -149,16 +190,20 @@ const RegistMineToday = () => {
                             <a
                                 onClick={() => navigate("/dashboard/ikut-lomba")}
                                 type="cancel"
-                                className="bg-gray-300 text-black px-4 py-2 rounded mr-2 cursor-pointer transition duration-300 ease-in-out hover:scale-105"
+                                className="bg-gray-300 text-black px-4 py-2 rounded mr-2 cursor-pointer transition duration-300 hover:scale-105"
                             >
                                 Batal
                             </a>
                             <button
                                 type="submit"
-                                disabled={isSubmitting}
-                                className={`custom-button-bg text-white px-4 py-2 rounded cursor-pointer ${isSubmitting ? 'opacity-75 cursor-not-allowed' : 'button-hover transition duration-300 ease-in-out hover:scale-105'}`}
+                                disabled={isSubmitting || !competitionId || isLoading}
+                                className={`custom-button-bg text-white px-4 py-2 rounded cursor-pointer ${isSubmitting || !competitionId || isLoading ? 'opacity-75 cursor-not-allowed' : 'button-hover transition duration-300 ease-in-out hover:scale-105'}`}
                             >
-                                {isSubmitting ? 'Mendaftar...' : 'Submit'}
+                                {isSubmitting
+                                    ? "Mendaftar..."
+                                    : participationType === "individual"
+                                      ? "Daftar"
+                                      : "Submit"}
                             </button>
                         </div>
                     </form>
@@ -209,4 +254,4 @@ const RegistMineToday = () => {
     );
 };
 
-export default RegistMineToday;
+export default RegistCompetition;

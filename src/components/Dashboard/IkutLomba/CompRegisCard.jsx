@@ -2,38 +2,11 @@ import React, { useState } from 'react';
 import { PiTargetBold } from 'react-icons/pi';
 import { FaUsers } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import { joinTeam } from "../../../api/user";
-import { useRegisStatus } from '../../../hooks/useRegisStatus';
+import { getCurrentUser, joinTeam } from "../../../api/user";
+import { getPublicEvents } from "../../../api/eventPublic";
+import { registerTeam } from "../../../api/compe";
 
-const events = [
-  {
-    title: 'HACKTODAY',
-    description: 'Taklukan CTF!',
-    image: '/logo-competition/HACKTODAY.webp',
-    registerLink: '/register-hacktoday',
-  },
-  {
-    title: 'GAMETODAY',
-    description: 'Ciptakan game yang menarik!',
-    image: '/logo-competition/GAMETODAY.webp',
-    registerLink: '/register-gametoday',
-  },
-  {
-    title: 'UXTODAY',
-    description: 'Rancang UI/UX yang inovatif!',
-    image: '/logo-competition/UXTODAY.webp',
-    registerLink: '/register-uxtoday',
-  },
-  {
-    title: 'MINETODAY',
-    description: 'Selesaikan masalah dengan Machine Learning!',
-    image: '/logo-competition/MINETODAY.webp',
-    registerLink: '/register-minetoday',
-  },
-];
-
-const IkutLomba = ({ title, description, image, registerLink }) => {
-  const isRegisOpen = useRegisStatus(title.toLowerCase());
+const IkutLomba = ({ title, description, image, isActive, eventId, participationType, onRegisterIndividual, loadingRegister }) => {
   return (
 
   <div className="font-dm-sans flex flex-col items-center justify-between w-full max-w-[220px] min-h-[340px] text-white">
@@ -56,12 +29,26 @@ const IkutLomba = ({ title, description, image, registerLink }) => {
         </div>
 
         <div className="w-full flex justify-center mt-auto">
-          <Link to={isRegisOpen ? registerLink : '/registration-unavailable'}>
+          {!isActive ? (
+            <div className="text-xs sm:text-sm button-hover bg-red-500 text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer text-center">
+              Pendaftaran Ditutup
+            </div>
+          ) : participationType === 'individual' ? (
             <button
-              className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer">
-              Daftar Sekarang
+              type="button"
+              disabled={loadingRegister}
+              onClick={() => onRegisterIndividual(eventId, title)}
+              className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60">
+              {loadingRegister ? 'Mendaftar...' : 'Daftar Sekarang'}
             </button>
-          </Link>
+          ) : (
+            <Link to={`/register-competition/${eventId.toLowerCase()}`}>
+              <button
+                className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer">
+                Daftar Sekarang
+              </button>
+            </Link>
+          )}
         </div>
       </div>
     </div>
@@ -72,19 +59,75 @@ const CompRegisCard = () => {
   const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [teamId, setTeamId] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loadingJoin, setLoadingJoin] = useState(false);
+  
+  const [eventsData, setEventsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingRegister, setLoadingRegister] = useState(false);
+
+  const handleRegisterIndividual = async (eventId, eventTitle) => {
+    const confirmed = window.confirm(
+      `Apakah kamu yakin ingin mendaftar ${eventTitle}? Pendaftaran ini bersifat individu dan tidak menggunakan tim.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setLoadingRegister(true);
+      const userRes = await getCurrentUser();
+      if (!userRes.success || !userRes.data) {
+        alert("Gagal mendapatkan data user");
+        return;
+      }
+      const user = userRes.data;
+      
+      const res = await registerTeam({
+        competition_id: eventId,
+        team_name: user.name || user.email.split('@')[0]
+      });
+      
+      if (res.success) {
+        alert("Pendaftaran berhasil!");
+        window.location.href = "/dashboard/ikut-lomba";
+      } else {
+        alert(res.error || "Gagal mendaftar");
+      }
+    } catch {
+      alert("Terjadi kesalahan sistem saat mendaftar");
+    } finally {
+      setLoadingRegister(false);
+    }
+  };
+
+  React.useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      const res = await getPublicEvents('competition');
+      if (res.success && res.data) {
+        setEventsData(res.data);
+      }
+      setLoading(false);
+    };
+    fetchEvents();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoadingJoin(true);
     joinTeam(teamId)
-      .then((response) => {
-        console.log(response);
+      .then(() => {
+        alert("Berhasil bergabung dengan tim!");
+        setTeamId('');
+        setShowForm(false);
+        navigate('/dashboard/beranda');
       }).catch((error) => {
         console.error(error);
+        const errorMsg = error.response?.data?.error || error.message || "Gagal bergabung dengan tim. Pastikan kode tim benar.";
+        alert(errorMsg);
       }).finally(() => {
-        setLoading(false);
-        navigate('/dashboard/beranda');
+        setLoadingJoin(false);
       });
   };
 
@@ -135,7 +178,7 @@ const CompRegisCard = () => {
               type="text"
               value={teamId}
               onChange={(e) => setTeamId(e.target.value)}
-              placeholder="Masukkan ID Team"
+              placeholder="Masukkan Join Code Tim"
               className="w-full px-3 py-2 rounded text-black bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]"
               required
             />
@@ -143,10 +186,10 @@ const CompRegisCard = () => {
             <div className="flex gap-2">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loadingJoin}
                 className="custom-button-bg px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded button-hover transition duration-300 hover:scale-105 font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Submitting...' : 'Submit'}
+                {loadingJoin ? 'Submitting...' : 'Submit'}
               </button>
               <button
                 type="button"
@@ -165,17 +208,27 @@ const CompRegisCard = () => {
 
       {/* Grid daftar lomba dengan scroll */}
       <div className="flex-1 overflow-y-auto custom-scrollbar px-1 sm:px-2 py-2">
-        <div className="grid grid-cols-2 gap-x-6 sm:gap-x-8 gap-y-6 justify-items-center">
-          {events.map((event, idx) => (
-            <IkutLomba
-              key={idx}
-              title={event.title}
-              description={event.description}
-              image={event.image}
-              registerLink={event.registerLink}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center items-center h-full">
+            <p className="text-white">Loading...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-x-6 sm:gap-x-8 gap-y-6 justify-items-center">
+            {eventsData.map((event) => (
+              <IkutLomba
+                key={event.id}
+                title={event.title}
+                description={event.description}
+                image={event.logo_url || `/logo-competition/${event.id.toUpperCase()}.webp`}
+                isActive={event.is_active}
+                eventId={event.id}
+                participationType={event.participation_type}
+                onRegisterIndividual={handleRegisterIndividual}
+                loadingRegister={loadingRegister}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

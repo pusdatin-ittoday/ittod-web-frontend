@@ -4,28 +4,7 @@ import { TfiClipboard } from "react-icons/tfi";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser, getUserCompetitions } from "../../../api/user";
 
-// Competition data mapping
-const eventsData = [
-  {
-    id: "gametoday",
-    title: "GAMETODAY",
-    image: "/logo-competition/GAMETODAY.webp",
-    submitLink: "submit-gametoday",
-  },
-  {
-    id: "uxtoday",
-    title: "UXTODAY",
-    image: "/logo-competition/UXTODAY.webp",
-    submitLink: "submit-uxtoday",
-  },
-  {
-    id: "minetoday",
-    title: "MINETODAY",
-    image: "/logo-competition/MINETODAY.webp",
-    submitLink: "submit-minetoday",
-  },
-  // HACKTODAY doesn't have a submission page
-];
+// Removed hardcoded eventsData
 
 const CardSubmit = ({ title, image, submitLink }) => {
   const navigate = useNavigate();
@@ -103,14 +82,16 @@ const CompSubmitCard = () => {
         // Process competitions data
         if (competitionsResponse.success && competitionsResponse.data) {
           setCompetitions(competitionsResponse.data);
-            // Filter the events based on user's competitions
-          const userCompetitions = competitionsResponse.data;
-          const filtered = eventsData.filter(event => {
-            // Check if the user is registered for this competition using competitionName
-            return userCompetitions.some(comp => 
-              comp.competitionName?.toLowerCase() === event.id.toLowerCase()
-            );
-          });
+          // Filter the events based on user's competitions that require submission
+          const userCompetitions = competitionsResponse.data || [];
+          const filtered = userCompetitions
+            .filter(comp => comp.requiresSubmission === true)
+            .map(comp => ({
+              id: comp.competitionId,
+              title: comp.competitionName,
+              image: comp.logo_url || `/logo-competition/${comp.competitionId?.toUpperCase()}.webp`,
+              submitLink: `submit-competition/${comp.competitionId}`
+            }));
           
           setFilteredEvents(filtered);
           setNoCompetitions(filtered.length === 0);

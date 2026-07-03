@@ -65,17 +65,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
         if (!data || !data.members) {
             return false;
         }
-
-        // Handle members sebagai objek atau array
-        if (Array.isArray(data.members)) {
-            return data.members.some(member => member && member.fullName === currentUser);
-        } else if (typeof data.members === 'object') {
-            // Jika members adalah objek, periksa semua nilai
-            return Object.values(data.members).some(
-                member => member && member.fullName === currentUser
-            );
-        }
-        return false;
+        return true; // The backend already filters teams by the user's ID
     });
 
     const linkWhatsapp = {
@@ -101,6 +91,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
     };
 
     const renderCompetition = (key, data) => {
+        const isIndividual = data.participationType === "individual";
+
         // Check dan pastikan members selalu dalam bentuk array untuk rendering
         const membersArray = Array.isArray(data.members)
             ? data.members
@@ -110,11 +102,36 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
         const isTeamLeader = membersArray[0]?.fullName === currentUser;
 
         // Check verification status at team level
-        const isTeamVerified = data.isVerified;
+        // VERIFIKASI 2 LANGKAH:
+        // 1. Cek Berkas (is_document_verified) - oleh panitia
+        // 2. Cek Transaksi (is_verified) - oleh admin keuangan
+        
+        const isTeamVerified = data.isVerified === true || data.isVerified === 'approved';
+        const isDocumentVerified = data.isDocumentVerified === "approved";
         const isPendingVerification = data.pendingVerification;
-
-        // Only team leader can upload payment proof if team isn't verified
-        const needsVerification = isTeamLeader && !isTeamVerified && !isPendingVerification;
+        const hasTeamError = Boolean(data.verificationError && data.verificationError.trim() !== "");
+        
+        // Check if any member has verification error (document rejected)
+        const membersWithErrors = membersArray.filter(m => m.verificationError && m.verificationError.trim() !== "");
+        
+        // Document rejection: ada team error ketika document belum verified, ATAU ada member dengan verificationError
+        const hasTeamDocumentError = hasTeamError && !isDocumentVerified;
+        const hasDocumentError = hasTeamDocumentError || membersWithErrors.length > 0;
+        
+        // Prioritaskan team.verification_error, baru member verificationError
+        const documentErrorReason = hasDocumentError ? 
+            (hasTeamDocumentError ? data.verificationError.trim() : (membersWithErrors[0]?.verificationError || "Berkas ditolak")) : 
+            null;
+            
+        // Transaction rejection: team error ketika document sudah verified
+        const hasTransactionError = hasTeamError && isDocumentVerified;
+        const isRejected = hasTransactionError || hasDocumentError;
+        
+        // Kalau dokumen ditolak, TIDAK ada "Menunggu Verifikasi"
+        const showPendingVerification = isDocumentVerified && isPendingVerification && !isRejected && !hasDocumentError;
+        
+        // Kalau dokumen belum diverifikasi, tidak bisa upload pembayaran
+        const needsVerification = isTeamLeader && isDocumentVerified && !isTeamVerified && !isPendingVerification && !hasTransactionError && !hasDocumentError;
 
         return (
             <div key={key} className="mb-4 bg-gradient-to-br from-[#8a4d7b]/90 to-[#6b3a5c]/95 backdrop-blur-md border border-white/20 rounded-xl shadow-lg px-3 sm:px-4 py-3 text-white hover:scale-[1.01] hover:shadow-xl transition duration-300 ease-in-out">
@@ -123,14 +140,32 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                         <h3 className="text-base sm:text-lg lg:text-xl font-semibold mb-1 leading-tight input-text-glow text-pink-100">{data.competitionName}</h3>
 
                         <div className="space-y-1 text-xs sm:text-sm">
+                            {data.participationType !== "individual" && (
+                                <p className="flex items-center">
+                                    <span className="font-semibold text-white/80 inline-block w-28">
+                                        Team Name:
+                                    </span>
+                                    <span className="bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamName || "-"}</span>
+                                </p>
+                            )}
                             <p className="flex items-center">
-                                <span className="font-semibold text-white/80 inline-block w-28">Team Name:</span>
-                                <span className="bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamName || "-"}</span>
-                            </p>
-                            <p className="flex items-center">
-                                <span className="font-semibold text-white/80 inline-block w-28">Join Code:</span>
+                                <span className="font-semibold text-white/80 inline-block w-28">
+                                    {data.participationType === "individual" ? "Reg. Code:" : "Join Code:"}
+                                </span>
                                 <span className="font-mono bg-[#9e5a8d]/30 px-2 py-0.5 rounded-md">{data.teamJoinCode || "-"}</span>
                             </p>
+                            {/* Document rejection status - shown below Join Code */}
+                            {hasDocumentError && (
+                                <div className="mt-2 p-2 rounded bg-red-500/20 border border-red-400/40">
+                                    <div className="flex items-center gap-2 text-red-300 text-xs font-semibold">
+                                        <MdErrorOutline className="text-sm" />
+                                        <span>Ditolak</span>
+                                    </div>
+                                    <p className="text-red-200 text-[10px] mt-1">
+                                        Alasan: {documentErrorReason || "Berkas tidak valid"}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -144,7 +179,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 <FaUpload className="inline mr-1 " /> Verifikasi
                             </button>
                         )}
-                        {isPendingVerification && (
+                        {showPendingVerification && (
                             <span className="px-3 py-2 rounded bg-yellow-400/20 text-yellow-300 text-xs sm:text-sm font-semibold flex items-center transition-all duration-300">
                                 <span className="spin-with-pause mr-1">⌛</span>
                                 Menunggu Verifikasi
@@ -166,8 +201,30 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 </div>
                             </div>
                         )}
-                        {/* Show status info for team members */}
-                        {!isTeamLeader && !isTeamVerified && !isPendingVerification && (
+                        {/* Transaction rejection status - shown on right side with upload button */}
+                        {/* Only show if NOT a document rejection */}
+                        {isRejected && !hasDocumentError && (
+                            <div className="flex flex-col gap-2">
+                                <div className="flex items-center gap-2 px-3 py-2 rounded bg-red-500/30 text-red-300 text-xs sm:text-sm font-semibold w-full">
+                                    <MdErrorOutline className="text-lg" />
+                                    <span>Ditolak</span>
+                                </div>
+                                <div className="px-3 py-2 rounded bg-red-500/20 border border-red-400/40 text-red-200 text-xs w-full">
+                                    <span className="font-semibold">Alasan: </span>
+                                    <span>{data.verificationError}</span>
+                                </div>
+                                {isTeamLeader && (
+                                    <button
+                                        onClick={() => handleVerifyClick(key)}
+                                        className="cursor-pointer custom-button-bg px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full"
+                                    >
+                                        <FaUpload className="inline mr-1" /> Upload Ulang
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                        {/* Show status info for team members who are not leader */}
+                        {!isTeamLeader && !isTeamVerified && !isPendingVerification && !isRejected && !hasDocumentError && (
                             <div className="flex items-center gap-2 px-3 py-2 rounded bg-red-400/30 text-red-300 text-xs sm:text-sm font-semibold">
                                 <MdErrorOutline className="text-lg" />
                                 <span className="rounded text-xs sm:text-sm font-semibold">
@@ -192,7 +249,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                 </div>
                                 <div className="flex flex-col sm:flex-row sm:items-center text-xs sm:text-sm">
                                     <span className="font-medium text-white/70 mb-0.5 sm:mb-0 sm:inline-block sm:w-16 sm:pr-2">
-                                        {idx === 0 ? "Ketua:" : "Anggota:"}
+                                        {data.participationType === "individual" ? "Peserta:" : (idx === 0 ? "Ketua:" : "Anggota:")}
                                     </span>
                                     <span className={anggota.fullName === currentUser ?
                                         "font-bold text-pink-300" :
@@ -203,33 +260,72 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                             </div>
 
                             {/* Status with vertical layout on mobile */}
-                            <div className={`text-xs sm:text-sm font-medium flex-shrink-0 flex flex-row items-center px-2 py-1.5 rounded-md ${anggota.isRegistrationComplete
-                                    ? "bg-green-500/20 text-green-300 border border-green-400/30"
-                                    : "bg-red-500/20 text-red-300 border border-red-400/30"
-                                }`}>
-                                {anggota.isRegistrationComplete ? (
-                                    <>
+                            {(() => {
+                                const hasMemberError = anggota.verificationError && anggota.verificationError.trim() !== "";
+                                
+                                if (hasMemberError) {
+                                    return (
+                                        <div className="text-xs sm:text-sm font-medium flex-shrink-0 flex flex-col items-start px-2 py-1.5 rounded-md bg-red-500/20 text-red-300 border border-red-400/30">
+                                            <p className="flex flex-col sm:flex-row items-center gap-1">
+                                                <MdErrorOutline className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
+                                                <span>Rejected</span>
+                                            </p>
+                                            <span className="text-[10px] sm:text-xs ml-0 sm:ml-5 mt-0.5 text-red-200">
+                                                Alasan: {anggota.verificationError}
+                                            </span>
+                                        </div>
+                                    );
+                                }
+                                
+                                const isApproved = data.isDocumentVerified === "approved";
+                                
+                                if (isApproved) {
+                                    return (
+                                        <div className="text-xs sm:text-sm font-medium flex-shrink-0 flex flex-row items-center px-2 py-1.5 rounded-md bg-green-500/20 text-green-300 border border-green-400/30">
+                                            <p className="flex flex-col sm:flex-row items-center gap-1">
+                                                <RiVerifiedBadgeFill className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
+                                                <span className="hidden sm:inline text-center text-xs sm:text-sm sm:text-left ">Approved</span>
+                                            </p>
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <div className="text-xs sm:text-sm font-medium flex-shrink-0 flex flex-row items-center px-2 py-1.5 rounded-md bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">
                                         <p className="flex flex-col sm:flex-row items-center gap-1">
-                                            <RiVerifiedBadgeFill className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
-                                            <span className="hidden sm:inline text-center text-xs sm:text-sm sm:text-left ">Data Lengkap</span>
+                                            <span className="spin-with-pause text-lg mb-1 sm:mb-0 sm:mr-1.5">⌛</span>
+                                            <span className="hidden sm:inline text-center sm:text-left text-xs sm:text-sm">Pending</span>
                                         </p>
-                                    </>
-                                ) : (
-                                    <>
-                                        <p className="flex flex-col sm:flex-row items-center gap-1">
-                                            <MdErrorOutline className="text-lg mb-1 sm:mb-0 sm:mr-1.5" />
-                                            <span className="hidden sm:inline text-center sm:text-left text-xs sm:text-sm">Data Belum</span>
-                                            <span className="hidden sm:inline">Lengkap/Pending</span>
-                                        </p>
-                                    </>
-                                )}
-                            </div>
+                                    </div>
+                                );
+                            })()}
                         </div>
                     ))}
                 </div>
 
-                {/* Reminder for team members */}
-                {!isTeamLeader && !isTeamVerified && !isPendingVerification && (
+                {/* Reminder for rejected transaction - show upload button again */}
+                {/* Only show if NOT a document rejection */}
+                {isRejected && !hasDocumentError && isTeamLeader && (
+                    <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-red-500/10 to-red-600/10 border border-red-400/30 shadow-inner">
+                        <p className="text-xs sm:text-sm text-red-300 flex items-center gap-2">
+                            <span className="text-lg p-1 bg-red-400/20 rounded-full">⚠️</span>
+                            <span>Silakan upload bukti pembayaran yang valid</span>
+                        </p>
+                    </div>
+                )}
+                
+                {/* Reminder for document not verified */}
+                {!isDocumentVerified && (
+                    <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-600/10 border border-yellow-400/30 shadow-inner">
+                        <p className="text-xs sm:text-sm text-yellow-300 flex items-center gap-2">
+                            <span className="text-lg p-1 bg-yellow-400/20 rounded-full">⚠️</span>
+                            <span>Lengkapi berkas agar bisa upload bukti bayar</span>
+                        </p>
+                    </div>
+                )}
+
+                {/* Reminder for team members who are not leaders */}
+                {!isTeamLeader && isDocumentVerified && !isTeamVerified && !isPendingVerification && !isRejected && (
                     <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-600/10 border border-yellow-400/30 shadow-inner">
                         <p className="text-xs sm:text-sm text-yellow-300 flex items-center gap-2">
                             <span className="text-lg p-1 bg-yellow-400/20 rounded-full">⚠️</span>
@@ -430,16 +526,22 @@ const CompListPage = () => {
 
         Object.entries(data).forEach(([key, comp]) => {
 
-            // Cek status verifikasi dari berbagai sumber
-            const isVerified = comp.is_verified || comp.isVerified;
+        // Cek status verifikasi dari berbagai sumber
+            const isVerified = comp.is_verified === 'approved' || comp.isVerified === 'approved';
 
             // Check if user upload payment proof through API through payment_proof_id
             const hasPaymentProof = Boolean(comp.paymentProofID);
 
+            // Check if payment was rejected - PRIORITAS UTAMA
+            const hasVerificationError = comp.verification_error && comp.verification_error.trim() !== "";
+            const isRejected = hasVerificationError || comp.is_verified === 'rejected' || comp.isVerified === 'rejected';
+
             // Tim menunggu verifikasi jika:
             // 1. Belum terverifikasi, dan
-            // 2. Sudah upload bukti pembayaran melalui API ATAU tercatat di localStorage
-            const isPendingVerification = !isVerified && hasPaymentProof;
+            // 2. Sudah upload bukti pembayaran, dan
+            // 3. TIDAK ada verification_error (artinya belum ditolak)
+            // Kalau ada verification_error, TIDAK AKAN menjadi pending, tapi REJECTED
+            const isPendingVerification = !isVerified && hasPaymentProof && !isRejected;
 
             let updatedMembers = [];
 
