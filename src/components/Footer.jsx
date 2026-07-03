@@ -1,49 +1,61 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Footer = () => {
+const Footer = ({ variant = 'default' }) => {
+  const isNeobrutal = variant === 'neobrutal';
+
   return (
-    <footer className="bg-[#452C4C]/60 text-white py-12 w-full">
-      <div className="w-full px-5 md:px-8 lg:px-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-center md:text-left">
+    <footer
+      id="contact"
+      className={`w-full text-white ${
+        isNeobrutal
+          ? 'border-t-4 border-black bg-[#191b1a] py-10'
+          : 'bg-[#452C4C]/60 py-12'
+      }`}
+    >
+      <div className={`mx-auto w-full px-5 md:px-8 lg:px-10 ${isNeobrutal ? 'max-w-[1600px]' : ''}`}>
+        <div className={`grid grid-cols-1 gap-10 text-center md:text-left ${isNeobrutal ? 'sm:grid-cols-2 lg:grid-cols-[1.15fr_4fr]' : 'md:grid-cols-2'}`}>
           {/* BAGIAN KIRI */}
           <div className="flex flex-col items-center md:items-start justify-start space-y-1">
-            <h2 className="text-xl font-bold hover:text-pink-400 cursor-pointer font-dm-playfair">
-              IT TODAY 2025
-            </h2>
-            <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">
+            <a
+              href="/"
+              className={isNeobrutal ? 'text-2xl font-black italic leading-none text-[#ffd400]' : 'text-xl font-bold hover:text-pink-400 font-dm-playfair'}
+            >
+              IT TODAY {isNeobrutal ? <><br />2026</> : '2025'}
+            </a>
+            <p className={isNeobrutal ? 'mt-4 text-[10px] font-bold uppercase text-gray-300' : 'text-sm font-dm-sans hover:text-pink-400'}>
               Departemen Ilmu Komputer
             </p>
-            <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">
+            <p className={isNeobrutal ? 'text-[10px] font-bold uppercase text-gray-300' : 'text-sm font-dm-sans hover:text-pink-400'}>
               IPB University
             </p>
           </div>
 
           {/* BAGIAN KANAN */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className={`grid grid-cols-1 gap-8 ${isNeobrutal ? 'sm:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-4'}`}>
             {/* EVENTS */}
             <div className="flex flex-col items-center md:items-start space-y-2">
               <a
-                href="#event"
-                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
+                href="/#event"
+                className={isNeobrutal ? 'text-xs font-black uppercase tracking-[0.14em]' : 'text-lg font-bold hover:text-pink-400 font-dm-playfair'}
               >
                 EVENTS
               </a>
               <Link
-                to="/event/national_seminar"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+                to="/event/Seminar"
+                className={isNeobrutal ? 'text-xs text-gray-300 hover:text-[#ffd400]' : 'text-sm font-dm-sans hover:text-pink-400'}
               >
                 National Seminar
               </Link>
               <Link
-                to="/event/workshop"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+                to="/event/Workshop"
+                className={isNeobrutal ? 'text-xs text-gray-300 hover:text-[#ffd400]' : 'text-sm font-dm-sans hover:text-pink-400'}
               >
                 Workshop
               </Link>
               <Link
-                to="/event/bootcamp"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+                to="/event/Bootcamp"
+                className={isNeobrutal ? 'text-xs text-gray-300 hover:text-[#ffd400]' : 'text-sm font-dm-sans hover:text-pink-400'}
               >
                 Bootcamp
               </Link>
@@ -52,32 +64,32 @@ const Footer = () => {
             {/* COMPETITIONS */}
             <div className="flex flex-col items-center md:items-start space-y-2">
               <a
-                href="#competition"
-                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
+                href="/#competition"
+                className={isNeobrutal ? 'text-xs font-black uppercase tracking-[0.14em]' : 'text-lg font-bold hover:text-pink-400 font-dm-playfair'}
               >
                 COMPETITIONS
               </a>
               <Link
-                to="/competition/game_today"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+                to="/competition/GameToday"
+                className={isNeobrutal ? 'text-xs text-gray-300 hover:text-[#ffd400]' : 'text-sm font-dm-sans hover:text-pink-400'}
               >
                 Game Today
               </Link>
               <Link
-                to="/competition/hack_today"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+                to="/competition/HackToday"
+                className={isNeobrutal ? 'text-xs text-gray-300 hover:text-[#ffd400]' : 'text-sm font-dm-sans hover:text-pink-400'}
               >
                 Hack Today
               </Link>
               <Link
-                to="/competition/ux_today"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+                to="/competition/UXToday"
+                className={isNeobrutal ? 'text-xs text-gray-300 hover:text-[#ffd400]' : 'text-sm font-dm-sans hover:text-pink-400'}
               >
                 UX Today
               </Link>
               <Link
-                to="/competition/mine_today"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+                to="/competition/MineToday"
+                className={isNeobrutal ? 'text-xs text-gray-300 hover:text-[#ffd400]' : 'text-sm font-dm-sans hover:text-pink-400'}
               >
                 Mine Today
               </Link>
@@ -86,7 +98,7 @@ const Footer = () => {
             <div className="flex flex-col items-center md:items-start space-y-4">
               <a
                 href="#contact"
-                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
+                className={isNeobrutal ? 'text-xs font-black uppercase tracking-[0.14em]' : 'text-lg font-bold hover:text-pink-400 font-dm-playfair'}
               >
                 SOCIAL MEDIA
               </a>
@@ -113,7 +125,12 @@ const Footer = () => {
                   },
                 ].map((item, i) => (
                   <div key={i} className="flex justify-center">
-                    <a href={item.url}>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Buka media sosial IT Today ${i + 1}`}
+                    >
                       <div className="w-6 h-6 flex items-center justify-center rounded-md hover:scale-155 transition duration-300 ease-in-out">
                         <img
                           src={`/${item.icon}`}
@@ -131,18 +148,23 @@ const Footer = () => {
             <div className="flex flex-col items-center md:items-start space-y-2">
               <a
                 href="#contact"
-                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
+                className={isNeobrutal ? 'text-xs font-black uppercase tracking-[0.14em]' : 'text-lg font-bold hover:text-pink-400 font-dm-playfair'}
               >
                 KONTAK KAMI
               </a>
 
-              <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer whitespace-nowrap">
+              <a
+                href="mailto:pr@ittoday.web.id"
+                className={`whitespace-nowrap ${isNeobrutal ? 'text-xs text-gray-300 hover:text-[#ffd400]' : 'text-sm font-dm-sans hover:text-pink-400'}`}
+              >
                 pr@ittoday.web.id
-              </p>
+              </a>
 
               <a
-                href="https://wa.me/+6281256518375"
-                className="font-dm-sans hover:text-pink-400 cursor-pointer text-sm"
+                href="https://wa.me/6281256518375"
+                target="_blank"
+                rel="noreferrer"
+                className={isNeobrutal ? 'text-xs text-gray-300 hover:text-[#ffd400]' : 'text-sm font-dm-sans hover:text-pink-400'}
               >
                 +6281256518375
               </a>

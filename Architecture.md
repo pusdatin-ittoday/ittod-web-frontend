@@ -32,6 +32,8 @@ The frontend provides the user interface for landing pages, event discovery, das
    - Competition detail pages apply the same rule: individual registration asks for confirmation and submits directly, while team registration opens the team-name form.
    - The dashboard hides internal team names and join codes for individual competitions and labels the registered member as `Peserta`.
    - Direct individual registration requires explicit user confirmation before the API request is sent, preventing accidental enrollment.
+   - The participant `Daftar Event` route uses a dedicated responsive neobrutalist dashboard shell. Its header, sidebar, footer, event cards, API calls, and registration routes remain separated so visual iteration does not change event data behavior.
+   - All pages reuse `Footer.jsx` as the single Contact Us and navigation footer. The dashboard selects its neobrutalist variant while preserving the same event, competition, social-media, email, and WhatsApp destinations.
 3. **File Uploads & Submissions**:
    - Users upload payment proofs and competition deliverables via the UI.
    - The frontend bundles files as `FormData` and sends them via Axios to the backend, which securely validates and stores them in Cloudflare R2 Storage (and subsequently the MySQL database).

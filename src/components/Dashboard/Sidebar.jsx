@@ -5,7 +5,7 @@ import { GiTrophy } from "react-icons/gi";
 import { MdEvent } from "react-icons/md";
 import { FaFileUpload } from "react-icons/fa";
 
-const Sidebar = ({ active, setActive }) => {
+const Sidebar = ({ active, setActive, variant = "default" }) => {
     const navigate = useNavigate();
 
     const menuItems = [
@@ -14,6 +14,63 @@ const Sidebar = ({ active, setActive }) => {
         { id: "ikut-event", label: "Ikut Event", icon: <MdEvent className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
         { id: "submit-lomba", label: "Submit Lomba", icon: <FaFileUpload className="text-sm sm:text-base lg:text-lg xl:text-xl" /> }
     ];
+
+    if (variant === "neobrutal") {
+        const neoMenuItems = [
+            menuItems[0],
+            { ...menuItems[2], label: "Daftar Event" },
+            { ...menuItems[1], label: "Daftar Lomba" },
+            menuItems[3],
+        ];
+
+        return (
+            <div className="flex h-full flex-col px-4 py-6 sm:px-6 lg:min-h-[760px] lg:px-5">
+                <div className="mb-6">
+                    <h2 className="text-xl font-black uppercase text-[#333bb0]">
+                        Dashboard
+                    </h2>
+                    <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                        V.2026.Street
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-1">
+                    {neoMenuItems.map((item) => (
+                        <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => {
+                                setActive(item.id);
+                                navigate(`/dashboard/${item.id}`);
+                            }}
+                            className={`flex min-h-14 items-center gap-3 border-[3px] border-black px-3 py-3 text-left text-xs font-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none sm:text-sm ${
+                                active === item.id
+                                    ? "bg-[#ffd400] text-[#191b1a]"
+                                    : "bg-white text-[#191b1a]"
+                            }`}
+                        >
+                            <span className="shrink-0 text-base">{item.icon}</span>
+                            <span>{item.label}</span>
+                        </button>
+                    ))}
+                </div>
+
+                <div className="mt-auto hidden border-[3px] border-[#4f58d0] bg-[#191b1a] p-4 text-white shadow-[5px_5px_0_#191b1a] lg:block">
+                    <p className="text-[9px] font-bold uppercase tracking-wide text-gray-300">
+                        Next Milestone:
+                    </p>
+                    <p className="mt-1 text-base font-black uppercase leading-6">
+                        Submission
+                        <br />
+                        Deadline
+                    </p>
+                    <p className="mt-2 text-[11px] font-bold uppercase text-gray-300">
+                        July 15, 2026
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="font-dm-sans w-full p-1 sm:p-2 md:p-3 lg:p-4 flex flex-col gap-2 sm:gap-3 items-center lg:items-start">
@@ -26,7 +83,7 @@ const Sidebar = ({ active, setActive }) => {
                 {menuItems.map(item => (
                     <button
                         key={item.id}
-                        onClick={(event) => {
+                        onClick={() => {
                             setActive(item.id);
                             navigate(`/dashboard/${item.id}`);
                         }}

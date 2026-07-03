@@ -7,6 +7,8 @@ import Beranda from "../../components/Dashboard/Beranda/Beranda";
 import IkutLomba from "../../components/Dashboard/IkutLomba/IkutLomba";
 import IkutEvent from "../../components/Dashboard/IkutEvent/IkutEvent";
 import SubmitLomba from "../../components/Dashboard/SubmitLomba/SubmitLomba";
+import DashboardNeoHeader from "../../components/Dashboard/DashboardNeoHeader";
+import Footer from "../../components/Footer";
 
 
 class DashboardLayout extends Component {
@@ -59,6 +61,30 @@ class DashboardLayout extends Component {
   };
 
   render() {
+    if (this.state.active === "ikut-event") {
+      return (
+        <div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
+          <DashboardNeoHeader />
+
+          <div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[760px] lg:flex-row">
+            <aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
+              <Sidebar
+                active={this.state.active}
+                setActive={this.setActive}
+                variant="neobrutal"
+              />
+            </aside>
+
+            <main className="min-w-0 flex-1 px-4 py-8 sm:px-7 lg:px-10 lg:py-10">
+              <IkutEvent variant="neobrutal" />
+            </main>
+          </div>
+
+          <Footer variant="neobrutal" />
+        </div>
+      );
+    }
+
     return (
       <div className="flex min-h-screen text-white font-dm-sans">
         <Navbar />
