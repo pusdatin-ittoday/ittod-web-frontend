@@ -39,6 +39,9 @@ class DashboardLayout extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    if (prevProps.activeTab !== this.props.activeTab) {
+      this.setState({ active: this.props.activeTab });
+    }
     if (prevState.active !== this.state.active) {
       sessionStorage.setItem("activeTab", this.state.active);
     }

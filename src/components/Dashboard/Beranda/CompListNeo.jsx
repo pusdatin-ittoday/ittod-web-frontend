@@ -304,14 +304,25 @@ const CompListNeo = () => {
                 </div>
 
                 <div className="space-y-5 overflow-y-auto max-h-[600px] px-3 py-2 custom-scrollbar">
-                    {loadingAnnouncements ? (
-                        <div className="text-center font-bold text-black py-4">Loading...</div>
-                    ) : announcements.length === 0 ? (
-                        <div className="border-[3px] border-[#1A1C1C] bg-white p-4 shadow-[4px_4px_0_0_#1A1C1C] text-center font-bold text-xs">
-                            Belum ada pengumuman.
-                        </div>
-                    ) : (
-                        announcements.map((announcement, idx) => {
+                    {(() => {
+                        const visibleAnnouncements = announcements.filter((ann) => {
+                            if (!ann.event) return true;
+                            const compList = Object.values(competitions || {});
+                            return compList.some((c) => c.competitionId === ann.event.id || c.id === ann.event.id);
+                        });
+
+                        if (loadingAnnouncements) {
+                            return <div className="text-center font-bold text-black py-4">Loading...</div>;
+                        }
+                        if (visibleAnnouncements.length === 0) {
+                            return (
+                                <div className="border-[3px] border-[#1A1C1C] bg-white p-4 shadow-[4px_4px_0_0_#1A1C1C] text-center font-bold text-xs">
+                                    Belum ada pengumuman.
+                                </div>
+                            );
+                        }
+
+                        return visibleAnnouncements.slice(0, 2).map((announcement, idx) => {
                             const tilt = idx % 2 === 0 ? "-rotate-[0.6deg]" : "rotate-[0.8deg]";
                             const cardBg = idx % 2 === 0 ? "bg-white" : "bg-[#E2E2E2]";
                             
@@ -324,7 +335,7 @@ const CompListNeo = () => {
                                         {announcement.title}
                                     </h4>
                                     <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 opacity-60 mb-2 font-space-grotesk">
-                                        <span>Kategori</span>
+                                        <span>{announcement.event ? announcement.event.title.toUpperCase() : "UMUM"}</span>
                                         <span>•</span>
                                         <span>
                                             {announcement.updated_at
@@ -337,8 +348,8 @@ const CompListNeo = () => {
                                     </p>
                                 </div>
                             );
-                        })
-                    )}
+                        });
+                    })()}
                 </div>
 
                 <div className="mt-auto text-center">
