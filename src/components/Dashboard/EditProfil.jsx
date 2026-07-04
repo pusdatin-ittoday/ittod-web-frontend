@@ -239,9 +239,7 @@ class EditProfile extends Component {
             pendidikan,
             nama_sekolah,
             KTM,
-            ktmFileName,
             twibbon,
-            twibbonFileName,
             ktmChanged,
             twibbonChanged
         } = this.state;
@@ -254,6 +252,7 @@ class EditProfile extends Component {
             birth_date,
             phone_number,
             id_line,
+            id_discord,
             id_instagram,
             pendidikan,
             nama_sekolah,

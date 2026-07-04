@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { PiTargetBold } from 'react-icons/pi';
 import { FaUsers } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getCurrentUser, joinTeam } from "../../../api/user";
 import { getPublicEvents } from "../../../api/eventPublic";
 import { registerTeam } from "../../../api/compe";
 import PaginationControls from "../PaginationControls";
+import { requireCompleteProfile } from "../../../utils/profileCompletion";
 
 const NEO_CARD_COLORS = [
   "bg-[#e8fbef] text-[#156b3b]",
@@ -15,7 +16,7 @@ const NEO_CARD_COLORS = [
 ];
 const ITEMS_PER_PAGE = 4;
 
-const IkutLomba = ({ title, description, image, isActive, eventId, participationType, onRegisterIndividual, loadingRegister, variant = "default", colorIndex = 0 }) => {
+const IkutLomba = ({ title, description, image, isActive, eventId, participationType, onRegisterIndividual, onRegisterTeam, loadingRegister, variant = "default", colorIndex = 0 }) => {
   if (variant === "neobrutal") {
     const actionClass =
       "block w-full border-[3px] border-black bg-[#ffd400] px-4 py-3 text-center text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-60";
@@ -49,12 +50,13 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
               {loadingRegister ? "Mendaftar..." : "Daftar Sekarang"}
             </button>
           ) : (
-            <Link
-              to={`/register-competition/${eventId.toLowerCase()}`}
+            <button
+              type="button"
+              onClick={() => onRegisterTeam(eventId)}
               className={actionClass}
             >
               Daftar Sekarang
-            </Link>
+            </button>
           )}
         </div>
       </article>
@@ -96,12 +98,12 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
               {loadingRegister ? 'Mendaftar...' : 'Daftar Sekarang'}
             </button>
           ) : (
-            <Link to={`/register-competition/${eventId.toLowerCase()}`}>
-              <button
-                className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer">
-                Daftar Sekarang
-              </button>
-            </Link>
+            <button
+              type="button"
+              onClick={() => onRegisterTeam(eventId)}
+              className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer">
+              Daftar Sekarang
+            </button>
           )}
         </div>
       </div>
@@ -121,6 +123,10 @@ const CompRegisCard = ({ variant = "default" }) => {
   const [currentPage, setCurrentPage] = useState(0);
 
   const handleRegisterIndividual = async (eventId, eventTitle) => {
+    if (!(await requireCompleteProfile(navigate))) {
+      return;
+    }
+
     const confirmed = window.confirm(
       `Apakah kamu yakin ingin mendaftar ${eventTitle}? Pendaftaran ini bersifat individu dan tidak menggunakan tim.`
     );
@@ -175,26 +181,49 @@ const CompRegisCard = ({ variant = "default" }) => {
     (currentPage + 1) * ITEMS_PER_PAGE
   );
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoadingJoin(true);
-    joinTeam(teamId)
-      .then(() => {
-        alert("Berhasil bergabung dengan tim!");
-        setTeamId('');
-        setShowForm(false);
-        navigate('/dashboard/beranda');
-      }).catch((error) => {
-        console.error(error);
-        const errorMsg = error.response?.data?.error || error.message || "Gagal bergabung dengan tim. Pastikan kode tim benar.";
-        alert(errorMsg);
-      }).finally(() => {
-        setLoadingJoin(false);
-      });
+  const handleRegisterTeam = async (eventId) => {
+    if (!(await requireCompleteProfile(navigate))) {
+      return;
+    }
+
+    navigate(`/register-competition/${eventId.toLowerCase()}`);
   };
 
-  const handleJoinTeamClick = () => {
-    setShowForm(!showForm);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!(await requireCompleteProfile(navigate))) {
+      return;
+    }
+
+    setLoadingJoin(true);
+
+    try {
+      await joinTeam(teamId);
+      alert("Berhasil bergabung dengan tim!");
+      setTeamId('');
+      setShowForm(false);
+      navigate('/dashboard/beranda');
+    } catch (error) {
+      console.error(error);
+      const errorMsg = error.response?.data?.error || error.message || "Gagal bergabung dengan tim. Pastikan kode tim benar.";
+      alert(errorMsg);
+    } finally {
+      setLoadingJoin(false);
+    }
+  };
+
+  const handleJoinTeamClick = async () => {
+    if (showForm) {
+      setShowForm(false);
+      return;
+    }
+
+    if (!(await requireCompleteProfile(navigate))) {
+      return;
+    }
+
+    setShowForm(true);
   };
 
   if (variant === "neobrutal") {
@@ -295,6 +324,7 @@ const CompRegisCard = ({ variant = "default" }) => {
                 eventId={event.id}
                 participationType={event.participation_type}
                 onRegisterIndividual={handleRegisterIndividual}
+                onRegisterTeam={handleRegisterTeam}
                 loadingRegister={loadingRegister}
                 variant="neobrutal"
                 colorIndex={currentPage * ITEMS_PER_PAGE + idx}
@@ -401,6 +431,7 @@ const CompRegisCard = ({ variant = "default" }) => {
                 eventId={event.id}
                 participationType={event.participation_type}
                 onRegisterIndividual={handleRegisterIndividual}
+                onRegisterTeam={handleRegisterTeam}
                 loadingRegister={loadingRegister}
               />
             ))}

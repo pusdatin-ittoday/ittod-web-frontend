@@ -6,6 +6,7 @@ import { getPublicEvents } from "../../api/eventPublic.js";
 import DashboardNeoHeader from "../../components/Dashboard/DashboardNeoHeader.jsx";
 import Sidebar from "../../components/Dashboard/Sidebar.jsx";
 import Footer from "../../components/Footer.jsx";
+import { requireCompleteProfile } from "../../utils/profileCompletion.js";
 
 const RegistCompetition = () => {
     const navigate = useNavigate();
@@ -23,6 +24,18 @@ const RegistCompetition = () => {
     const [alertType, setAlertType] = useState("error"); // "error" or "success"
     const [incompleteFields, setIncompleteFields] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isCheckingProfile, setIsCheckingProfile] = useState(true);
+
+    useEffect(() => {
+        const guardTeamRegistration = async () => {
+            const isComplete = await requireCompleteProfile(navigate);
+            if (isComplete) {
+                setIsCheckingProfile(false);
+            }
+        };
+
+        guardTeamRegistration();
+    }, [navigate]);
 
     useEffect(() => {
         const fetchCompetitionInfo = async () => {
@@ -62,6 +75,10 @@ const RegistCompetition = () => {
 
         // Prevent multiple submissions
         if (isSubmitting) return;
+
+        if (!(await requireCompleteProfile(navigate))) {
+            return;
+        }
 
         const emptyFields = [];
         const isIndividual = participationType === "individual";
@@ -153,6 +170,20 @@ const RegistCompetition = () => {
     const closeAlert = () => {
         setShowAlert(false);
     };
+
+    if (isCheckingProfile) {
+        return (
+            <div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
+                <DashboardNeoHeader />
+                <div className="flex min-h-[520px] items-center justify-center p-6">
+                    <p className="border-[3px] border-black bg-[#ffd400] px-5 py-3 text-sm font-black uppercase shadow-[5px_5px_0_#191b1a]">
+                        Memeriksa kelengkapan profil...
+                    </p>
+                </div>
+                <Footer variant="neobrutal" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
