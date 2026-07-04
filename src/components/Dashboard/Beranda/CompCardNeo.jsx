@@ -1,6 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaUpload, FaReceipt } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { getPublicEventById } from "../../../api/eventPublic";
+
 
 const CheckIcon = ({ className = "w-3 h-3 text-[#1A1C1C]" }) => (
     <svg className={className} viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,6 +24,7 @@ const PremiumBadgeIcon = () => (
 );
 
 const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
+    const navigate = useNavigate();
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [pembayaran, setPembayaran] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
@@ -35,6 +39,9 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
         : Object.values(data.members || {});
 
     const isTeamLeader = membersArray[0]?.fullName === currentUser;
+    const currentUserMember = membersArray.find(m => m.fullName === currentUser);
+    const currentUserHasError = !!(currentUserMember && currentUserMember.verificationError && currentUserMember.verificationError.trim() !== "");
+
 
     const isApproved = (v) => v === 1 || v === true || v === 'approved';
     const isTeamVerified = isApproved(data.isVerified);
@@ -53,32 +60,32 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
     const hasTransactionError = hasTeamError && isDocumentVerified;
     const isRejected = hasTransactionError || hasDocumentError;
+    const showTeamErrorBox = hasTransactionError || hasTeamDocumentError;
 
     const showPendingVerification = isDocumentVerified && isParagraphVerified && !isRejected && !hasDocumentError;
 
     const needsVerification = isTeamLeader && isDocumentVerified && !isTeamVerified && !isParagraphVerified && !hasTransactionError && !hasDocumentError;
 
-    const linkWhatsapp = {
-        gameToday: "https://chat.whatsapp.com/DZ7vHHwgC6J6SLgJmTD949?mode=r_c",
-        uxToday: "https://chat.whatsapp.com/JVZ8EXWwCwf0YUdhxJYuEx",
-        hackToday: "https://chat.whatsapp.com/IXSPAbcNk3hJUEafPUWMAS?mode=ac_t",
-        mineToday: "https://chat.whatsapp.com/HBZ8a4VbYbi4v08b2t45h7?mode=r_c",
-    };
+    const [whatsappLink, setWhatsappLink] = useState("");
 
-    const competitionNameToKey = {
-        "GameToday": "gameToday",
-        "UXToday": "uxToday",
-        "HackToday": "hackToday",
-        "MineToday": "mineToday",
-    };
+    useEffect(() => {
+        const fetchWhatsappLink = async () => {
+            if (data.competitionId) {
+                const res = await getPublicEventById(data.competitionId);
+                if (res.success && res.data && res.data.whatsapp_group_link) {
+                    setWhatsappLink(res.data.whatsapp_group_link.trim());
+                }
+            }
+        };
+        fetchWhatsappLink();
+    }, [data.competitionId]);
 
     const handleWhatsappClick = () => {
-        const key = competitionNameToKey[data.competitionName];
-        if (!key || !linkWhatsapp[key]) {
+        if (!whatsappLink) {
             alert("Grup Whatsapp tidak ditemukan untuk kompetisi ini.");
             return;
         }
-        window.open(linkWhatsapp[key], "_blank");
+        window.open(whatsappLink, "_blank");
     };
 
     const handleVerifyClick = () => {
@@ -138,13 +145,15 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 <div className="flex flex-row sm:flex-col lg:flex-row items-stretch sm:items-end lg:items-center gap-3 w-full sm:w-auto">
                     {isTeamVerified && (
                         <>
-                            <button
-                                onClick={handleWhatsappClick}
-                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#25D366] px-4 py-2 text-sm font-space-grotesk text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
-                            >
-                                <WhatsappIcon />
-                                Grup Whatsapp
-                            </button>
+                            {whatsappLink && (
+                                <button
+                                    onClick={handleWhatsappClick}
+                                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#25D366] px-4 py-2 text-sm font-space-grotesk text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                >
+                                    <WhatsappIcon />
+                                    Grup Whatsapp
+                                </button>
+                            )}
                             <div className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#4ADE80] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000]">
                                 <CheckIcon className="w-3.5 h-3.5 text-[#1A1C1C]" />
                                 Sudah Terverifikasi
@@ -175,10 +184,10 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 </div>
             </div>
 
-            {isRejected && (
+            {showTeamErrorBox && (
                 <div className="border-[3px] border-[#1A1C1C] bg-[#fef2f2] p-4 text-xs font-bold text-red-700 shadow-[4px_4px_0_0_#000]">
                     <span className="font-extrabold uppercase text-red-800">Alasan Penolakan:</span>{" "}
-                    {documentErrorReason || data.verificationError || "Berkas / bukti pembayaran tidak valid"}
+                    {data.verificationError || "Berkas / bukti pembayaran tidak valid"}
                 </div>
             )}
 
@@ -213,10 +222,19 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
                             <div className="flex items-center gap-1.5">
                                 {hasMemberError ? (
-                                    <>
+                                    <div className="relative group cursor-help flex items-center gap-1">
                                         <MdErrorOutline className="text-red-600 text-sm" />
-                                        <span className="text-red-600 font-hanken-grotesk font-extrabold text-[12px]">REJECTED</span>
-                                    </>
+                                        <span className="text-red-600 font-hanken-grotesk font-extrabold text-[12px] border-b border-dashed border-red-400">REJECTED</span>
+                                        
+                                        {/* Hover Tooltip Neo-Brutalist */}
+                                        <div className="absolute right-0 bottom-full mb-2 hidden group-hover:block z-50 w-64 p-3 bg-[#1A1C1C] text-white text-xs font-semibold rounded-md shadow-[4px_4px_0_0_#EF4444] border-2 border-red-500">
+                                            <div className="relative">
+                                                <p className="font-space-grotesk leading-relaxed">{anggota.verificationError}</p>
+                                                {/* Tooltip Arrow */}
+                                                <div className="absolute top-full right-4 w-2.5 h-2.5 bg-[#1A1C1C] border-r-2 border-b-2 border-red-500 transform rotate-45 translate-y-1.5"></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 ) : isApproved ? (
                                     <>
                                         <CheckIcon className="w-3.5 h-3.5 text-[#166534]" />
@@ -236,10 +254,19 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
             <div className="mt-1">
                 {!isDocumentVerified && (
-                    <div className="border-[3px] border-[#1A1C1C] bg-[#fffbeb] p-4 text-xs font-bold text-amber-700 shadow-[4px_4px_0_0_#000] flex items-center gap-2">
-                        <span>⚠️</span>
-                        <span>Lengkapi berkas agar panitia dapat memverifikasi tim Anda dan membuka menu pembayaran.</span>
-                    </div>
+                    isRejected && hasDocumentError ? (
+                        <button
+                            onClick={() => navigate("/edit-profile")}
+                            className="w-full border-[3px] border-[#1A1C1C] bg-[#FFD600] px-4 py-3.5 text-center text-xs font-black uppercase text-black shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                        >
+                            Edit Data
+                        </button>
+                    ) : (
+                        <div className="border-[3px] border-[#1A1C1C] bg-[#fffbeb] p-4 text-xs font-bold text-amber-700 shadow-[4px_4px_0_0_#000] flex items-center gap-2">
+                            <span>⚠️</span>
+                            <span>Lengkapi berkas agar panitia dapat memverifikasi tim Anda dan membuka menu pembayaran.</span>
+                        </div>
+                    )
                 )}
 
                 {!isTeamLeader && isDocumentVerified && !isTeamVerified && !isParagraphVerified && !isRejected && (
