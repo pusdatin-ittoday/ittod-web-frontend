@@ -36,8 +36,9 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
     const isTeamLeader = membersArray[0]?.fullName === currentUser;
 
-    const isTeamVerified = data.isVerified === true || data.isVerified === 'approved';
-    const isDocumentVerified = data.isDocumentVerified === "approved";
+    const isApproved = (v) => v === 1 || v === true || v === 'approved';
+    const isTeamVerified = isApproved(data.isVerified);
+    const isDocumentVerified = isApproved(data.isDocumentVerified);
     const isParagraphVerified = data.pendingVerification;
     const hasTeamError = Boolean(data.verificationError && data.verificationError.trim() !== "");
 
