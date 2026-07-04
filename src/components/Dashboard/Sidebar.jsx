@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { MdHomeFilled } from "react-icons/md";
 import { GiTrophy } from "react-icons/gi";
 import { MdEvent } from "react-icons/md";
-import { FaFileUpload } from "react-icons/fa";
+import { FaFileUpload, FaBell } from "react-icons/fa";
 
 const Sidebar = ({ active, setActive, variant = "default" }) => {
     const navigate = useNavigate();
 
     const menuItems = [
         { id: "beranda", label: "Beranda", icon: <MdHomeFilled className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
+        { id: "pengumuman", label: "Pengumuman", icon: <FaBell className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
         { id: "ikut-lomba", label: "Ikut Lomba", icon: <GiTrophy className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
         { id: "ikut-event", label: "Ikut Event", icon: <MdEvent className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
         { id: "submit-lomba", label: "Submit Lomba", icon: <FaFileUpload className="text-sm sm:text-base lg:text-lg xl:text-xl" /> }
@@ -18,9 +19,10 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
     if (variant === "neobrutal") {
         const neoMenuItems = [
             menuItems[0],
-            { ...menuItems[2], label: "Daftar Event" },
-            { ...menuItems[1], label: "Daftar Lomba" },
-            menuItems[3],
+            menuItems[1],
+            { ...menuItems[3], label: "Daftar Event" },
+            { ...menuItems[2], label: "Daftar Lomba" },
+            menuItems[4],
         ];
 
         return (

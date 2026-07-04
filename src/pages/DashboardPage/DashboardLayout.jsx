@@ -7,6 +7,7 @@ import Beranda from "../../components/Dashboard/Beranda/Beranda";
 import IkutLomba from "../../components/Dashboard/IkutLomba/IkutLomba";
 import IkutEvent from "../../components/Dashboard/IkutEvent/IkutEvent";
 import SubmitLomba from "../../components/Dashboard/SubmitLomba/SubmitLomba";
+import Pengumuman from "../../components/Dashboard/Pengumuman/Pengumuman";
 import DashboardNeoHeader from "../../components/Dashboard/DashboardNeoHeader";
 import Footer from "../../components/Footer";
 
@@ -14,7 +15,7 @@ import Footer from "../../components/Footer";
 class DashboardLayout extends Component {
   constructor(props) {
     super(props);
-    const validTabs = ["beranda", "ikut-lomba", "ikut-event", "submit-lomba", "submit-gametoday", "submit-uxtoday", "submit-minetoday"];
+    const validTabs = ["beranda", "ikut-lomba", "ikut-event", "submit-lomba", "submit-gametoday", "submit-uxtoday", "submit-minetoday", "pengumuman"];
     const initialTab = validTabs.includes(props.activeTab) ? props.activeTab : "beranda";
 
     this.state = {
@@ -55,13 +56,15 @@ class DashboardLayout extends Component {
         return <IkutEvent />;
       case "submit-lomba":
         return <SubmitLomba />;
+      case "pengumuman":
+        return <Pengumuman />;
       default:
         return <Beranda />;
     }
   };
 
   render() {
-    const usesNeobrutalDashboard = ["ikut-event", "ikut-lomba", "beranda"].includes(
+    const usesNeobrutalDashboard = ["ikut-event", "ikut-lomba", "beranda", "pengumuman"].includes(
       this.state.active
     );
 
@@ -84,6 +87,8 @@ class DashboardLayout extends Component {
                 <IkutEvent variant="neobrutal" />
               ) : this.state.active === "ikut-lomba" ? (
                 <IkutLomba variant="neobrutal" />
+              ) : this.state.active === "pengumuman" ? (
+                <Pengumuman variant="neobrutal" />
               ) : (
                 <Beranda variant="neobrutal" />
               )}
