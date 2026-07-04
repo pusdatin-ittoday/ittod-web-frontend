@@ -19,14 +19,6 @@ import Footer from "../components/Footer";
 
 const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
 
-const whatsappLink = {
-	cyberSec: "https://chat.whatsapp.com/GAiIjPTM31zDTPxr1M2YUg",
-	uiux: "https://chat.whatsapp.com/IyLj86XgxZ19CFGigqnf3l",
-	machineLearning: "https://chat.whatsapp.com/FbcLPUztaQEEm6qn1ZjZep",
-	seminar: "https://chat.whatsapp.com/GrFDVvBC1weDWY4kA4MO7T",
-	bootcamp: "https://chat.whatsapp.com/ED4bnW4VCJC7KRPYmUHRwN",
-};
-
 // Map route target names to display names
 const targetDisplayName = {
 	bootcamp: "Bootcamp",
@@ -125,22 +117,6 @@ const DaftarEvent = () => {
 		initializeUserData();
 	}, []);
 
-	useEffect(() => {
-		if (target === "workshop") {
-			if (workshopChoice === "Cyber Security") {
-				setLinkWhatsapp(whatsappLink.cyberSec);
-			} else if (workshopChoice === "UI/UX") {
-				setLinkWhatsapp(whatsappLink.uiux);
-			} else if (workshopChoice === "Machine Learning") {
-				setLinkWhatsapp(whatsappLink.machineLearning);
-			}
-		} else if (target === "national-seminar") {
-			setLinkWhatsapp(whatsappLink.seminar);
-		} else if (target === "bootcamp") {
-			setLinkWhatsapp(whatsappLink.bootcamp);
-		}
-	}, [target, workshopChoice]);
-
 	// Check if user already registered for Bootcamp or National Seminar on load
 	useEffect(() => {
 		const checkExistingRegistration = async () => {
@@ -177,30 +153,46 @@ const DaftarEvent = () => {
 		checkExistingRegistration();
 	}, [target]);
 
-	// Check if event is active from backend
+	// Fetch the current event configuration from Admin/database.
 	useEffect(() => {
-		const checkActiveStatus = async () => {
-			if (target === "workshop") {
+		const fetchEventConfiguration = async () => {
+			if (target === "workshop" && !workshopChoice) {
+				setLinkWhatsapp("");
 				setCheckingActive(false);
 				return;
 			}
+
 			setCheckingActive(true);
 			try {
 				const res = await getPublicEvents("non_competition");
 				if (res.success && res.data) {
-					let eventId = eventIdMapping[target === "national-seminar" ? "seminar" : target] || target;
+					const routeEventId =
+						target === "workshop"
+							? workshopChoice
+							: target === "national-seminar"
+								? "seminar"
+								: target;
+					const eventId = eventIdMapping[routeEventId] || routeEventId;
 					const event = res.data.find(e => e.id.toLowerCase() === eventId.toLowerCase());
-					if (event && event.is_active !== undefined) {
-						setIsActive(event.is_active);
+
+					if (event) {
+						if (event.is_active !== undefined) {
+							setIsActive(event.is_active);
+						}
+						setLinkWhatsapp(event.whatsapp_group_link || "");
+					} else {
+						setLinkWhatsapp("");
 					}
 				}
 			} catch (e) {
-				console.error("Error checking event active status:", e);
+				console.error("Error fetching event configuration:", e);
+				setLinkWhatsapp("");
 			}
 			setCheckingActive(false);
 		};
-		checkActiveStatus();
-	}, [target]);
+
+		fetchEventConfiguration();
+	}, [target, workshopChoice]);
 
 	// File handling methods similar to EditProfil
 	const handlePaymentFileChange = (file) => {
@@ -378,52 +370,32 @@ const DaftarEvent = () => {
 								<p className="text-base font-black sm:text-lg">
 									{alreadyRegistered
 										? "You're already registered."
-										: "Terima kasih telah mendaftar. Silahkan masuk ke dua grup whatsapp berikut: "}
+										: "Terima kasih telah mendaftar. Silakan masuk ke grup WhatsApp event berikut:"}
 								</p>
 								<div className="flex flex-col gap-3 w-full items-center">
-									<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl justify-center items-center">
-										<button
-											onClick={() => window.open(linkWhatsapp)}
-											className="w-full min-w-[180px] max-w-[320px] flex-1 cursor-pointer border-[3px] border-black bg-[#18c964] px-3 py-3 text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] sm:w-auto sm:text-sm"
-										>
-											<FaWhatsapp className="inline mr-1" /> Grup{" "}
-											{displayName}
-										</button>
-										<button
-											onClick={() => {
-												handleCopyToClipboard(linkWhatsapp, "main");
-											}}
-											className="w-full min-w-[160px] flex-shrink-0 border-[3px] border-black bg-white px-4 py-3 text-xs font-black uppercase text-[#087a3d] shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 sm:w-auto sm:text-sm"
-										>
-											{hasCopied.main ? "Link Disalin!" : "Salin Link Whatsapp"}
-										</button>
-									</div>
-									<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl justify-center items-center mt-2">
-										<button
-											onClick={() =>
-												window.open(
-													"https://chat.whatsapp.com/JzRETO4AWayIwq6CzfUz85?mode=ems_copy_t"
-												)
-											}
-											className="w-full min-w-[180px] max-w-[320px] flex-1 cursor-pointer border-[3px] border-black bg-[#18c964] px-3 py-3 text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] sm:w-auto sm:text-sm"
-										>
-											<FaWhatsapp className="inline mr-1" /> Grup IT-Today 2025
-											x Sentral Komputer
-										</button>
-										<button
-											onClick={() => {
-												handleCopyToClipboard(
-													"https://chat.whatsapp.com/JzRETO4AWayIwq6CzfUz85?mode=ems_copy_t",
-													"sentral"
-												);
-											}}
-											className="w-full min-w-[160px] flex-shrink-0 border-[3px] border-black bg-white px-4 py-3 text-xs font-black uppercase text-[#087a3d] shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 sm:w-auto sm:text-sm"
-										>
-											{hasCopied.sentral
-												? "Link Disalin!"
-												: "Salin Link Whatsapp"}
-										</button>
-									</div>
+									{linkWhatsapp ? (
+										<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl justify-center items-center">
+											<button
+												onClick={() => window.open(linkWhatsapp, "_blank", "noopener,noreferrer")}
+												className="w-full min-w-[180px] max-w-[320px] flex-1 cursor-pointer border-[3px] border-black bg-[#18c964] px-3 py-3 text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] sm:w-auto sm:text-sm"
+											>
+												<FaWhatsapp className="inline mr-1" /> Grup{" "}
+												{displayName}
+											</button>
+											<button
+												onClick={() => {
+													handleCopyToClipboard(linkWhatsapp, "main");
+												}}
+												className="w-full min-w-[160px] flex-shrink-0 border-[3px] border-black bg-white px-4 py-3 text-xs font-black uppercase text-[#087a3d] shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 sm:w-auto sm:text-sm"
+											>
+												{hasCopied.main ? "Link Disalin!" : "Salin Link WhatsApp"}
+											</button>
+										</div>
+									) : (
+										<p className="border-[3px] border-black bg-[#ffe26b] px-5 py-3 text-sm font-bold shadow-[4px_4px_0_#191b1a]">
+											Link grup WhatsApp belum tersedia. Silakan hubungi panitia.
+										</p>
+									)}
 								</div>
 							</div>
 							<div className="flex flex-row justify-center gap-4">
