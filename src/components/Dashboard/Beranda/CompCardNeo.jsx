@@ -21,7 +21,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
     const isTeamVerified = data.isVerified === true || data.isVerified === 'approved';
     const isDocumentVerified = data.isDocumentVerified === "approved";
-    const isPendingVerification = data.pendingVerification;
+    const isParagraphVerified = data.pendingVerification;
     const hasTeamError = Boolean(data.verificationError && data.verificationError.trim() !== "");
 
     const membersWithErrors = membersArray.filter(m => m.verificationError && m.verificationError.trim() !== "");
@@ -36,9 +36,9 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
     const hasTransactionError = hasTeamError && isDocumentVerified;
     const isRejected = hasTransactionError || hasDocumentError;
 
-    const showPendingVerification = isDocumentVerified && isPendingVerification && !isRejected && !hasDocumentError;
+    const showPendingVerification = isDocumentVerified && isParagraphVerified && !isRejected && !hasDocumentError;
 
-    const needsVerification = isTeamLeader && isDocumentVerified && !isTeamVerified && !isPendingVerification && !hasTransactionError && !hasDocumentError;
+    const needsVerification = isTeamLeader && isDocumentVerified && !isTeamVerified && !isParagraphVerified && !hasTransactionError && !hasDocumentError;
 
     const linkWhatsapp = {
         gameToday: "https://chat.whatsapp.com/DZ7vHHwgC6J6SLgJmTD949?mode=r_c",
@@ -93,7 +93,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
     return (
         <div className="w-full border-[4px] border-[#191b1a] bg-white p-4 sm:p-5 shadow-[6px_6px_0_#191b1a] flex flex-col gap-4">
 
-            {/* Top row: Info & Status Badge */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                 <div className="space-y-1">
                     <h3 className="text-xl sm:text-2xl font-black uppercase text-[#34399F] tracking-tight">
@@ -118,9 +117,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                     </div>
                 </div>
 
-                {/* Status Badges & WA Group */}
                 <div className="flex flex-row sm:flex-col lg:flex-row items-stretch sm:items-end lg:items-center gap-2 w-full sm:w-auto">
-                    {/* Sudah Terverifikasi */}
                     {isTeamVerified && (
                         <>
                             <button
@@ -137,7 +134,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                         </>
                     )}
 
-                    {/* Menunggu Verifikasi */}
                     {showPendingVerification && (
                         <div className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border-[3px] border-[#191b1a] bg-[#FCD400] px-3 py-2 text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a]">
                             <span className="animate-spin text-xs">⌛</span>
@@ -145,7 +141,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                         </div>
                     )}
 
-                    {/* Belum Terverifikasi */}
                     {!isTeamVerified && !showPendingVerification && !isRejected && (
                         <div className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border-[3px] border-[#191b1a] bg-[#ff8c75] px-3 py-2 text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a]">
                             <MdErrorOutline className="text-sm" />
@@ -153,7 +148,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                         </div>
                     )}
 
-                    {/* Ditolak (Rejected) */}
                     {isRejected && (
                         <div className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border-[3px] border-[#191b1a] bg-[#ef4444] px-3 py-2 text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a]">
                             <MdErrorOutline className="text-sm" />
@@ -163,7 +157,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 </div>
             </div>
 
-            {/* Error message / Rejection feedback */}
             {isRejected && (
                 <div className="border-[3px] border-[#191b1a] bg-[#fef2f2] p-3 text-xs font-bold text-red-700 shadow-[4px_4px_0_#191b1a]">
                     <span className="font-extrabold uppercase text-red-800">Alasan Penolakan:</span>{" "}
@@ -171,7 +164,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 </div>
             )}
 
-            {/* Members Section */}
             <div className="border-[3px] border-[#191b1a] bg-[#EEEEEE] p-2.5 sm:p-3 flex flex-col gap-2">
                 {membersArray.map((anggota, idx) => {
                     const hasMemberError = anggota.verificationError && anggota.verificationError.trim() !== "";
@@ -195,7 +187,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                                 </div>
                             </div>
 
-                            {/* Status Label */}
                             <div>
                                 {hasMemberError ? (
                                     <div className="border border-black bg-red-100 text-red-700 px-2 py-0.5 text-[10px] font-black uppercase">
@@ -216,9 +207,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 })}
             </div>
 
-            {/* Banners & Upload Actions */}
             <div className="mt-1">
-                {/* 1. Document not verified yet */}
                 {!isDocumentVerified && (
                     <div className="border-[3px] border-[#191b1a] bg-[#fffbeb] p-3 text-xs font-bold text-amber-700 shadow-[4px_4px_0_#191b1a] flex items-center gap-2">
                         <span>⚠️</span>
@@ -226,15 +215,13 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                     </div>
                 )}
 
-                {/* 2. Team member reminder */}
-                {!isTeamLeader && isDocumentVerified && !isTeamVerified && !isPendingVerification && !isRejected && (
+                {!isTeamLeader && isDocumentVerified && !isTeamVerified && !isParagraphVerified && !isRejected && (
                     <div className="border-[3px] border-[#191b1a] bg-[#fffbeb] p-3 text-xs font-bold text-amber-700 shadow-[4px_4px_0_#191b1a] flex items-center gap-2">
                         <span>⚠️</span>
                         <span>Ingatkan ketua tim Anda untuk mengunggah bukti pembayaran agar pendaftaran selesai.</span>
                     </div>
                 )}
 
-                {/* 3. Transaction Rejected */}
                 {isRejected && !hasDocumentError && isTeamLeader && (
                     <div className="border-[3px] border-[#191b1a] bg-[#fef2f2] p-3 text-xs font-bold text-red-700 shadow-[4px_4px_0_#191b1a] flex items-center gap-2 mb-3">
                         <span>⚠️</span>
@@ -242,7 +229,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                     </div>
                 )}
 
-                {/* 4. Action Button */}
                 {(needsVerification || (isRejected && !hasDocumentError && isTeamLeader)) && (
                     <button
                         onClick={handleVerifyClick}
@@ -254,7 +240,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 )}
             </div>
 
-            {/* Modal Upload */}
             {showUploadModal && (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-2 sm:px-4">
                     <div className="border-[4px] border-[#191b1a] bg-white p-5 sm:p-6 rounded-none w-full max-w-md text-black shadow-[8px_8px_0_#191b1a] max-h-[90vh] overflow-y-auto custom-scrollbar">
@@ -346,7 +331,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                             </div>
                         </div>
 
-                        {/* Actions */}
                         <div className="flex gap-4 mt-6">
                             <button
                                 onClick={() => setShowUploadModal(false)}
@@ -366,7 +350,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 </div>
             )}
 
-            {/* Alert */}
             {showAlert && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] px-4">
                     <div className="border-[3px] border-[#191b1a] bg-white p-4 rounded-none max-w-xs w-full text-black shadow-[5px_5px_0_#191b1a]">
