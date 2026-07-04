@@ -5,6 +5,7 @@ import instance from "../../api/axios";
 import { getImageUrlFromR2 } from "../../api/user";
 import DashboardNeoHeader from "./DashboardNeoHeader";
 import Footer from "../Footer";
+import { normalizeIndonesianPhoneNumber } from "../../utils/phoneNumber";
 
 const getOriginalFileName = (key) => {
     if (!key) return "";
@@ -51,7 +52,7 @@ class EditProfile extends Component {
         this.fieldLabels = {
             full_name: "Nama Lengkap",
             birth_date: "Tanggal Lahir",
-            phone_number: "Nomor HP",
+            phone_number: "Nomor HP (gunakan 08..., 628..., atau +628...)",
             jenis_kelamin: "Jenis Kelamin",
             id_line: "ID Line",
             id_discord: "ID Discord",
@@ -276,6 +277,12 @@ class EditProfile extends Component {
             }
         }
 
+        const normalizedPhoneNumber =
+            normalizeIndonesianPhoneNumber(phone_number);
+        if (phone_number && !normalizedPhoneNumber) {
+            emptyFieldsList.push(this.fieldLabels.phone_number);
+        }
+
         if (emptyFieldsList.length > 0) {
             this.setState({
                 showErrorBox: true,
@@ -288,7 +295,7 @@ class EditProfile extends Component {
             const formData = new FormData();
             if (full_name) formData.append('full_name', full_name);
             if (birth_date) formData.append('birth_date', birth_date);
-            if (phone_number) formData.append('phone_number', phone_number);
+            if (normalizedPhoneNumber) formData.append('phone_number', normalizedPhoneNumber);
             if (jenis_kelamin) formData.append('jenis_kelamin', jenis_kelamin);
             if (id_line) formData.append('id_line', id_line);
             if (id_discord) formData.append('id_discord', id_discord);
@@ -327,7 +334,7 @@ class EditProfile extends Component {
                     ...userData,
                     full_name: full_name,
                     birth_date,
-                    phone_number,
+                    phone_number: normalizedPhoneNumber,
                     jenis_kelamin,
                     id_line,
                     id_discord,
@@ -456,7 +463,8 @@ class EditProfile extends Component {
                                             <path d="M2 16H3.425L13.2 6.225L11.775 4.8L2 14.575V16ZM0 18V13.75L13.2 0.575C13.4 0.391667 13.6208 0.25 13.8625 0.15C14.1042 0.05 14.3583 0 14.625 0C14.8917 0 15.15 0.05 15.4 0.15C15.65 0.25 15.8667 0.4 16.05 0.6L17.425 2C17.625 2.18333 17.7708 2.4 17.8625 2.65C17.9542 2.9 18 3.15 18 3.4C18 3.66667 17.9542 3.92083 17.8625 4.1625C17.7708 4.40417 17.625 4.625 17.425 4.825L4.25 18H0ZM16 3.4L14.6 2L16 3.4ZM12.475 5.525L11.775 4.8L13.2 6.225L12.475 5.525Z" fill="#464652"/>
                                         </svg>
                                         <input
-                                            type="text"
+                                            type="tel"
+                                            inputMode="tel"
                                             name="full_name"
                                             placeholder="Nama Lengkap"
                                             value={full_name}

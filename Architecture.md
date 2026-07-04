@@ -39,6 +39,7 @@ The frontend provides the user interface for landing pages, event discovery, das
    - The existing Join Team toggle renders a dedicated neobrutalist main panel while preserving the same local state, `joinTeam(teamId)` request, loading state, cancel behavior, and success redirect.
    - Event registration (`/daftar-event/:target`) reuses the same neobrutalist dashboard shell and shared footer for loading, form, and success states while retaining its existing event checks, validation, registration/upload requests, WhatsApp actions, and redirects.
    - The event registration success state reads `whatsapp_group_link` from the selected non-competition event returned by the public API, so Admin controls the displayed group destination without frontend link mappings. Missing links render a safe unavailable notice.
+   - Indonesian phone inputs in Edit Profile and event registration accept local `08...`, country-code `628...`, and international `+628...` forms, then normalize valid values to `+628...` before API submission.
    - All pages reuse `Footer.jsx` as the single Contact Us and navigation footer. The dashboard selects its neobrutalist variant while preserving the same event, competition, social-media, email, and WhatsApp destinations.
 3. **File Uploads & Submissions**:
    - Users upload payment proofs and competition deliverables via the UI.

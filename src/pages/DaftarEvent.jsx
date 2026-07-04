@@ -16,6 +16,7 @@ import FallbackEventCloseRegist from "./Fallback/FallbackCloseRegis";
 import DashboardNeoHeader from "../components/Dashboard/DashboardNeoHeader";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Footer from "../components/Footer";
+import { normalizeIndonesianPhoneNumber } from "../utils/phoneNumber";
 
 const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
 
@@ -243,12 +244,12 @@ const DaftarEvent = () => {
 		if (target === "workshop" && !workshopChoice)
 			missingFields.push({ label: "Bidang Workshop" });
 
-		const internationalFormatRegex = /^\+\d+$/;
-		if (whatsapp.trim() && !internationalFormatRegex.test(whatsapp)) {
+		const normalizedWhatsapp = normalizeIndonesianPhoneNumber(whatsapp);
+		if (whatsapp.trim() && !normalizedWhatsapp) {
 			setIncompleteFields([
 				{
 					label:
-						"Nomor WhatsApp harus dalam format internasional (misalnya: +628123456789).",
+						"Format Nomor WhatsApp tidak valid. Gunakan 08123456789, 628123456789, atau +628123456789.",
 				},
 			]);
 			setShowAlert(true);
@@ -261,6 +262,7 @@ const DaftarEvent = () => {
 			return;
 		}
 
+		setWhatsapp(normalizedWhatsapp);
 		setLoading(true);
 
 		// Determine the event ID using the mapping
@@ -279,7 +281,7 @@ const DaftarEvent = () => {
 			registerToBootcamp({
 				eventId: eventId,
 				institutionName: institution,
-				phoneNumber: whatsapp,
+				phoneNumber: normalizedWhatsapp,
 				bundling: bootcampBundling,
 			})
 				.then(() => {
@@ -305,7 +307,7 @@ const DaftarEvent = () => {
 			registerEvent({
 				eventId: eventId,
 				institutionName: institution,
-				phoneNumber: whatsapp,
+				phoneNumber: normalizedWhatsapp,
 				dateOfBirth: dateOfBirth
 					? new Date(dateOfBirth).toISOString().split("T")[0]
 					: null,
@@ -416,7 +418,8 @@ const DaftarEvent = () => {
 								<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
 									<FaSchool className="mr-3 shrink-0 text-[#4f5261]" size={21} />
 									<input
-										type="text"
+										type="tel"
+										inputMode="tel"
 										value={institution}
 										onChange={(e) => setInstitution(e.target.value)}
 										className="min-w-0 flex-1 bg-transparent font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400"
