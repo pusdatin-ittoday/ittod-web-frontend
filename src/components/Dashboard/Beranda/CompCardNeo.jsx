@@ -1,6 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaUpload, FaReceipt } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { getPublicEventById } from "../../../api/eventPublic";
+
 
 const CheckIcon = ({ className = "w-3 h-3 text-[#1A1C1C]" }) => (
     <svg className={className} viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,6 +24,7 @@ const PremiumBadgeIcon = () => (
 );
 
 const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
+    const navigate = useNavigate();
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [pembayaran, setPembayaran] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
@@ -35,9 +39,13 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
         : Object.values(data.members || {});
 
     const isTeamLeader = membersArray[0]?.fullName === currentUser;
+    const currentUserMember = membersArray.find(m => m.fullName === currentUser);
+    const currentUserHasError = !!(currentUserMember && currentUserMember.verificationError && currentUserMember.verificationError.trim() !== "");
 
-    const isTeamVerified = data.isVerified === true || data.isVerified === 'approved';
-    const isDocumentVerified = data.isDocumentVerified === "approved";
+
+    const isApproved = (v) => v === 1 || v === true || v === 'approved';
+    const isTeamVerified = isApproved(data.isVerified);
+    const isDocumentVerified = isApproved(data.isDocumentVerified);
     const isParagraphVerified = data.pendingVerification;
     const hasTeamError = Boolean(data.verificationError && data.verificationError.trim() !== "");
 
@@ -52,32 +60,32 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
     const hasTransactionError = hasTeamError && isDocumentVerified;
     const isRejected = hasTransactionError || hasDocumentError;
+    const showTeamErrorBox = hasTransactionError || hasTeamDocumentError;
 
     const showPendingVerification = isDocumentVerified && isParagraphVerified && !isRejected && !hasDocumentError;
 
     const needsVerification = isTeamLeader && isDocumentVerified && !isTeamVerified && !isParagraphVerified && !hasTransactionError && !hasDocumentError;
 
-    const linkWhatsapp = {
-        gameToday: "https://chat.whatsapp.com/DZ7vHHwgC6J6SLgJmTD949?mode=r_c",
-        uxToday: "https://chat.whatsapp.com/JVZ8EXWwCwf0YUdhxJYuEx",
-        hackToday: "https://chat.whatsapp.com/IXSPAbcNk3hJUEafPUWMAS?mode=ac_t",
-        mineToday: "https://chat.whatsapp.com/HBZ8a4VbYbi4v08b2t45h7?mode=r_c",
-    };
+    const [whatsappLink, setWhatsappLink] = useState("");
 
-    const competitionNameToKey = {
-        "GameToday": "gameToday",
-        "UXToday": "uxToday",
-        "HackToday": "hackToday",
-        "MineToday": "mineToday",
-    };
+    useEffect(() => {
+        const fetchWhatsappLink = async () => {
+            if (data.competitionId) {
+                const res = await getPublicEventById(data.competitionId);
+                if (res.success && res.data && res.data.whatsapp_group_link) {
+                    setWhatsappLink(res.data.whatsapp_group_link.trim());
+                }
+            }
+        };
+        fetchWhatsappLink();
+    }, [data.competitionId]);
 
     const handleWhatsappClick = () => {
-        const key = competitionNameToKey[data.competitionName];
-        if (!key || !linkWhatsapp[key]) {
+        if (!whatsappLink) {
             alert("Grup Whatsapp tidak ditemukan untuk kompetisi ini.");
             return;
         }
-        window.open(linkWhatsapp[key], "_blank");
+        window.open(whatsappLink, "_blank");
     };
 
     const handleVerifyClick = () => {
@@ -137,13 +145,15 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 <div className="flex flex-row sm:flex-col lg:flex-row items-stretch sm:items-end lg:items-center gap-3 w-full sm:w-auto">
                     {isTeamVerified && (
                         <>
-                            <button
-                                onClick={handleWhatsappClick}
-                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#25D366] px-4 py-2 text-sm font-space-grotesk text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
-                            >
-                                <WhatsappIcon />
-                                Grup Whatsapp
-                            </button>
+                            {whatsappLink && (
+                                <button
+                                    onClick={handleWhatsappClick}
+                                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#25D366] px-4 py-2 text-sm font-space-grotesk text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                >
+                                    <WhatsappIcon />
+                                    Grup Whatsapp
+                                </button>
+                            )}
                             <div className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#4ADE80] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000]">
                                 <CheckIcon className="w-3.5 h-3.5 text-[#1A1C1C]" />
                                 Sudah Terverifikasi
@@ -174,10 +184,10 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 </div>
             </div>
 
-            {isRejected && (
+            {showTeamErrorBox && (
                 <div className="border-[3px] border-[#1A1C1C] bg-[#fef2f2] p-4 text-xs font-bold text-red-700 shadow-[4px_4px_0_0_#000]">
                     <span className="font-extrabold uppercase text-red-800">Alasan Penolakan:</span>{" "}
-                    {documentErrorReason || data.verificationError || "Berkas / bukti pembayaran tidak valid"}
+                    {data.verificationError || "Berkas / bukti pembayaran tidak valid"}
                 </div>
             )}
 
@@ -212,10 +222,19 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
                             <div className="flex items-center gap-1.5">
                                 {hasMemberError ? (
-                                    <>
+                                    <div className="relative group cursor-help flex items-center gap-1">
                                         <MdErrorOutline className="text-red-600 text-sm" />
-                                        <span className="text-red-600 font-hanken-grotesk font-extrabold text-[12px]">REJECTED</span>
-                                    </>
+                                        <span className="text-red-600 font-hanken-grotesk font-extrabold text-[12px] border-b border-dashed border-red-400">REJECTED</span>
+                                        
+                                        {/* Hover Tooltip Neo-Brutalist */}
+                                        <div className="absolute right-0 bottom-full mb-2 hidden group-hover:block z-50 w-64 p-3 bg-[#1A1C1C] text-white text-xs font-semibold rounded-md shadow-[4px_4px_0_0_#EF4444] border-2 border-red-500">
+                                            <div className="relative">
+                                                <p className="font-space-grotesk leading-relaxed">{anggota.verificationError}</p>
+                                                {/* Tooltip Arrow */}
+                                                <div className="absolute top-full right-4 w-2.5 h-2.5 bg-[#1A1C1C] border-r-2 border-b-2 border-red-500 transform rotate-45 translate-y-1.5"></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 ) : isApproved ? (
                                     <>
                                         <CheckIcon className="w-3.5 h-3.5 text-[#166534]" />
@@ -235,10 +254,19 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
             <div className="mt-1">
                 {!isDocumentVerified && (
-                    <div className="border-[3px] border-[#1A1C1C] bg-[#fffbeb] p-4 text-xs font-bold text-amber-700 shadow-[4px_4px_0_0_#000] flex items-center gap-2">
-                        <span>⚠️</span>
-                        <span>Lengkapi berkas agar panitia dapat memverifikasi tim Anda dan membuka menu pembayaran.</span>
-                    </div>
+                    isRejected && hasDocumentError ? (
+                        <button
+                            onClick={() => navigate("/edit-profile")}
+                            className="w-full border-[3px] border-[#1A1C1C] bg-[#FFD600] px-4 py-3.5 text-center text-xs font-black uppercase text-black shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                        >
+                            Edit Data
+                        </button>
+                    ) : (
+                        <div className="border-[3px] border-[#1A1C1C] bg-[#fffbeb] p-4 text-xs font-bold text-amber-700 shadow-[4px_4px_0_0_#000] flex items-center gap-2">
+                            <span>⚠️</span>
+                            <span>Lengkapi berkas agar panitia dapat memverifikasi tim Anda dan membuka menu pembayaran.</span>
+                        </div>
+                    )
                 )}
 
                 {!isTeamLeader && isDocumentVerified && !isTeamVerified && !isParagraphVerified && !isRejected && (
@@ -268,50 +296,77 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
             {showUploadModal && (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-2 sm:px-4">
-                    <div className="border-[4px] border-[#1A1C1C] bg-white p-5 sm:p-6 rounded-none w-full max-w-md text-black shadow-[8px_8px_0_#000] max-h-[90vh] overflow-y-auto custom-scrollbar">
-                        <h3 className="text-lg font-black uppercase tracking-tight mb-4 text-[#34399F] text-center">
-                            Upload Bukti Pembayaran
-                        </h3>
-
-                        <div className="mb-4 space-y-4">
-                            <div className="border-[3px] border-[#1A1C1C] bg-yellow-50 p-3 font-semibold text-[11px] sm:text-xs text-black leading-relaxed">
-                                <div className="mb-2">
-                                    <p className="font-extrabold text-[#34399F] mb-0.5">Informasi Rekening:</p>
-                                    <div className="border-2 border-[#1A1C1C] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-xs">
-                                        Blu by BCA DIGITAL<br />
-                                        <span className="text-sm font-extrabold tracking-wide">0027 4625 4702</span><br />
-                                        <span className="text-[10px] font-bold text-gray-700">a/n M Althaf Faiz Rafianto</span>
-                                    </div>
-                                </div>
-                                <div className="mb-2">
-                                    <p className="font-extrabold text-[#34399F] mb-0.5">Kode Kompetisi:</p>
-                                    <ul className="text-[10px] sm:text-[11px] list-disc pl-4 space-y-0.5">
-                                        <li><span className="font-bold">01</span> : HackToday</li>
-                                        <li><span className="font-bold">02</span> : GameToday</li>
-                                        <li><span className="font-bold">03</span> : UXToday</li>
-                                        <li><span className="font-bold">04</span> : Minetoday</li>
-                                    </ul>
-                                </div>
-                                <div className="mb-2">
-                                    <p className="text-[10px] sm:text-[11px] text-gray-800">
-                                        <span className="line-through font-bold text-gray-400">Harga Batch 1: Rp 80.000</span><br />
-                                        <span className="font-bold text-black">Harga Batch 2: Rp 100.000</span>
-                                    </p>
-                                </div>
-                                <div className="border border-[#1A1C1C] bg-white px-2 py-1 text-[10px] sm:text-[11px] italic text-gray-600 text-justify leading-snug">
-                                    <span className="font-bold text-black">Contoh:</span> Ryan transfer <span className="font-bold text-black">100.002</span> Rupiah jika mendaftar <span className="font-bold text-black">GameToday</span> (Batch 2).
-                                </div>
-                            </div>
+                    <div className="border-[4px] border-[#1A1C1C] bg-white rounded-none w-full max-w-md text-black shadow-[8px_8px_0_#000] max-h-[90vh] flex flex-col overflow-hidden">
+                        
+                        {/* Modal Header */}
+                        <div className="border-b-[4px] border-[#1A1C1C] bg-[#3D45A0] px-5 py-4 text-left">
+                            <h3 className="text-xl font-space-grotesk font-black uppercase text-white tracking-tight">
+                                Upload Bukti Pembayaran
+                            </h3>
                         </div>
 
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-black uppercase mb-1.5">
-                                    Pilih File Bukti Bayar
-                                    <span className="text-[9px] text-gray-500 font-bold ml-1">(JPG/PNG, maks 2MB)</span>
+                        {/* Modal Body */}
+                        <div className="p-5 overflow-y-auto custom-scrollbar flex-1 flex flex-col gap-4 text-xs font-bold leading-relaxed">
+                            
+                            {/* Bank Info Section */}
+                            <div className="border-[2px] border-black bg-[#FFD600]/20 p-4 flex flex-col gap-2">
+                                <p className="font-space-grotesk text-[10px] sm:text-xs tracking-wider text-[#3D45A0] font-black uppercase">
+                                    Informasi Rekening:
+                                </p>
+                                <div className="space-y-1">
+                                    <h4 className="text-sm sm:text-base font-space-grotesk font-black text-[#121212]">
+                                        Blu by BCA DIGITAL
+                                    </h4>
+                                    <p className="font-mono text-base sm:text-lg tracking-wider text-[#121212] font-extrabold select-all">
+                                        0027 4625 4702
+                                    </p>
+                                    <p className="text-xs sm:text-sm font-space-grotesk font-bold text-[#121212]">
+                                        a/n M Althaf Faiz Rafianto
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Competition Codes & Pricing */}
+                            <div className="flex gap-4">
+                                {/* Kode Kompetisi */}
+                                <div className="flex-1 border-[2px] border-black p-3.5 flex flex-col gap-2">
+                                    <p className="font-space-grotesk text-[10px] tracking-wider text-gray-500 font-black uppercase">
+                                        Kode Kompetisi:
+                                    </p>
+                                    <ul className="space-y-1 text-[10px] sm:text-xs text-[#121212] font-bold">
+                                        <li>01 : HackToday</li>
+                                        <li>02 : GameToday</li>
+                                        <li>03 : UXToday</li>
+                                        <li>04 : Minetoday</li>
+                                    </ul>
+                                </div>
+                                {/* Harga */}
+                                <div className="flex-1 border-[2px] border-black p-3.5 flex flex-col gap-2">
+                                    <p className="font-space-grotesk text-[10px] tracking-wider text-gray-500 font-black uppercase">
+                                        Harga:
+                                    </p>
+                                    <div className="space-y-1 text-[10px] sm:text-xs text-[#121212] font-bold">
+                                        <p>Batch 1: <span className="text-[#3D45A0]">Rp 80.000</span></p>
+                                        <p>Batch 2: <span className="text-[#3D45A0]">Rp 100.000</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Important Note */}
+                            <div className="border-l-[4px] border-[#3D45A0] bg-gray-100 p-3.5 text-[10px] sm:text-xs text-justify">
+                                <span className="text-black font-black uppercase mr-1">Contoh:</span>
+                                <span className="text-[#121212]">
+                                    Ryan harus bayar sebanyak 100.000 rupiah jika Ryan ingin ikut GameToday pada Batch-2. Ryan harus transfer <span className="text-[#3D45A0] font-black">100.002</span> Rupiah ke M Althaf Faiz Rafianto.
+                                </span>
+                            </div>
+
+                            {/* Upload Area */}
+                            <div className="flex flex-col gap-2">
+                                <label className="block font-space-grotesk text-[10px] tracking-wider text-gray-500 font-black uppercase">
+                                    Upload Bukti Pembayaran (JPG/PNG, Maks 2MB)
                                 </label>
                                 <div
-                                    className="border-3 border-solid border-[#1A1C1C] rounded-none p-5 text-center bg-gray-50 hover:bg-gray-100 cursor-pointer w-full flex flex-col items-center justify-center gap-1.5 relative transition duration-300"
+                                    className="border-[2px] border-dashed border-black rounded-none p-6 text-center bg-gray-50 hover:bg-gray-100 cursor-pointer w-full flex flex-col items-center justify-center gap-2 relative transition duration-300"
                                     onClick={() => pembayaranInputRef.current?.click()}
                                     onDragOver={(e) => e.preventDefault()}
                                     onDrop={(e) => {
@@ -329,8 +384,10 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                                         }
                                     }}
                                 >
-                                    <FaReceipt className={`text-2xl ${pembayaran ? 'text-[#25D366]' : 'text-gray-400'}`} />
-                                    <span className="truncate text-xs font-bold w-full px-2">
+                                    <svg className="w-8 h-8 text-[#3D45A0]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                    <span className="truncate text-xs font-black uppercase w-full px-2 text-[#121212]">
                                         {pembayaran ? pembayaran.name : "Drop file atau klik untuk memilih"}
                                     </span>
                                     <input
@@ -357,21 +414,23 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                             </div>
                         </div>
 
-                        <div className="flex gap-4 mt-6">
+                        {/* Modal Footer */}
+                        <div className="border-t-[4px] border-[#1A1C1C] p-4 flex gap-4 bg-white">
                             <button
                                 onClick={() => setShowUploadModal(false)}
-                                className="flex-1 py-2.5 border-[3px] border-[#1A1C1C] bg-gray-200 text-xs font-black uppercase text-black shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                className="flex-1 py-3 border-[3px] border-[#1A1C1C] bg-[#E5E7EB] text-xs font-black uppercase text-[#121212] shadow-[3.5px_3.5px_0_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={handleUploadSubmit}
                                 disabled={loadingUpload}
-                                className="flex-1 py-2.5 border-[3px] border-[#1A1C1C] bg-[#ffd400] text-xs font-black uppercase text-black shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50"
+                                className="flex-1 py-3 border-[3px] border-[#1A1C1C] bg-[#FFD600] text-xs font-black uppercase text-[#121212] shadow-[3.5px_3.5px_0_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50"
                             >
                                 {loadingUpload ? "Mengunggah..." : "Submit"}
                             </button>
                         </div>
+
                     </div>
                 </div>
             )}

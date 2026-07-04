@@ -28,12 +28,14 @@ const CompListNeo = () => {
 
     const processCompetitionsData = (data, currentUserName = null, isCurrentUserDataComplete = false) => {
         const processedCompetitions = {};
+        const isApproved = (v) => v === 1 || v === true || v === 'approved';
+        const isRejectedStatus = (v) => v === 0 || v === false || v === 'rejected';
 
         Object.entries(data).forEach(([key, comp]) => {
-            const isVerified = comp.is_verified === 'approved' || comp.isVerified === 'approved';
+            const isVerified = isApproved(comp.is_verified) || isApproved(comp.isVerified);
             const hasPaymentProof = Boolean(comp.paymentProofID);
             const hasVerificationError = comp.verification_error && comp.verification_error.trim() !== "";
-            const isRejected = hasVerificationError || comp.is_verified === 'rejected' || comp.isVerified === 'rejected';
+            const isRejected = hasVerificationError || isRejectedStatus(comp.is_verified) || isRejectedStatus(comp.isVerified);
 
             const isPendingVerification = !isVerified && hasPaymentProof && !isRejected;
 
@@ -68,6 +70,7 @@ const CompListNeo = () => {
 
             processedCompetitions[key] = {
                 ...comp,
+                isDocumentVerified: isApproved(comp.isDocumentVerified) ? 'approved' : comp.isDocumentVerified,
                 members: updatedMembers,
                 isVerified: isVerified,
                 pendingVerification: isPendingVerification
