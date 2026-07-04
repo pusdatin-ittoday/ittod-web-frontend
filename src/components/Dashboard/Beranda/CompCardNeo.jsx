@@ -1,7 +1,24 @@
 import React, { useState, useRef } from "react";
-import { FaUpload, FaReceipt, FaWhatsapp } from "react-icons/fa";
-import { RiVerifiedBadgeFill } from "react-icons/ri";
+import { FaUpload, FaReceipt } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
+
+const CheckIcon = ({ className = "w-3 h-3 text-[#1A1C1C]" }) => (
+    <svg className={className} viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5.28784 8.97392L9.51658 4.73039L8.47552 3.68473L5.28419 6.88722L3.71789 5.32637L2.68048 6.37565L5.28784 8.97392ZM6.13493 12.2378C5.28402 12.2393 4.4662 12.0805 3.7438 11.7613C3.00061 11.4422 2.35387 11.0084 1.80357 10.4601C1.25328 9.91167 0.817257 9.26645 0.495513 8.52439C0.17377 7.78232 0.0121553 6.98584 0.0106702 6.13493C0.0091851 5.28402 0.168018 4.48698 0.48717 3.7438C0.806321 3.00061 1.24009 2.35387 1.78847 1.80357C2.33685 1.25328 2.98207 0.817256 3.72413 0.495513C4.4662 0.173769 5.26268 0.0121553 6.11359 0.0106702C6.9645 0.0091851 7.76154 0.168018 8.50472 0.487169C9.24791 0.81725 9.89465 1.24009 10.4449 1.78847C10.9952 2.33685 11.4313 2.98207 11.753 3.72413C12.0748 4.4662 12.2364 5.26268 12.2378 6.11359C12.2393 6.9645 12.0805 7.76154 11.7614 8.50472C11.4422 9.24791 11.0084 9.89465 10.4601 10.4449C9.91167 10.9952 9.26645 11.4313 8.52439 11.753C7.78232 12.0747 6.98584 12.2364 6.13493 12.2378ZM6.13223 10.692C7.41303 10.6898 8.49374 10.2468 9.37439 9.36306C10.255 8.47934 10.6942 7.39708 10.692 6.11629C10.6898 4.83549 10.2468 3.75478 9.36306 2.87413C8.47934 1.99349 7.39708 1.55428 6.11629 1.55652C4.83549 1.55876 3.75478 2.00173 2.87413 2.88546C1.99349 3.76918 1.55428 4.85144 1.55652 6.13223C1.55876 7.41303 2.00173 8.49374 2.88546 9.37439C3.76918 10.255 4.85144 10.6942 6.13223 10.692Z" fill="currentColor"/>
+    </svg>
+);
+
+const WhatsappIcon = () => (
+    <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2.68241 7.31604L7.34862 7.3812L7.36491 6.21465L2.6987 6.14949L2.68241 7.31604ZM2.70685 5.56622L9.70616 5.66395L9.72245 4.4974L2.72314 4.39966L2.70685 5.56622ZM2.73128 3.81639L9.73059 3.91412L9.74688 2.74757L2.74757 2.64984L2.73128 3.81639ZM0 12.226L0.149135 1.5457C0.155 1.115 0.310192 0.751803 0.614263 0.456107C0.918334 0.16041 1.28572 0.0155694 1.71642 0.0215835L10.851 0.149135C11.2817 0.155149 11.6449 0.310192 11.9406 0.614263C12.2363 0.918334 12.3811 1.28572 12.3751 1.71642L12.2802 8.51791C12.2741 8.94861 12.1191 9.31181 11.815 9.60751C11.511 9.90321 11.1436 10.048 10.7129 10.042L2.36568 9.92547L0 12.226ZM1.89148 8.37285L10.7345 8.49633L10.8294 1.69484L1.69484 1.56728L1.59588 8.65406L1.89148 8.37285ZM1.59986 8.36878L1.69484 1.56728L1.59986 8.36878Z" fill="white"/>
+    </svg>
+);
+
+const PremiumBadgeIcon = () => (
+    <svg className="w-5 h-5 text-[#1A1C1C]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#FCD400" stroke="#1A1C1C" strokeWidth="2" strokeLinejoin="round"/>
+    </svg>
+);
 
 const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
     const [showUploadModal, setShowUploadModal] = useState(false);
@@ -91,66 +108,66 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
     };
 
     return (
-        <div className="w-full border-[4px] border-[#191b1a] bg-white p-4 sm:p-5 shadow-[6px_6px_0_#191b1a] flex flex-col gap-4">
+        <div className="w-full border-[4px] border-[#1A1C1C] bg-white p-6 shadow-[4px_4px_0_0_#000] flex flex-col gap-5">
 
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                <div className="space-y-1">
-                    <h3 className="text-xl sm:text-2xl font-black uppercase text-[#34399F] tracking-tight">
+                <div className="space-y-2">
+                    <h3 className="text-2xl sm:text-3xl font-bold uppercase text-[#34399F] tracking-tight">
                         {data.competitionName}
                     </h3>
 
-                    <div className="space-y-0.5 text-xs font-semibold text-gray-700">
+                    <div className="space-y-1 text-sm font-space-grotesk text-gray-700">
                         {!isIndividual && (
                             <p className="flex items-center gap-2">
-                                <span className="opacity-55 w-20">Team Name:</span>
-                                <span>{data.teamName || "-"}</span>
+                                <span className="opacity-55">Team Name:</span>
+                                <span className="font-extrabold text-[#1A1C1C]">{data.teamName || "-"}</span>
                             </p>
                         )}
                         <p className="flex items-center gap-2">
-                            <span className="opacity-55 w-20">
+                            <span className="opacity-55">
                                 {isIndividual ? "Reg. Code:" : "Join Code:"}
                             </span>
-                            <span className="font-mono bg-[#f0f0f0] border border-gray-300 px-2 py-0.5 text-[10px]">
+                            <span className="font-extrabold text-[#1A1C1C]">
                                 {data.teamJoinCode || "-"}
                             </span>
                         </p>
                     </div>
                 </div>
 
-                <div className="flex flex-row sm:flex-col lg:flex-row items-stretch sm:items-end lg:items-center gap-2 w-full sm:w-auto">
+                <div className="flex flex-row sm:flex-col lg:flex-row items-stretch sm:items-end lg:items-center gap-3 w-full sm:w-auto">
                     {isTeamVerified && (
                         <>
                             <button
                                 onClick={handleWhatsappClick}
-                                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border-[3px] border-[#191b1a] bg-[#25D366] px-3 py-2 text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#25D366] px-4 py-2 text-sm font-space-grotesk text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
                             >
-                                <FaWhatsapp className="text-sm" />
-                                WA Group
+                                <WhatsappIcon />
+                                Grup Whatsapp
                             </button>
-                            <div className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border-[3px] border-[#191b1a] bg-[#4ADE80] px-3 py-2 text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a]">
-                                <RiVerifiedBadgeFill className="text-sm" />
-                                Verified
+                            <div className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#4ADE80] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000]">
+                                <CheckIcon className="w-3.5 h-3.5 text-[#1A1C1C]" />
+                                Sudah Terverifikasi
                             </div>
                         </>
                     )}
 
                     {showPendingVerification && (
-                        <div className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border-[3px] border-[#191b1a] bg-[#FCD400] px-3 py-2 text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a]">
+                        <div className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#FCD400] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000]">
                             <span className="animate-spin text-xs">⌛</span>
                             Pending Verif
                         </div>
                     )}
 
                     {!isTeamVerified && !showPendingVerification && !isRejected && (
-                        <div className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border-[3px] border-[#191b1a] bg-[#ff8c75] px-3 py-2 text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a]">
-                            <MdErrorOutline className="text-sm" />
+                        <div className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#ff8c75] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000]">
+                            <MdErrorOutline className="text-base text-black" />
                             Unverified
                         </div>
                     )}
 
                     {isRejected && (
-                        <div className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 border-[3px] border-[#191b1a] bg-[#ef4444] px-3 py-2 text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a]">
-                            <MdErrorOutline className="text-sm" />
+                        <div className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#ef4444] px-4 py-2 text-sm font-space-grotesk font-bold text-white shadow-[4px_4px_0_0_#000]">
+                            <MdErrorOutline className="text-base text-white" />
                             Rejected
                         </div>
                     )}
@@ -158,13 +175,13 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
             </div>
 
             {isRejected && (
-                <div className="border-[3px] border-[#191b1a] bg-[#fef2f2] p-3 text-xs font-bold text-red-700 shadow-[4px_4px_0_#191b1a]">
+                <div className="border-[3px] border-[#1A1C1C] bg-[#fef2f2] p-4 text-xs font-bold text-red-700 shadow-[4px_4px_0_0_#000]">
                     <span className="font-extrabold uppercase text-red-800">Alasan Penolakan:</span>{" "}
                     {documentErrorReason || data.verificationError || "Berkas / bukti pembayaran tidak valid"}
                 </div>
             )}
 
-            <div className="border-[3px] border-[#191b1a] bg-[#EEEEEE] p-2.5 sm:p-3 flex flex-col gap-2">
+            <div className="border-2 border-[#1A1C1C] bg-[#EEE] p-4 flex flex-col gap-2.5">
                 {membersArray.map((anggota, idx) => {
                     const hasMemberError = anggota.verificationError && anggota.verificationError.trim() !== "";
                     const isApproved = isDocumentVerified && !hasMemberError;
@@ -172,34 +189,43 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                     return (
                         <div
                             key={idx}
-                            className={`flex items-center justify-between gap-3 p-2 bg-white border-2 border-[#191b1a] ${idx === 0 ? "border-l-[5px] border-l-[#FCD400]" : ""
+                            className={`flex items-center justify-between gap-4 p-3 bg-white border-2 border-[#1A1C1C] ${idx === 0 ? "border-l-[5px] border-l-[#FCD400]" : ""
                                 }`}
                         >
-                            <div className="flex items-center gap-2">
-                                <span className="text-base">{idx === 0 ? "👑" : "👤"}</span>
-                                <div className="text-xs font-bold">
-                                    <span className="opacity-55 mr-1">
+                            <div className="flex items-center gap-3">
+                                {idx === 0 ? (
+                                    <div className="border border-[#1A1C1C] bg-[#FCD400] p-1 flex items-center justify-center">
+                                        <PremiumBadgeIcon />
+                                    </div>
+                                ) : (
+                                    <span className="text-lg">👤</span>
+                                )}
+                                <div className="text-sm font-space-grotesk">
+                                    <span className="opacity-50 mr-1.5">
                                         {isIndividual ? "Peserta:" : (idx === 0 ? "Ketua:" : "Anggota:")}
                                     </span>
-                                    <span className={anggota.fullName === currentUser ? "text-[#34399F]" : ""}>
+                                    <span className={anggota.fullName === currentUser ? "text-[#34399F] font-bold" : "font-semibold"}>
                                         {anggota.fullName}
                                     </span>
                                 </div>
                             </div>
 
-                            <div>
+                            <div className="flex items-center gap-1.5">
                                 {hasMemberError ? (
-                                    <div className="border border-black bg-red-100 text-red-700 px-2 py-0.5 text-[10px] font-black uppercase">
-                                        Rejected
-                                    </div>
+                                    <>
+                                        <MdErrorOutline className="text-red-600 text-sm" />
+                                        <span className="text-red-600 font-hanken-grotesk font-extrabold text-[12px]">REJECTED</span>
+                                    </>
                                 ) : isApproved ? (
-                                    <div className="border border-black bg-green-100 text-green-700 px-2 py-0.5 text-[10px] font-black uppercase">
-                                        Approved
-                                    </div>
+                                    <>
+                                        <CheckIcon className="w-3.5 h-3.5 text-[#166534]" />
+                                        <span className="text-[#166534] font-hanken-grotesk font-extrabold text-[12px]">APPROVED</span>
+                                    </>
                                 ) : (
-                                    <div className="border border-black bg-yellow-100 text-yellow-700 px-2 py-0.5 text-[10px] font-black uppercase">
-                                        Pending
-                                    </div>
+                                    <>
+                                        <span className="text-amber-600 animate-pulse">⌛</span>
+                                        <span className="text-amber-600 font-hanken-grotesk font-extrabold text-[12px]">PENDING</span>
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -209,21 +235,21 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
             <div className="mt-1">
                 {!isDocumentVerified && (
-                    <div className="border-[3px] border-[#191b1a] bg-[#fffbeb] p-3 text-xs font-bold text-amber-700 shadow-[4px_4px_0_#191b1a] flex items-center gap-2">
+                    <div className="border-[3px] border-[#1A1C1C] bg-[#fffbeb] p-4 text-xs font-bold text-amber-700 shadow-[4px_4px_0_0_#000] flex items-center gap-2">
                         <span>⚠️</span>
                         <span>Lengkapi berkas agar panitia dapat memverifikasi tim Anda dan membuka menu pembayaran.</span>
                     </div>
                 )}
 
                 {!isTeamLeader && isDocumentVerified && !isTeamVerified && !isParagraphVerified && !isRejected && (
-                    <div className="border-[3px] border-[#191b1a] bg-[#fffbeb] p-3 text-xs font-bold text-amber-700 shadow-[4px_4px_0_#191b1a] flex items-center gap-2">
+                    <div className="border-[3px] border-[#1A1C1C] bg-[#fffbeb] p-4 text-xs font-bold text-amber-700 shadow-[4px_4px_0_0_#000] flex items-center gap-2">
                         <span>⚠️</span>
                         <span>Ingatkan ketua tim Anda untuk mengunggah bukti pembayaran agar pendaftaran selesai.</span>
                     </div>
                 )}
 
                 {isRejected && !hasDocumentError && isTeamLeader && (
-                    <div className="border-[3px] border-[#191b1a] bg-[#fef2f2] p-3 text-xs font-bold text-red-700 shadow-[4px_4px_0_#191b1a] flex items-center gap-2 mb-3">
+                    <div className="border-[3px] border-[#1A1C1C] bg-[#fef2f2] p-4 text-xs font-bold text-red-700 shadow-[4px_4px_0_0_#000] flex items-center gap-2 mb-3">
                         <span>⚠️</span>
                         <span>Silakan unggah kembali bukti pembayaran yang valid di bawah ini.</span>
                     </div>
@@ -232,7 +258,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 {(needsVerification || (isRejected && !hasDocumentError && isTeamLeader)) && (
                     <button
                         onClick={handleVerifyClick}
-                        className="w-full border-[3px] border-[#191b1a] bg-[#34399F] px-4 py-3 text-center text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                        className="w-full border-[3px] border-[#1A1C1C] bg-[#34399F] px-4 py-3.5 text-center text-xs font-black uppercase text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
                     >
                         <FaUpload className="inline mr-2 text-xs" />
                         {isRejected ? "Upload Ulang Bukti Pembayaran" : "Upload Bukti Pembayaran"}
@@ -242,16 +268,16 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
             {showUploadModal && (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-2 sm:px-4">
-                    <div className="border-[4px] border-[#191b1a] bg-white p-5 sm:p-6 rounded-none w-full max-w-md text-black shadow-[8px_8px_0_#191b1a] max-h-[90vh] overflow-y-auto custom-scrollbar">
+                    <div className="border-[4px] border-[#1A1C1C] bg-white p-5 sm:p-6 rounded-none w-full max-w-md text-black shadow-[8px_8px_0_#000] max-h-[90vh] overflow-y-auto custom-scrollbar">
                         <h3 className="text-lg font-black uppercase tracking-tight mb-4 text-[#34399F] text-center">
                             Upload Bukti Pembayaran
                         </h3>
 
                         <div className="mb-4 space-y-4">
-                            <div className="border-[3px] border-[#191b1a] bg-yellow-50 p-3 font-semibold text-[11px] sm:text-xs text-black leading-relaxed">
+                            <div className="border-[3px] border-[#1A1C1C] bg-yellow-50 p-3 font-semibold text-[11px] sm:text-xs text-black leading-relaxed">
                                 <div className="mb-2">
                                     <p className="font-extrabold text-[#34399F] mb-0.5">Informasi Rekening:</p>
-                                    <div className="border-2 border-[#191b1a] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-xs">
+                                    <div className="border-2 border-[#1A1C1C] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-xs">
                                         Blu by BCA DIGITAL<br />
                                         <span className="text-sm font-extrabold tracking-wide">0027 4625 4702</span><br />
                                         <span className="text-[10px] font-bold text-gray-700">a/n M Althaf Faiz Rafianto</span>
@@ -272,7 +298,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                                         <span className="font-bold text-black">Harga Batch 2: Rp 100.000</span>
                                     </p>
                                 </div>
-                                <div className="border border-[#191b1a] bg-white px-2 py-1 text-[10px] sm:text-[11px] italic text-gray-600 text-justify leading-snug">
+                                <div className="border border-[#1A1C1C] bg-white px-2 py-1 text-[10px] sm:text-[11px] italic text-gray-600 text-justify leading-snug">
                                     <span className="font-bold text-black">Contoh:</span> Ryan transfer <span className="font-bold text-black">100.002</span> Rupiah jika mendaftar <span className="font-bold text-black">GameToday</span> (Batch 2).
                                 </div>
                             </div>
@@ -285,7 +311,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                                     <span className="text-[9px] text-gray-500 font-bold ml-1">(JPG/PNG, maks 2MB)</span>
                                 </label>
                                 <div
-                                    className="border-3 border-dashed border-[#191b1a] rounded-none p-5 text-center bg-gray-50 hover:bg-gray-100 cursor-pointer w-full flex flex-col items-center justify-center gap-1.5 relative transition duration-300"
+                                    className="border-3 border-solid border-[#1A1C1C] rounded-none p-5 text-center bg-gray-50 hover:bg-gray-100 cursor-pointer w-full flex flex-col items-center justify-center gap-1.5 relative transition duration-300"
                                     onClick={() => pembayaranInputRef.current?.click()}
                                     onDragOver={(e) => e.preventDefault()}
                                     onDrop={(e) => {
@@ -334,14 +360,14 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                         <div className="flex gap-4 mt-6">
                             <button
                                 onClick={() => setShowUploadModal(false)}
-                                className="flex-1 py-2.5 border-[3px] border-[#191b1a] bg-gray-200 text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                className="flex-1 py-2.5 border-[3px] border-[#1A1C1C] bg-gray-200 text-xs font-black uppercase text-black shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={handleUploadSubmit}
                                 disabled={loadingUpload}
-                                className="flex-1 py-2.5 border-[3px] border-[#191b1a] bg-[#ffd400] text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50"
+                                className="flex-1 py-2.5 border-[3px] border-[#1A1C1C] bg-[#ffd400] text-xs font-black uppercase text-black shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50"
                             >
                                 {loadingUpload ? "Mengunggah..." : "Submit"}
                             </button>
@@ -352,14 +378,14 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
             {showAlert && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] px-4">
-                    <div className="border-[3px] border-[#191b1a] bg-white p-4 rounded-none max-w-xs w-full text-black shadow-[5px_5px_0_#191b1a]">
+                    <div className="border-[3px] border-[#1A1C1C] bg-white p-4 rounded-none max-w-xs w-full text-black shadow-[5px_5px_0_0_#000]">
                         <div className="flex items-center gap-3 mb-4">
                             <MdErrorOutline className="text-2xl text-red-500" />
                             <h3 className="text-sm font-bold">{alertMessage}</h3>
                         </div>
                         <button
                             onClick={() => setShowAlert(false)}
-                            className="w-full py-2 border-[3px] border-black bg-[#ffd400] font-black uppercase text-xs shadow-[4px_4px_0_#191b1a]"
+                            className="w-full py-2 border-[3px] border-black bg-[#ffd400] font-black uppercase text-xs shadow-[4px_4px_0_0_#000]"
                         >
                             OK
                         </button>
