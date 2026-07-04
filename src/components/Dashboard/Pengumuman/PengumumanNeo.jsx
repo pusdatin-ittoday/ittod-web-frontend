@@ -117,21 +117,24 @@ const PengumumanNeo = () => {
 
     // Helper to identify the category of each announcement
     const getAnnouncementCategory = (ann) => {
-        if (!ann.event_id) return "umum";
-        // Check if user is registered to this event
-        const isRegistered = competitions.some(
-            (c) => c.id === ann.event_id || (c.competitionId === ann.event_id)
-        );
-        return isRegistered ? "event" : "umum";
+        return ann.event ? "event" : "umum";
     };
 
+    // Filter list of announcements to only show:
+    // 1. General announcements (no event)
+    // 2. Announcements for events/competitions the user is registered in
+    const visibleAnnouncements = announcements.filter((ann) => {
+        if (!ann.event) return true;
+        return competitions.some((c) => c.id === ann.event.id || c.competitionId === ann.event.id);
+    });
+
     // Filter list based on selected category tab
-    const filteredAnnouncements = announcements.filter((ann) => {
+    const filteredAnnouncements = visibleAnnouncements.filter((ann) => {
         const cat = getAnnouncementCategory(ann);
         if (activeTab === "ALL") return true;
         if (activeTab === "UMUM") return cat === "umum";
         // Tab is specific event ID
-        return ann.event_id === activeTab;
+        return ann.event?.id === activeTab;
     });
 
     // Pagination Calculation

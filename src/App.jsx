@@ -67,6 +67,11 @@ const App = () => {
               <DashboardWrapper />
             </ProtectedRoute>
           } />
+          <Route path="/dashboard/pengumuman" element={
+            <ProtectedRoute>
+              <DashboardWrapper />
+            </ProtectedRoute>
+          } />
           <Route path="/submit-competition/:competitionId" element={
             <ProtectedRoute>
               <SubmitCompetition />

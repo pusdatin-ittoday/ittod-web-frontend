@@ -10,7 +10,7 @@ const DashboardWrapper = () => {
   const path = pathSegments.length > 2 ? pathSegments[2] : "beranda"; 
 
   // Fallback to beranda if no match or base /dashboard
-  const validTabs = ["beranda", "ikut-lomba", "ikut-event", "submit-lomba", "submit-gametoday", "submit-uxtoday", "submit-minetoday"];
+  const validTabs = ["beranda", "ikut-lomba", "ikut-event", "submit-lomba", "submit-gametoday", "submit-uxtoday", "submit-minetoday", "pengumuman"];
   const activeTab = validTabs.includes(path) ? path : "beranda";
 
   return <DashboardLayout activeTab={activeTab} />; 
