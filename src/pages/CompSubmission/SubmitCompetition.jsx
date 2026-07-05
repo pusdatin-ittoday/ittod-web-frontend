@@ -10,6 +10,7 @@ import DashboardNeoHeader from "../../components/Dashboard/DashboardNeoHeader";
 import Sidebar from "../../components/Dashboard/Sidebar";
 import Footer from "../../components/Footer";
 import LoadingState from "../../components/ui/LoadingState";
+import FallbackNotFound from "../Fallback/FallbackNotFound";
 
 const SubmitCompetition = () => {
   const { competitionId } = useParams();
@@ -25,15 +26,16 @@ const SubmitCompetition = () => {
   const [competitionName, setCompetitionName] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const [loading, setLoading] = useState(true);
+  const [competitionExists, setCompetitionExists] = useState(true);
 
   // Get fields configuration based on competitionId
   const [fieldsConfig, setFieldsConfig] = useState(SUBMISSION_FIELDS[competitionId?.toLowerCase()] || []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -43,9 +45,7 @@ const SubmitCompetition = () => {
     if (isSubmitting) return;
 
     const emptyFields = [];
-
-    // Validate required fields
-    fieldsConfig.forEach(field => {
+    fieldsConfig.forEach((field) => {
       if (!formData[field.name] || formData[field.name].trim() === "") {
         emptyFields.push(field.label);
       }
@@ -53,38 +53,29 @@ const SubmitCompetition = () => {
 
     if (emptyFields.length > 0) {
       setIncompleteFields(emptyFields);
-      setAlertMessage("Mohon lengkapi kolom berikut:");
       setAlertType("error");
+      setAlertMessage("Data belum lengkap! Mohon untuk mengisi field berikut:");
       setShowAlert(true);
       return;
     }
 
-    if (!teamId) {
-      setAlertMessage(`Tidak dapat menemukan ID tim Anda untuk kompetisi ini`);
-      setAlertType("error");
-      setShowAlert(true);
-      return;
-    }
+    const submissionData = {
+      submission_object: formData,
+    };
 
     setIsSubmitting(true);
-
     try {
-      const submissionPayload = {
-        team_id: teamId,
-        submission_object: formData,
-      };
+      const response = await upsertCompetitionFile(teamId, submissionData);
 
-      const result = await upsertCompetitionFile(submissionPayload);
-
-      if (!result.success) {
-        throw new Error(`Failed to submit: ${result.error}`);
+      if (!response.success) {
+        throw new Error(response.error || "Gagal mengirim submission");
       }
 
-      console.log("Form Submitted Successfully!");
+      console.log("Submission sent successfully");
 
       // Save to sessionStorage
       sessionStorage.setItem("SubmissionData", JSON.stringify(formData));
-      
+
       // Store active tab in localStorage
       localStorage.setItem("activeTab", "submit-lomba");
 
@@ -108,15 +99,37 @@ const SubmitCompetition = () => {
   const closeAlert = () => setShowAlert(false);
 
   useEffect(() => {
-    const fetchTeamData = async () => {
+    const fetchData = async () => {
       setLoading(true);
-      // Temporary delay for testing loading state
-      await new Promise(resolve => setTimeout(resolve, 3000));
       try {
-        const result = await getUserCompetitions();
-        if (result.success && result.data) {
+        const [teamResult, eventResult] = await Promise.all([
+          getUserCompetitions(),
+          getPublicEventById(competitionId)
+        ]);
+
+        if (!eventResult.success || !eventResult.data) {
+          setCompetitionExists(false);
+          setLoading(false);
+          return;
+        }
+
+        setCompetitionExists(true);
+        setEventDescription(eventResult.data.description || "");
+
+        // Populate dynamic fields from DB if present
+        if (eventResult.data.submission_fields && Array.isArray(eventResult.data.submission_fields) && eventResult.data.submission_fields.length > 0) {
+          const mapped = eventResult.data.submission_fields.map(f => ({
+            label: f.label,
+            type: f.type || 'url',
+            name: f.label, // Use label directly as name to prevent duplicates in Admin view
+            placeholder: `Masukkan ${f.label}`
+          }));
+          setFieldsConfig(mapped);
+        }
+
+        if (teamResult.success && teamResult.data) {
           // Find the specific competition team data
-          const team = result.data.find(
+          const team = teamResult.data.find(
             (comp) => comp.competitionId === competitionId
           );
 
@@ -154,46 +167,23 @@ const SubmitCompetition = () => {
           }
         }
       } catch (error) {
-        console.error("Error fetching team data:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
     if (competitionId) {
-      fetchTeamData();
+      fetchData();
     }
-  }, [competitionId]);
-
-  useEffect(() => {
-    const fetchEventDetails = async () => {
-      if (competitionId) {
-        try {
-          const res = await getPublicEventById(competitionId);
-          if (res.success && res.data) {
-            setEventDescription(res.data.description || "");
-            
-            // Populate dynamic fields from DB if present
-            if (res.data.submission_fields && Array.isArray(res.data.submission_fields) && res.data.submission_fields.length > 0) {
-              const mapped = res.data.submission_fields.map(f => ({
-                label: f.label,
-                type: f.type || 'url',
-                name: f.label, // Use label directly as name to prevent duplicates in Admin view
-                placeholder: `Masukkan ${f.label}`
-              }));
-              setFieldsConfig(mapped);
-            }
-          }
-        } catch (error) {
-          console.error("Error fetching event details:", error);
-        }
-      }
-    };
-    fetchEventDetails();
-  }, [competitionId]);
+  }, [competitionId, navigate]);
 
   if (loading) {
     return <LoadingState />;
+  }
+
+  if (!competitionExists) {
+    return <FallbackNotFound title="COMPETITION NOT FOUND" message="Kompetisi tidak ditemukan." />;
   }
 
   if (!fieldsConfig || fieldsConfig.length === 0) {
@@ -215,7 +205,7 @@ const SubmitCompetition = () => {
                   Kok kamu bisa masuk ke sini sih? Silakan hubungi panitia atau kembali ke halaman sebelumnya.
                 </p>
               </div>
-              <button 
+              <button
                 className="flex items-center gap-2 border-[3px] border-black bg-[#eeeeee] px-6 py-2.5 text-sm font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[5px_5px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
                 onClick={() => navigate("/dashboard/submit-lomba")}
               >

@@ -16,7 +16,9 @@ import FallbackEventCloseRegist from "./Fallback/FallbackCloseRegis";
 import DashboardNeoHeader from "../components/Dashboard/DashboardNeoHeader";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Footer from "../components/Footer";
+import FallbackNotFound from "./Fallback/FallbackNotFound";
 import { normalizeIndonesianPhoneNumber } from "../utils/phoneNumber";
+import LoadingState from "../components/ui/LoadingState";
 
 const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
 
@@ -24,6 +26,7 @@ const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
 const targetDisplayName = {
 	bootcamp: "Bootcamp",
 	"national-seminar": "Seminar Nasional",
+	seminar: "Seminar Nasional",
 	workshop: "Workshop",
 };
 
@@ -81,7 +84,8 @@ const DaftarEvent = () => {
 	const [bootcampBundling, setBootcampBundling] = useState("");
 	const [isActive, setIsActive] = useState(true);
 	const [checkingActive, setCheckingActive] = useState(true);
-	const displayName = targetDisplayName[target] || target || "Event";
+	const [exists, setExists] = useState(true);
+	const displayName = targetDisplayName[target] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : "Event");
 
 	const paymentFileInputRef = useRef(null);
 
@@ -158,6 +162,7 @@ const DaftarEvent = () => {
 	useEffect(() => {
 		const fetchEventConfiguration = async () => {
 			if (target === "workshop" && !workshopChoice) {
+				setExists(true);
 				setLinkWhatsapp("");
 				setCheckingActive(false);
 				return;
@@ -170,23 +175,28 @@ const DaftarEvent = () => {
 					const routeEventId =
 						target === "workshop"
 							? workshopChoice
-							: target === "national-seminar"
+							: (target === "national-seminar" || target === "seminar")
 								? "seminar"
 								: target;
 					const eventId = eventIdMapping[routeEventId] || routeEventId;
 					const event = res.data.find(e => e.id.toLowerCase() === eventId.toLowerCase());
 
 					if (event) {
+						setExists(true);
 						if (event.is_active !== undefined) {
 							setIsActive(event.is_active);
 						}
 						setLinkWhatsapp(event.whatsapp_group_link || "");
 					} else {
+						setExists(false);
 						setLinkWhatsapp("");
 					}
+				} else {
+					setExists(false);
 				}
 			} catch (e) {
 				console.error("Error fetching event configuration:", e);
+				setExists(false);
 				setLinkWhatsapp("");
 			}
 			setCheckingActive(false);
@@ -335,13 +345,11 @@ const DaftarEvent = () => {
 	};
 
 	if (checkingActive) {
-		return (
-			<EventRegistrationShell>
-				<div className="border-[3px] border-black bg-[#ffd400] px-6 py-4 text-sm font-black uppercase shadow-[5px_5px_0_#191b1a]">
-					Loading...
-				</div>
-			</EventRegistrationShell>
-		);
+		return <LoadingState />;
+	}
+
+	if (!exists) {
+		return <FallbackNotFound title="EVENT NOT FOUND" message="Event tidak ditemukan." />;
 	}
 
 	if (!isActive) {

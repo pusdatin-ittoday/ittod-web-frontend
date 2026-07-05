@@ -6,6 +6,7 @@ import { getPublicEvents } from "../../api/eventPublic.js";
 import DashboardNeoHeader from "../../components/Dashboard/DashboardNeoHeader.jsx";
 import Sidebar from "../../components/Dashboard/Sidebar.jsx";
 import Footer from "../../components/Footer.jsx";
+import FallbackNotFound from "../Fallback/FallbackNotFound.jsx";
 import { requireCompleteProfile } from "../../utils/profileCompletion.js";
 
 const RegistCompetition = () => {
@@ -25,6 +26,7 @@ const RegistCompetition = () => {
     const [incompleteFields, setIncompleteFields] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isCheckingProfile, setIsCheckingProfile] = useState(true);
+    const [exists, setExists] = useState(true);
 
     useEffect(() => {
         const guardTeamRegistration = async () => {
@@ -49,14 +51,12 @@ const RegistCompetition = () => {
                     setCompetitionId(event.id);
                     setCompetitionTitle(event.title);
                     setParticipationType(event.participation_type || "team");
+                    setExists(true);
                 } else {
-                    // Fallback to title casing the slug for display if event not found
-                    setCompetitionTitle(
-                        competitionSlug ? 
-                        competitionSlug.charAt(0).toUpperCase() + competitionSlug.slice(1) : 
-                        "Kompetisi"
-                    );
+                    setExists(false);
                 }
+            } else {
+                setExists(false);
             }
             setIsLoading(false);
         };
@@ -170,6 +170,24 @@ const RegistCompetition = () => {
     const closeAlert = () => {
         setShowAlert(false);
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
+                <DashboardNeoHeader />
+                <div className="flex min-h-[520px] items-center justify-center p-6">
+                    <p className="border-[3px] border-black bg-[#ffd400] px-5 py-3 text-sm font-black uppercase shadow-[5px_5px_0_#191b1a] animate-pulse">
+                        Memuat data...
+                    </p>
+                </div>
+                <Footer variant="neobrutal" />
+            </div>
+        );
+    }
+
+    if (!exists) {
+        return <FallbackNotFound title="COMPETITION NOT FOUND" message="Kompetisi tidak ditemukan." />;
+    }
 
     if (isCheckingProfile) {
         return (
