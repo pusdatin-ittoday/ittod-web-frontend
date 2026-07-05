@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { loginUser, initiateGoogleLogin, resendVerificationEmail } from "../../api/user";
 import Footer from "../../components/Footer";
+import NavbarNeo from "../../components/layout/Navbar";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -111,37 +112,9 @@ const Login = () => {
             }}
         >
             {/* Top Area (Navbar + Form Content) */}
-            <div className="flex flex-col flex-grow">
+            <NavbarNeo />
+            <div className="flex flex-col flex-grow pt-16 md:pt-20">
                 {/* Top Navbar Header */}
-                <header className="w-full bg-[#1E3A8A] h-16 flex items-center justify-between px-6 md:px-16 border-b-2 border-black z-10">
-                    <div className="flex items-center">
-                        <img
-                            src="/LOGO_ITTODAY_2025.webp"
-                            alt="IT Today Logo"
-                            className="h-10 md:h-12 w-auto object-contain cursor-pointer"
-                            onClick={() => navigate("/")}
-                            onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "https://placehold.co/150x50/cccccc/ffffff?text=ITTODAY";
-                            }}
-                        />
-                    </div>
-                    <nav className="flex items-center gap-6">
-                        <a 
-                            href="/" 
-                            className="text-white text-xs md:text-sm font-bold tracking-wider hover:text-gray-300 transition-colors uppercase font-sans"
-                        >
-                            Home
-                        </a>
-                        <a 
-                            href="/event" 
-                            className="text-white text-xs md:text-sm font-bold tracking-wider hover:text-gray-300 transition-colors uppercase font-sans"
-                        >
-                            Event
-                        </a>
-                    </nav>
-                </header>
-
                 {/* Main Content Area */}
                 <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
                     {/* Login Content Card */}
