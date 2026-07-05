@@ -1,153 +1,166 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaFacebook, FaInstagram, FaLinkedin, FaXTwitter } from 'react-icons/fa6';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#452C4C]/60 text-white py-12 w-full">
-      <div className="w-full px-5 md:px-8 lg:px-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-center md:text-left">
-          {/* BAGIAN KIRI */}
-          <div className="flex flex-col items-center md:items-start justify-start space-y-1">
-            <h2 className="text-xl font-bold hover:text-pink-400 cursor-pointer font-dm-playfair">
-              IT TODAY 2025
+    <footer className="bg-[#111111] text-white py-12 md:py-16 w-full border-t border-black/10 select-none">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 md:gap-8">
+          
+          {/* Column 1: Branding / Identitas */}
+          <div className="flex flex-col space-y-4">
+            <h2 className="text-3xl font-black italic tracking-wide font-sans text-[#FBBF24] leading-tight">
+              IT TODAY <br /> 2026
             </h2>
-            <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">
-              Departemen Ilmu Komputer
-            </p>
-            <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer">
-              IPB University
-            </p>
+            <div className="text-[10px] md:text-xs font-bold tracking-widest text-gray-400 space-y-1 uppercase font-sans">
+              <p>DEPARTEMEN ILMU KOMPUTER</p>
+              <p>IPB UNIVERSITY</p>
+            </div>
           </div>
 
-          {/* BAGIAN KANAN */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {/* EVENTS */}
-            <div className="flex flex-col items-center md:items-start space-y-2">
+          {/* Column 2: EVENTS */}
+          <div className="flex flex-col space-y-4">
+            <h3 className="text-sm font-black tracking-widest text-white uppercase font-sans">
+              EVENTS
+            </h3>
+            <ul className="flex flex-col space-y-2.5 font-sans">
+              <li>
+                <a
+                  href="/event#national-seminar"
+                  className="text-xs md:text-sm text-gray-400 hover:text-[#FBBF24] transition-colors duration-200 font-medium"
+                >
+                  National Seminar
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/event#workshop"
+                  className="text-xs md:text-sm text-gray-400 hover:text-[#FBBF24] transition-colors duration-200 font-medium"
+                >
+                  Workshop
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/event#bootcamp"
+                  className="text-xs md:text-sm text-gray-400 hover:text-[#FBBF24] transition-colors duration-200 font-medium"
+                >
+                  Bootcamp
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: COMPETITIONS */}
+          <div className="flex flex-col space-y-4">
+            <h3 className="text-sm font-black tracking-widest text-white uppercase font-sans">
+              COMPETITIONS
+            </h3>
+            <ul className="flex flex-col space-y-2.5 font-sans">
+              <li>
+                <a
+                  href="/competition#game-today"
+                  className="text-xs md:text-sm text-gray-400 hover:text-[#FBBF24] transition-colors duration-200 font-medium"
+                >
+                  Game Today
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/competition#hack-today"
+                  className="text-xs md:text-sm text-gray-400 hover:text-[#FBBF24] transition-colors duration-200 font-medium"
+                >
+                  Hack Today
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/competition#ux-today"
+                  className="text-xs md:text-sm text-gray-400 hover:text-[#FBBF24] transition-colors duration-200 font-medium"
+                >
+                  UX Today
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/competition#mine-today"
+                  className="text-xs md:text-sm text-gray-400 hover:text-[#FBBF24] transition-colors duration-200 font-medium"
+                >
+                  Mine Today
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: SOCIAL MEDIA */}
+          <div className="flex flex-col space-y-4">
+            <h3 className="text-sm font-black tracking-widest text-white uppercase font-sans">
+              SOCIAL MEDIA
+            </h3>
+            <div className="flex flex-row items-center gap-4">
               <a
-                href="#event"
-                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
+                href="https://www.facebook.com/people/Ittoday-Ipb/pfbid023SS24sTjuCxJhY4Q61jr9FKxHfGEMvAQrpjBJWbj9LpdygyCtHwyhWxy7jMtcrCkl/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-[#FBBF24] text-xl transition-colors duration-200"
+                aria-label="Facebook"
               >
-                EVENTS
+                <FaFacebook />
               </a>
-              <Link
-                to="/event/national_seminar"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+              <a
+                href="https://www.instagram.com/ittoday_ipb/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-[#FBBF24] text-xl transition-colors duration-200"
+                aria-label="Instagram"
               >
-                National Seminar
-              </Link>
-              <Link
-                to="/event/workshop"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+                <FaInstagram />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/ittoday/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-[#FBBF24] text-xl transition-colors duration-200"
+                aria-label="LinkedIn"
               >
-                Workshop
-              </Link>
-              <Link
-                to="/event/bootcamp"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
+                <FaLinkedin />
+              </a>
+              <a
+                href="https://x.com/ittoday_ipb"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-[#FBBF24] text-xl transition-colors duration-200"
+                aria-label="Twitter X"
               >
-                Bootcamp
-              </Link>
+                <FaXTwitter />
+              </a>
             </div>
+          </div>
 
-            {/* COMPETITIONS */}
-            <div className="flex flex-col items-center md:items-start space-y-2">
+          {/* Column 5: KONTAK KAMI */}
+          <div className="flex flex-col space-y-4">
+            <h3 className="text-sm font-black tracking-widest text-white uppercase font-sans">
+              KONTAK KAMI
+            </h3>
+            <div className="flex flex-col space-y-2.5 font-sans">
               <a
-                href="#competition"
-                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
+                href="mailto:pr@ittoday.web.id"
+                className="text-xs md:text-sm text-gray-400 hover:text-[#FBBF24] transition-colors duration-200 break-words"
               >
-                COMPETITIONS
-              </a>
-              <Link
-                to="/competition/game_today"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
-              >
-                Game Today
-              </Link>
-              <Link
-                to="/competition/hack_today"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
-              >
-                Hack Today
-              </Link>
-              <Link
-                to="/competition/ux_today"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
-              >
-                UX Today
-              </Link>
-              <Link
-                to="/competition/mine_today"
-                className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer"
-              >
-                Mine Today
-              </Link>
-            </div>
-
-            <div className="flex flex-col items-center md:items-start space-y-4">
-              <a
-                href="#contact"
-                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
-              >
-                SOCIAL MEDIA
-              </a>
-
-              <div className="grid grid-cols-3 gap-4 justify-items-center">
-                {[
-                  {
-                    icon: "facebook.svg",
-                    url: "https://www.facebook.com/people/Ittoday-Ipb/pfbid023SS24sTjuCxJhY4Q61jr9FKxHfGEMvAQrpjBJWbj9LpdygyCtHwyhWxy7jMtcrCkl/",
-                  },
-                  { icon: "line.svg", url: "https://line.me/R/ti/p/@ukd0443x" },
-                  {
-                    icon: "instagram.svg",
-                    url: "https://www.instagram.com/ittoday_ipb/",
-                  },
-                  {
-                    icon: "linkedin.svg",
-                    url: "https://www.linkedin.com/company/ittoday/",
-                  },
-                  { icon: "x.svg", url: "https://x.com/ittoday_ipb" },
-                  {
-                    icon: "tiktok.svg",
-                    url: "https://www.tiktok.com/@ittoday_ipb",
-                  },
-                ].map((item, i) => (
-                  <div key={i} className="flex justify-center">
-                    <a href={item.url}>
-                      <div className="w-6 h-6 flex items-center justify-center rounded-md hover:scale-155 transition duration-300 ease-in-out">
-                        <img
-                          src={`/${item.icon}`}
-                          alt={`Social Icon ${i + 1}`}
-                          className="w-6 h-6 object-contain"
-                        />
-                      </div>
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* KONTAK KAMI */}
-            <div className="flex flex-col items-center md:items-start space-y-2">
-              <a
-                href="#contact"
-                className="text-lg font-bold hover:text-pink-400 cursor-pointer font-dm-playfair"
-              >
-                KONTAK KAMI
-              </a>
-
-              <p className="text-sm font-dm-sans hover:text-pink-400 cursor-pointer whitespace-nowrap">
                 pr@ittoday.web.id
-              </p>
-
+              </a>
               <a
-                href="https://wa.me/+6281256518375"
-                className="font-dm-sans hover:text-pink-400 cursor-pointer text-sm"
+                href="https://wa.me/6281256518375"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs md:text-sm text-gray-400 hover:text-[#FBBF24] transition-colors duration-200"
               >
                 +6281256518375
               </a>
             </div>
           </div>
+
         </div>
       </div>
     </footer>
