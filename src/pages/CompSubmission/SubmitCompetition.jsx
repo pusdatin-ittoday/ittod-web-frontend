@@ -25,7 +25,7 @@ const SubmitCompetition = () => {
   const [loading, setLoading] = useState(true);
 
   // Get fields configuration based on competitionId
-  const fieldsConfig = SUBMISSION_FIELDS[competitionId?.toLowerCase()] || [];
+  const [fieldsConfig, setFieldsConfig] = useState(SUBMISSION_FIELDS[competitionId?.toLowerCase()] || []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -168,6 +168,17 @@ const SubmitCompetition = () => {
           const res = await getPublicEventById(competitionId);
           if (res.success && res.data) {
             setEventDescription(res.data.description || "");
+            
+            // Populate dynamic fields from DB if present
+            if (res.data.submission_fields && Array.isArray(res.data.submission_fields) && res.data.submission_fields.length > 0) {
+              const mapped = res.data.submission_fields.map(f => ({
+                label: f.label,
+                type: f.type || 'url',
+                name: f.label, // Use label directly as name to prevent duplicates in Admin view
+                placeholder: `Masukkan ${f.label}`
+              }));
+              setFieldsConfig(mapped);
+            }
           }
         } catch (error) {
           console.error("Error fetching event details:", error);
