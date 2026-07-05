@@ -195,7 +195,7 @@ const Register = () => {
                                         onChange={(e) => setNamaLengkap(e.target.value)}
                                         disabled={loading}
                                         required
-                                        className="w-full pl-11 pr-10 py-3 border-2 border-black bg-white text-black text-xs md:text-sm font-semibold outline-none rounded-none placeholder-gray-300 focus:border-[#1E3A8A] font-sans tracking-wide uppercase transition-all shadow-[4px_4px_0px_0px_#000000]"
+                                        className="w-full pl-11 pr-10 py-3 border-2 border-black bg-white text-black text-xs md:text-sm font-semibold outline-none rounded-none placeholder-gray-300 focus:border-[#1E3A8A] font-sans tracking-wide transition-all shadow-[4px_4px_0px_0px_#000000]"
                                     />
                                     {/* Simulated Check Icon if Name length >= 8 */}
                                     {namaLengkap.length >= 8 && (
@@ -226,7 +226,7 @@ const Register = () => {
                                         onChange={(e) => setEmail(e.target.value)}
                                         disabled={loading}
                                         required
-                                        className="w-full pl-11 pr-4 py-3 border-2 border-black bg-white text-black text-xs md:text-sm font-semibold outline-none rounded-none placeholder-gray-300 focus:border-[#1E3A8A] font-sans tracking-wide uppercase transition-all shadow-[4px_4px_0px_0px_#000000]"
+                                        className="w-full pl-11 pr-4 py-3 border-2 border-black bg-white text-black text-xs md:text-sm font-semibold outline-none rounded-none placeholder-gray-300 focus:border-[#1E3A8A] font-sans tracking-wide transition-all shadow-[4px_4px_0px_0px_#000000]"
                                     />
                                 </div>
                             </div>
@@ -249,7 +249,7 @@ const Register = () => {
                                         onChange={(e) => setPassword(e.target.value)}
                                         disabled={loading}
                                         required
-                                        className="w-full pl-11 pr-10 py-3 border-2 border-black bg-white text-black text-xs md:text-sm font-semibold outline-none rounded-none placeholder-gray-300 focus:border-[#1E3A8A] font-sans tracking-wide uppercase transition-all shadow-[4px_4px_0px_0px_#000000]"
+                                        className="w-full pl-11 pr-10 py-3 border-2 border-black bg-white text-black text-xs md:text-sm font-semibold outline-none rounded-none placeholder-gray-300 focus:border-[#1E3A8A] font-sans tracking-wide transition-all shadow-[4px_4px_0px_0px_#000000]"
                                     />
                                     <button
                                         type="button"
@@ -288,7 +288,7 @@ const Register = () => {
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         disabled={loading}
                                         required
-                                        className="w-full pl-11 pr-10 py-3 border-2 border-black bg-white text-black text-xs md:text-sm font-semibold outline-none rounded-none placeholder-gray-300 focus:border-[#1E3A8A] font-sans tracking-wide uppercase transition-all shadow-[4px_4px_0px_0px_#000000]"
+                                        className="w-full pl-11 pr-10 py-3 border-2 border-black bg-white text-black text-xs md:text-sm font-semibold outline-none rounded-none placeholder-gray-300 focus:border-[#1E3A8A] font-sans tracking-wide transition-all shadow-[4px_4px_0px_0px_#000000]"
                                     />
                                     <button
                                         type="button"

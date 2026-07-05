@@ -116,7 +116,7 @@ const ForgetPassword = () => {
                                         onChange={(e) => setEmail(e.target.value)}
                                         disabled={loading}
                                         required
-                                        className="w-full pl-11 pr-4 py-3 border-2 border-black bg-white text-black text-xs md:text-sm font-semibold outline-none rounded-none placeholder-gray-300 focus:border-[#1E3A8A] font-sans tracking-wide uppercase transition-colors"
+                                        className="w-full pl-11 pr-4 py-3 border-2 border-black bg-white text-black text-xs md:text-sm font-semibold outline-none rounded-none placeholder-gray-300 focus:border-[#1E3A8A] font-sans tracking-wide transition-colors"
                                     />
                                 </div>
                             </div>
