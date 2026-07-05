@@ -6,6 +6,51 @@ import { getCurrentUser, getUserCompetitions } from "../../../api/user";
 
 // Removed hardcoded eventsData
 
+const CardSubmitNeo = ({ title, submitLink, isSubmitted }) => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="w-full max-w-[550px] border-[4px] border-[#1A1C1C] bg-[#FFF] p-8 sm:p-12 shadow-[6px_6px_0_0_#000] flex flex-col items-center justify-between gap-6 relative overflow-hidden">
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex items-center gap-2 text-[#34399F]">
+          <TfiClipboard className="text-xl text-[#34399F]" />
+          <span className="font-anybody text-xs sm:text-sm font-bold uppercase tracking-wider text-[#1A1C1C]">
+            UPLOAD KARYA TERBAIKMU
+          </span>
+        </div>
+        <p className="font-hanken-grotesk text-sm text-[#464652] text-center">
+          Pastikan Karyamu Sudah Siap!
+        </p>
+      </div>
+
+      <div className="my-6">
+        <h3 className="font-anybody text-3xl sm:text-4xl font-extrabold text-[#34399F] tracking-wide uppercase text-center">
+          {title}
+        </h3>
+      </div>
+
+      {isSubmitted ? (
+        <button
+          onClick={() => navigate("/" + submitLink)}
+          className="w-full flex items-center justify-center gap-2 border-[4px] border-[#1A1C1C] bg-[#BBF7D0] py-4 text-base sm:text-lg font-anybody font-extrabold text-[#166534] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+        >
+          ✓ SUBMITTED
+        </button>
+      ) : (
+        <button
+          onClick={() => navigate("/" + submitLink)}
+          className="w-full flex items-center justify-center gap-3 border-[4px] border-[#1A1C1C] bg-[#34399F] py-4 text-base sm:text-lg font-anybody font-extrabold text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+        >
+          SUBMIT
+          <svg className="w-5 h-5 fill-current" viewBox="0 0 24 20">
+            <path d="M0 20V0L23.75 10L0 20ZM2.5 16.25L17.3125 10L2.5 3.75V8.125L10 10L2.5 11.875V16.25ZM2.5 16.25V10V3.75V8.125V11.875V16.25Z" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+};
+
 const CardSubmit = ({ title, image, submitLink }) => {
   const navigate = useNavigate();
   
@@ -28,7 +73,6 @@ const CardSubmit = ({ title, image, submitLink }) => {
       {submitLink && (
         <div className="flex gap-5">
           <button
-            // To this:
             onClick={() => navigate("/" + submitLink)}
             className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer"
           >
@@ -40,7 +84,7 @@ const CardSubmit = ({ title, image, submitLink }) => {
   );
 };
 
-const CompSubmitCard = () => {
+const CompSubmitCard = ({ variant = "default" }) => {
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [userData, setUserData] = useState({ name: "" });
   const [competitions, setCompetitions] = useState([]);
@@ -64,15 +108,11 @@ const CompSubmitCard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch both user profile and competitions in parallel
         const [userResponse, competitionsResponse] = await Promise.all([
           getCurrentUser(),
           getUserCompetitions()
         ]);
         
-        // console.log("User Response:", userResponse.data);
-        // console.log("Competitions Response:", competitionsResponse.data);
-
         // Process user data
         if (userResponse.success && userResponse.data) {
           const fullName = userResponse.data.full_name || userResponse.data.name || "User";
@@ -82,15 +122,16 @@ const CompSubmitCard = () => {
         // Process competitions data
         if (competitionsResponse.success && competitionsResponse.data) {
           setCompetitions(competitionsResponse.data);
-          // Filter the events based on user's competitions that require submission
+          // Filter the events based on user's competitions that require submission AND are verified
           const userCompetitions = competitionsResponse.data || [];
           const filtered = userCompetitions
-            .filter(comp => comp.requiresSubmission === true)
+            .filter(comp => comp.requiresSubmission === true && comp.isVerified === true)
             .map(comp => ({
               id: comp.competitionId,
               title: comp.competitionName,
               image: comp.logo_url || `/logo-competition/${comp.competitionId?.toUpperCase()}.webp`,
-              submitLink: `submit-competition/${comp.competitionId}`
+              submitLink: `submit-competition/${comp.competitionId}`,
+              isSubmitted: !!comp.submissionData
             }));
           
           setFilteredEvents(filtered);
@@ -109,6 +150,55 @@ const CompSubmitCard = () => {
 
     fetchData();
   }, []);
+
+  if (variant === "neobrutal") {
+    return (
+      <div className="w-full border-[5px] border-[#1A1C1C] bg-[#F3F3F3] p-6 sm:p-9 shadow-[5px_5px_0_0_#1A1C1C] flex flex-col gap-6">
+        {/* Header */}
+        <div className="pb-6 border-b-2 border-dashed border-[#464652] flex flex-col gap-1.5">
+          <h2 className="font-anybody text-xl sm:text-2xl font-bold uppercase tracking-tight text-[#1A1C1C]">
+            SUBMIT KARYA TERBAIK ANDA !
+          </h2>
+          <p className="font-hanken-grotesk text-sm sm:text-base text-[#464652]">
+            Pilih Cabang Lomba yang anda ikuti
+          </p>
+        </div>
+
+        {/* Alert */}
+        {showSuccessAlert && (
+          <div className="border-[3px] border-black bg-[#b8f2cf] p-4 text-xs font-bold text-[#166534] shadow-[4px_4px_0_0_#000] flex items-center gap-2 self-start mb-2">
+            <MdCheckCircleOutline className="text-xl" />
+            <span>Form berhasil dikirim!</span>
+          </div>
+        )}
+
+        {/* Loading / Empty / Content states */}
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-pulse text-black font-bold text-lg">Loading...</div>
+          </div>
+        ) : noCompetitions ? (
+          <div className="flex flex-col justify-center items-center text-center p-8 bg-white border-4 border-[#1a1c1c] shadow-[6px_6px_0_0_#000]">
+            <MdInfo className="text-5xl text-[#34399F] mb-3" />
+            <h3 className="text-black text-lg sm:text-xl font-black uppercase mb-2">Tidak ada lomba yang bisa disubmit</h3>
+            <p className="text-gray-600 text-sm max-w-md">Kamu belum terdaftar pada lomba yang memiliki submission. Daftar lomba terlebih dahulu untuk dapat mengunggah karya.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center">
+            {filteredEvents.map((event, idx) => (
+              <CardSubmitNeo
+                key={idx}
+                title={event.title}
+                submitLink={event.submitLink}
+                isSubmitted={event.isSubmitted}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="h-[500px] w-full lg:w-[650px] bg-[#7b446c] rounded-lg shadow-lg flex flex-col p-6 border-[#dfb4d7]/60">
       {/* Header */}

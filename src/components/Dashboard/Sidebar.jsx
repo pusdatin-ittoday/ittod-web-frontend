@@ -42,7 +42,7 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                             key={item.id}
                             type="button"
                             onClick={() => {
-                                setActive(item.id);
+                                if (setActive) setActive(item.id);
                                 navigate(`/dashboard/${item.id}`);
                             }}
                             className={`flex min-h-14 items-center gap-3 border-[3px] border-black px-3 py-3 text-left text-xs font-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none sm:text-sm ${
@@ -86,7 +86,7 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                     <button
                         key={item.id}
                         onClick={() => {
-                            setActive(item.id);
+                            if (setActive) setActive(item.id);
                             navigate(`/dashboard/${item.id}`);
                         }}
                         className={`px-4 sm:px-6 md:px-8 py-1 sm:py-2.5 md:py-3 lg:px-8 lg:text-start lg:py-2 xl:py-3 xl:px-10

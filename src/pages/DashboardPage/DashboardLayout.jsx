@@ -67,7 +67,7 @@ class DashboardLayout extends Component {
   };
 
   render() {
-    const usesNeobrutalDashboard = ["ikut-event", "ikut-lomba", "beranda", "pengumuman"].includes(
+    const usesNeobrutalDashboard = ["ikut-event", "ikut-lomba", "beranda", "pengumuman", "submit-lomba"].includes(
       this.state.active
     );
 
@@ -92,6 +92,8 @@ class DashboardLayout extends Component {
                 <IkutLomba variant="neobrutal" />
               ) : this.state.active === "pengumuman" ? (
                 <Pengumuman variant="neobrutal" />
+              ) : this.state.active === "submit-lomba" ? (
+                <SubmitLomba variant="neobrutal" />
               ) : (
                 <Beranda variant="neobrutal" />
               )}

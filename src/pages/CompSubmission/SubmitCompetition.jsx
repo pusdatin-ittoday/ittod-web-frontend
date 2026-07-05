@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../../components/Navbar";
 import { useParams, useNavigate } from "react-router-dom";
 import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md";
 import { upsertCompetitionFile } from "../../api/compeFile";
 import { getUserCompetitions } from "../../api/user";
+import { getPublicEventById } from "../../api/eventPublic";
 import { SUBMISSION_FIELDS } from "./SubmissionConfig";
+import DashboardNeoHeader from "../../components/Dashboard/DashboardNeoHeader";
+import Sidebar from "../../components/Dashboard/Sidebar";
+import Footer from "../../components/Footer";
 
 const SubmitCompetition = () => {
   const { competitionId } = useParams();
@@ -18,10 +21,10 @@ const SubmitCompetition = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [teamId, setTeamId] = useState("");
   const [competitionName, setCompetitionName] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
   const [loading, setLoading] = useState(true);
 
   // Get fields configuration based on competitionId
-  // Fallback to empty array if config is not defined
   const fieldsConfig = SUBMISSION_FIELDS[competitionId?.toLowerCase()] || [];
 
   const handleChange = (e) => {
@@ -114,6 +117,16 @@ const SubmitCompetition = () => {
           );
 
           if (team && team.teamID) {
+            if (!team.isVerified) {
+              setAlertType("error");
+              setAlertMessage("Pendaftaran tim Anda belum disetujui (Approved) oleh admin");
+              setShowAlert(true);
+              setTimeout(() => {
+                navigate("/dashboard/submit-lomba");
+              }, 2000);
+              return;
+            }
+
             setTeamId(team.teamID);
             setCompetitionName(team.competitionName || competitionId);
 
@@ -147,108 +160,146 @@ const SubmitCompetition = () => {
     }
   }, [competitionId]);
 
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      if (competitionId) {
+        try {
+          const res = await getPublicEventById(competitionId);
+          if (res.success && res.data) {
+            setEventDescription(res.data.description || "");
+          }
+        } catch (error) {
+          console.error("Error fetching event details:", error);
+        }
+      }
+    };
+    fetchEventDetails();
+  }, [competitionId]);
+
   if (loading) {
     return (
-      <>
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center p-4">
-          <p className="text-white text-lg">Loading form...</p>
+      <div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
+        <DashboardNeoHeader />
+        <div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[760px] lg:flex-row">
+          <aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
+            <Sidebar active="submit-lomba" variant="neobrutal" />
+          </aside>
+          <main className="min-w-0 flex-1 flex items-center justify-center p-4">
+            <p className="text-black text-lg font-bold animate-pulse">Loading form...</p>
+          </main>
         </div>
-      </>
+        <Footer variant="neobrutal" />
+      </div>
     );
   }
 
   if (!fieldsConfig || fieldsConfig.length === 0) {
     return (
-      <>
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center p-4">
-          <div className="bg-[#7b446c] text-white rounded-2xl shadow-lg p-8 max-w-3xl w-full text-center">
-            <h2 className="text-xl font-bold mb-4">Form Submit Tidak Ditemukan</h2>
-            <p>Konfigurasi submisi untuk kompetisi ini tidak tersedia.</p>
-            <button 
-              onClick={() => navigate("/dashboard/submit-lomba")}
-              className="mt-6 custom-button-bg text-white px-4 py-2 rounded button-hover"
-            >
-              Kembali
-            </button>
-          </div>
+      <div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
+        <DashboardNeoHeader />
+        <div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[760px] lg:flex-row">
+          <aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
+            <Sidebar active="submit-lomba" variant="neobrutal" />
+          </aside>
+          <main className="min-w-0 flex-1 flex items-center justify-center p-4">
+            <div className="bg-white text-black border-[4px] border-black p-8 shadow-[8px_8px_0_#191b1a] max-w-3xl w-full text-center">
+              <h2 className="text-xl font-black uppercase mb-4">Form Submit Tidak Ditemukan</h2>
+              <p className="font-semibold text-gray-700">Konfigurasi submisi untuk kompetisi ini tidak tersedia.</p>
+              <button 
+                onClick={() => navigate("/dashboard/submit-lomba")}
+                className="mt-6 border-[3px] border-black bg-[#eeeeee] px-6 py-2.5 text-sm font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[5px_5px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
+              >
+                Kembali
+              </button>
+            </div>
+          </main>
         </div>
-      </>
+        <Footer variant="neobrutal" />
+      </div>
     );
   }
 
   return (
-    <>
-      <Navbar />
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-[#7b446c] text-white rounded-2xl shadow-lg p-8 max-w-3xl w-full">
-          <h2 className="text-lg lg:text-2xl font-dm-sans font-bold text-center mb-6 uppercase">
-            Form Submit {competitionName}
-          </h2>
+    <div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
+      <DashboardNeoHeader />
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 font-dm-sans">
-            {fieldsConfig.map((field, idx) => (
-              <div key={idx} className="mb-3 relative">
-                <label htmlFor={field.name} className="block text-sm font-bold mb-2">
-                  {field.label}
-                </label>
-                {field.icon && (
-                  <field.icon className="absolute left-3 top-12 transform -translate-y-1/2 text-[#3D2357] text-xl" />
-                )}
-                <input
-                  id={field.name}
-                  name={field.name}
-                  value={formData[field.name] || ""}
-                  onChange={handleChange}
-                  type="text"
-                  placeholder={field.placeholder}
-                  className="pl-10 py-2 w-full rounded-md text-[#3D2357] bg-[#F4F0F8] focus:outline-none focus:ring-2 focus:ring-[#AC6871]"
-                />
-              </div>
-            ))}
+      <div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[760px] lg:flex-row">
+        <aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
+          <Sidebar
+            active="submit-lomba"
+            variant="neobrutal"
+          />
+        </aside>
 
-            <div className="buttons flex flex-row justify-end mt-4">
-              <a
-                onClick={() => {
-                  localStorage.setItem("activeTab", "submit-lomba");
-                  window.location.href = "/dashboard/submit-lomba";
-                }}
-                className="bg-gray-300 text-black px-4 py-2 rounded mr-2 cursor-pointer transition duration-300 hover:scale-105"
-              >
-                Batal
-              </a>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`custom-button-bg text-white px-4 py-2 rounded cursor-pointer ${
-                  isSubmitting
-                    ? "opacity-75 cursor-not-allowed"
-                    : "button-hover transition duration-300 ease-in-out hover:scale-105"
-                }`}
-              >
-                {isSubmitting ? "Mengirim..." : "Simpan"}
-              </button>
+        <main className="flex min-w-0 flex-1 items-start justify-center px-4 py-8 sm:px-7 lg:px-10 lg:py-10">
+          <section className="w-full max-w-5xl border-[4px] border-black bg-[#f4f4f2] p-4 shadow-[8px_8px_0_#191b1a] sm:p-6 lg:p-8">
+            <div className="border-[3px] border-black bg-white p-6 shadow-[7px_7px_0_#191b1a] sm:p-8 lg:p-10">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#3f46b8]">
+                {competitionName}
+              </p>
+              <h1 className="mt-3 text-2xl font-black sm:text-3xl">
+                Submit Karyamu
+              </h1>
+              <p className="mt-2 text-sm font-semibold text-[#806400] sm:text-base">
+                {eventDescription || "Silakan masukkan link karya terbaik Anda untuk kompetisi ini."}
+              </p>
+
+              <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-6">
+                {fieldsConfig.map((field, idx) => (
+                  <div key={idx} className="flex flex-col gap-2">
+                    <label htmlFor={field.name} className="text-sm font-black uppercase tracking-wider text-gray-700">
+                      {field.label}
+                    </label>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      value={formData[field.name] || ""}
+                      onChange={handleChange}
+                      type="text"
+                      placeholder={field.placeholder || "Masukkan Link"}
+                      className="w-full border-[3px] border-black bg-[#F9F9F9] px-5 py-4 text-base font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400 focus:bg-[#fff6bf]"
+                    />
+                  </div>
+                ))}
+
+                <div className="flex flex-col gap-3 sm:flex-row mt-4">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="order-1 border-[3px] border-black bg-[#ffd400] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 sm:order-none"
+                  >
+                    {isSubmitting ? "Mengirim..." : "Submit"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      localStorage.setItem("activeTab", "submit-lomba");
+                      window.location.href = "/dashboard/submit-lomba";
+                    }}
+                    className="border-[3px] border-black bg-[#eeeeee] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                  >
+                    Batal
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
-        </div>
+          </section>
+        </main>
       </div>
+
+      <Footer variant="neobrutal" />
 
       {/* Custom Alert Dialog */}
       {showAlert && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black/50">
-          <div
-            className={`${
-              alertType === "error" ? "bg-red-600/90" : "bg-green-600/90"
-            } text-white px-6 py-4 rounded-lg shadow-xl max-w-md`}
-          >
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 p-4">
+          <div className={`w-full max-w-md border-[4px] border-black px-6 py-5 text-black shadow-[8px_8px_0_#191b1a] ${alertType === 'error' ? 'bg-[#ff8c75]' : 'bg-[#b8f2cf]'}`}>
             <div className="flex justify-between items-start mb-2 gap-5">
-              <h3 className="font-bold text-lg">
+              <h3 className="text-lg font-black uppercase">
                 <div className="flex items-center">
-                  {alertType === "error" ? (
+                  {alertType === 'error' ? (
                     <>
                       <MdErrorOutline className="text-xl mr-2" />
-                      Data belum lengkap!
+                      Pendaftaran Gagal!
                     </>
                   ) : (
                     <>
@@ -259,29 +310,17 @@ const SubmitCompetition = () => {
                 </div>
               </h3>
               <button
+                type="button"
                 onClick={closeAlert}
-                className={`${
-                  alertType === "error"
-                    ? "bg-red-700/85 hover:bg-red-800/85"
-                    : "bg-green-700/85 hover:bg-green-800/85"
-                } rounded-full p-1 transition-colors`}
+                className="border-2 border-black bg-white p-1 transition-transform hover:-translate-y-0.5"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </button>
             </div>
-            <p className="text-sm mb-2">{alertMessage}</p>
-            {alertType === "error" && incompleteFields.length > 0 && (
+            <p className="mb-2 text-sm font-semibold">{alertMessage}</p>
+            {alertType === 'error' && incompleteFields.length > 0 && (
               <ul className="list-disc pl-5 text-sm space-y-1">
                 {incompleteFields.map((field, index) => (
                   <li key={index}>{field}</li>
@@ -291,7 +330,7 @@ const SubmitCompetition = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
