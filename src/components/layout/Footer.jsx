@@ -76,15 +76,17 @@ const FooterNeo = () => {
           {/* Competitions Column */}
           <div>
             <h3 className="mb-6 font-bebas text-xl tracking-wider text-yellow-neo">COMPETITIONS</h3>
-            <ul className="space-y-4">
+            <div className="grid grid-cols-3 gap-2">
               {footerCompetitions.map((item) => (
-                <li key={item.id}>
-                  <Link to={`/competition/${item.id}`} className="font-inter text-[13px] font-medium text-gray-300 transition-colors duration-200 hover:text-yellow-neo">
-                    {item.title}
-                  </Link>
-                </li>
+                <Link 
+                  key={item.id} 
+                  to={`/competition/${item.id}`} 
+                  className="font-inter text-[13px] font-medium text-gray-300 transition-colors duration-200 hover:text-yellow-neo"
+                >
+                  {item.title}
+                </Link>
               ))}
-            </ul>
+            </div>
           </div>
 
           {/* Social Media Column */}

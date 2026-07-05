@@ -47,19 +47,16 @@ const NavbarNeo = () => {
       <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link to="/" className="group flex shrink-0 items-center gap-3" aria-label="IT Today Home">
+          <Link to="/" className="group flex shrink-0 items-center" aria-label="IT Today Home">
             <img
               src="/LOGO_ITTODAY_2025.webp"
               alt="IT Today Logo"
-              className="h-11 w-11 object-contain transition-transform duration-200 group-hover:-rotate-3 group-hover:scale-105 md:h-14 md:w-14"
+              className="h-14 w-14 object-contain transition-transform duration-200 group-hover:-rotate-3 group-hover:scale-105 md:h-20 md:w-20"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = 'https://placehold.co/56x56/3730A3/ffffff?text=IT';
+                e.target.src = 'https://placehold.co/80x80/3730A3/ffffff?text=IT';
               }}
             />
-            <span className="hidden font-bebas text-2xl tracking-[0.08em] text-white sm:block md:text-3xl">
-              IT TODAY
-            </span>
           </Link>
 
           {/* Desktop menu */}
@@ -153,9 +150,9 @@ const NavbarNeo = () => {
                     logout();
                     setMobileOpen(false);
                   }}
-                  className="block w-full text-center text-white/70 hover:text-white font-inter font-medium py-2 cursor-pointer"
+                  className="block w-full border-[3px] border-black bg-red-600 py-2.5 text-center font-inter font-black text-white shadow-[4px_4px_0_#111] cursor-pointer"
                 >
-                  Logout
+                  LOGOUT
                 </button>
               </div>
             ) : (
