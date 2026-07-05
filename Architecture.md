@@ -39,6 +39,7 @@ The frontend provides the user interface for landing pages, event discovery, das
     - Login, registration, and forgot-password pages share the Neo-Brutalist presentation and the application-wide dynamic footer while retaining the existing authentication API endpoints.
     - Authentication pages also reuse the shared public navbar, so Event, Competition, and Contact Us navigation returns to Home and scrolls to the corresponding section consistently.
     - Authentication input values preserve the user's original letter casing; uppercase styling is limited to labels and action text.
+    - Shared-navbar logout calls the backend logout endpoint before clearing local authentication state, then redirects to `/login`, preventing an active Express session from immediately authenticating the user again.
 2. **Dynamic Event Data**:
    - The frontend heavily relies on dynamic API fetching (e.g., `GET /api/events`) to ascertain which events/competitions are currently active (`is_active` flag) and if they require submissions (`requires_submission` flag).
    - This ensures the UI accurately mirrors the configuration set dynamically via the database instead of local hardcoded config files.

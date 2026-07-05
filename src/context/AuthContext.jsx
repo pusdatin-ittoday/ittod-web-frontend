@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import {
   getCurrentUser,
   isAuthenticated as checkAuthenticatedSession,
+  logoutUser,
 } from '../api/user';
 
 /**
@@ -72,12 +73,12 @@ export const AuthProvider = ({ children }) => {
     window.dispatchEvent(new Event('auth-changed'));
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await logoutUser();
     localStorage.removeItem('authToken');
     sessionStorage.removeItem('userData');
     setIsAuthenticated(false);
     setUser(null);
-    window.dispatchEvent(new Event('auth-changed'));
   };
 
   return (

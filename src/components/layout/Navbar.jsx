@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 /**
@@ -15,10 +15,22 @@ const navLinks = [
 
 const NavbarNeo = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { isAuthenticated, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isHomePage = location.pathname === '/' || location.pathname === '/home';
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+    await logout();
+    setMobileOpen(false);
+    navigate('/login', { replace: true });
+    setIsLoggingOut(false);
+  };
 
   const handleNavClick = (e, link) => {
     if (link.to === '/') {
@@ -146,13 +158,11 @@ const NavbarNeo = () => {
                   PROFILE
                 </Link>
                 <button
-                  onClick={() => {
-                    logout();
-                    setMobileOpen(false);
-                  }}
-                  className="block w-full border-[3px] border-black bg-red-600 py-2.5 text-center font-inter font-black text-white shadow-[4px_4px_0_#111] cursor-pointer"
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="block w-full cursor-pointer border-[3px] border-black bg-red-600 py-2.5 text-center font-inter font-black text-white shadow-[4px_4px_0_#111] disabled:cursor-wait disabled:opacity-70"
                 >
-                  LOGOUT
+                  {isLoggingOut ? 'LOGGING OUT...' : 'LOGOUT'}
                 </button>
               </div>
             ) : (
