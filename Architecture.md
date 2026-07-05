@@ -33,8 +33,9 @@ The frontend provides the user interface for landing pages, event discovery, das
 - Dashboard header links use React Router navigation, preserving the active frontend authentication context when users move back to public Home, Event, Competition, or Contact Us pages.
 
 1. **User Authentication**:
-   - The UI communicates with the backend for login/registration and OAuth flows.
-   - Authentication tokens or secure cookies verify session status for protected routes (like the Dashboard).
+    - The UI communicates with the backend for login/registration and OAuth flows.
+    - Authentication tokens or secure cookies verify session status for protected routes (like the Dashboard).
+    - Login, registration, and forgot-password pages share the Neo-Brutalist presentation and the application-wide dynamic footer while retaining the existing authentication API endpoints.
 2. **Dynamic Event Data**:
    - The frontend heavily relies on dynamic API fetching (e.g., `GET /api/events`) to ascertain which events/competitions are currently active (`is_active` flag) and if they require submissions (`requires_submission` flag).
    - This ensures the UI accurately mirrors the configuration set dynamically via the database instead of local hardcoded config files.
