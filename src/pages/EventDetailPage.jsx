@@ -88,19 +88,19 @@ const EventDetailPage = () => {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-[#f7f7f4] text-black">
       <NavbarNeo />
       <main className="pt-16 md:pt-20">
         {/* Banner */}
         <PageBanner icon={event.icon} title={event.title} subtitle={event.tagline} />
 
         {/* 2-column layout */}
-        <section className="w-full bg-white py-12 md:py-16">
-          <div className="max-w-6xl mx-auto px-4 md:px-8">
+        <section className="w-full bg-[#f7f7f4] py-12 md:py-16">
+          <div className="mx-auto max-w-6xl px-5 md:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Left: About card */}
               <div className="lg:col-span-2">
-                <div className="card-brutal-no-hover rounded-lg p-6 md:p-8">
+                <div className="border-[4px] border-black bg-white p-6 shadow-[9px_9px_0_#111] md:p-8">
                   <h2 className="font-bebas text-3xl md:text-4xl text-black tracking-wider mb-6 uppercase">
                     About The {event.title.split(' ').pop().toUpperCase()}
                   </h2>
@@ -133,7 +133,7 @@ const EventDetailPage = () => {
         <GetInTouchSection compact />
       </main>
       <FooterNeo />
-    </>
+    </div>
   );
 };
 

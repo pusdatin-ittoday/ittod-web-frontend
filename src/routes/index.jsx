@@ -3,7 +3,6 @@ import { Route } from 'react-router-dom';
 import LandingPage from '../pages/LandingPage';
 import EventDetailPage from '../pages/EventDetailPage';
 import CompetitionDetailPage from '../pages/CompetitionDetailPage';
-import ContactUsPage from '../pages/ContactUsPage';
 
 /**
  * Routes untuk scope Orang Pertama.
@@ -15,7 +14,6 @@ const OrangPertamaRoutes = () => (
     <Route path="/home" element={<LandingPage />} />
     <Route path="/event/:slug" element={<EventDetailPage />} />
     <Route path="/competition/:slug" element={<CompetitionDetailPage />} />
-    <Route path="/contact-us" element={<ContactUsPage />} />
   </>
 );
 

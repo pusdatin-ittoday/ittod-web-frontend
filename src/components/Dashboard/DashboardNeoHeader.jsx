@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { logoutUser } from "../../api/user";
 
 const DashboardNeoHeader = () => {
@@ -10,33 +11,33 @@ const DashboardNeoHeader = () => {
   return (
     <header className="border-b-4 border-black bg-[#3f46b8] text-white">
       <div className="mx-auto flex min-h-24 w-full max-w-[1600px] items-center justify-between gap-6 px-5 py-4 md:px-10">
-        <a href="/" aria-label="Kembali ke beranda" className="shrink-0">
+        <Link to="/" aria-label="Kembali ke beranda" className="shrink-0">
           <img
             src="/LOGO_ITTODAY_2025.webp"
             alt="IT Today"
             className="h-auto w-24 md:w-28"
           />
-        </a>
+        </Link>
 
         <nav className="hidden items-center gap-8 text-xs font-black uppercase tracking-wide md:flex lg:gap-12">
-          <a href="/" className="transition-transform hover:-translate-y-0.5">
+          <Link to="/" className="transition-transform hover:-translate-y-0.5">
             Home
-          </a>
-          <a href="/#event" className="transition-transform hover:-translate-y-0.5">
+          </Link>
+          <Link to="/#event" className="transition-transform hover:-translate-y-0.5">
             Event
-          </a>
-          <a
-            href="/#competition"
+          </Link>
+          <Link
+            to="/#competition"
             className="transition-transform hover:-translate-y-0.5"
           >
             Competition
-          </a>
-          <a
-            href="/#contact"
+          </Link>
+          <Link
+            to="/#contact"
             className="transition-transform hover:-translate-y-0.5"
           >
             Contact Us
-          </a>
+          </Link>
         </nav>
 
         <button

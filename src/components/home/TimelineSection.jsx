@@ -6,17 +6,17 @@ import { timelineEvents, timelineCompetitions } from '../../data/events';
  */
 const TimelineSection = () => {
   return (
-    <section id="timeline" className="w-full bg-gray-50 py-16 md:py-24">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+    <section id="timeline" className="w-full border-b-[5px] border-black bg-[#f7f7f4] py-16 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
         {/* Heading */}
-        <h2 className="font-bebas text-5xl md:text-6xl text-black text-center tracking-wider mb-12">
+        <h2 className="mb-12 text-center font-bebas text-5xl tracking-[0.1em] text-black md:text-7xl">
           Timeline
         </h2>
 
         {/* Timeline card */}
-        <div className="relative card-brutal-no-hover rounded-lg p-8 md:p-12 bg-white">
+        <div className="relative border-[4px] border-black bg-white p-8 shadow-[9px_9px_0_#111] md:p-12">
           {/* Badge 2026 */}
-          <div className="absolute top-4 right-4 md:top-6 md:right-6 bg-indigo-neo text-white font-bebas text-2xl px-4 py-1 border-2 border-black shadow-[3px_3px_0px_#000] tracking-widest">
+          <div className="absolute right-4 top-4 border-[3px] border-black bg-indigo-neo px-4 py-1 font-bebas text-2xl tracking-widest text-white shadow-[5px_5px_0_#111] md:right-6 md:top-6">
             2026
           </div>
 

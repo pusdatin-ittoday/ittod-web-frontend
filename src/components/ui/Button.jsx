@@ -7,13 +7,13 @@ import { Link } from 'react-router-dom';
  */
 const variantStyles = {
   'yellow-solid':
-    'bg-yellow-neo text-black border-2 border-black shadow-[4px_4px_0px_#000] hover:shadow-[6px_6px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px]',
+    'bg-yellow-neo text-black border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5',
   'indigo-solid':
-    'bg-indigo-neo text-white border-2 border-black shadow-[4px_4px_0px_#000] hover:shadow-[6px_6px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px]',
+    'bg-indigo-neo text-white border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5',
   'dark-solid':
-    'bg-dark-neo text-white border-2 border-black shadow-[4px_4px_0px_#000] hover:shadow-[6px_6px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px]',
+    'bg-dark-neo text-white border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5',
   outline:
-    'bg-white text-black border-2 border-black shadow-[4px_4px_0px_#000] hover:shadow-[6px_6px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px]',
+    'bg-white text-black border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5',
 };
 
 const Button = ({
@@ -29,7 +29,7 @@ const Button = ({
   ...rest
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center gap-2 px-6 py-3 font-inter font-bold text-base rounded-md transition-all duration-200 cursor-pointer';
+    'inline-flex items-center justify-center gap-2 px-6 py-3 font-inter font-black text-sm uppercase tracking-wide transition-all duration-150 cursor-pointer active:translate-x-1 active:translate-y-1 active:shadow-none';
   const widthClass = fullWidth ? 'w-full' : '';
   const disabledClass = disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : '';
   const classes = `${baseStyles} ${variantStyles[variant] || variantStyles['yellow-solid']} ${widthClass} ${disabledClass} ${className}`;

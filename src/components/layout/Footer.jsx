@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { getEvents } from '../../services/eventService';
 
 /**
- * Footer Neo-Brutalisme — background hitam, border-top kuning, 4 kolom.
+ * Shared Footer Neo-Brutalisme — dipakai di seluruh halaman.
+ * Data event dan kompetisi selalu mengikuti API.
  */
 
 
@@ -43,16 +44,16 @@ const FooterNeo = () => {
   }, []);
 
   return (
-    <footer className="bg-[#1a1a1a] border-t-0 text-white pb-6 pt-16">
-      <div className="max-w-[85rem] mx-auto px-6 md:px-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-20">
+    <footer className="border-t-[5px] border-black bg-[#171918] pb-6 pt-14 text-white">
+      <div className="mx-auto max-w-[90rem] px-6 md:px-10">
+        <div className="mb-16 grid grid-cols-1 gap-10 text-left md:grid-cols-5 md:gap-8 lg:gap-12">
           
           {/* Brand Column */}
           <div className="lg:col-span-1">
-            <h2 className="font-bebas italic text-4xl text-yellow-neo tracking-wider leading-[0.9] mb-6">
+            <h2 className="mb-6 font-bebas text-4xl italic leading-[0.9] tracking-wider text-yellow-neo">
               IT TODAY<br />2026
             </h2>
-            <div className="font-inter text-sm text-gray-300 space-y-1.5">
+            <div className="space-y-1.5 font-inter text-sm font-medium text-gray-300">
               <p>Departemen Ilmu Komputer</p>
               <p>IPB University</p>
             </div>
@@ -60,11 +61,11 @@ const FooterNeo = () => {
 
           {/* Events Column */}
           <div>
-            <h3 className="font-bebas text-xl text-yellow-neo tracking-wider mb-6">EVENTS</h3>
+            <h3 className="mb-6 font-bebas text-xl tracking-wider text-yellow-neo">EVENTS</h3>
             <ul className="space-y-4">
               {footerEvents.map((item) => (
                 <li key={item.id}>
-                  <Link to={`/event/${item.id}`} className="font-inter text-[13px] text-gray-300 hover:text-white transition-colors duration-200">
+                  <Link to={`/event/${item.id}`} className="font-inter text-[13px] font-medium text-gray-300 transition-colors duration-200 hover:text-yellow-neo">
                     {item.title}
                   </Link>
                 </li>
@@ -74,11 +75,11 @@ const FooterNeo = () => {
 
           {/* Competitions Column */}
           <div>
-            <h3 className="font-bebas text-xl text-yellow-neo tracking-wider mb-6">COMPETITIONS</h3>
+            <h3 className="mb-6 font-bebas text-xl tracking-wider text-yellow-neo">COMPETITIONS</h3>
             <ul className="space-y-4">
               {footerCompetitions.map((item) => (
                 <li key={item.id}>
-                  <Link to={`/competition/${item.id}`} className="font-inter text-[13px] text-gray-300 hover:text-white transition-colors duration-200">
+                  <Link to={`/competition/${item.id}`} className="font-inter text-[13px] font-medium text-gray-300 transition-colors duration-200 hover:text-yellow-neo">
                     {item.title}
                   </Link>
                 </li>
@@ -88,21 +89,21 @@ const FooterNeo = () => {
 
           {/* Social Media Column */}
           <div>
-            <h3 className="font-bebas text-xl text-yellow-neo tracking-wider mb-6">SOCIAL MEDIA</h3>
-            <div className="flex gap-4">
-              {socialLinks.slice(0, 4).map((item) => (
+            <h3 className="mb-6 font-bebas text-xl tracking-wider text-yellow-neo">SOCIAL MEDIA</h3>
+            <div className="grid w-fit grid-cols-3 gap-4">
+              {socialLinks.map((item) => (
                 <a
                   key={item.label}
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-6 h-6 flex items-center justify-center hover:opacity-80 transition-opacity duration-200"
+                  className="flex h-7 w-7 items-center justify-center border-2 border-transparent p-1 transition-all duration-150 hover:border-yellow-neo"
                   aria-label={item.label}
                 >
                   <img
                     src={item.icon}
                     alt={item.label}
-                    className="w-full h-full object-contain invert brightness-0"
+                    className="h-full w-full object-contain"
                   />
                 </a>
               ))}
@@ -111,7 +112,7 @@ const FooterNeo = () => {
 
           {/* Contact Column */}
           <div>
-            <h3 className="font-bebas text-xl text-yellow-neo tracking-wider mb-6">KONTAK KAMI</h3>
+            <h3 className="mb-6 font-bebas text-xl tracking-wider text-yellow-neo">KONTAK KAMI</h3>
             <div className="flex flex-col gap-3 font-inter text-[13px] text-gray-300">
               <a href="mailto:pr@ittoday.web.id" className="hover:text-white transition-colors">
                 pr@ittoday.web.id
@@ -125,8 +126,8 @@ const FooterNeo = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-[#333] pt-6 flex flex-col md:flex-row items-center justify-between gap-4 font-inter text-[10px] text-gray-500 uppercase tracking-widest font-bold">
-          <p>© 2026 MODERN BRUTALIST ZINE</p>
+        <div className="flex flex-col items-center justify-between gap-4 border-t-2 border-[#343735] pt-6 font-inter text-[10px] font-bold uppercase tracking-widest text-gray-500 md:flex-row">
+          <p>© 2026 IT TODAY</p>
           <div className="flex items-center gap-8">
             <Link to="#" className="hover:text-gray-300 transition-colors">PRIVACY</Link>
             <Link to="#" className="hover:text-gray-300 transition-colors">TERMS</Link>

@@ -6,7 +6,7 @@ import React from 'react';
  */
 const PageBanner = ({ icon, title, subtitle }) => {
   return (
-    <section className="relative w-full bg-indigo-neo py-16 md:py-24 overflow-hidden">
+    <section className="relative w-full overflow-hidden border-b-[5px] border-black bg-indigo-neo py-16 md:py-24">
       {/* Decorative diagonal stripes */}
       <div className="absolute inset-0 opacity-10">
         <div
@@ -20,7 +20,7 @@ const PageBanner = ({ icon, title, subtitle }) => {
 
       <div className="relative max-w-6xl mx-auto px-4 md:px-8">
         {/* Main banner box */}
-        <div className="inline-block bg-yellow-neo border-4 border-black shadow-[8px_8px_0px_#000] px-8 md:px-12 py-6 -rotate-2 transform">
+        <div className="inline-block -rotate-1 transform border-[4px] border-black bg-yellow-neo px-7 py-6 shadow-[9px_9px_0_#111] md:px-12">
           <div className="flex items-center gap-4 md:gap-6">
             {icon && (
               <img

@@ -16,7 +16,9 @@ import GetInTouchSection from '../components/home/GetInTouchSection';
 const LandingPage = () => {
   useEffect(() => {
     // Scroll to section jika diarahkan dari halaman lain
-    const sectionId = sessionStorage.getItem('scrollToSectionId');
+    const sectionId =
+      sessionStorage.getItem('scrollToSectionId') ||
+      window.location.hash.replace('#', '');
     if (sectionId) {
       sessionStorage.removeItem('scrollToSectionId');
       // Delay sedikit agar DOM ter-render
@@ -30,9 +32,9 @@ const LandingPage = () => {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen bg-white text-black">
       <NavbarNeo />
-      <main>
+      <main className="pt-16 md:pt-20">
         <HeroSection />
         <AboutSection />
         <MainEventSection />
@@ -42,7 +44,7 @@ const LandingPage = () => {
         <GetInTouchSection />
       </main>
       <FooterNeo />
-    </>
+    </div>
   );
 };
 

@@ -1,4 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import {
+  getCurrentUser,
+  isAuthenticated as checkAuthenticatedSession,
+} from '../api/user';
 
 /**
  * Auth Context — menyediakan state autentikasi untuk seluruh app.
@@ -9,7 +13,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const AuthContext = createContext({
   isAuthenticated: false,
   user: null,
-  login: (token, user) => {},
+  login: () => {},
   logout: () => {},
 });
 
@@ -18,11 +22,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   // Sinkronisasi state auth dengan localStorage/sessionStorage
-  const checkAuth = () => {
+  const checkAuth = async () => {
     const savedUser = sessionStorage.getItem('userData');
-    
-    // Karena backend menggunakan express-session, token tidak selalu ada.
-    // Kita cukup mengandalkan userData dari sessionStorage
+
     if (savedUser) {
       setIsAuthenticated(true);
       try {
@@ -30,16 +32,36 @@ export const AuthProvider = ({ children }) => {
       } catch {
         setUser(null);
       }
-    } else {
+    }
+
+    const hasActiveSession = await checkAuthenticatedSession();
+
+    if (!hasActiveSession) {
       setIsAuthenticated(false);
       setUser(null);
+      sessionStorage.removeItem('userData');
+      return;
+    }
+
+    const userResponse = await getCurrentUser();
+    const currentUser = userResponse.success ? userResponse.data : null;
+
+    setIsAuthenticated(true);
+    setUser(currentUser);
+
+    if (currentUser) {
+      sessionStorage.setItem('userData', JSON.stringify(currentUser));
     }
   };
 
   useEffect(() => {
-    checkAuth();
-    window.addEventListener('auth-changed', checkAuth);
-    return () => window.removeEventListener('auth-changed', checkAuth);
+    void checkAuth();
+    const handleAuthChanged = () => {
+      void checkAuth();
+    };
+
+    window.addEventListener('auth-changed', handleAuthChanged);
+    return () => window.removeEventListener('auth-changed', handleAuthChanged);
   }, []);
 
   const login = (token, userData) => {

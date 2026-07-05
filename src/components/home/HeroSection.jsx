@@ -8,66 +8,69 @@ const HeroSection = () => {
   return (
     <section
       id="hero"
-      className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden"
+      className="relative flex min-h-[calc(100svh-4rem)] w-full items-center justify-center overflow-hidden border-b-[14px] border-yellow-neo md:min-h-[calc(100svh-5rem)]"
       style={{
-        background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 40%, #991B1B 100%)',
+        background: 'linear-gradient(135deg, #e2252b 0%, #c71920 48%, #9f1118 100%)',
       }}
     >
-      {/* Wave pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.07]">
-        <svg className="w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="none">
-          <path d="M0,160 C320,300,420,240,640,200 C880,160,960,280,1440,240 L1440,800 L0,800 Z" fill="#000" />
-          <path d="M0,320 C240,400,480,320,720,360 C960,400,1200,320,1440,380 L1440,800 L0,800 Z" fill="#000" />
+      <div className="absolute inset-0 opacity-[0.12]">
+        <svg
+          className="h-full w-full"
+          viewBox="0 0 1440 800"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M0,78 C250,230,470,220,680,150 C930,68,1120,182,1440,145 L1440,800 L0,800 Z"
+            fill="#7f0d13"
+          />
+          <path
+            d="M0,295 C300,390,485,290,730,315 C995,342,1160,255,1440,312 L1440,800 L0,800 Z"
+            fill="#970f16"
+            opacity="0.65"
+          />
         </svg>
       </div>
 
-      {/* Diagonal stripes */}
       <div
-        className="absolute inset-0 opacity-[0.04]"
+        className="absolute inset-0 opacity-[0.07]"
         style={{
           backgroundImage:
-            'repeating-linear-gradient(45deg, transparent, transparent 20px, #000 20px, #000 22px)',
+            'repeating-linear-gradient(45deg, transparent, transparent 22px, #6f090d 22px, #6f090d 24px)',
         }}
       />
 
-      {/* Content */}
-      <div className="relative z-10 text-center px-4 py-20">
-        {/* Badge */}
-        <div className="inline-block bg-yellow-neo text-black font-inter font-bold text-sm md:text-base px-6 py-2 mb-8 border-2 border-black shadow-[4px_4px_0px_#000] tracking-widest uppercase">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-5 py-14 text-center sm:py-16 md:py-20">
+        <div className="mb-7 inline-block border-[3px] border-black bg-yellow-neo px-7 py-2.5 font-inter text-xs font-black uppercase tracking-[0.18em] text-black shadow-[6px_6px_0_#111] sm:text-sm md:mb-9 md:px-10 md:text-base">
           HIMALKOM PRESENT
         </div>
 
-        {/* Main title */}
-        <h1 className="font-bebas text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] text-white leading-none tracking-wider mb-4 drop-shadow-[4px_4px_0px_#000]">
+        <h1 className="mb-5 font-bebas text-7xl leading-[0.88] tracking-[0.05em] text-white [text-shadow:7px_7px_0_#111] sm:text-8xl md:text-[8.5rem] lg:text-[10rem]">
           IT TODAY
         </h1>
 
-        {/* Year subtitle */}
-        <div className="flex items-center justify-center gap-4 mb-8">
-          <div className="w-12 md:w-20 h-0.5 bg-yellow-neo" />
-          <span className="font-bebas text-3xl md:text-5xl text-yellow-neo tracking-[0.3em]">
+        <div className="mb-7 flex items-center justify-center gap-4 md:mb-9 md:gap-6">
+          <div className="h-[3px] w-12 bg-yellow-neo md:w-24" />
+          <span className="font-bebas text-3xl tracking-[0.35em] text-yellow-neo md:text-5xl">
             2026
           </span>
-          <div className="w-12 md:w-20 h-0.5 bg-yellow-neo" />
+          <div className="h-[3px] w-12 bg-yellow-neo md:w-24" />
         </div>
 
-        {/* Tagline */}
-        <p className="font-inter text-base md:text-lg text-white/80 italic max-w-xl mx-auto">
-          "Exploring Harmonious Connections In The Digital Universe"
+        <p className="mx-auto max-w-2xl font-inter text-sm font-semibold text-white/90 sm:text-base md:text-lg">
+          &quot;Exploring Harmonious Connections In The Digital Universe&quot;
         </p>
 
-        {/* Logo */}
-        <div className="mt-10">
+        <div className="mt-8 md:mt-10">
           <img
             src="/LOGO_ITTODAY_2025.webp"
             alt="IT Today 2026 Logo"
-            className="w-32 md:w-40 mx-auto drop-shadow-lg hover:scale-105 transition-transform duration-300"
+            className="mx-auto w-28 drop-shadow-[4px_5px_0_rgba(0,0,0,0.35)] transition-transform duration-300 hover:-rotate-2 hover:scale-105 sm:w-32 md:w-40"
           />
         </div>
       </div>
 
-      {/* Bottom decorative border */}
-      <div className="absolute bottom-0 left-0 right-0 h-4 bg-yellow-neo border-t-4 border-black" />
+      <div className="absolute inset-x-0 bottom-0 h-[5px] bg-black" />
     </section>
   );
 };

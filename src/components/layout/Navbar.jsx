@@ -43,33 +43,33 @@ const NavbarNeo = () => {
   };
 
   return (
-    <nav className="fixed w-full top-0 z-[999] bg-indigo-neo border-b-4 border-black shadow-[0_4px_0px_#000]">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+    <nav className="fixed inset-x-0 top-0 z-[999] border-b-[5px] border-black bg-indigo-neo text-white">
+      <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="group flex shrink-0 items-center gap-3" aria-label="IT Today Home">
             <img
               src="/LOGO_ITTODAY_2025.webp"
               alt="IT Today Logo"
-              className="w-12 h-12 md:w-14 md:h-14 object-contain group-hover:scale-110 transition-transform duration-200"
+              className="h-11 w-11 object-contain transition-transform duration-200 group-hover:-rotate-3 group-hover:scale-105 md:h-14 md:w-14"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = 'https://placehold.co/56x56/3730A3/ffffff?text=IT';
               }}
             />
-            <span className="font-bebas text-2xl md:text-3xl text-white tracking-wider hidden sm:block">
+            <span className="hidden font-bebas text-2xl tracking-[0.08em] text-white sm:block md:text-3xl">
               IT TODAY
             </span>
           </Link>
 
           {/* Desktop menu */}
-          <ul className="hidden lg:flex items-center gap-8">
+          <ul className="hidden items-center gap-9 lg:flex xl:gap-12">
             {navLinks.map((link) => (
               <li key={link.label}>
                 <Link
                   to={link.to}
                   onClick={(e) => handleNavClick(e, link)}
-                  className="font-inter font-semibold text-white hover:text-yellow-neo transition-colors duration-200 text-base tracking-wide"
+                  className="border-b-[3px] border-transparent py-2 font-inter text-sm font-extrabold tracking-wide text-white transition-colors duration-200 hover:border-yellow-neo hover:text-yellow-neo xl:text-base"
                 >
                   {link.label}
                 </Link>
@@ -78,18 +78,18 @@ const NavbarNeo = () => {
           </ul>
 
           {/* Desktop auth button */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden min-w-[150px] items-center justify-end lg:flex">
             {isAuthenticated ? (
               <Link
                 to="/dashboard/beranda"
-                className="bg-[#00b14f] text-white font-inter font-bold px-8 py-2.5 rounded-sm border-2 border-black shadow-[4px_4px_0px_#000] hover:shadow-[6px_6px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 tracking-wider"
+                className="border-[3px] border-black bg-[#22b64b] px-8 py-3 font-inter text-sm font-black tracking-wider text-white shadow-[6px_6px_0_#111] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_#111] active:translate-x-1 active:translate-y-1 active:shadow-none"
               >
                 PROFILE
               </Link>
             ) : (
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 bg-yellow-neo text-black font-inter font-bold px-6 py-2.5 rounded-md border-2 border-black shadow-[3px_3px_0px_#000] hover:shadow-[5px_5px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200"
+                className="inline-flex items-center border-[3px] border-black bg-yellow-neo px-7 py-3 font-inter text-sm font-black tracking-wider text-black shadow-[6px_6px_0_#111] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_#111] active:translate-x-1 active:translate-y-1 active:shadow-none"
               >
                 LOGIN
               </Link>
@@ -98,22 +98,22 @@ const NavbarNeo = () => {
 
           {/* Mobile hamburger */}
           <button
-            className="lg:hidden flex flex-col gap-1.5 cursor-pointer p-2"
+            className="flex cursor-pointer flex-col gap-1.5 border-2 border-black bg-yellow-neo p-2 shadow-[3px_3px_0_#111] lg:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle Menu"
           >
             <span
-              className={`block w-6 h-0.5 bg-white transition-all duration-300 ${
+              className={`block h-0.5 w-6 bg-black transition-all duration-300 ${
                 mobileOpen ? 'rotate-45 translate-y-2' : ''
               }`}
             />
             <span
-              className={`block w-6 h-0.5 bg-white transition-all duration-300 ${
+              className={`block h-0.5 w-6 bg-black transition-all duration-300 ${
                 mobileOpen ? 'opacity-0' : ''
               }`}
             />
             <span
-              className={`block w-6 h-0.5 bg-white transition-all duration-300 ${
+              className={`block h-0.5 w-6 bg-black transition-all duration-300 ${
                 mobileOpen ? '-rotate-45 -translate-y-2' : ''
               }`}
             />
@@ -123,17 +123,17 @@ const NavbarNeo = () => {
 
       {/* Mobile menu */}
       <div
-        className={`lg:hidden overflow-hidden transition-all duration-300 border-t-2 border-black bg-indigo-neo ${
+        className={`overflow-hidden border-t-[3px] border-black bg-indigo-neo transition-all duration-300 lg:hidden ${
           mobileOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <ul className="px-6 py-4 space-y-3">
+        <ul className="space-y-2 px-5 py-5">
           {navLinks.map((link) => (
             <li key={link.label}>
               <Link
                 to={link.to}
                 onClick={(e) => handleNavClick(e, link)}
-                className="block font-inter font-semibold text-white hover:text-yellow-neo transition-colors duration-200 py-2"
+                className="block border-2 border-transparent px-3 py-2 font-inter font-bold text-white transition-colors duration-200 hover:border-black hover:bg-yellow-neo hover:text-black"
               >
                 {link.label}
               </Link>
@@ -144,7 +144,7 @@ const NavbarNeo = () => {
               <div className="space-y-2">
                 <Link
                   to="/dashboard/beranda"
-                  className="block text-center bg-emerald-500 text-white font-inter font-bold py-2.5 rounded-md border-2 border-black shadow-[3px_3px_0px_#000]"
+                  className="block border-[3px] border-black bg-[#22b64b] py-2.5 text-center font-inter font-black text-white shadow-[4px_4px_0_#111]"
                 >
                   PROFILE
                 </Link>
@@ -162,7 +162,7 @@ const NavbarNeo = () => {
               <Link
                 to="/login"
                 onClick={() => setMobileOpen(false)}
-                className="block text-center bg-yellow-neo text-black font-inter font-bold py-2.5 rounded-md border-2 border-black shadow-[3px_3px_0px_#000]"
+                className="block border-[3px] border-black bg-yellow-neo py-2.5 text-center font-inter font-black text-black shadow-[4px_4px_0_#111]"
               >
                 LOGIN
               </Link>

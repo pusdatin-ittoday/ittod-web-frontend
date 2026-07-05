@@ -7,21 +7,21 @@ import { landingStats } from '../../data/events';
  */
 const AboutSection = () => {
   return (
-    <section id="about" className="w-full bg-white py-16 md:py-24">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+    <section id="about" className="w-full border-b-[5px] border-black bg-[#f7f7f4] py-16 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
         {/* Heading */}
-        <h2 className="font-bebas text-5xl md:text-6xl text-black text-center tracking-wider mb-12">
+        <h2 className="mb-12 text-center font-bebas text-5xl tracking-[0.08em] text-black md:text-7xl">
           What is IT Today?
         </h2>
 
         {/* Description card */}
-        <div className="card-brutal-no-hover rounded-lg p-8 md:p-10 mb-14 bg-yellow-neo/10">
+        <div className="mb-14 border-[4px] border-black bg-white p-7 shadow-[9px_9px_0_#111] md:p-10">
           <div className="flex items-start gap-4 mb-4">
-            <div className="bg-indigo-neo text-white font-bebas text-xl px-4 py-2 border-2 border-black shadow-[3px_3px_0px_#000] tracking-wider shrink-0">
+            <div className="shrink-0 border-[3px] border-black bg-indigo-neo px-4 py-2 font-bebas text-xl tracking-wider text-white shadow-[5px_5px_0_#111]">
               THE BIGGEST IT EVENT
             </div>
           </div>
-          <p className="font-inter text-base md:text-lg text-gray-800 leading-relaxed">
+          <p className="font-inter text-base font-medium leading-relaxed text-gray-800 md:text-lg">
             <strong>IT Today</strong> merupakan megaproker tahunan Himpunan Mahasiswa Ilmu Komputer
             (HIMALKOM) IPB dan Departemen Ilmu Komputer IPB yang telah berlangsung sejak 2003.
             Memasuki tahun ke-20, rangkaian acara seperti seminar komunitas, workshop, kompetisi,

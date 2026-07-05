@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getEvents } from '../../services/eventService';
 import SectionCard from '../ui/SectionCard';
-import Button from '../ui/Button';
 
 const getDefaultImage = (title) => {
   if (!title) return '/logo-event/SEMINAR-NASIONAL.webp';
@@ -31,42 +30,42 @@ const MainEventSection = () => {
   }, []);
 
   return (
-    <section id="event" className="w-full bg-indigo-neo py-16 md:py-24">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+    <section id="event" className="w-full border-b-[5px] border-black bg-indigo-neo py-16 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
         {/* Heading */}
-        <h2 className="font-bebas text-5xl md:text-6xl text-white text-center tracking-wider mb-4">
+        <h2 className="mb-3 text-center font-bebas text-5xl tracking-[0.1em] text-white md:text-7xl">
           Main Event
         </h2>
-        <div className="w-20 h-1 bg-yellow-neo mx-auto mb-12" />
+        <div className="mx-auto mb-12 h-[5px] w-24 bg-yellow-neo" />
 
         {loading ? (
-          <div className="text-center text-white">Loading...</div>
+          <div className="mx-auto w-fit border-[3px] border-black bg-yellow-neo px-6 py-3 font-inter font-black uppercase text-black shadow-[5px_5px_0_#111]">Loading...</div>
         ) : events.length === 0 ? (
-          <div className="text-center text-white">No main events available at the moment.</div>
+          <div className="border-[3px] border-black bg-white p-6 text-center font-inter font-bold text-black shadow-[6px_6px_0_#111]">No main events available at the moment.</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {events.map((event) => (
               <Link to={`/event/${event.id}`} key={event.id} className="block group">
-                <SectionCard className="flex flex-col items-center text-center h-full hover:shadow-[6px_6px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200">
+                <SectionCard className="flex h-full flex-col items-center border-[4px] border-black bg-white text-center shadow-[8px_8px_0_#111] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[10px_10px_0_#111]">
                   {/* Icon */}
                   <img
                     src={event.logo_url || getDefaultImage(event.title)}
                     alt={event.title}
-                    className="w-20 h-20 md:w-24 md:h-24 object-contain mb-5 group-hover:scale-110 transition-transform duration-300"
+                    className="mb-5 h-20 w-20 object-contain transition-transform duration-300 group-hover:-rotate-2 group-hover:scale-110 md:h-24 md:w-24"
                   />
 
                   {/* Title */}
-                  <h3 className="font-bebas text-2xl md:text-3xl text-indigo-neo tracking-wider mb-3">
+                  <h3 className="mb-3 font-bebas text-2xl tracking-wider text-indigo-neo md:text-3xl">
                     {event.title}
                   </h3>
 
                   {/* Description */}
-                  <p className="font-inter text-sm text-gray-600 leading-relaxed mb-6 flex-grow">
+                  <p className="mb-6 flex-grow font-inter text-sm font-medium leading-relaxed text-gray-600">
                     {event.description?.substring(0, 100)}...
                   </p>
 
                   {/* CTA */}
-                  <div className="w-full max-w-[200px] text-center bg-yellow-neo text-black font-inter font-bold py-2 px-4 rounded border-2 border-black shadow-[2px_2px_0px_#000] group-hover:bg-yellow-400 transition-colors text-sm">
+                  <div className="w-full max-w-[220px] border-[3px] border-black bg-yellow-neo px-4 py-2.5 text-center font-inter text-xs font-black uppercase text-black shadow-[4px_4px_0_#111] transition-colors group-hover:bg-yellow-400">
                     Lihat Lebih Lanjut →
                   </div>
                 </SectionCard>

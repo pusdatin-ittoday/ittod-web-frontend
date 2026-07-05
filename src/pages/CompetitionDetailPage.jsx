@@ -92,21 +92,21 @@ const CompetitionDetailPage = () => {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-[#f7f7f4] text-black">
       <NavbarNeo />
       <main className="pt-16 md:pt-20">
         {/* Banner */}
         <PageBanner icon={competition.icon} title={competition.title} subtitle={competition.tagline} />
 
         {/* 2-column layout */}
-        <section className="w-full bg-white py-12 md:py-16">
-          <div className="max-w-6xl mx-auto px-4 md:px-8">
+        <section className="w-full bg-[#f7f7f4] py-12 md:py-16">
+          <div className="mx-auto max-w-6xl px-5 md:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Left: About the Challenge */}
               <div className="lg:col-span-2">
-                <div className="card-brutal-no-hover rounded-lg p-6 md:p-8 relative">
+                <div className="relative border-[4px] border-black bg-white p-6 shadow-[9px_9px_0_#111] md:p-8">
                   {/* URGENT badge */}
-                  <div className="absolute top-4 right-4 bg-red-neo text-white font-inter font-bold text-xs px-3 py-1 border-2 border-black shadow-[2px_2px_0px_#000] tracking-wider uppercase">
+                  <div className="absolute right-4 top-4 border-[3px] border-black bg-red-neo px-3 py-1 font-inter text-xs font-black uppercase tracking-wider text-white shadow-[4px_4px_0_#111]">
                     URGENT
                   </div>
 
@@ -152,7 +152,7 @@ const CompetitionDetailPage = () => {
         </section>
       </main>
       <FooterNeo />
-    </>
+    </div>
   );
 };
 

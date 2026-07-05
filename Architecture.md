@@ -21,6 +21,14 @@ The frontend provides the user interface for landing pages, event discovery, das
 
 ## Data Flow & Integrations
 
+### Public Neo-Brutalist Experience
+- `/` and `/home` compose the public Home sections with a shared fixed `Navbar`, dynamic event and competition sections, contact callout, and dynamic `Footer`.
+- `/event/:slug` and `/competition/:slug` retain their existing API-backed detail lookup while sharing the same thick-border, hard-shadow visual system.
+- Public `Contact Us` navigation scrolls to `#contact` on the Home page. The `Kontak Kami` call-to-action opens the official WhatsApp contact directly; there is no separate contact page.
+- All public and authenticated pages resolve to one shared footer implementation. Its desktop layout uses five horizontal columns, event and competition links are populated from the existing API, and all six official social-media links are displayed.
+- The public navbar reads `AuthContext`, which hydrates from the existing backend authentication-status endpoint and refreshes current-user data when an Express session remains active. Unauthenticated visitors see the yellow `LOGIN` action, while authenticated visitors see the green `PROFILE` action linked to `/dashboard/beranda`.
+- Dashboard header links use React Router navigation, preserving the active frontend authentication context when users move back to public Home, Event, Competition, or Contact Us pages.
+
 1. **User Authentication**:
    - The UI communicates with the backend for login/registration and OAuth flows.
    - Authentication tokens or secure cookies verify session status for protected routes (like the Dashboard).

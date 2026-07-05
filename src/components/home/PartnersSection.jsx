@@ -15,20 +15,20 @@ const partnersPlaceholder = [
 
 const PartnersSection = () => {
   return (
-    <section id="partners" className="w-full bg-white py-16 md:py-24">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+    <section id="partners" className="w-full border-b-[5px] border-black bg-white py-16 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
         {/* Heading */}
-        <h2 className="font-bebas text-5xl md:text-6xl text-black text-center tracking-wider mb-4">
+        <h2 className="mb-3 text-center font-bebas text-5xl tracking-[0.1em] text-black md:text-7xl">
           Our Official Partners
         </h2>
-        <div className="w-20 h-1 bg-yellow-neo mx-auto mb-12" />
+        <div className="mx-auto mb-12 h-[5px] w-24 bg-yellow-neo" />
 
         {/* Partners grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6">
           {partnersPlaceholder.map((partner, index) => (
             <div
               key={index}
-              className="flex items-center justify-center h-24 bg-gray-50 border-2 border-black rounded-lg shadow-[3px_3px_0px_#000] hover:shadow-[5px_5px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200"
+              className="flex h-24 items-center justify-center border-[3px] border-black bg-gray-50 shadow-[5px_5px_0_#111] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#111]"
             >
               <span className="font-inter text-xs text-gray-400 font-medium">
                 {partner.name}
