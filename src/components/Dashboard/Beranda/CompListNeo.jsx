@@ -290,8 +290,34 @@ const CompListNeo = () => {
                                 />
                             ))
                         ) : (
-                            <div className="border-[3px] border-[#1A1C1C] bg-white p-6 text-center text-xs font-black uppercase shadow-[4px_4px_0_0_#1A1C1C]">
-                                Kamu belum mengikuti kompetisi apa pun.
+                            <div className="w-full border-[2.4px] border-dashed border-[#34399F] bg-white p-8 sm:p-12 flex flex-col justify-center items-center gap-6 text-center">
+                                <div className="flex flex-col items-center gap-4">
+                                    <h3 className="font-anybody text-2xl sm:text-3xl font-bold uppercase tracking-tight text-[#1A1C1C]">
+                                        BELUM ADA LOMBA
+                                    </h3>
+                                    <p className="font-space-grotesk text-sm sm:text-base text-gray-500 max-w-md">
+                                        Kamu belum mendaftar ke lomba apapun. Yuk cari lomba dan mulai berkompetisi!
+                                    </p>
+                                </div>
+                                
+                                <p className="font-space-grotesk text-xs sm:text-sm text-gray-400">
+                                    Sudah punya join code? Masukkan dari halaman Daftar Lomba.
+                                </p>
+
+                                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                                    <button
+                                        onClick={() => navigate("/dashboard/ikut-lomba")}
+                                        className="w-full sm:w-[240px] border-[2.4px] border-black bg-[#34399F] py-3 text-sm font-space-grotesk font-bold uppercase text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                                    >
+                                        LIHAT DAFTAR LOMBA
+                                    </button>
+                                    <button
+                                        onClick={() => navigate("/dashboard/ikut-lomba")}
+                                        className="w-full sm:w-[257px] border-[2.4px] border-black bg-[#FCD400] py-3 text-sm font-space-grotesk font-bold uppercase text-[#6E5C00] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                                    >
+                                        BERGABUNG TIM
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>
