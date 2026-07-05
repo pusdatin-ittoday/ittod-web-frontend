@@ -31,6 +31,7 @@ The frontend provides the user interface for landing pages, event discovery, das
 - The public navbar reads `AuthContext`, which hydrates from the existing backend authentication-status endpoint and refreshes current-user data when an Express session remains active. Unauthenticated visitors see the yellow `LOGIN` action, while authenticated visitors see the green `PROFILE` action linked to `/dashboard/beranda`.
 - Dashboard header (`DashboardNeoHeader`) uses the same visual style as the landing navbar (indigo background, thick black border, yellow hover effects) with a prominent LOGOUT button in red, ensuring visual consistency across authenticated and public pages. On mobile and tablet viewports, it displays a hamburger menu with a slide-down panel containing navigation links (Home, Event, Competition, Contact Us) plus PROFILE and LOGOUT buttons styled in green and red respectively.
 - Dashboard header links use React Router navigation, preserving the active frontend authentication context when users move back to public Home, Event, Competition, or Contact Us pages.
+- Dashboard competition cards use mobile-first stacking for verification badges, member identities, rejection details, and payment controls so long names and status labels do not overflow narrow viewports.
 
 1. **User Authentication**:
     - The UI communicates with the backend for login/registration and OAuth flows.

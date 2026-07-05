@@ -242,7 +242,7 @@ const CompListNeo = () => {
                             <p className="font-space-grotesk text-[10px] sm:text-xs tracking-[0.15em] text-[#34399F] font-bold uppercase">
                                 WELCOME BACK, CREW
                             </p>
-                            <h1 className="text-3xl sm:text-4xl font-extrabold uppercase text-[#1A1C1C] leading-tight tracking-tight">
+                            <h1 className="break-words text-2xl font-extrabold uppercase text-[#1A1C1C] leading-tight tracking-tight sm:text-4xl">
                                 Halo, <span className="text-[#34399F]">{userData.name}!</span>
                             </h1>
                         </div>
@@ -264,7 +264,7 @@ const CompListNeo = () => {
                     </div>
                 </div>
 
-                <div className="border-[4px] border-[#1A1C1C] bg-[#F3F3F3] p-4 sm:p-6 flex flex-col gap-5">
+                <div className="border-[3px] border-[#1A1C1C] bg-[#F3F3F3] p-2.5 flex flex-col gap-5 sm:border-[4px] sm:p-6">
                     <div className="flex items-center gap-2">
                         <BentoListIcon />
                         <h2 className="text-lg sm:text-xl font-black uppercase text-[#1A1C1C] tracking-tight">
@@ -327,7 +327,7 @@ const CompListNeo = () => {
             <aside className="w-full xl:w-[360px] border-[4px] border-[#1A1C1C] bg-[#FCD400] p-5 sm:p-7 shadow-[6px_6px_0_0_#1A1C1C] flex flex-col gap-5 flex-shrink-0 self-stretch xl:self-auto">
                 <div className="flex items-center gap-2.5">
                     <BellIcon />
-                    <h2 className="text-2xl sm:text-3xl font-extrabold uppercase text-[#1A1C1C] tracking-tight leading-none">
+                    <h2 className="break-words text-xl font-extrabold uppercase text-[#1A1C1C] tracking-tight leading-none sm:text-3xl">
                         Announcements
                     </h2>
                 </div>

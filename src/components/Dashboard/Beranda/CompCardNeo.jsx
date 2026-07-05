@@ -39,8 +39,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
         : Object.values(data.members || {});
 
     const isTeamLeader = membersArray[0]?.fullName === currentUser;
-    const currentUserMember = membersArray.find(m => m.fullName === currentUser);
-    const currentUserHasError = !!(currentUserMember && currentUserMember.verificationError && currentUserMember.verificationError.trim() !== "");
 
 
     const isApproved = (v) => v === 1 || v === true || v === 'approved';
@@ -53,10 +51,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
     const hasTeamDocumentError = hasTeamError && !isDocumentVerified;
     const hasDocumentError = hasTeamDocumentError || membersWithErrors.length > 0;
-
-    const documentErrorReason = hasDocumentError ?
-        (hasTeamDocumentError ? data.verificationError.trim() : (membersWithErrors[0]?.verificationError || "Berkas ditolak")) :
-        null;
 
     const hasTransactionError = hasTeamError && isDocumentVerified;
     const isRejected = hasTransactionError || hasDocumentError;
@@ -116,22 +110,22 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
     };
 
     return (
-        <div className="w-full border-[4px] border-[#1A1C1C] bg-white p-6 shadow-[4px_4px_0_0_#000] flex flex-col gap-5">
+        <div className="w-full min-w-0 border-[3px] border-[#1A1C1C] bg-white p-3 shadow-[4px_4px_0_0_#000] flex flex-col gap-4 sm:border-[4px] sm:p-6 sm:gap-5">
 
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                 <div className="space-y-2">
-                    <h3 className="text-2xl sm:text-3xl font-bold uppercase text-[#34399F] tracking-tight">
+                    <h3 className="break-words text-xl font-bold uppercase text-[#34399F] tracking-tight sm:text-3xl">
                         {data.competitionName}
                     </h3>
 
                     <div className="space-y-1 text-sm font-space-grotesk text-gray-700">
                         {!isIndividual && (
-                            <p className="flex items-center gap-2">
+                            <p className="flex flex-col gap-0.5 min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-2">
                                 <span className="opacity-55">Team Name:</span>
                                 <span className="font-extrabold text-[#1A1C1C]">{data.teamName || "-"}</span>
                             </p>
                         )}
-                        <p className="flex items-center gap-2">
+                        <p className="flex flex-col gap-0.5 min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-2">
                             <span className="opacity-55">
                                 {isIndividual ? "Reg. Code:" : "Join Code:"}
                             </span>
@@ -142,19 +136,19 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                     </div>
                 </div>
 
-                <div className="flex flex-row sm:flex-col lg:flex-row items-stretch sm:items-end lg:items-center gap-3 w-full sm:w-auto">
+                <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:items-end lg:flex-row lg:items-center">
                     {isTeamVerified && (
                         <>
                             {whatsappLink && (
                                 <button
                                     onClick={handleWhatsappClick}
-                                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#25D366] px-4 py-2 text-sm font-space-grotesk text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                    className="flex w-full items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#25D366] px-4 py-2 text-sm font-space-grotesk text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto"
                                 >
                                     <WhatsappIcon />
                                     Grup Whatsapp
                                 </button>
                             )}
-                            <div className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#4ADE80] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000]">
+                            <div className="flex w-full items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#4ADE80] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000] sm:w-auto">
                                 <CheckIcon className="w-3.5 h-3.5 text-[#1A1C1C]" />
                                 Sudah Terverifikasi
                             </div>
@@ -162,21 +156,21 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                     )}
 
                     {showPendingVerification && (
-                        <div className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#FCD400] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000]">
+                        <div className="flex w-full items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#FCD400] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000] sm:w-auto">
                             <span className="animate-spin text-xs">⌛</span>
                             Pending Verif
                         </div>
                     )}
 
                     {!isTeamVerified && !showPendingVerification && !isRejected && (
-                        <div className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#ff8c75] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000]">
+                        <div className="flex w-full items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#ff8c75] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000] sm:w-auto">
                             <MdErrorOutline className="text-base text-black" />
                             Unverified
                         </div>
                     )}
 
                     {isRejected && (
-                        <div className="flex-1 sm:flex-none flex items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#ef4444] px-4 py-2 text-sm font-space-grotesk font-bold text-white shadow-[4px_4px_0_0_#000]">
+                        <div className="flex w-full items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#ef4444] px-4 py-2 text-sm font-space-grotesk font-bold text-white shadow-[4px_4px_0_0_#000] sm:w-auto">
                             <MdErrorOutline className="text-base text-white" />
                             Rejected
                         </div>
@@ -185,13 +179,13 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
             </div>
 
             {showTeamErrorBox && (
-                <div className="border-[3px] border-[#1A1C1C] bg-[#fef2f2] p-4 text-xs font-bold text-red-700 shadow-[4px_4px_0_0_#000]">
+                <div className="break-words border-[3px] border-[#1A1C1C] bg-[#fef2f2] p-3 text-xs font-bold text-red-700 shadow-[4px_4px_0_0_#000] sm:p-4">
                     <span className="font-extrabold uppercase text-red-800">Alasan Penolakan:</span>{" "}
                     {data.verificationError || "Berkas / bukti pembayaran tidak valid"}
                 </div>
             )}
 
-            <div className="border-2 border-[#1A1C1C] bg-[#EEE] p-4 flex flex-col gap-2.5">
+            <div className="border-2 border-[#1A1C1C] bg-[#EEE] p-2.5 flex flex-col gap-2.5 sm:p-4">
                 {membersArray.map((anggota, idx) => {
                     const hasMemberError = anggota.verificationError && anggota.verificationError.trim() !== "";
                     const isApproved = isDocumentVerified && !hasMemberError;
@@ -199,10 +193,10 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                     return (
                         <div
                             key={idx}
-                            className={`flex items-center justify-between gap-4 p-3 bg-white border-2 border-[#1A1C1C] ${idx === 0 ? "border-l-[5px] border-l-[#FCD400]" : ""
+                            className={`flex flex-col items-stretch justify-between gap-3 p-3 bg-white border-2 border-[#1A1C1C] sm:flex-row sm:items-center sm:gap-4 ${idx === 0 ? "border-l-[5px] border-l-[#FCD400]" : ""
                                 }`}
                         >
-                            <div className="flex items-center gap-3">
+                            <div className="flex min-w-0 items-start gap-3 sm:items-center">
                                 {idx === 0 ? (
                                     <div className="border border-[#1A1C1C] bg-[#FCD400] p-1 flex items-center justify-center">
                                         <PremiumBadgeIcon />
@@ -210,17 +204,17 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                                 ) : (
                                     <span className="text-lg">👤</span>
                                 )}
-                                <div className="text-sm font-space-grotesk">
-                                    <span className="opacity-50 mr-1.5">
+                                <div className="min-w-0 text-sm font-space-grotesk">
+                                    <span className="mr-1.5 block opacity-50 min-[420px]:inline">
                                         {isIndividual ? "Peserta:" : (idx === 0 ? "Ketua:" : "Anggota:")}
                                     </span>
-                                    <span className={anggota.fullName === currentUser ? "text-[#34399F] font-bold" : "font-semibold"}>
+                                    <span className={`break-words ${anggota.fullName === currentUser ? "text-[#34399F] font-bold" : "font-semibold"}`}>
                                         {anggota.fullName}
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex shrink-0 items-center justify-end gap-1.5 self-end sm:self-auto">
                                 {hasMemberError ? (
                                     <div className="relative group cursor-help flex items-center gap-1">
                                         <MdErrorOutline className="text-red-600 text-sm" />
@@ -327,7 +321,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                             </div>
 
                             {/* Competition Codes & Pricing */}
-                            <div className="flex gap-4">
+                            <div className="flex flex-col gap-4 sm:flex-row">
                                 {/* Kode Kompetisi */}
                                 <div className="flex-1 border-[2px] border-black p-3.5 flex flex-col gap-2">
                                     <p className="font-space-grotesk text-[10px] tracking-wider text-gray-500 font-black uppercase">
@@ -415,7 +409,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="border-t-[4px] border-[#1A1C1C] p-4 flex gap-4 bg-white">
+                        <div className="border-t-[4px] border-[#1A1C1C] p-4 flex flex-col gap-4 bg-white min-[400px]:flex-row">
                             <button
                                 onClick={() => setShowUploadModal(false)}
                                 className="flex-1 py-3 border-[3px] border-[#1A1C1C] bg-[#E5E7EB] text-xs font-black uppercase text-[#121212] shadow-[3.5px_3.5px_0_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"

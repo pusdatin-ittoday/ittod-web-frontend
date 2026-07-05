@@ -85,7 +85,7 @@ class DashboardLayout extends Component {
               />
             </aside>
 
-            <main className="min-w-0 flex-1 px-4 py-8 sm:px-7 lg:px-10 lg:py-10">
+            <main className="min-w-0 flex-1 px-3 py-6 sm:px-7 sm:py-8 lg:px-10 lg:py-10">
               {this.state.active === "ikut-event" ? (
                 <IkutEvent variant="neobrutal" />
               ) : this.state.active === "ikut-lomba" ? (
