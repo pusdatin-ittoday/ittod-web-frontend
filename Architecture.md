@@ -24,6 +24,7 @@ The frontend provides the user interface for landing pages, event discovery, das
 ### Public Neo-Brutalist Experience
 - `/` and `/home` compose the public Home sections with a shared fixed `Navbar`, dynamic event and competition sections, contact callout, and dynamic `Footer`.
 - The Home intro uses a responsive Neo-Brutalist editorial block with a split-color heading, hard-shadow description panel, and four color-coded statistic cards sourced from the existing landing statistics data.
+- The Home hero is rendered with code-native responsive SVG wave bands and heavy responsive blue-outlined display typography, preserving sharp Neo-Brutalist visuals without depending on an additional raster hero asset.
 - `/event/:slug` and `/competition/:slug` retain their existing API-backed detail lookup while sharing the same thick-border, hard-shadow visual system.
 - Public `Contact Us` navigation scrolls to `#contact` on the Home page. The `Kontak Kami` call-to-action opens the official WhatsApp contact directly; there is no separate contact page.
 - All public and authenticated pages resolve to one shared footer implementation. Its desktop layout uses five horizontal columns, event and competition links are populated from the existing API, and all six official social-media links are displayed.
