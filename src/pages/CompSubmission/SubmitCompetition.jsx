@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md";
+import { IoArrowUndoCircle } from "react-icons/io5";
 import { upsertCompetitionFile } from "../../api/compeFile";
 import { getUserCompetitions } from "../../api/user";
 import { getPublicEventById } from "../../api/eventPublic";
@@ -8,6 +9,7 @@ import { SUBMISSION_FIELDS } from "./SubmissionConfig";
 import DashboardNeoHeader from "../../components/Dashboard/DashboardNeoHeader";
 import Sidebar from "../../components/Dashboard/Sidebar";
 import Footer from "../../components/Footer";
+import LoadingState from "../../components/ui/LoadingState";
 
 const SubmitCompetition = () => {
   const { competitionId } = useParams();
@@ -108,6 +110,8 @@ const SubmitCompetition = () => {
   useEffect(() => {
     const fetchTeamData = async () => {
       setLoading(true);
+      // Temporary delay for testing loading state
+      await new Promise(resolve => setTimeout(resolve, 3000));
       try {
         const result = await getUserCompetitions();
         if (result.success && result.data) {
@@ -189,20 +193,7 @@ const SubmitCompetition = () => {
   }, [competitionId]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
-        <DashboardNeoHeader />
-        <div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[760px] lg:flex-row">
-          <aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
-            <Sidebar active="submit-lomba" variant="neobrutal" />
-          </aside>
-          <main className="min-w-0 flex-1 flex items-center justify-center p-4">
-            <p className="text-black text-lg font-bold animate-pulse">Loading form...</p>
-          </main>
-        </div>
-        <Footer variant="neobrutal" />
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (!fieldsConfig || fieldsConfig.length === 0) {
@@ -213,15 +204,23 @@ const SubmitCompetition = () => {
           <aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
             <Sidebar active="submit-lomba" variant="neobrutal" />
           </aside>
-          <main className="min-w-0 flex-1 flex items-center justify-center p-4">
-            <div className="bg-white text-black border-[4px] border-black p-8 shadow-[8px_8px_0_#191b1a] max-w-3xl w-full text-center">
-              <h2 className="text-xl font-black uppercase mb-4">Form Submit Tidak Ditemukan</h2>
-              <p className="font-semibold text-gray-700">Konfigurasi submisi untuk kompetisi ini tidak tersedia.</p>
+          <main className="min-w-0 flex-1 flex flex-col items-center justify-center p-4">
+            <div className="flex flex-col gap-5 items-center justify-center max-w-lg w-full bg-white border-[4px] border-black p-8 shadow-[8px_8px_0_#191b1a] text-center">
+              <h1 className="font-dm-sans text-pink-500 text-5xl font-black uppercase tracking-wider">Waduh!</h1>
+              <div className="text-center">
+                <p className="font-dm-sans text-base md:text-lg font-bold leading-relaxed text-black mb-3">
+                  Formulir pengumpulan untuk <span className="font-black text-pink-500 border-b-2 border-pink-500">{competitionName || "Kompetisi"}</span> belum tersedia nih!
+                </p>
+                <p className="font-dm-sans text-sm md:text-base font-semibold text-gray-600">
+                  Kok kamu bisa masuk ke sini sih? Silakan hubungi panitia atau kembali ke halaman sebelumnya.
+                </p>
+              </div>
               <button 
+                className="flex items-center gap-2 border-[3px] border-black bg-[#eeeeee] px-6 py-2.5 text-sm font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[5px_5px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
                 onClick={() => navigate("/dashboard/submit-lomba")}
-                className="mt-6 border-[3px] border-black bg-[#eeeeee] px-6 py-2.5 text-sm font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[5px_5px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
               >
-                Kembali
+                <IoArrowUndoCircle className="w-5 h-5 text-gray-700" />
+                <span>Kembali ke Beranda</span>
               </button>
             </div>
           </main>

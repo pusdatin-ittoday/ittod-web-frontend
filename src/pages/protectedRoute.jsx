@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { isAuthenticated } from '../api/user';
+import LoadingState from '../components/ui/LoadingState';
 
 const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);
@@ -34,11 +35,7 @@ const ProtectedRoute = ({ children }) => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-white text-lg">Loading...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (!authenticated) {
