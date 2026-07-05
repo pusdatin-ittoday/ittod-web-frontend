@@ -117,7 +117,8 @@ const SubmitCompetition = () => {
           );
 
           if (team && team.teamID) {
-            if (!team.isVerified) {
+            const isApproved = team.isVerified === true || team.isVerified === 1 || team.isVerified === 'approved';
+            if (!isApproved) {
               setAlertType("error");
               setAlertMessage("Pendaftaran tim Anda belum disetujui (Approved) oleh admin");
               setShowAlert(true);

@@ -125,7 +125,7 @@ const CompSubmitCard = ({ variant = "default" }) => {
           // Filter the events based on user's competitions that require submission AND are verified
           const userCompetitions = competitionsResponse.data || [];
           const filtered = userCompetitions
-            .filter(comp => comp.requiresSubmission === true && comp.isVerified === true)
+            .filter(comp => comp.requiresSubmission === true && (comp.isVerified === true || comp.isVerified === 1 || comp.isVerified === 'approved'))
             .map(comp => ({
               id: comp.competitionId,
               title: comp.competitionName,
