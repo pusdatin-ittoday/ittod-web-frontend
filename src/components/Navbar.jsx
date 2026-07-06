@@ -196,7 +196,7 @@ class Navbar extends Component {
 
             {/* Dropdown Profil untuk Desktop */}
             <div className="hidden lg:block relative ">
-              {isLoggedIn ? (   
+              {isLoggedIn ? (
                 <div className="relative ">
                   <button
                     onClick={this.toggleDropdown}
@@ -238,33 +238,29 @@ class Navbar extends Component {
             {/* Tombol Toggle Menu untuk Mobile */}
             <button
               aria-label="Toggle Menu"
-              className={`w-[40px] h-[40px] lg:hidden block cursor-pointer text-white focus:outline-none relative group transition-all duration-300 ease-in-out hover:scale-110 ${
-                active ? 'rotate-0' : ''
-              }`}
+              className={`w-[40px] h-[40px] lg:hidden block cursor-pointer text-white focus:outline-none relative group transition-all duration-300 ease-in-out hover:scale-110 ${active ? 'rotate-0' : ''
+                }`}
               onClick={this.handleClick}
             >
-              <div className="relative w-full h-full flex items-center justify-center"> 
+              <div className="relative w-full h-full flex items-center justify-center">
                 {/* Hamburger lines with individual animations */}
                 <div className="relative w-6 h-6 flex flex-col justify-center items-center">
                   {/* Top line */}
-                  <div className={`left-0 absolute w-3 h-0.5 bg-current transition-all duration-400 ease-in-out transform ${
-                    active 
-                      ? 'rotate-45 w-6 ' 
+                  <div className={`left-0 absolute w-3 h-0.5 bg-current transition-all duration-400 ease-in-out transform ${active
+                      ? 'rotate-45 w-6 '
                       : '-translate-y-2'
-                  }`} />
-                  
+                    }`} />
+
                   {/* Middle line */}
-                  <div className={`absolute w-6 h-0.5 bg-current transition-all duration-400 ease-in-out ${
-                    active 
-                      ? 'translate-x-5 opacity-0' 
+                  <div className={`absolute w-6 h-0.5 bg-current transition-all duration-400 ease-in-out ${active
+                      ? 'translate-x-5 opacity-0'
                       : 'translate-y-0'
-                  }`} />
-                  <div className={`right-0 absolute w-3 h-0.5 bg-current transition-all duration-400 ease-in-out transform ${
-                    active 
-                      ? '-rotate-45 w-6' 
+                    }`} />
+                  <div className={`right-0 absolute w-3 h-0.5 bg-current transition-all duration-400 ease-in-out transform ${active
+                      ? '-rotate-45 w-6'
                       : 'translate-y-2'
-                  }`} />
-                </div>  
+                    }`} />
+                </div>
               </div>
             </button>
           </div>

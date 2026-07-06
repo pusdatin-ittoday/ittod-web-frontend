@@ -112,19 +112,16 @@ const NavbarNeo = () => {
             aria-label="Toggle Menu"
           >
             <span
-              className={`block h-0.5 w-6 bg-black transition-all duration-300 ${
-                mobileOpen ? 'rotate-45 translate-y-2' : ''
-              }`}
+              className={`block h-0.5 w-6 bg-black transition-all duration-300 ${mobileOpen ? 'rotate-45 translate-y-2' : ''
+                }`}
             />
             <span
-              className={`block h-0.5 w-6 bg-black transition-all duration-300 ${
-                mobileOpen ? 'opacity-0' : ''
-              }`}
+              className={`block h-0.5 w-6 bg-black transition-all duration-300 ${mobileOpen ? 'opacity-0' : ''
+                }`}
             />
             <span
-              className={`block h-0.5 w-6 bg-black transition-all duration-300 ${
-                mobileOpen ? '-rotate-45 -translate-y-2' : ''
-              }`}
+              className={`block h-0.5 w-6 bg-black transition-all duration-300 ${mobileOpen ? '-rotate-45 -translate-y-2' : ''
+                }`}
             />
           </button>
         </div>
@@ -132,11 +129,10 @@ const NavbarNeo = () => {
 
       {/* Mobile menu */}
       <div
-        className={`absolute top-full right-4 z-[9999] mt-2 w-60 border-[3px] border-black bg-indigo-neo shadow-[6px_6px_0_#000000] transition-all duration-200 lg:hidden ${
-          mobileOpen
+        className={`absolute top-full right-4 z-[9999] mt-2 w-60 border-[3px] border-black bg-indigo-neo shadow-[6px_6px_0_#000000] transition-all duration-200 lg:hidden ${mobileOpen
             ? 'visible opacity-100 translate-y-0'
             : 'invisible opacity-0 -translate-y-2 pointer-events-none'
-        }`}
+          }`}
       >
         <ul className="space-y-2 px-5 py-5">
           {navLinks.map((link) => (

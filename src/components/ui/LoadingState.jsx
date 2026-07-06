@@ -22,7 +22,10 @@ const LoadingState = () => {
     <div 
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center font-dm-sans bg-[#0d0f26]"
       style={{
-        background: "url('https://api.builder.io/api/v1/image/assets/TEMP/794d42f37c2c7754d2f7b62f7ad0198b09ee2cf0?width=3966') lightgray -0.317px -51.05px / 96.823% 113.089% no-repeat",
+        backgroundImage: "url('/images/loading-bg.png')",
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
         backgroundColor: "#0d0f26"
       }}
     >

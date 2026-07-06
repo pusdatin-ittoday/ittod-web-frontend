@@ -9,6 +9,7 @@ import Button from '../components/ui/Button';
 import AgendaSidebar from '../components/ui/AgendaSidebar';
 import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
+import LoadingState from '../components/ui/LoadingState';
 
 const formatWaLink = (num) => {
   if (!num) return '#';
@@ -55,17 +56,7 @@ const EventDetailPage = () => {
   }, [slug]);
 
   if (loading) {
-    return (
-      <>
-        <NavbarNeo />
-        <main className="min-h-screen flex flex-col items-center justify-center bg-white pt-20">
-          <div className="text-center px-4">
-            <h1 className="font-bebas text-4xl text-black mb-4">Loading...</h1>
-          </div>
-        </main>
-        <FooterNeo />
-      </>
-    );
+    return <LoadingState />;
   }
 
   // 404 fallback

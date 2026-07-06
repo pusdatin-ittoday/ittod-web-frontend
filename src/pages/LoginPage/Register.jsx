@@ -6,7 +6,7 @@ import NavbarNeo from "../../components/layout/Navbar";
 
 const Register = () => {
     const navigate = useNavigate();
-    
+
     // Form input states
     const [namaLengkap, setNamaLengkap] = useState("");
     const [email, setEmail] = useState("");
@@ -122,7 +122,7 @@ const Register = () => {
     };
 
     return (
-        <div 
+        <div
             className="flex flex-col min-h-screen w-full select-none justify-between"
             style={{
                 background: "radial-gradient(circle at top left, #FDF5B0 0%, #E9E9F0 100%)"
@@ -136,7 +136,7 @@ const Register = () => {
                 <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
                     {/* Registration Content Card */}
                     <div className="bg-white border-2 md:border-[3px] border-black shadow-[10px_10px_0px_0px_#000000] md:shadow-[14px_14px_0px_0px_#000000] w-full max-w-[460px] p-6 md:p-10 rounded-none my-8">
-                        
+
                         {/* Top Logo */}
                         <div className="flex justify-center mb-8">
                             <img
@@ -176,7 +176,7 @@ const Register = () => {
 
                         {/* Form */}
                         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                            
+
                             {/* Nama Lengkap */}
                             <div className="flex flex-col">
                                 <label className="block text-[10px] md:text-xs font-extrabold text-[#1E3A8A] tracking-wider mb-1.5 uppercase font-sans">
@@ -340,7 +340,7 @@ const Register = () => {
                             className="w-full bg-[#1E3A8A] hover:bg-[#12255c] active:bg-[#0c1b48] border-2 border-black text-white text-xs md:text-sm font-bold py-3.5 px-4 rounded-none tracking-wider transition-all uppercase duration-200 select-none cursor-pointer flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-[2px] hover:translate-y-[2px] active:scale-[0.98]"
                         >
                             <svg className="w-4 h-4 md:w-5 md:h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.2-5.136 4.2A5.724 5.724 0 018.28 12.87a5.724 5.724 0 015.71-5.73 5.492 5.492 0 013.9 1.564l3.15-3.15A9.912 9.912 0 0013.99 2 9.99 9.99 0 004 12a9.99 9.99 0 009.99 10c5.518 0 9.99-4.482 9.99-10 0-.712-.082-1.397-.22-2.065H12.24z"/>
+                                <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.2-5.136 4.2A5.724 5.724 0 018.28 12.87a5.724 5.724 0 015.71-5.73 5.492 5.492 0 013.9 1.564l3.15-3.15A9.912 9.912 0 0013.99 2 9.99 9.99 0 004 12a9.99 9.99 0 009.99 10c5.518 0 9.99-4.482 9.99-10 0-.712-.082-1.397-.22-2.065H12.24z" />
                             </svg>
                             <span>LOGIN WITH GOOGLE</span>
                         </button>
@@ -348,8 +348,8 @@ const Register = () => {
                         {/* Link Back to Login */}
                         <div className="text-center mt-6">
                             <span className="text-xs font-semibold text-gray-600">Sudah Punya Akun? </span>
-                            <Link 
-                                to="/login" 
+                            <Link
+                                to="/login"
                                 className="text-xs font-bold text-[#1E3A8A] hover:underline uppercase tracking-wide font-sans transition-colors"
                             >
                                 Login
