@@ -46,7 +46,7 @@ const FooterNeo = () => {
   return (
     <footer className="border-t-[5px] border-black bg-[#171918] pb-6 pt-14 text-white">
       <div className="mx-auto max-w-[90rem] px-6 md:px-10">
-        <div className="mb-16 grid grid-cols-1 gap-10 text-left md:grid-cols-5 md:gap-8 lg:gap-12">
+        <div className="mb-16 grid grid-cols-1 gap-10 text-center md:grid-cols-5 md:gap-8 lg:gap-12 md:text-left">
           
           {/* Brand Column */}
           <div className="lg:col-span-1">
@@ -76,7 +76,7 @@ const FooterNeo = () => {
           {/* Competitions Column */}
           <div>
             <h3 className="mb-6 font-bebas text-xl tracking-wider text-yellow-neo">COMPETITIONS</h3>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="flex flex-col gap-4 md:grid md:grid-cols-3 md:gap-2">
               {footerCompetitions.map((item) => (
                 <Link 
                   key={item.id} 
@@ -92,7 +92,7 @@ const FooterNeo = () => {
           {/* Social Media Column */}
           <div>
             <h3 className="mb-6 font-bebas text-xl tracking-wider text-yellow-neo">SOCIAL MEDIA</h3>
-            <div className="grid w-fit grid-cols-3 gap-4">
+            <div className="grid w-fit grid-cols-3 gap-4 mx-auto md:mx-0">
               {socialLinks.map((item) => (
                 <a
                   key={item.label}

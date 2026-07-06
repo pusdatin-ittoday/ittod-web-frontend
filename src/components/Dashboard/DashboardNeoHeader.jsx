@@ -42,8 +42,7 @@ const DashboardNeoHeader = () => {
   };
 
   return (
-    <>
-      <header className="border-b-[5px] border-black bg-indigo-neo text-white">
+    <header className="relative border-b-[5px] border-black bg-indigo-neo text-white">
         <div className="mx-auto flex h-16 w-full max-w-[1500px] items-center justify-between px-4 sm:px-6 lg:px-10 md:h-20">
           <Link to="/" aria-label="Kembali ke beranda" className="shrink-0">
             <img
@@ -99,12 +98,13 @@ const DashboardNeoHeader = () => {
             />
           </button>
         </div>
-      </header>
 
       {/* Mobile menu */}
       <div
-        className={`overflow-hidden border-t-[3px] border-black bg-indigo-neo transition-all duration-300 lg:hidden ${
-          mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        className={`absolute top-full right-4 z-[9999] mt-2 w-60 border-[3px] border-black bg-indigo-neo shadow-[6px_6px_0_#000000] transition-all duration-200 lg:hidden ${
+          mobileOpen
+            ? 'visible opacity-100 translate-y-0'
+            : 'invisible opacity-0 -translate-y-2 pointer-events-none'
         }`}
       >
         <ul className="space-y-2 px-5 py-5">
@@ -142,7 +142,7 @@ const DashboardNeoHeader = () => {
           </li>
         </ul>
       </div>
-    </>
+    </header>
   );
 };
 
