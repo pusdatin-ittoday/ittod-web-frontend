@@ -174,7 +174,7 @@ const Login = () => {
                                 <div className="relative flex items-center">
                                     <span className="absolute left-3.5 flex items-center justify-center pointer-events-none">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#1E3A8A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
                                     </span>
                                     <input
@@ -192,12 +192,12 @@ const Login = () => {
                             {/* Password / Access Key Input */}
                             <div className="flex flex-col mt-1">
                                 <label className="block text-[10px] md:text-xs font-extrabold text-[#1E3A8A] tracking-wider mb-1.5 uppercase font-sans">
-                                    ACCESS_KEY
+                                    PASSWORD
                                 </label>
                                 <div className="relative flex items-center">
                                     <span className="absolute left-3.5 flex items-center justify-center pointer-events-none">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#1E3A8A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m-2 4a5 5 0 11-5.93-9.14l2.94-2.93a1 1 0 011.41 0l1.42 1.42a1 1 0 010 1.41l-1.42 1.42a1 1 0 000 1.41l1.42 1.42a1 1 0 010 1.41l-1.42 1.42z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a5 5 0 1 1-10 0 5 5 0 0 1 10 0zm-3 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm3 0h7M18 12v3.5M21 12v3.5" />
                                         </svg>
                                     </span>
                                     <input
