@@ -141,7 +141,7 @@ const CompetitionDetailPage = () => {
             </div>
           </div>
         </section>
-        <GetInTouchSection compact contact1={competition.contact_person1} contact2={competition.contact_person2} />
+        <GetInTouchSection compact />
       </main>
       <FooterNeo />
     </div>

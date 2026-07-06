@@ -5,22 +5,7 @@ import { DEFAULT_CONTACTS } from '../../data/contacts';
  * Get In Touch Section — background hitam, heading kuning, tombol "Kontak Kami" → WhatsApp.
  * Juga dipakai sebagai ContactUsBanner di EventDetailPage.
  */
-const GetInTouchSection = ({ compact = false, contact1 = null, contact2 = null }) => {
-  const formatWaLink = (num) => {
-    if (!num) return null;
-    let clean = num.toString().replace(/[^0-9]/g, "");
-    if (clean.startsWith("0")) {
-      clean = "62" + clean.slice(1);
-    }
-    return `https://wa.me/${clean}`;
-  };
-
-  const link1 = formatWaLink(contact1);
-  const link2 = formatWaLink(contact2);
-
-  // If dynamic contacts are available, use them, otherwise fallback to PR
-  const hasDynamicContacts = link1 || link2;
-
+const GetInTouchSection = ({ compact = false }) => {
   if (compact) {
     return (
       <section id="contact" className="w-full border-b-[5px] border-black bg-[#f7f7f4] px-5 py-14 md:px-8 md:py-20">
@@ -35,41 +20,14 @@ const GetInTouchSection = ({ compact = false, contact1 = null, contact2 = null }
               partnerships and inquiries.
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            {hasDynamicContacts ? (
-              <>
-                {link1 && (
-                  <a
-                    href={link1}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center border-[3px] border-black bg-indigo-neo px-7 py-4 font-inter text-xs font-black uppercase tracking-wide text-white shadow-[5px_5px_0_#000] transition-all duration-200 hover:-translate-y-1 hover:translate-x-1 hover:bg-yellow-neo hover:text-black hover:shadow-[8px_8px_0_#000]"
-                  >
-                    Hubungi CP 1 <span className="ml-3 text-lg">→</span>
-                  </a>
-                )}
-                {link2 && (
-                  <a
-                    href={link2}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center border-[3px] border-black bg-indigo-neo px-7 py-4 font-inter text-xs font-black uppercase tracking-wide text-white shadow-[5px_5px_0_#000] transition-all duration-200 hover:-translate-y-1 hover:translate-x-1 hover:bg-yellow-neo hover:text-black hover:shadow-[8px_8px_0_#000]"
-                  >
-                    Hubungi CP 2 <span className="ml-3 text-lg">→</span>
-                  </a>
-                )}
-              </>
-            ) : (
-              <a
-                href={`https://wa.me/${DEFAULT_CONTACTS.phone}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center border-[3px] border-black bg-indigo-neo px-7 py-4 font-inter text-xs font-black uppercase tracking-wide text-white shadow-[5px_5px_0_#000] transition-all duration-200 hover:-translate-y-1 hover:translate-x-1 hover:bg-yellow-neo hover:text-black hover:shadow-[8px_8px_0_#000]"
-              >
-                Hubungi Kami <span className="ml-3 text-lg">→</span>
-              </a>
-            )}
-          </div>
+          <a
+            href={`https://wa.me/${DEFAULT_CONTACTS.phone}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center border-[3px] border-black bg-indigo-neo px-7 py-4 font-inter text-xs font-black uppercase tracking-wide text-white shadow-[5px_5px_0_#000] transition-all duration-200 hover:-translate-y-1 hover:translate-x-1 hover:bg-yellow-neo hover:text-black hover:shadow-[8px_8px_0_#000]"
+          >
+            Hubungi Kami <span className="ml-3 text-lg">→</span>
+          </a>
         </div>
       </section>
     );
@@ -94,40 +52,15 @@ const GetInTouchSection = ({ compact = false, contact1 = null, contact2 = null }
             </p>
           </div>
 
-          <div className="shrink-0 md:mt-12 flex flex-col sm:flex-row gap-4">
-            {hasDynamicContacts ? (
-              <>
-                {link1 && (
-                  <a 
-                    href={link1}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block border-[3px] border-black bg-yellow-neo px-8 py-4 font-inter text-sm font-black uppercase tracking-wide text-black shadow-[7px_7px_0_#fff] transition-all duration-150 hover:translate-x-1 hover:translate-y-1 hover:shadow-[3px_3px_0_#fff]"
-                  >
-                    Hubungi CP 1
-                  </a>
-                )}
-                {link2 && (
-                  <a 
-                    href={link2}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block border-[3px] border-black bg-yellow-neo px-8 py-4 font-inter text-sm font-black uppercase tracking-wide text-black shadow-[7px_7px_0_#fff] transition-all duration-150 hover:translate-x-1 hover:translate-y-1 hover:shadow-[3px_3px_0_#fff]"
-                  >
-                    Hubungi CP 2
-                  </a>
-                )}
-              </>
-            ) : (
-              <a 
-                href={`https://wa.me/${DEFAULT_CONTACTS.phone}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block border-[3px] border-black bg-yellow-neo px-8 py-4 font-inter text-sm font-black uppercase tracking-wide text-black shadow-[7px_7px_0_#fff] transition-all duration-150 hover:translate-x-1 hover:translate-y-1 hover:shadow-[3px_3px_0_#fff]"
-              >
-                Kontak Kami
-              </a>
-            )}
+          <div className="shrink-0 md:mt-12">
+            <a 
+              href={`https://wa.me/${DEFAULT_CONTACTS.phone}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block border-[3px] border-black bg-yellow-neo px-8 py-4 font-inter text-sm font-black uppercase tracking-wide text-black shadow-[7px_7px_0_#fff] transition-all duration-150 hover:translate-x-1 hover:translate-y-1 hover:shadow-[3px_3px_0_#fff]"
+            >
+              Kontak Kami
+            </a>
           </div>
 
         </div>

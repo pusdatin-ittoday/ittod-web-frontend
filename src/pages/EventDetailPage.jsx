@@ -127,7 +127,7 @@ const EventDetailPage = () => {
         </section>
 
         {/* Contact Us banner */}
-        <GetInTouchSection compact contact1={event.contact_person1} contact2={event.contact_person2} />
+        <GetInTouchSection compact />
       </main>
       <FooterNeo />
     </div>
