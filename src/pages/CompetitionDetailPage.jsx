@@ -5,7 +5,7 @@ import NavbarNeo from '../components/layout/Navbar';
 import FooterNeo from '../components/layout/Footer';
 import PageBanner from '../components/ui/PageBanner';
 import Button from '../components/ui/Button';
-import CompetitionInfoSidebar from '../components/competition/CompetitionInfoSidebar';
+import AgendaSidebar from '../components/ui/AgendaSidebar';
 import CompetitionCategoryGrid from '../components/competition/CompetitionCategoryGrid';
 import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
@@ -25,18 +25,10 @@ const CompetitionDetailPage = () => {
       const response = await getEventBySlug(slug);
       if (response.success && response.data) {
         const apiData = response.data;
-        const mainDate = apiData.timelines && apiData.timelines.length > 0 
-          ? new Date(apiData.timelines[0].date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
-          : 'TBA';
-
         const formattedComp = {
           ...apiData,
           tagline: `${apiData.title.toUpperCase()} // 2026`,
           icon: apiData.logo_url,
-          registrationDeadline: mainDate,
-          registrationFee: apiData.price > 0 ? `Rp ${apiData.price.toLocaleString('id-ID')}` : 'FREE / GRATIS',
-          teamSize: apiData.participation_type === 'team' ? '1 - 3 Members' : 'Individual',
-          prizePool: 'TBA',
           categories: [],
           guidebookUrl: apiData.guide_book_url || '#'
         };
@@ -136,7 +128,7 @@ const CompetitionDetailPage = () => {
 
               {/* Right: Sidebar */}
               <div>
-                <CompetitionInfoSidebar competition={competition} />
+                <AgendaSidebar timelines={competition.timelines} type="competition" />
               </div>
             </div>
           </div>

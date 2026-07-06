@@ -5,7 +5,7 @@ import NavbarNeo from '../components/layout/Navbar';
 import FooterNeo from '../components/layout/Footer';
 import PageBanner from '../components/ui/PageBanner';
 import Button from '../components/ui/Button';
-import EventInfoSidebar from '../components/event/EventInfoSidebar';
+import AgendaSidebar from '../components/ui/AgendaSidebar';
 import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
 
@@ -25,17 +25,10 @@ const EventDetailPage = () => {
       if (response.success && response.data) {
         // Map API fields to UI fields
         const apiData = response.data;
-        const mainDate = apiData.timelines && apiData.timelines.length > 0 
-          ? new Date(apiData.timelines[0].date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
-          : 'TBA';
         const formattedEvent = {
           ...apiData,
           tagline: `${apiData.title.toUpperCase()} // 2026`,
           icon: apiData.logo_url,
-          date: mainDate,
-          time: 'TBA',
-          registrationFee: apiData.price > 0 ? `Rp ${apiData.price.toLocaleString('id-ID')}` : 'Gratis',
-          benefits: []
         };
         setEvent(formattedEvent);
       }
@@ -120,7 +113,7 @@ const EventDetailPage = () => {
 
               {/* Right: Sidebar */}
               <div>
-                <EventInfoSidebar event={event} />
+                <AgendaSidebar timelines={event.timelines} type="event" />
               </div>
             </div>
           </div>
