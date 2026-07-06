@@ -7,6 +7,7 @@ import PageBanner from '../components/ui/PageBanner';
 import Button from '../components/ui/Button';
 import CompetitionInfoSidebar from '../components/competition/CompetitionInfoSidebar';
 import CompetitionCategoryGrid from '../components/competition/CompetitionCategoryGrid';
+import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
 
 /**
@@ -86,25 +87,25 @@ const CompetitionDetailPage = () => {
       <NavbarNeo />
       <main className="pt-16 md:pt-20">
         {/* Banner */}
-        <PageBanner icon={competition.icon} title={competition.title} subtitle={competition.tagline} />
+        <PageBanner
+          icon={competition.icon}
+          title={competition.title}
+          subtitle={competition.tagline}
+          variant="event"
+        />
 
         {/* 2-column layout */}
-        <section className="w-full bg-[#f7f7f4] py-12 md:py-16">
+        <section className="w-full bg-[#f7f7f4] py-12 md:py-20">
           <div className="mx-auto max-w-6xl px-5 md:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(260px,0.72fr)]">
               {/* Left: About the Challenge */}
-              <div className="lg:col-span-2">
-                <div className="relative border-[4px] border-black bg-white p-6 shadow-[9px_9px_0_#111] md:p-8">
-                  {/* URGENT badge */}
-                  <div className="absolute right-4 top-4 border-[3px] border-black bg-red-neo px-3 py-1 font-inter text-xs font-black uppercase tracking-wider text-white shadow-[4px_4px_0_#111]">
-                    URGENT
-                  </div>
-
-                  <h2 className="font-bebas text-3xl md:text-4xl text-black tracking-wider mb-6 uppercase">
+              <div>
+                <div className="border-[3px] border-black bg-white p-6 shadow-[8px_8px_0_#111] transition-transform duration-300 hover:-translate-y-1 md:p-9">
+                  <h2 className="mb-5 w-fit border-b-[4px] border-yellow-neo pb-2 font-inter text-2xl font-black uppercase leading-tight text-[#171918] md:text-4xl">
                     About The Challenge
                   </h2>
 
-                  <p className="font-inter text-base text-gray-700 leading-relaxed mb-6 whitespace-pre-wrap">
+                  <p className="mb-6 whitespace-pre-wrap font-inter text-sm leading-relaxed text-[#2e3238] md:text-base">
                     {competition.description}
                   </p>
 
@@ -114,18 +115,18 @@ const CompetitionDetailPage = () => {
                   )}
 
                   {/* CTA buttons */}
-                  <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                  <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                     <Button
                       variant="yellow-solid"
                       href={competition.guidebookUrl}
-                      className="flex-1 text-center flex items-center justify-center gap-2 uppercase tracking-wider"
+                      className="flex flex-1 items-center justify-center gap-2 text-center uppercase tracking-wider"
                     >
                       <FiFileText size={18} /> Download Guidebook
                     </Button>
                     <Button
                       variant="indigo-solid"
                       href={`/register-competition/${slug}`}
-                      className="flex-1 text-center flex items-center justify-center gap-2 uppercase tracking-wider"
+                      className="flex flex-1 items-center justify-center gap-2 text-center uppercase tracking-wider"
                     >
                       <FiUserPlus size={18} /> Daftar Sekarang
                     </Button>
@@ -134,12 +135,13 @@ const CompetitionDetailPage = () => {
               </div>
 
               {/* Right: Sidebar */}
-              <div className="lg:col-span-1">
+              <div>
                 <CompetitionInfoSidebar competition={competition} />
               </div>
             </div>
           </div>
         </section>
+        <GetInTouchSection compact />
       </main>
       <FooterNeo />
     </div>
