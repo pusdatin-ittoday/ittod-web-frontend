@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getEvents } from '../../services/eventService';
+import { DEFAULT_CONTACTS } from '../../data/contacts';
 
 /**
  * Shared Footer Neo-Brutalisme — dipakai di seluruh halaman.
@@ -116,11 +117,11 @@ const FooterNeo = () => {
           <div>
             <h3 className="mb-6 font-bebas text-xl tracking-wider text-yellow-neo">KONTAK KAMI</h3>
             <div className="flex flex-col gap-3 font-inter text-[13px] text-gray-300">
-              <a href="mailto:pr@ittoday.web.id" className="hover:text-white transition-colors">
-                pr@ittoday.web.id
+              <a href={`mailto:${DEFAULT_CONTACTS.email}`} className="hover:text-white transition-colors">
+                {DEFAULT_CONTACTS.email}
               </a>
-              <a href="tel:+6281256518375" className="hover:text-white transition-colors">
-                +6281256518375
+              <a href={`tel:+${DEFAULT_CONTACTS.phone}`} className="hover:text-white transition-colors">
+                {DEFAULT_CONTACTS.formattedPhone}
               </a>
             </div>
           </div>

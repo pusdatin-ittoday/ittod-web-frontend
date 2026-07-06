@@ -1,4 +1,5 @@
 import React from 'react';
+import { DEFAULT_CONTACTS } from '../../data/contacts';
 
 /**
  * Get In Touch Section — background hitam, heading kuning, tombol "Kontak Kami" → WhatsApp.
@@ -20,7 +21,7 @@ const GetInTouchSection = ({ compact = false }) => {
             </p>
           </div>
           <a
-            href="https://wa.me/6281256518375"
+            href={`https://wa.me/${DEFAULT_CONTACTS.phone}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center border-[3px] border-black bg-indigo-neo px-7 py-4 font-inter text-xs font-black uppercase tracking-wide text-white shadow-[5px_5px_0_#000] transition-all duration-200 hover:-translate-y-1 hover:translate-x-1 hover:bg-yellow-neo hover:text-black hover:shadow-[8px_8px_0_#000]"
@@ -53,7 +54,7 @@ const GetInTouchSection = ({ compact = false }) => {
 
           <div className="shrink-0 md:mt-12">
             <a 
-              href="https://wa.me/6281256518375"
+              href={`https://wa.me/${DEFAULT_CONTACTS.phone}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block border-[3px] border-black bg-yellow-neo px-8 py-4 font-inter text-sm font-black uppercase tracking-wide text-black shadow-[7px_7px_0_#fff] transition-all duration-150 hover:translate-x-1 hover:translate-y-1 hover:shadow-[3px_3px_0_#fff]"
