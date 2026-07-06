@@ -315,7 +315,10 @@ export const getUserCompetitions = async () => {
 export const getAnnouncements = async () => {
 	try {
 		const response = await instance.get("/api/announcements");
-		return { success: true, data: response.data };
+		return {
+			success: response.data?.success !== false,
+			data: Array.isArray(response.data?.data) ? response.data.data : [],
+		};
 	} catch (error) {
 		return {
 			success: false,

@@ -120,13 +120,9 @@ const PengumumanNeo = () => {
         return ann.event ? "event" : "umum";
     };
 
-    // Filter list of announcements to only show:
-    // 1. General announcements (no event)
-    // 2. Announcements for events/competitions the user is registered in
-    const visibleAnnouncements = announcements.filter((ann) => {
-        if (!ann.event) return true;
-        return competitions.some((c) => c.id === ann.event.id || c.competitionId === ann.event.id);
-    });
+    // The API already scopes event-specific announcements to registrations
+    // belonging to the authenticated participant.
+    const visibleAnnouncements = announcements;
 
     // Filter list based on selected category tab
     const filteredAnnouncements = visibleAnnouncements.filter((ann) => {
@@ -150,12 +146,32 @@ const PengumumanNeo = () => {
     };
 
     // Define Dynamic Filter Tabs
+    const announcementEvents = announcements.reduce((events, announcement) => {
+        if (
+            announcement.event &&
+            !events.some((event) => event.id === announcement.event.id)
+        ) {
+            events.push(announcement.event);
+        }
+        return events;
+    }, []);
+    const registeredEventTabs = [
+        ...competitions.map((competition) => ({
+            id: competition.id,
+            title: competition.title,
+        })),
+        ...announcementEvents,
+    ].filter(
+        (event, index, events) =>
+            events.findIndex((candidate) => candidate.id === event.id) === index
+    );
+
     const filterTabs = [
         { id: "ALL", label: "ALL" },
         { id: "UMUM", label: "UMUM" },
-        ...competitions.map((c) => ({
-            id: c.id,
-            label: c.title.toUpperCase(),
+        ...registeredEventTabs.map((event) => ({
+            id: event.id,
+            label: event.title.toUpperCase(),
         })),
     ];
 

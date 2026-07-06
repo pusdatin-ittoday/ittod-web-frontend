@@ -334,11 +334,7 @@ const CompListNeo = () => {
 
                 <div className="space-y-5 overflow-y-auto max-h-[600px] px-3 py-2 custom-scrollbar">
                     {(() => {
-                        const visibleAnnouncements = announcements.filter((ann) => {
-                            if (!ann.event) return true;
-                            const compList = Object.values(competitions || {});
-                            return compList.some((c) => c.competitionId === ann.event.id || c.id === ann.event.id);
-                        });
+                        const visibleAnnouncements = announcements;
 
                         if (loadingAnnouncements) {
                             return <div className="text-center font-bold text-black py-4">Loading...</div>;

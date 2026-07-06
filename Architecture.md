@@ -68,6 +68,7 @@ The frontend provides the user interface for landing pages, event discovery, das
    - The event registration success state reads `whatsapp_group_link` from the selected non-competition event returned by the public API, so Admin controls the displayed group destination without frontend link mappings. Missing links render a safe unavailable notice.
    - Indonesian phone inputs in Edit Profile and event registration accept local `08...`, country-code `628...`, and international `+628...` forms, then normalize valid values to `+628...` before API submission.
    - All pages reuse `Footer.jsx` as the single Contact Us and navigation footer. The dashboard selects its neobrutalist variant while preserving the same event, competition, social-media, email, and WhatsApp destinations.
+   - Dashboard announcement consumers read the normalized array returned by `GET /api/announcements`. General announcements (`event = null`) are visible to every participant, while the API scopes event-specific announcements to the authenticated participant's event registrations and competition memberships. Dashboard filters are generated from the returned event relations so non-competition announcements are not accidentally discarded.
 3. **File Uploads & Submissions**:
    - Users upload payment proofs and competition deliverables via the UI.
    - The frontend bundles files as `FormData` and sends them via Axios to the backend, which securely validates and stores them in Cloudflare R2 Storage (and subsequently the MySQL database).
