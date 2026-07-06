@@ -13,7 +13,7 @@ const GetInTouchSection = ({ compact = false }) => {
       }`}
     >
       <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <div className="flex flex-col items-center justify-between gap-10 border-[5px] border-black bg-[#191b1a] p-8 shadow-[12px_12px_0_#3730A3] md:flex-row md:items-start md:p-14">
+        <div className="flex flex-col items-center justify-between gap-10 border-[5px] border-black bg-[#191b1a] p-8 shadow-[12px_12px_0_#3730A3] transition-all duration-300 ease-out hover:-translate-x-1 hover:-translate-y-2 hover:shadow-[16px_20px_0_#3730A3] md:flex-row md:items-start md:p-14">
           
           <div className="flex-1 text-left">
             <h2 className="mb-6 font-bebas text-6xl leading-[0.9] tracking-wider text-yellow-neo md:text-[5.5rem]">
