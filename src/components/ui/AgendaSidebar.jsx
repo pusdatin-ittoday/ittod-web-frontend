@@ -30,7 +30,7 @@ const formatAgendaDate = (value) => {
  */
 const AgendaSidebar = ({ timelines = [], type = 'event' }) => {
   const isCompetition = type === 'competition';
-  const accentColor = isCompetition ? 'bg-indigo-neo' : 'bg-yellow-neo';
+  const accentColor = 'bg-yellow-neo';
   const sortedTimelines = [...timelines].sort(
     (first, second) => new Date(first.date).getTime() - new Date(second.date).getTime(),
   );
