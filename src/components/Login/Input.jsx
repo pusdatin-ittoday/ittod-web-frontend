@@ -1,13 +1,14 @@
 import React from "react";
 
-const Input = ({ type, placeholder, value, onChange }) => {
+const Input = ({ type, placeholder, value, onChange, disabled }) => {
     return (
         <input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        className ="font-dm-sans pl-10 py-2 w-full rounded-md text-[#3D2357] focus:outline-none focus:ring-2 focus:ring-[#AC6871] bg-[#F4F0F8]"
+            type={type}
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+            disabled={disabled}
+            className="w-full border-2 border-black pl-10 pr-10 py-3 text-xs md:text-sm font-bold text-black focus:outline-none rounded-none placeholder-gray-400 bg-white"
         />
     );
 }

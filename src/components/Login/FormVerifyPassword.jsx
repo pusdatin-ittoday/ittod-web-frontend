@@ -96,26 +96,26 @@ class FormVerifyPassword extends React.Component {
         const isDisabled = countdown > 0;
 
         return (
-            <form className="w-96 text-sm font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
+            <form className="w-full max-w-[420px] font-sans flex flex-col justify-center bg-white p-6 md:p-10 gap-6 border-2 md:border-[3px] border-black shadow-[10px_10px_0px_0px_#000000] md:shadow-[14px_14px_0px_0px_#000000] rounded-none">
                 {showAlert && <Alert message={alertMessage} type={alertType} />}
 
-                <h2 className="text-[#E4CCCF] text-xl font-semibold text-center font-playfair input-text-glow transition-all duration-300 hover:back-button-glow hover:brightness-110">
+                <h2 className="text-[#1E3A8A] text-xl md:text-2xl font-black italic tracking-wide uppercase text-center font-sans mt-2 mb-2">
                     Verifikasi Email
                 </h2>
 
-                <div className="flex flex-col justify-center items-center">
+                <div className="flex flex-col justify-center items-center gap-4">
                     <img
                         src="gmail.svg"
-                        className="max-w-40 max-h-40"
+                        className="max-w-28 max-h-28"
                         alt="Email verification"
                     />
-                    <p className="text-white text-sm text-center font-playfair transition-all duration-300 hover:back-button-glow hover:brightness-110">
-                        Mohon <span className="font-bold input-text-glow">periksa email</span> untuk melanjutkan. Jika tidak ada email, <span className="font-bold input-text-glow">mohon memeriksa folder spam</span>
+                    <p className="text-gray-700 text-sm md:text-base text-center font-sans leading-relaxed">
+                        Mohon <span className="font-black text-[#1E3A8A]">periksa email</span> untuk melanjutkan. Jika tidak ada email, <span className="font-black text-[#1E3A8A]">mohon memeriksa folder spam</span>.
                     </p>
                 </div>
 
                 <Button
-                    className="w-full custom-button-bg p-2 text-white font-bold rounded-md transition-all duration-300 button-hover cursor-pointer"
+                    className="w-full bg-[#FBBF24] hover:bg-[#F59E0B] active:bg-[#D97706] text-black border-2 border-black text-xs md:text-sm font-extrabold italic tracking-widest py-3.5 px-4 rounded-none transition-all uppercase duration-200 select-none cursor-pointer flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-[2px] hover:translate-y-[2px] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                     type="button"
                     text={
                         resendStatus === 'sending'

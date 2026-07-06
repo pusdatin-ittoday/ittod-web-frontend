@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser } from "../../api/user";
+import LoadingState from "../ui/LoadingState";
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -60,23 +61,21 @@ const AuthCallback = () => {
   }, [navigate]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#2A1138]">
-        <div className="text-white text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-lg">Memproses login Google...</p>
-        </div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#2A1138]">
-        <div className="text-white text-center max-w-md">
-          <p className="text-lg mb-4">Terjadi kesalahan:</p>
-          <p className="text-red-400 mb-4">{error}</p>
-          <p className="text-sm">Mengalihkan ke halaman login...</p>
+      <div 
+        className="flex flex-col min-h-screen w-full select-none items-center justify-center p-4 md:p-8"
+        style={{
+            background: "radial-gradient(circle at top left, #FDF5B0 0%, #E9E9F0 100%)"
+        }}
+      >
+        <div className="w-full max-w-[460px] font-sans flex flex-col justify-center bg-white p-6 md:p-10 gap-6 border-2 md:border-[3px] border-black shadow-[10px_10px_0px_0px_#000000] md:shadow-[14px_14px_0px_0px_#000000] rounded-none">
+          <h1 className="text-red-600 text-xl font-black uppercase text-center font-sans">Terjadi Kesalahan</h1>
+          <p className="text-gray-700 text-sm font-medium text-center font-sans leading-relaxed">{error}</p>
+          <p className="text-gray-400 text-xs text-center font-sans">Mengalihkan ke halaman login...</p>
         </div>
       </div>
     );

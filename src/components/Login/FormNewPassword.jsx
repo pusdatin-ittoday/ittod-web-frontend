@@ -175,15 +175,15 @@ constructor(props) {
         } = this.state;
 
         return (
-            <form onSubmit={this.handleSubmit} className="w-80 lg:w-96 lg:h-auto font-dm-sans flex flex-col justify-center bg-[#3D2357] p-10 gap-3 rounded-md backdrop-blur-md [box-shadow:0_0_10px_5px_#AC6871,_0_0_20px_5px_#AC6871_inset]">
+            <form onSubmit={this.handleSubmit} className="w-full max-w-[420px] font-sans flex flex-col justify-center bg-white p-6 md:p-10 gap-6 border-2 md:border-[3px] border-black shadow-[10px_10px_0px_0px_#000000] md:shadow-[14px_14px_0px_0px_#000000] rounded-none">
                 {errorMessage && <Alert message={errorMessage} type="error" />}
                 {successMessage && <Alert message={successMessage} type="success" />}
 
-                <h2 className="text-[#E4CCCF] text-xl font-semibold text-center font-playfair input-text-glow transition-all duration-300 hover:back-button-glow hover:brightness-110" >
+                <h2 className="text-[#1E3A8A] text-xl md:text-2xl font-black italic tracking-wide uppercase text-center font-sans mt-2 mb-2">
                     Buat password baru
                 </h2>
                 <div className="relative flex items-center">
-                    <MdKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
+                    <MdKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black text-xl z-10" />
                     <Input
                         type={showPassword ? "text" : "password"}
                         placeholder="minimal 8 karakter"
@@ -193,16 +193,16 @@ constructor(props) {
                     />
                     <button
                         type="button"
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#3D2357]"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-black z-10"
                         onClick={this.showPasswordHandler}
                         disabled={loading}
                     >
-                        {showPassword ? <FiEyeOff /> : <FiEye />}
+                        {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
                     </button>
                 </div>
 
                 <div className="relative flex items-center">
-                    <MdKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3D2357] text-xl" />
+                    <MdKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black text-xl z-10" />
                     <Input
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="confirm password"
@@ -212,16 +212,16 @@ constructor(props) {
                     />
                     <button
                         type="button"
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#3D2357]"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-black z-10"
                         onClick={this.showConfirmPasswordHandler}
                         disabled={loading}
                     >
-                        {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
+                        {showConfirmPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
                     </button>
                 </div>
                 <div className="w-full flex flex-col gap-4">
                     <Button
-                        className="w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 button-hover cursor-pointer"
+                        className="w-full bg-[#FBBF24] hover:bg-[#F59E0B] active:bg-[#D97706] text-black border-2 border-black text-xs md:text-sm font-extrabold italic tracking-widest py-3.5 px-4 rounded-none transition-all uppercase duration-200 select-none cursor-pointer flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[2px_2px_0px_0px_#000000] hover:translate-x-[2px] hover:translate-y-[2px] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                         type="submit"
                         text={loading ? "Memproses..." : "Buat password baru"}
                         disabled={loading}
