@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiUsers, FiDollarSign, FiAward, FiPhone } from 'react-icons/fi';
+import { FiUsers, FiDollarSign, FiAward } from 'react-icons/fi';
 
 /**
  * Competition Info Sidebar — sidebar kanan halaman CompetitionDetail.
@@ -11,56 +11,6 @@ const CompetitionInfoSidebar = ({ competition }) => {
     { label: 'Registration Fee', value: competition?.registrationFee || 'FREE / GRATIS', icon: <FiDollarSign size={14} /> },
     { label: 'Total Prize Pool', value: competition?.prizePool || 'Rp 25,000,000', icon: <FiAward size={14} /> },
   ];
-
-  const formatWaLink = (num) => {
-    if (!num) return '#';
-    let clean = num.toString().replace(/[^0-9]/g, "");
-    if (clean.startsWith("0")) {
-      clean = "62" + clean.slice(1);
-    }
-    return `https://wa.me/${clean}`;
-  };
-
-  const cleanDisplayNumber = (num) => {
-    if (!num) return '';
-    return num.toString()
-      .replace(/^(https?:\/\/)?(www\.)?wa\.me\//i, "")
-      .trim();
-  };
-
-  if (competition?.contact_person1) {
-    infoItems.push({
-      label: 'Contact Person 1',
-      value: (
-        <a 
-          href={formatWaLink(competition.contact_person1)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:underline hover:text-indigo-neo font-bold break-all"
-        >
-          {cleanDisplayNumber(competition.contact_person1)}
-        </a>
-      ),
-      icon: <FiPhone size={14} />
-    });
-  }
-
-  if (competition?.contact_person2) {
-    infoItems.push({
-      label: 'Contact Person 2',
-      value: (
-        <a 
-          href={formatWaLink(competition.contact_person2)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:underline hover:text-indigo-neo font-bold break-all"
-        >
-          {cleanDisplayNumber(competition.contact_person2)}
-        </a>
-      ),
-      icon: <FiPhone size={14} />
-    });
-  }
 
   return (
     <div className="space-y-5">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FiFileText, FiUserPlus } from 'react-icons/fi';
+import { FaWhatsapp } from 'react-icons/fa';
 import NavbarNeo from '../components/layout/Navbar';
 import FooterNeo from '../components/layout/Footer';
 import PageBanner from '../components/ui/PageBanner';
@@ -9,6 +10,22 @@ import AgendaSidebar from '../components/ui/AgendaSidebar';
 import CompetitionCategoryGrid from '../components/competition/CompetitionCategoryGrid';
 import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
+
+const formatWaLink = (num) => {
+  if (!num) return '#';
+  let clean = num.toString().replace(/[^0-9]/g, "");
+  if (clean.startsWith("0")) {
+    clean = "62" + clean.slice(1);
+  }
+  return `https://wa.me/${clean}`;
+};
+
+const cleanDisplayNumber = (num) => {
+  if (!num) return '';
+  return num.toString()
+    .replace(/^(https?:\/\/)?(www\.)?wa\.me\//i, "")
+    .trim();
+};
 
 /**
  * Competition Detail Page — template tunggal, render berdasarkan :slug (id) dari API.
@@ -123,6 +140,39 @@ const CompetitionDetailPage = () => {
                       <FiUserPlus size={18} /> Daftar Sekarang
                     </Button>
                   </div>
+
+                  {/* Contact Person */}
+                  {(competition.contact_person1 || competition.contact_person2) && (
+                    <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <p className="font-inter text-xs font-black uppercase tracking-wider text-gray-400">
+                        Contact Person
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        {competition.contact_person1 && (
+                          <a
+                            href={formatWaLink(competition.contact_person1)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 border-2 border-black bg-[#f7f7f4] px-3 py-1.5 font-inter text-xs font-black text-black shadow-[3px_3px_0_#000] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] hover:bg-yellow-neo"
+                          >
+                            <FaWhatsapp size={14} className="text-[#25D366]" />
+                            <span>{cleanDisplayNumber(competition.contact_person1)}</span>
+                          </a>
+                        )}
+                        {competition.contact_person2 && (
+                          <a
+                            href={formatWaLink(competition.contact_person2)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 border-2 border-black bg-[#f7f7f4] px-3 py-1.5 font-inter text-xs font-black text-black shadow-[3px_3px_0_#000] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] hover:bg-yellow-neo"
+                          >
+                            <FaWhatsapp size={14} className="text-[#25D366]" />
+                            <span>{cleanDisplayNumber(competition.contact_person2)}</span>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

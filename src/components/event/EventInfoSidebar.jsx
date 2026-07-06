@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiClock, FiDollarSign, FiAward, FiPhone } from 'react-icons/fi';
+import { FiClock, FiDollarSign, FiAward } from 'react-icons/fi';
 
 /**
  * Event Info Sidebar — sidebar kanan halaman EventDetail.
@@ -21,56 +21,6 @@ const EventInfoSidebar = ({ event }) => {
       icon: <FiAward size={14} />
     },
   ];
-
-  const formatWaLink = (num) => {
-    if (!num) return '#';
-    let clean = num.toString().replace(/[^0-9]/g, "");
-    if (clean.startsWith("0")) {
-      clean = "62" + clean.slice(1);
-    }
-    return `https://wa.me/${clean}`;
-  };
-
-  const cleanDisplayNumber = (num) => {
-    if (!num) return '';
-    return num.toString()
-      .replace(/^(https?:\/\/)?(www\.)?wa\.me\//i, "")
-      .trim();
-  };
-
-  if (event?.contact_person1) {
-    infoItems.push({
-      label: 'Contact Person 1',
-      value: (
-        <a 
-          href={formatWaLink(event.contact_person1)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:underline hover:text-indigo-neo font-bold break-all"
-        >
-          {cleanDisplayNumber(event.contact_person1)}
-        </a>
-      ),
-      icon: <FiPhone size={14} />
-    });
-  }
-
-  if (event?.contact_person2) {
-    infoItems.push({
-      label: 'Contact Person 2',
-      value: (
-        <a 
-          href={formatWaLink(event.contact_person2)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:underline hover:text-indigo-neo font-bold break-all"
-        >
-          {cleanDisplayNumber(event.contact_person2)}
-        </a>
-      ),
-      icon: <FiPhone size={14} />
-    });
-  }
 
   return (
     <div className="space-y-5">
