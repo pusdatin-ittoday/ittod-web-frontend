@@ -319,7 +319,7 @@ const CompRegisCard = ({ variant = "default" }) => {
                 key={event.id}
                 title={event.title}
                 description={event.description}
-                image={event.logo_url || `/logo-competition/${event.id.toUpperCase()}.webp`}
+                image={event.logo_url}
                 isActive={event.is_active}
                 eventId={event.id}
                 participationType={event.participation_type}
@@ -426,7 +426,7 @@ const CompRegisCard = ({ variant = "default" }) => {
                 key={event.id}
                 title={event.title}
                 description={event.description}
-                image={event.logo_url || `/logo-competition/${event.id.toUpperCase()}.webp`}
+                image={event.logo_url}
                 isActive={event.is_active}
                 eventId={event.id}
                 participationType={event.participation_type}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { FiUserPlus } from 'react-icons/fi';
 import NavbarNeo from '../components/layout/Navbar';
 import FooterNeo from '../components/layout/Footer';
@@ -8,14 +8,6 @@ import Button from '../components/ui/Button';
 import EventInfoSidebar from '../components/event/EventInfoSidebar';
 import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
-
-const getDefaultImage = (title) => {
-  if (!title) return '/logo-event/SEMINAR-NASIONAL.webp';
-  const t = title.toLowerCase();
-  if (t.includes('bootcamp')) return '/logo-event/BOOTCAMP.webp';
-  if (t.includes('workshop')) return '/logo-event/WORKSHOP.webp';
-  return '/logo-event/SEMINAR-NASIONAL.webp';
-};
 
 /**
  * Event Detail Page — template tunggal, render berdasarkan :slug dari API.
@@ -39,7 +31,7 @@ const EventDetailPage = () => {
         const formattedEvent = {
           ...apiData,
           tagline: `${apiData.title.toUpperCase()} // 2026`,
-          icon: apiData.logo_url || getDefaultImage(apiData.title),
+          icon: apiData.logo_url,
           date: mainDate,
           time: 'TBA',
           registrationFee: apiData.price > 0 ? `Rp ${apiData.price.toLocaleString('id-ID')}` : 'Gratis',
@@ -92,20 +84,25 @@ const EventDetailPage = () => {
       <NavbarNeo />
       <main className="pt-16 md:pt-20">
         {/* Banner */}
-        <PageBanner icon={event.icon} title={event.title} subtitle={event.tagline} />
+        <PageBanner
+          icon={event.icon}
+          title={event.title}
+          subtitle={event.tagline}
+          variant="event"
+        />
 
         {/* 2-column layout */}
-        <section className="w-full bg-[#f7f7f4] py-12 md:py-16">
+        <section className="w-full bg-[#f7f7f4] py-12 md:py-20">
           <div className="mx-auto max-w-6xl px-5 md:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(260px,0.72fr)]">
               {/* Left: About card */}
-              <div className="lg:col-span-2">
-                <div className="border-[4px] border-black bg-white p-6 shadow-[9px_9px_0_#111] md:p-8">
-                  <h2 className="font-bebas text-3xl md:text-4xl text-black tracking-wider mb-6 uppercase">
-                    About The {event.title.split(' ').pop().toUpperCase()}
+              <div>
+                <div className="border-[3px] border-black bg-white p-6 shadow-[8px_8px_0_#111] transition-transform duration-300 hover:-translate-y-1 md:p-9">
+                  <h2 className="mb-5 w-fit border-b-[4px] border-yellow-neo pb-2 font-inter text-2xl font-black uppercase leading-tight text-[#171918] md:text-4xl">
+                    About The {event.title}
                   </h2>
 
-                  <p className="font-inter text-base text-gray-700 leading-relaxed mb-8 whitespace-pre-wrap">
+                  <p className="mb-9 whitespace-pre-wrap font-inter text-sm leading-relaxed text-[#2e3238] md:text-base">
                     {event.description}
                   </p>
 
@@ -114,7 +111,7 @@ const EventDetailPage = () => {
                     variant="yellow-solid"
                     fullWidth
                     href={`/daftar-event/${slug}`}
-                    className="text-lg py-4 flex items-center justify-center gap-2 uppercase tracking-wider"
+                    className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
                   >
                     <FiUserPlus size={20} /> Daftar Sekarang
                   </Button>
@@ -122,7 +119,7 @@ const EventDetailPage = () => {
               </div>
 
               {/* Right: Sidebar */}
-              <div className="lg:col-span-1">
+              <div>
                 <EventInfoSidebar event={event} />
               </div>
             </div>

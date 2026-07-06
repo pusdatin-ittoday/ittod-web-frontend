@@ -32,7 +32,7 @@ const Lomba = () => {
               key={comp.id}
               title={comp.title}
               description={comp.description}
-              imageSrc={comp.logo_url || `/logo-competition/${comp.id.toUpperCase()}.webp`}
+              imageSrc={comp.logo_url}
               linkHref={`/competition/${comp.id}`}
             />
           ))}

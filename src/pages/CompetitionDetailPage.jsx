@@ -9,16 +9,6 @@ import CompetitionInfoSidebar from '../components/competition/CompetitionInfoSid
 import CompetitionCategoryGrid from '../components/competition/CompetitionCategoryGrid';
 import { getEventBySlug } from '../services/eventService';
 
-const getDefaultImage = (title) => {
-  if (!title) return '/LOGO_ITTODAY_2025.webp';
-  const t = title.toLowerCase();
-  if (t.includes('hack')) return '/logo-competition/HACKTODAY.webp';
-  if (t.includes('mine')) return '/logo-competition/MINETODAY.webp';
-  if (t.includes('ux')) return '/logo-competition/UXTODAY.webp';
-  if (t.includes('game')) return '/logo-competition/GAMETODAY.webp';
-  return '/LOGO_ITTODAY_2025.webp';
-};
-
 /**
  * Competition Detail Page — template tunggal, render berdasarkan :slug (id) dari API.
  * Layout 2 kolom: AboutChallengeCard + CompetitionInfoSidebar.
@@ -41,7 +31,7 @@ const CompetitionDetailPage = () => {
         const formattedComp = {
           ...apiData,
           tagline: `${apiData.title.toUpperCase()} // 2026`,
-          icon: apiData.logo_url || getDefaultImage(apiData.title),
+          icon: apiData.logo_url,
           registrationDeadline: mainDate,
           registrationFee: apiData.price > 0 ? `Rp ${apiData.price.toLocaleString('id-ID')}` : 'FREE / GRATIS',
           teamSize: apiData.participation_type === 'team' ? '1 - 3 Members' : 'Individual',

@@ -144,7 +144,7 @@ const EventRegisCard = ({ variant = "default" }) => {
                   <IkutEvent
                     title={event.title}
                     description={event.description}
-                    image={event.logo_url || `/logo-event/${event.id.toUpperCase()}.webp`}
+                    image={event.logo_url}
                     isActive={event.is_active}
                     eventId={event.id}
                     variant="neobrutal"
@@ -198,7 +198,7 @@ const EventRegisCard = ({ variant = "default" }) => {
                   <IkutEvent
                     title={event.title}
                     description={event.description}
-                    image={event.logo_url || `/logo-event/${event.id.toUpperCase()}.webp`}
+                    image={event.logo_url}
                     isActive={event.is_active}
                     eventId={event.id}
                   />
