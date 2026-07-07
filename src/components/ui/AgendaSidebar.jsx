@@ -43,9 +43,6 @@ const AgendaSidebar = ({ timelines = [], type = 'event' }) => {
             <FiCalendar size={20} aria-hidden="true" />
           </div>
           <div>
-            <p className="font-inter text-[9px] font-black uppercase tracking-[0.2em] text-black/70">
-              Dikelola Panitia
-            </p>
             <h2 className="font-inter text-lg font-black uppercase leading-tight text-black">
               Agenda {isCompetition ? 'Kompetisi' : 'Event'}
             </h2>
