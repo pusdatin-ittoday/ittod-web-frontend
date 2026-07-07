@@ -136,7 +136,7 @@ class Navbar extends Component {
           <div className="navbar-box relative flex items-center justify-between font-dm-sans">
             <div className="logo flex items-center">
               <img
-                src="/LOGO_ITTODAY_2025.webp"
+                src="/logo-ittod.webp"
                 alt="IT Today Logo"
                 className="w-[80px] h-auto lg:w-[100px] cursor-pointer"
                 onClick={this.navigateToHome}

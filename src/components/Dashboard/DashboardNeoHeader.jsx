@@ -46,7 +46,7 @@ const DashboardNeoHeader = () => {
         <div className="mx-auto flex h-16 w-full max-w-[1500px] items-center justify-between px-4 sm:px-6 lg:px-10 md:h-20">
           <Link to="/" aria-label="Kembali ke beranda" className="shrink-0">
             <img
-              src="/LOGO_ITTODAY_2025.webp"
+              src="/logo-ittod.webp"
               alt="IT Today"
               className="h-14 w-14 object-contain transition-transform duration-200 hover:-rotate-3 hover:scale-105 md:h-20 md:w-20"
             />

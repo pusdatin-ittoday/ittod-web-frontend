@@ -48,3 +48,26 @@ export const getPublicEventById = async (id) => {
         };
     }
 };
+
+/**
+ * Fetch all competition timelines
+ * @returns {Promise<Object>} The competition timelines data
+ */
+export const getCompetitionTimelines = async () => {
+    try {
+        const response = await instance.get("/api/competition-timeline");
+        return {
+            success: true,
+            data: response.data,
+        };
+    } catch (error) {
+        console.error("Error fetching competition timelines:", error);
+        return {
+            success: false,
+            error:
+                error.response?.data?.message ||
+                error.response?.data?.error ||
+                "Failed to fetch competition timelines.",
+        };
+    }
+};
