@@ -51,124 +51,101 @@ const ProtectedDashboard = ({ children }) => (
   <ProtectedRoute>{children}</ProtectedRoute>
 );
 
-const AnimatedRoutes = () => {
-  const location = useLocation();
-  const [prevPath, setPrevPath] = React.useState(location.pathname);
-
-  React.useEffect(() => {
-    setPrevPath(location.pathname);
-  }, [location.pathname]);
-
-  const isHomepage = (path) => path === "/" || path === "/home";
-  const shouldAnimate = isHomepage(location.pathname) || isHomepage(prevPath);
-
+const AppRoutes = () => {
   return (
-    <>
-      <RouteWaveTransition shouldAnimate={shouldAnimate} />
-      <AnimatePresence mode="wait">
-        <Motion.div
-          key={location.pathname}
-          className="min-h-screen bg-[#f7f7f4]"
-          variants={shouldAnimate ? pageTransition : {}}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-        >
-          <Suspense fallback={<RouteLoading />}>
-            <Routes location={location}>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/home" element={<LandingPage />} />
-              <Route path="/event/:slug" element={<EventDetailPage />} />
-              <Route
-                path="/competition/:slug"
-                element={<CompetitionDetailPage />}
-              />
+    <div className="min-h-screen bg-[#f7f7f4]">
+      <Suspense fallback={<RouteLoading />}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/home" element={<LandingPage />} />
+          <Route path="/event/:slug" element={<EventDetailPage />} />
+          <Route
+            path="/competition/:slug"
+            element={<CompetitionDetailPage />}
+          />
 
-              <Route path="/login" element={<Login />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/verify-password" element={<VerifyPassword />} />
-              <Route path="/forget-password" element={<ForgetPassword />} />
-              <Route path="/new-password" element={<NewPassword />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/verify-password" element={<VerifyPassword />} />
+          <Route path="/forget-password" element={<ForgetPassword />} />
+          <Route path="/new-password" element={<NewPassword />} />
 
-              <Route path="/edit-profile" element={<EditProfile />} />
-              <Route
-                path="/dashboard/beranda"
-                element={
-                  <ProtectedDashboard>
-                    <DashboardWrapper />
-                  </ProtectedDashboard>
-                }
-              />
-              <Route
-                path="/dashboard/ikut-lomba"
-                element={
-                  <ProtectedDashboard>
-                    <DashboardWrapper />
-                  </ProtectedDashboard>
-                }
-              />
-              <Route
-                path="/dashboard/ikut-event"
-                element={
-                  <ProtectedDashboard>
-                    <DashboardWrapper />
-                  </ProtectedDashboard>
-                }
-              />
-              <Route
-                path="/dashboard/submit-lomba"
-                element={
-                  <ProtectedDashboard>
-                    <DashboardWrapper />
-                  </ProtectedDashboard>
-                }
-              />
-              <Route
-                path="/dashboard/pengumuman"
-                element={
-                  <ProtectedDashboard>
-                    <DashboardWrapper />
-                  </ProtectedDashboard>
-                }
-              />
-              <Route
-                path="/submit-competition/:competitionId"
-                element={
-                  <ProtectedDashboard>
-                    <SubmitCompetition />
-                  </ProtectedDashboard>
-                }
-              />
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route
+            path="/dashboard/beranda"
+            element={
+              <ProtectedDashboard>
+                <DashboardWrapper />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/dashboard/ikut-lomba"
+            element={
+              <ProtectedDashboard>
+                <DashboardWrapper />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/dashboard/ikut-event"
+            element={
+              <ProtectedDashboard>
+                <DashboardWrapper />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/dashboard/pengumuman"
+            element={
+              <ProtectedDashboard>
+                <DashboardWrapper />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/dashboard/edit-profile"
+            element={
+              <ProtectedDashboard>
+                <DashboardWrapper />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/dashboard/lomba/:competitionId/register"
+            element={
+              <ProtectedDashboard>
+                <RegistCompetition />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/dashboard/lomba/:competitionId/submit"
+            element={
+              <ProtectedDashboard>
+                <SubmitCompetition />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/daftar-event/:target"
+            element={
+              <ProtectedDashboard>
+                <DaftarEvent />
+              </ProtectedDashboard>
+            }
+          />
 
-              <Route
-                path="/register-competition/:competitionSlug"
-                element={
-                  <ProtectedDashboard>
-                    <RegistCompetition />
-                  </ProtectedDashboard>
-                }
-              />
-              <Route
-                path="/daftar-event/:target"
-                element={
-                  <ProtectedDashboard>
-                    <DaftarEvent />
-                  </ProtectedDashboard>
-                }
-              />
-
-              <Route path="/sponsors" element={<Sponsors />} />
-              <Route
-                path="/registration-unavailable"
-                element={<FallbackNoRegist />}
-              />
-              <Route path="*" element={<FallbackNotFound />} />
-            </Routes>
-          </Suspense>
-        </Motion.div>
-      </AnimatePresence>
-    </>
+          <Route path="/sponsors" element={<Sponsors />} />
+          <Route
+            path="/registration-unavailable"
+            element={<FallbackNoRegist />}
+          />
+          <Route path="*" element={<FallbackNotFound />} />
+        </Routes>
+      </Suspense>
+    </div>
   );
 };
 
@@ -177,7 +154,7 @@ const App = () => {
     <AuthProvider>
       <MotionProvider>
         <BrowserRouter>
-          <AnimatedRoutes />
+          <AppRoutes />
         </BrowserRouter>
       </MotionProvider>
     </AuthProvider>
