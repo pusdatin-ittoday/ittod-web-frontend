@@ -53,15 +53,23 @@ const ProtectedDashboard = ({ children }) => (
 
 const AnimatedRoutes = () => {
   const location = useLocation();
+  const [prevPath, setPrevPath] = React.useState(location.pathname);
+
+  React.useEffect(() => {
+    setPrevPath(location.pathname);
+  }, [location.pathname]);
+
+  const isHomepage = (path) => path === "/" || path === "/home";
+  const shouldAnimate = isHomepage(location.pathname) || isHomepage(prevPath);
 
   return (
     <>
-      <RouteWaveTransition />
+      <RouteWaveTransition shouldAnimate={shouldAnimate} />
       <AnimatePresence mode="wait">
         <Motion.div
           key={location.pathname}
           className="min-h-screen bg-[#f7f7f4]"
-          variants={pageTransition}
+          variants={shouldAnimate ? pageTransition : {}}
           initial="initial"
           animate="animate"
           exit="exit"

@@ -27,11 +27,11 @@ const waveSheets = [
   },
 ];
 
-const RouteWaveTransition = () => {
+const RouteWaveTransition = ({ shouldAnimate = true }) => {
   const location = useLocation();
   const reduceMotion = useReducedMotion();
 
-  if (reduceMotion) return null;
+  if (reduceMotion || !shouldAnimate) return null;
 
   return (
     <AnimatePresence initial={false}>
