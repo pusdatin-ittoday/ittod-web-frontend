@@ -632,8 +632,9 @@ class EditProfile extends Component {
                                         >
                                             <option value="">Pilih</option>
                                             <option value="sma">SMA/SMK</option>
-                                            <option value="mahasiswa">Mahasiswa</option>
-                                            <option value="lainnya">Lainnya</option>
+                                            <option value="s1">S1</option>
+                                            <option value="d3">D3</option>
+                                            <option value="d4">D4</option>
                                         </select>
                                     </div>
                                 </div>

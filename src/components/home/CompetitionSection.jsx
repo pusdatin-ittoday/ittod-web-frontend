@@ -13,12 +13,39 @@ import {
 
 const MotionLink = Motion.create(Link);
 
+const defaultCompetitions = [
+  {
+    id: "HackToday",
+    title: "Hack Today",
+    description: "Kompetisi Capture the Flag (CTF) tingkat nasional untuk menguji kemampuan analisis dan eksploitasi keamanan siber.",
+    logo_url: "https://cdn.ittoday.web.id/events/logos/uWRUdDcbAQTJvarX350jeC0fezK9PhRQQXQdMJzZ.png"
+  },
+  {
+    id: "MineToday",
+    title: "Mine Today",
+    description: "Kompetisi perancangan dan pengembangan game tingkat nasional untuk memamerkan kreativitas dan gameplay inovatif.",
+    logo_url: "https://cdn.ittoday.web.id/events/logos/aSekiyHcy0RnaAjYUvtZWx1Gf1Z7L1FQK6DyHUC.png"
+  },
+  {
+    id: "UXToday",
+    title: "UX Today",
+    description: "Kompetisi perancangan antarmuka pengguna (UI/UX) tingkat nasional untuk menghadirkan solusi digital kreatif.",
+    logo_url: null
+  },
+  {
+    id: "CodeToday",
+    title: "IT-Brains",
+    description: "Kompetisi analisis bisnis IT dan pemecahan masalah (IT Case Study) berskala nasional.",
+    logo_url: null
+  }
+];
+
 /**
  * Competition Section — background kuning, 4x card poster kompetisi.
  */
 const CompetitionSection = () => {
-  const [competitions, setCompetitions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [competitions, setCompetitions] = useState(defaultCompetitions);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchCompetitions = async () => {
@@ -26,7 +53,6 @@ const CompetitionSection = () => {
       if (response.success && response.data) {
         setCompetitions(response.data);
       }
-      setLoading(false);
     };
     fetchCompetitions();
   }, []);

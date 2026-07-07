@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion as Motion } from "motion/react";
 import { getCompetitionTimelines } from "../../api/eventPublic";
-import { timelineEvents } from "../../data/events";
+import { timelineEvents, timelineCompetitions as staticTimelineCompetitions } from "../../data/events";
 import {
   lineDraw,
   popIn,
@@ -18,8 +18,8 @@ const COMPETITION_TIMELINE_EMPTY =
  * Timeline Section — box putih dengan badge "2026", 2 kolom: Main Events & Competitions.
  */
 const TimelineSection = () => {
-  const [timelineCompetitions, setTimelineCompetitions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [timelineCompetitions, setTimelineCompetitions] = useState(staticTimelineCompetitions);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const formatDate = (dateString, endDateString = null) => {
@@ -59,28 +59,24 @@ const TimelineSection = () => {
 
   useEffect(() => {
     const fetchTimelines = async () => {
-      setLoading(true);
       setError(false);
       try {
         // Fetch global competition timelines
         const compRes = await getCompetitionTimelines();
         if (compRes.success && compRes.data) {
-          const mapped = compRes.data.map((item) => ({
-            id: item.id,
-            title: item.title,
-            date: formatDate(item.start_date, item.end_date),
-            dateObj: new Date(item.start_date),
-          }));
-          mapped.sort((a, b) => a.dateObj - b.dateObj);
-          setTimelineCompetitions(mapped);
-        } else {
-          setError(true);
+          if (compRes.data.length > 0) {
+            const mapped = compRes.data.map((item) => ({
+              id: item.id,
+              title: item.title,
+              date: formatDate(item.start_date, item.end_date),
+              dateObj: new Date(item.start_date),
+            }));
+            mapped.sort((a, b) => a.dateObj - b.dateObj);
+            setTimelineCompetitions(mapped);
+          }
         }
       } catch (err) {
         console.error("Error loading timelines:", err);
-        setError(true);
-      } finally {
-        setLoading(false);
       }
     };
 
