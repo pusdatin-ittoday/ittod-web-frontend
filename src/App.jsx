@@ -1,101 +1,176 @@
-// App.js
-import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import React, { Suspense, lazy } from 'react';
+import { AnimatePresence, motion as Motion } from 'motion/react';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import MotionProvider from './components/motion/MotionProvider';
+import { pageTransition } from './lib/motion';
 
-// === Orang Pertama: Halaman publik (Neo-Brutalisme) ===
-import LandingPage from './pages/LandingPage';
-import EventDetailPage from './pages/EventDetailPage';
-import CompetitionDetailPage from './pages/CompetitionDetailPage';
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const EventDetailPage = lazy(() => import('./pages/EventDetailPage'));
+const CompetitionDetailPage = lazy(() => import('./pages/CompetitionDetailPage'));
+const ProtectedRoute = lazy(() => import('./pages/protectedRoute'));
+const Login = lazy(() => import('./pages/LoginPage/Login'));
+const Register = lazy(() => import('./pages/LoginPage/Register'));
+const ForgetPassword = lazy(() => import('./pages/LoginPage/ForgetPassword'));
+const VerifyPassword = lazy(() => import('./pages/LoginPage/VerifyPassword'));
+const NewPassword = lazy(() => import('./pages/LoginPage/NewPassword'));
+const EditProfile = lazy(() => import('./components/Dashboard/EditProfil'));
+const SubmitCompetition = lazy(() =>
+  import('./pages/CompSubmission/SubmitCompetition')
+);
+const DashboardWrapper = lazy(() =>
+  import('./pages/DashboardPage/DashboardWrapper')
+);
+const DaftarEvent = lazy(() => import('./pages/DaftarEvent'));
+const RegistCompetition = lazy(() =>
+  import('./pages/CompeRegisPage/RegistCompetition.jsx')
+);
+const AuthCallback = lazy(() => import('./components/Login/AuthCallback'));
+const FallbackNoRegist = lazy(() =>
+  import('./pages/Fallback/FallbackNoRegist.jsx')
+);
+const FallbackNotFound = lazy(() =>
+  import('./pages/Fallback/FallbackNotFound.jsx')
+);
+const Sponsors = lazy(() => import('./Sponsors'));
 
-// === Orang Lain: Import existing (tetap dipertahankan) ===
-import ProtectedRoute from './pages/protectedRoute';
-import Login from './pages/LoginPage/Login';
-import Register from './pages/LoginPage/Register';
-import ForgetPassword from './pages/LoginPage/ForgetPassword';
-import VerifyPassword from './pages/LoginPage/VerifyPassword';
-import NewPassword from './pages/LoginPage/NewPassword';
-import EditProfile from './components/Dashboard/EditProfil';
-import SubmitCompetition from './pages/CompSubmission/SubmitCompetition';
-import DashboardWrapper from './pages/DashboardPage/DashboardWrapper';
-import DaftarEvent from './pages/DaftarEvent';
-import RegistCompetition from "./pages/CompeRegisPage/RegistCompetition.jsx";
-import AuthCallback from './components/Login/AuthCallback';
-import FallbackNoRegist from './pages/Fallback/FallbackNoRegist.jsx';
-import FallbackNotFound from './pages/Fallback/FallbackNotFound.jsx';
-import Sponsors from './Sponsors';
+const RouteLoading = () => (
+  <Motion.div
+    className="flex min-h-screen items-center justify-center bg-[#f7f7f4] px-5 text-black"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+  >
+    <Motion.div
+      className="border-[4px] border-black bg-yellow-neo px-6 py-4 font-inter text-sm font-black uppercase shadow-[7px_7px_0_#111]"
+      animate={{ rotate: [-1.5, 1.5, -1.5], y: [0, -4, 0] }}
+      transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
+    >
+      Loading...
+    </Motion.div>
+  </Motion.div>
+);
+
+const ProtectedDashboard = ({ children }) => (
+  <ProtectedRoute>{children}</ProtectedRoute>
+);
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Motion.div
+        key={location.pathname}
+        variants={pageTransition}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
+        <Suspense fallback={<RouteLoading />}>
+          <Routes location={location}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/home" element={<LandingPage />} />
+            <Route path="/event/:slug" element={<EventDetailPage />} />
+            <Route
+              path="/competition/:slug"
+              element={<CompetitionDetailPage />}
+            />
+
+            <Route path="/login" element={<Login />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify-password" element={<VerifyPassword />} />
+            <Route path="/forget-password" element={<ForgetPassword />} />
+            <Route path="/new-password" element={<NewPassword />} />
+
+            <Route path="/edit-profile" element={<EditProfile />} />
+            <Route
+              path="/dashboard/beranda"
+              element={
+                <ProtectedDashboard>
+                  <DashboardWrapper />
+                </ProtectedDashboard>
+              }
+            />
+            <Route
+              path="/dashboard/ikut-lomba"
+              element={
+                <ProtectedDashboard>
+                  <DashboardWrapper />
+                </ProtectedDashboard>
+              }
+            />
+            <Route
+              path="/dashboard/ikut-event"
+              element={
+                <ProtectedDashboard>
+                  <DashboardWrapper />
+                </ProtectedDashboard>
+              }
+            />
+            <Route
+              path="/dashboard/submit-lomba"
+              element={
+                <ProtectedDashboard>
+                  <DashboardWrapper />
+                </ProtectedDashboard>
+              }
+            />
+            <Route
+              path="/dashboard/pengumuman"
+              element={
+                <ProtectedDashboard>
+                  <DashboardWrapper />
+                </ProtectedDashboard>
+              }
+            />
+            <Route
+              path="/submit-competition/:competitionId"
+              element={
+                <ProtectedDashboard>
+                  <SubmitCompetition />
+                </ProtectedDashboard>
+              }
+            />
+
+            <Route
+              path="/register-competition/:competitionSlug"
+              element={
+                <ProtectedDashboard>
+                  <RegistCompetition />
+                </ProtectedDashboard>
+              }
+            />
+            <Route
+              path="/daftar-event/:target"
+              element={
+                <ProtectedDashboard>
+                  <DaftarEvent />
+                </ProtectedDashboard>
+              }
+            />
+
+            <Route path="/sponsors" element={<Sponsors />} />
+            <Route
+              path="/registration-unavailable"
+              element={<FallbackNoRegist />}
+            />
+            <Route path="*" element={<FallbackNotFound />} />
+          </Routes>
+        </Suspense>
+      </Motion.div>
+    </AnimatePresence>
+  );
+};
 
 const App = () => {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* ===== ORANG PERTAMA: Halaman Publik (Neo-Brutalisme) ===== */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/home" element={<LandingPage />} />
-          <Route path="/event/:slug" element={<EventDetailPage />} />
-          <Route path="/competition/:slug" element={<CompetitionDetailPage />} />
-          {/* ===== ORANG KEDUA: Auth Pages ===== */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/verify-password" element={<VerifyPassword />} />
-          <Route path="/forget-password" element={<ForgetPassword />} />
-          <Route path="/new-password" element={<NewPassword />} />
-
-          {/* ===== ORANG KETIGA: Dashboard & Protected Routes ===== */}
-          <Route path="/edit-profile" element={<EditProfile />} />
-          <Route path="/dashboard/beranda" element={
-            <ProtectedRoute>
-              <DashboardWrapper />
-            </ProtectedRoute>
-          } />
-          <Route path="/dashboard/ikut-lomba" element={
-            <ProtectedRoute>
-              <DashboardWrapper />
-            </ProtectedRoute>
-          } />
-          <Route path="/dashboard/ikut-event" element={
-            <ProtectedRoute>
-              <DashboardWrapper />
-            </ProtectedRoute>
-          } />
-          <Route path="/dashboard/submit-lomba" element={
-            <ProtectedRoute>
-              <DashboardWrapper />
-            </ProtectedRoute>
-          } />
-          <Route path="/dashboard/pengumuman" element={
-            <ProtectedRoute>
-              <DashboardWrapper />
-            </ProtectedRoute>
-          } />
-          <Route path="/submit-competition/:competitionId" element={
-            <ProtectedRoute>
-              <SubmitCompetition />
-            </ProtectedRoute>
-          } />
-
-          {/* ===== ORANG KEEMPAT: Registration Routes ===== */}
-          <Route path="/register-competition/:competitionSlug" element={
-            <ProtectedRoute>
-              <RegistCompetition />
-            </ProtectedRoute>
-          } />
-          <Route path="/daftar-event/:target" element={
-            <ProtectedRoute>
-              <DaftarEvent />
-            </ProtectedRoute>
-          } />
-
-          {/* ===== Misc ===== */}
-          <Route path="/sponsors" element={<Sponsors />} />
-
-          {/* ===== Fallback Routes ===== */}
-          <Route path="/registration-unavailable" element={<FallbackNoRegist />} />
-          <Route path="*" element={<FallbackNotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <MotionProvider>
+        <BrowserRouter>
+          <AnimatedRoutes />
+        </BrowserRouter>
+      </MotionProvider>
     </AuthProvider>
   );
 };

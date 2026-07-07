@@ -1,26 +1,26 @@
 /* font */
-@import url('https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap&font-display=swap');
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap&font-display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap&font-display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap&font-display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap&font-display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap&font-display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+@import "tailwindcss";
 @tailwind utilities;
 
 /* for tailwind */
 @theme {
-  --font-playfair: 'Playfair Display', serif;
-  --font-dm-sans: 'DM Sans', sans-serif;
-  --font-bebas: 'Bebas Neue', sans-serif;
-  --font-inter: 'Inter', sans-serif;
+  --font-playfair: "Playfair Display", serif;
+  --font-dm-sans: "DM Sans", sans-serif;
+  --font-bebas: "Bebas Neue", sans-serif;
+  --font-inter: "Inter", sans-serif;
 
   /* Neo-Brutalisme color tokens */
-  --color-indigo-neo: #3730A3;
-  --color-yellow-neo: #F5C518;
-  --color-red-neo: #DC2626;
+  --color-indigo-neo: #3730a3;
+  --color-yellow-neo: #f5c518;
+  --color-red-neo: #dc2626;
   --color-dark-neo: #111827;
-  --color-mustard: #D4A017;
+  --color-mustard: #d4a017;
 }
 
 @layer utilities {
@@ -29,7 +29,9 @@
     border: 2px solid #000;
     box-shadow: 4px 4px 0px #000;
     background-color: #fff;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
   .card-brutal:hover {
     transform: translate(-2px, -2px);
@@ -43,21 +45,28 @@
   }
 
   .text-glow-beranda {
-    text-shadow: 0px 1px 6.5px 0px #ff9ba8 inset, 0px 5px 10px 0px rgba(172, 104, 113, 0.7), 0px 0px 20px #ffffff;
+    text-shadow:
+      0px 1px 6.5px 0px #ff9ba8 inset,
+      0px 5px 10px 0px rgba(172, 104, 113, 0.7),
+      0px 0px 20px #ffffff;
   }
 
   .font-dm-sans {
-    font-family: 'DM Sans', sans-serif;
+    font-family: "DM Sans", sans-serif;
     font-display: swap;
   }
 
   /* shadow untuk Beranda */
   .shadow-beranda {
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 0px 50px 0px #ca63a9;
+    box-shadow:
+      0px 4px 4px 0px rgba(0, 0, 0, 0.25),
+      0px 0px 50px 0px #ca63a9;
   }
 
   .custom-button-shadow {
-    box-shadow: 0px 0px 20px 1px rgba(12, 16, 29, 0.5), 0px 0px 15px 1px rgba(12, 16, 29, 0.5) inset;
+    box-shadow:
+      0px 0px 20px 1px rgba(12, 16, 29, 0.5),
+      0px 0px 15px 1px rgba(12, 16, 29, 0.5) inset;
   }
 
   .glow-dashboard-text {
@@ -65,8 +74,15 @@
   }
 
   .bg-competition {
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%), linear-gradient(0deg, rgba(48, 32, 68, 0.3) 0%, rgba(48, 32, 68, 0.3) 100%),
-      url('/images/background.png') lightgray -1.288px -0.418px / 100.509% 225.45% no-repeat;
+    background:
+      linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%),
+      linear-gradient(
+        0deg,
+        rgba(48, 32, 68, 0.3) 0%,
+        rgba(48, 32, 68, 0.3) 100%
+      ),
+      url("/images/background.png") lightgray -1.288px -0.418px / 100.509%
+        225.45% no-repeat;
   }
 
   .custom-button-bg {
@@ -129,13 +145,16 @@
   .white-text-glow {
     color: #fff;
     text-align: center;
-    font-family: 'Playfair Display', serif;
+    font-family: "Playfair Display", serif;
     font-display: swap;
     font-size: 25px;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
-    text-shadow: 0px 1px 6.5px 0px #ff9ba8 inset, 0px 5px 10px 0px rgba(172, 104, 113, 0.7), 0px 0px 20px #ffffff;
+    text-shadow:
+      0px 1px 6.5px 0px #ff9ba8 inset,
+      0px 5px 10px 0px rgba(172, 104, 113, 0.7),
+      0px 0px 20px #ffffff;
   }
 
   .spin-with-pause {
@@ -190,7 +209,7 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-display: swap;
   /* background-color: #302044; */
   background: linear-gradient(135deg, #5c3b5c, #2e263c, #a86b8290);
@@ -202,4 +221,19 @@ body {
 
 html {
   scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
 }
