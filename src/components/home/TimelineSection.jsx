@@ -8,18 +8,22 @@ import { timelineEvents } from '../../data/events';
 const TimelineSection = () => {
   const [timelineCompetitions, setTimelineCompetitions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const formatDate = (dateString, endDateString = null) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    const options = { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Jakarta' };
     const formatter = new Intl.DateTimeFormat('id-ID', options);
     
     if (endDateString) {
       const endDate = new Date(endDateString);
-      if (date.getMonth() === endDate.getMonth() && date.getFullYear() === endDate.getFullYear()) {
-        const monthYear = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(date);
-        return `${date.getDate()} - ${endDate.getDate()} ${monthYear}`;
+      
+      const getMonthYearString = (d) => new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'Asia/Jakarta' }).format(d);
+      const getDayString = (d) => new Intl.DateTimeFormat('id-ID', { day: 'numeric', timeZone: 'Asia/Jakarta' }).format(d);
+
+      if (getMonthYearString(date) === getMonthYearString(endDate)) {
+        return `${getDayString(date)} - ${getDayString(endDate)} ${getMonthYearString(date)}`;
       }
       return `${formatter.format(date)} - ${formatter.format(endDate)}`;
     }
@@ -30,20 +34,25 @@ const TimelineSection = () => {
   useEffect(() => {
     const fetchTimelines = async () => {
       setLoading(true);
+      setError(false);
       try {
         // Fetch global competition timelines
         const compRes = await getCompetitionTimelines();
         if (compRes.success && compRes.data) {
           const mapped = compRes.data.map(item => ({
+            id: item.id,
             title: item.title,
             date: formatDate(item.start_date, item.end_date),
             dateObj: new Date(item.start_date)
           }));
           mapped.sort((a, b) => a.dateObj - b.dateObj);
           setTimelineCompetitions(mapped);
+        } else {
+          setError(true);
         }
-      } catch (error) {
-        console.error("Error loading timelines:", error);
+      } catch (err) {
+        console.error("Error loading timelines:", err);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -108,9 +117,11 @@ const TimelineSection = () => {
                   <div className="flex justify-center py-10">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-black border-t-[#ffd400]" />
                   </div>
+                ) : error ? (
+                  <p className="font-inter text-sm text-red-500 font-medium pl-4">Gagal memuat agenda kompetisi</p>
                 ) : timelineCompetitions.length > 0 ? (
                   timelineCompetitions.map((item, index) => (
-                    <div key={index} className="group flex items-start gap-4">
+                    <div key={item.id} className="group flex items-start gap-4">
                       {/* Bullet */}
                       <div className="relative mt-0.5 flex w-4 shrink-0 justify-center">
                         <div className="z-10 h-4 w-4 rounded-full border-2 border-[#171918] bg-[#4246b8] transition-transform duration-200 group-hover:scale-125" />
