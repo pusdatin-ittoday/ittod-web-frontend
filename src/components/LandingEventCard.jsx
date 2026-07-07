@@ -8,8 +8,12 @@ const LandingEventCard = ({ title, description, imageSrc, linkHref }) => {
 
       <div className="lg:w-60 w-40 lg:h-60 h-40 rounded-full overflow-hidden">
         <img
-          src={imageSrc}
-          className="object-cover"
+          src={imageSrc || '/images/DummyImg2.jpeg'}
+          alt={title}
+          className="object-cover w-full h-full"
+          onError={(e) => {
+            e.target.src = '/images/DummyImg2.jpeg';
+          }}
         />
       </div>
 

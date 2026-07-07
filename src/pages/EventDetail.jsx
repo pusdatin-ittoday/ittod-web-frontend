@@ -168,11 +168,11 @@ const EventDetail = () => {
           {/* Logo */}
           <div className="flex justify-center mb-6 hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out">
             <img
-              src={eventData.logo_url}
+              src={eventData.logo_url || '/images/DummyImg2.jpeg'}
               alt={`${eventData.title} Logo`}
               className="w-40 md:w-48 h-auto"
               onError={(e) => {
-                e.target.style.display = 'none';
+                e.target.src = '/images/DummyImg2.jpeg';
               }}
             />
           </div>

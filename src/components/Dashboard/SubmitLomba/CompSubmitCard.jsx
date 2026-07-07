@@ -58,15 +58,14 @@ const CardSubmit = ({ title, image, submitLink }) => {
   return (
     <div className="font-dm-sans flex flex-col items-center text-white">
       <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1]">
-        {image ? (
-          <img
-            src={image}
-            alt={title}
-            className="w-full h-full object-cover rounded-lg hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out"
-          />
-        ) : (
-          <div className="w-full h-full bg-black"></div>
-        )}
+        <img
+          src={image || '/images/DummyImg2.jpeg'}
+          alt={title}
+          className="w-full h-full object-cover rounded-lg hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out"
+          onError={(e) => {
+            e.target.src = '/images/DummyImg2.jpeg';
+          }}
+        />
       </div>
       <div className="text-center max-w-[200px]">
         <h3 className="decoration-white/50 white-text-glow text-2xl mb-5 font-bold">{title}</h3>

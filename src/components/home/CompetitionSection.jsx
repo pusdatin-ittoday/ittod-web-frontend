@@ -53,9 +53,12 @@ const CompetitionSection = () => {
                     {comp.title}
                   </span>
                   <img
-                    src={comp.logo_url}
+                    src={comp.logo_url || '/images/DummyImg2.jpeg'}
                     alt={comp.title}
                     className="h-full w-full object-contain p-7 transition-transform duration-500 ease-out group-hover:rotate-2 group-hover:scale-110 sm:p-9"
+                    onError={(e) => {
+                      e.target.src = '/images/DummyImg2.jpeg';
+                    }}
                   />
                 </div>
 

@@ -16,9 +16,12 @@ const CardCompetition = ({ competitions = [] }) => {
           >
             {/* Gambar */}
             <img
-              src={comp.imgSrc}
+              src={comp.imgSrc || '/images/DummyImg2.jpeg'}
               alt="competition"
-              className="w-[205px] h-[260px] rounded-lg"
+              className="w-[205px] h-[260px] rounded-lg object-cover"
+              onError={(e) => {
+                e.target.src = '/images/DummyImg2.jpeg';
+              }}
             />
 
             {/* Text dan Button */}

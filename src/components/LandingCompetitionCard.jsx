@@ -7,8 +7,12 @@ const CompetitionCard = ({ title, description, imageSrc, linkHref }) => {
       <h2 className="text-white lg:text-3xl text-2xl text-center font-semibold font-playfair leading-12 [text-shadow:0_4px_10px_#ac6871]">{title}</h2>
       <div className="w-60 h-60 rounded-full overflow-hidden">
         <img
-          src={imageSrc}
+          src={imageSrc || '/images/DummyImg2.jpeg'}
+          alt={title}
           className="w-full h-full object-contain"
+          onError={(e) => {
+            e.target.src = '/images/DummyImg2.jpeg';
+          }}
         />
       </div>
       <p className="text-lg lg:text-xl mb-6 font-playfair text-white [text-shadow:0_4px_10px_#ac6871]">{description}</p>

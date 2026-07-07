@@ -43,9 +43,12 @@ const MainEventSection = () => {
                   {/* Icon */}
                   <div className="mx-auto mb-8 flex h-28 w-40 items-center justify-center sm:h-32 sm:w-44">
                     <img
-                      src={event.logo_url}
+                      src={event.logo_url || '/images/DummyImg2.jpeg'}
                       alt={event.title}
                       className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110"
+                      onError={(e) => {
+                        e.target.src = '/images/DummyImg2.jpeg';
+                      }}
                     />
                   </div>
 

@@ -42,15 +42,14 @@ const IkutEvent = ({ title, description, image, isActive, eventId, variant = "de
   return (
   <div className="font-dm-sans flex flex-col items-center text-white">
     <div className="w-full max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[250px] aspect-[5/4]">
-      {image ? (
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-full object-cover rounded-lg hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out"
-        />
-      ) : (
-        <div className="w-full h-full bg-black"></div>
-      )}
+      <img
+        src={image || '/images/DummyImg2.jpeg'}
+        alt={title}
+        className="w-full h-full object-cover rounded-lg hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out"
+        onError={(e) => {
+          e.target.src = '/images/DummyImg2.jpeg';
+        }}
+      />
     </div>
     <div className="text-center max-w-[250px] mt-2">
       <h3 className="decoration-white/50 leading-tight font-playfair text-sm sm:text-xl lg:text-xl mb-1 sm:mb-2 font-bold text-glow-beranda">
