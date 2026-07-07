@@ -53,7 +53,7 @@ const CardSubmitNeo = ({ title, submitLink, isSubmitted }) => {
 
 const CardSubmit = ({ title, image, submitLink }) => {
   const navigate = useNavigate();
-  
+
   return (
     <div className="font-dm-sans flex flex-col items-center text-white">
       <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1]">
@@ -85,13 +85,14 @@ const CardSubmit = ({ title, image, submitLink }) => {
 };
 
 const CompSubmitCard = ({ variant = "default" }) => {
+  const navigate = useNavigate();
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [userData, setUserData] = useState({ name: "" });
   const [competitions, setCompetitions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [noCompetitions, setNoCompetitions] = useState(false);
-  
+
   // Handle submission success alert
   useEffect(() => {
     const shouldShow = sessionStorage.getItem("SubmissionData");
@@ -103,7 +104,7 @@ const CompSubmitCard = ({ variant = "default" }) => {
       }, 5000);
     }
   }, []);
-  
+
   // Fetch user data and competitions
   useEffect(() => {
     const fetchData = async () => {
@@ -112,13 +113,13 @@ const CompSubmitCard = ({ variant = "default" }) => {
           getCurrentUser(),
           getUserCompetitions()
         ]);
-        
+
         // Process user data
         if (userResponse.success && userResponse.data) {
           const fullName = userResponse.data.full_name || userResponse.data.name || "User";
           setUserData({ name: fullName });
         }
-        
+
         // Process competitions data
         if (competitionsResponse.success && competitionsResponse.data) {
           setCompetitions(competitionsResponse.data);
@@ -133,7 +134,7 @@ const CompSubmitCard = ({ variant = "default" }) => {
               submitLink: `submit-competition/${comp.competitionId}`,
               isSubmitted: !!comp.submissionData
             }));
-          
+
           setFilteredEvents(filtered);
           setNoCompetitions(filtered.length === 0);
         } else {
@@ -180,29 +181,29 @@ const CompSubmitCard = ({ variant = "default" }) => {
         ) : noCompetitions ? (
           <div className="w-full border-[4px] border-black bg-white p-6 sm:p-12 shadow-[6px_6px_0_0_#000]">
             <div className="w-full border-[2.4px] border-dashed border-[#34399F] bg-white p-8 sm:p-12 flex flex-col justify-center items-center gap-6 text-center">
-                <div className="flex flex-col items-center gap-4">
-                    <h3 className="font-anybody text-2xl sm:text-3xl font-bold uppercase tracking-tight text-[#1A1C1C]">
-                        BELUM ADA LOMBA
-                    </h3>
-                    <p className="font-space-grotesk text-sm sm:text-base text-gray-500 max-w-md">
-                        Kamu belum mendaftar ke lomba apapun. Yuk cari lomba dan mulai berkompetisi!
-                    </p>
-                </div>
+              <div className="flex flex-col items-center gap-4">
+                <h3 className="font-anybody text-2xl sm:text-3xl font-bold uppercase tracking-tight text-[#1A1C1C]">
+                  BELUM ADA LOMBA
+                </h3>
+                <p className="font-space-grotesk text-sm sm:text-base text-gray-500 max-w-md">
+                  Kamu belum mendaftar ke lomba apapun. Yuk cari lomba dan mulai berkompetisi!
+                </p>
+              </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                    <button
-                        onClick={() => navigate("/dashboard/ikut-lomba")}
-                        className="w-full sm:w-[240px] border-[2.4px] border-black bg-[#34399F] py-3 text-sm font-space-grotesk font-bold uppercase text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
-                    >
-                        LIHAT DAFTAR LOMBA
-                    </button>
-                    <button
-                        onClick={() => navigate("/dashboard/ikut-lomba")}
-                        className="w-full sm:w-[257px] border-[2.4px] border-black bg-[#FCD400] py-3 text-sm font-space-grotesk font-bold uppercase text-[#6E5C00] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
-                    >
-                        BERGABUNG TIM
-                    </button>
-                </div>
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <button
+                  onClick={() => navigate("/dashboard/ikut-lomba")}
+                  className="w-full sm:w-[240px] border-[2.4px] border-black bg-[#34399F] py-3 text-sm font-space-grotesk font-bold uppercase text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                >
+                  LIHAT DAFTAR LOMBA
+                </button>
+                <button
+                  onClick={() => navigate("/dashboard/ikut-lomba", { state: { showJoinForm: true } })}
+                  className="w-full sm:w-[257px] border-[2.4px] border-black bg-[#FCD400] py-3 text-sm font-space-grotesk font-bold uppercase text-[#6E5C00] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                >
+                  BERGABUNG TIM
+                </button>
+              </div>
             </div>
           </div>
         ) : (

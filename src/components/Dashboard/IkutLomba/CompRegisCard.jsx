@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PiTargetBold } from 'react-icons/pi';
 import { FaUsers } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getCurrentUser, joinTeam } from "../../../api/user";
 import { getPublicEvents } from "../../../api/eventPublic";
 import { registerTeam } from "../../../api/compe";
@@ -23,9 +23,8 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
 
     return (
       <article
-        className={`flex min-h-[210px] h-full flex-col border-[4px] border-[#191b1a] p-5 shadow-[7px_7px_0_#191b1a] sm:p-6 ${
-          NEO_CARD_COLORS[colorIndex % NEO_CARD_COLORS.length]
-        }`}
+        className={`flex min-h-[210px] h-full flex-col border-[4px] border-[#191b1a] p-5 shadow-[7px_7px_0_#191b1a] sm:p-6 ${NEO_CARD_COLORS[colorIndex % NEO_CARD_COLORS.length]
+          }`}
       >
         <p className="text-[9px] font-black uppercase tracking-wide opacity-60">
           {title}
@@ -65,58 +64,66 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
 
   return (
 
-  <div className="font-dm-sans flex flex-col items-center justify-between w-full max-w-[220px] min-h-[340px] text-white">
-    <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1] flex-shrink-0">
-      {image ? (
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-full object-cover rounded-lg hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out"
-        />
-      ) : (
-        <div className="w-full h-full bg-black"></div>
-      )}
-    </div>
-    <div className="flex-1 flex flex-col justify-start items-center gap-4 w-full">
-      <div className="flex flex-col justify-between items-center w-full h-[140px] py-4">
-        <div className="text-center w-full flex flex-col justify-start mb-1 sm:mb-4">
-          <h3 className="decoration-white/50 leading-tight font-playfair text-sm sm:text-xl lg:text-xl mb-1 sm:mb-2 font-bold text-glow-beranda">{title}</h3>
-          <p className="text-xs sm:text-sm leading-relaxed">{description}</p>
-        </div>
+    <div className="font-dm-sans flex flex-col items-center justify-between w-full max-w-[220px] min-h-[340px] text-white">
+      <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1] flex-shrink-0">
+        {image ? (
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover rounded-lg hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out"
+          />
+        ) : (
+          <div className="w-full h-full bg-black"></div>
+        )}
+      </div>
+      <div className="flex-1 flex flex-col justify-start items-center gap-4 w-full">
+        <div className="flex flex-col justify-between items-center w-full h-[140px] py-4">
+          <div className="text-center w-full flex flex-col justify-start mb-1 sm:mb-4">
+            <h3 className="decoration-white/50 leading-tight font-playfair text-sm sm:text-xl lg:text-xl mb-1 sm:mb-2 font-bold text-glow-beranda">{title}</h3>
+            <p className="text-xs sm:text-sm leading-relaxed">{description}</p>
+          </div>
 
-        <div className="w-full flex justify-center mt-auto">
-          {!isActive ? (
-            <div className="text-xs sm:text-sm button-hover bg-red-500 text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer text-center">
-              Pendaftaran Ditutup
-            </div>
-          ) : participationType === 'individual' ? (
-            <button
-              type="button"
-              disabled={loadingRegister}
-              onClick={() => onRegisterIndividual(eventId, title)}
-              className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60">
-              {loadingRegister ? 'Mendaftar...' : 'Daftar Sekarang'}
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => onRegisterTeam(eventId)}
-              className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer">
-              Daftar Sekarang
-            </button>
-          )}
+          <div className="w-full flex justify-center mt-auto">
+            {!isActive ? (
+              <div className="text-xs sm:text-sm button-hover bg-red-500 text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer text-center">
+                Pendaftaran Ditutup
+              </div>
+            ) : participationType === 'individual' ? (
+              <button
+                type="button"
+                disabled={loadingRegister}
+                onClick={() => onRegisterIndividual(eventId, title)}
+                className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60">
+                {loadingRegister ? 'Mendaftar...' : 'Daftar Sekarang'}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onRegisterTeam(eventId)}
+                className="text-xs sm:text-sm button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer">
+                Daftar Sekarang
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
-  </div>
-)};
+  )
+};
 
 const CompRegisCard = ({ variant = "default" }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showForm, setShowForm] = useState(false);
   const [teamId, setTeamId] = useState('');
   const [loadingJoin, setLoadingJoin] = useState(false);
-  
+
+  React.useEffect(() => {
+    if (location.state?.showJoinForm) {
+      setShowForm(true);
+    }
+  }, [location.state]);
+
   const [eventsData, setEventsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingRegister, setLoadingRegister] = useState(false);
@@ -143,12 +150,12 @@ const CompRegisCard = ({ variant = "default" }) => {
         return;
       }
       const user = userRes.data;
-      
+
       const res = await registerTeam({
         competition_id: eventId,
         team_name: user.name || user.email.split('@')[0]
       });
-      
+
       if (res.success) {
         alert("Pendaftaran berhasil!");
         window.location.href = "/dashboard/ikut-lomba";
@@ -313,29 +320,29 @@ const CompRegisCard = ({ variant = "default" }) => {
           </div>
         ) : (
           <>
-          <div className="grid grid-cols-1 gap-7 py-7 md:grid-cols-2 lg:gap-8">
-            {visibleEvents.map((event, idx) => (
-              <IkutLomba
-                key={event.id}
-                title={event.title}
-                description={event.description}
-                image={event.logo_url}
-                isActive={event.is_active}
-                eventId={event.id}
-                participationType={event.participation_type}
-                onRegisterIndividual={handleRegisterIndividual}
-                onRegisterTeam={handleRegisterTeam}
-                loadingRegister={loadingRegister}
-                variant="neobrutal"
-                colorIndex={currentPage * ITEMS_PER_PAGE + idx}
-              />
-            ))}
-          </div>
-          <PaginationControls
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+            <div className="grid grid-cols-1 gap-7 py-7 md:grid-cols-2 lg:gap-8">
+              {visibleEvents.map((event, idx) => (
+                <IkutLomba
+                  key={event.id}
+                  title={event.title}
+                  description={event.description}
+                  image={event.logo_url}
+                  isActive={event.is_active}
+                  eventId={event.id}
+                  participationType={event.participation_type}
+                  onRegisterIndividual={handleRegisterIndividual}
+                  onRegisterTeam={handleRegisterTeam}
+                  loadingRegister={loadingRegister}
+                  variant="neobrutal"
+                  colorIndex={currentPage * ITEMS_PER_PAGE + idx}
+                />
+              ))}
+            </div>
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </>
         )}
       </section>
