@@ -105,6 +105,38 @@ const AppRoutes = () => {
             }
           />
           <Route
+            path="/dashboard/submit-lomba"
+            element={
+              <ProtectedDashboard>
+                <DashboardWrapper />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/dashboard/submit-gametoday"
+            element={
+              <ProtectedDashboard>
+                <DashboardWrapper />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/dashboard/submit-uxtoday"
+            element={
+              <ProtectedDashboard>
+                <DashboardWrapper />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/dashboard/submit-minetoday"
+            element={
+              <ProtectedDashboard>
+                <DashboardWrapper />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
             path="/dashboard/edit-profile"
             element={
               <ProtectedDashboard>
