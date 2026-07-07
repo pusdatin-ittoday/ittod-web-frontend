@@ -3,6 +3,7 @@ import { MdCheckCircleOutline, MdInfo } from "react-icons/md";
 import { TfiClipboard } from "react-icons/tfi";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser, getUserCompetitions } from "../../../api/user";
+import { requireCompleteProfile } from "../../../utils/profileCompletion";
 
 // Removed hardcoded eventsData
 
@@ -92,6 +93,12 @@ const CompSubmitCard = ({ variant = "default" }) => {
   const [loading, setLoading] = useState(true);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [noCompetitions, setNoCompetitions] = useState(false);
+
+  const handleJoinTeam = async () => {
+    if (await requireCompleteProfile(navigate)) {
+      navigate("/dashboard/ikut-lomba", { state: { showJoinForm: true } });
+    }
+  };
 
   // Handle submission success alert
   useEffect(() => {
@@ -198,7 +205,7 @@ const CompSubmitCard = ({ variant = "default" }) => {
                   LIHAT DAFTAR LOMBA
                 </button>
                 <button
-                  onClick={() => navigate("/dashboard/ikut-lomba", { state: { showJoinForm: true } })}
+                  onClick={handleJoinTeam}
                   className="w-full sm:w-[257px] border-[2.4px] border-black bg-[#FCD400] py-3 text-sm font-space-grotesk font-bold uppercase text-[#6E5C00] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
                 >
                   BERGABUNG TIM

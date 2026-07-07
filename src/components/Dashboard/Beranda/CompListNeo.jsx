@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getCurrentUser, getUserCompetitions, getAnnouncements } from "../../../api/user";
 import { postCompePayment } from "../../../api/compeFile";
 import CompCardNeo from "./CompCardNeo";
+import { requireCompleteProfile } from "../../../utils/profileCompletion";
 
 const BellIcon = () => (
     <svg className="w-[36px] h-[32px] flex-shrink-0" viewBox="0 0 52 47" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,6 +26,12 @@ const CompListNeo = () => {
     const [announcements, setAnnouncements] = useState([]);
     const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
     const navigate = useNavigate();
+
+    const handleJoinTeam = async () => {
+        if (await requireCompleteProfile(navigate)) {
+            navigate("/dashboard/ikut-lomba", { state: { showJoinForm: true } });
+        }
+    };
 
     const processCompetitionsData = (data, currentUserName = null, isCurrentUserDataComplete = false) => {
         const processedCompetitions = {};
@@ -310,7 +317,7 @@ const CompListNeo = () => {
                                         LIHAT DAFTAR LOMBA
                                     </button>
                                     <button
-                                        onClick={() => navigate("/dashboard/ikut-lomba", { state: { showJoinForm: true } })}
+                                        onClick={handleJoinTeam}
                                         className="w-full sm:w-[257px] border-[2.4px] border-black bg-[#FCD400] py-3 text-sm font-space-grotesk font-bold uppercase text-[#6E5C00] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
                                     >
                                         BERGABUNG TIM
