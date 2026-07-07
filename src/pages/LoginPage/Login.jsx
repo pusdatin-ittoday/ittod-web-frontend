@@ -123,7 +123,7 @@ const Login = () => {
                         {/* Top Logo */}
                         <div className="flex justify-center mb-4">
                             <img
-                                src="/LOGO_ITTODAY_2025.webp"
+                                src="/logo-ittod.webp"
                                 alt="ITTODAY Logo"
                                 className="h-14 md:h-16 w-auto object-contain cursor-pointer"
                                 onClick={() => navigate("/")}

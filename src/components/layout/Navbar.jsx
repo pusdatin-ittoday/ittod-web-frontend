@@ -61,7 +61,7 @@ const NavbarNeo = () => {
           {/* Logo */}
           <Link to="/" className="group flex shrink-0 items-center" aria-label="IT Today Home">
             <img
-              src="/LOGO_ITTODAY_2025.webp"
+              src="/logo-ittod.webp"
               alt="IT Today Logo"
               className="h-14 w-14 object-contain transition-transform duration-200 group-hover:-rotate-3 group-hover:scale-105 md:h-20 md:w-20"
               onError={(e) => {

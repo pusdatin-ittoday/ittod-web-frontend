@@ -1,10 +1,66 @@
-import React from 'react';
-import { timelineEvents, timelineCompetitions } from '../../data/events';
+import React, { useState, useEffect } from 'react';
+import { getCompetitionTimelines } from '../../api/eventPublic';
+import { timelineEvents } from '../../data/events';
 
 /**
  * Timeline Section — box putih dengan badge "2026", 2 kolom: Main Events & Competitions.
  */
 const TimelineSection = () => {
+  const [timelineCompetitions, setTimelineCompetitions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const formatDate = (dateString, endDateString = null) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const options = { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Jakarta' };
+    const formatter = new Intl.DateTimeFormat('id-ID', options);
+    
+    if (endDateString) {
+      const endDate = new Date(endDateString);
+      
+      const getMonthYearString = (d) => new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'Asia/Jakarta' }).format(d);
+      const getDayString = (d) => new Intl.DateTimeFormat('id-ID', { day: 'numeric', timeZone: 'Asia/Jakarta' }).format(d);
+
+      if (getMonthYearString(date) === getMonthYearString(endDate)) {
+        return `${getDayString(date)} - ${getDayString(endDate)} ${getMonthYearString(date)}`;
+      }
+      return `${formatter.format(date)} - ${formatter.format(endDate)}`;
+    }
+    
+    return formatter.format(date);
+  };
+
+  useEffect(() => {
+    const fetchTimelines = async () => {
+      setLoading(true);
+      setError(false);
+      try {
+        // Fetch global competition timelines
+        const compRes = await getCompetitionTimelines();
+        if (compRes.success && compRes.data) {
+          const mapped = compRes.data.map(item => ({
+            id: item.id,
+            title: item.title,
+            date: formatDate(item.start_date, item.end_date),
+            dateObj: new Date(item.start_date)
+          }));
+          mapped.sort((a, b) => a.dateObj - b.dateObj);
+          setTimelineCompetitions(mapped);
+        } else {
+          setError(true);
+        }
+      } catch (err) {
+        console.error("Error loading timelines:", err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTimelines();
+  }, []);
+
   return (
     <section id="timeline" className="w-full border-b-[5px] border-black bg-[#f7f7f4] py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-5 sm:px-7 md:px-10">
@@ -57,21 +113,31 @@ const TimelineSection = () => {
                 Competitions
               </h3>
               <div className="space-y-6">
-                {timelineCompetitions.map((item, index) => (
-                  <div key={index} className="group flex items-start gap-4">
-                    {/* Bullet */}
-                    <div className="relative mt-0.5 flex w-4 shrink-0 justify-center">
-                      <div className="z-10 h-4 w-4 rounded-full border-2 border-[#171918] bg-[#4246b8] transition-transform duration-200 group-hover:scale-125" />
-                      {index < timelineCompetitions.length - 1 && (
-                        <div className="absolute top-3 h-9 w-[3px] bg-[#4246b8]" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-inter text-sm font-black uppercase text-[#171918] sm:text-base">{item.title}</p>
-                      <p className="mt-1 font-inter text-xs font-medium text-[#4d505c] sm:text-sm">{item.date}</p>
-                    </div>
+                {loading ? (
+                  <div className="flex justify-center py-10">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-black border-t-[#ffd400]" />
                   </div>
-                ))}
+                ) : error ? (
+                  <p className="font-inter text-sm text-red-500 font-medium pl-4">Gagal memuat agenda kompetisi</p>
+                ) : timelineCompetitions.length > 0 ? (
+                  timelineCompetitions.map((item, index) => (
+                    <div key={item.id} className="group flex items-start gap-4">
+                      {/* Bullet */}
+                      <div className="relative mt-0.5 flex w-4 shrink-0 justify-center">
+                        <div className="z-10 h-4 w-4 rounded-full border-2 border-[#171918] bg-[#4246b8] transition-transform duration-200 group-hover:scale-125" />
+                        {index < timelineCompetitions.length - 1 && (
+                          <div className="absolute top-3 h-9 w-[3px] bg-[#4246b8]" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-inter text-sm font-black uppercase text-[#171918] sm:text-base">{item.title}</p>
+                        <p className="mt-1 font-inter text-xs font-medium text-[#4d505c] sm:text-sm">{item.date}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="font-inter text-sm text-gray-500 italic pl-4">Belum ada agenda</p>
+                )}
               </div>
             </div>
           </div>
