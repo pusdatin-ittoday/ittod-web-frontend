@@ -3,19 +3,15 @@ import { motion as Motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { tapPress } from "../../lib/motion";
 
-/**
- * Tombol reusable Neo-Brutalisme.
- * Varian: yellow-solid (default), indigo-solid, outline, dark-solid
- */
 const variantStyles = {
   "yellow-solid":
-    "bg-yellow-neo text-black border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5",
+    "bg-yellow-neo text-black border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111]",
   "indigo-solid":
-    "bg-indigo-neo text-white border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5",
+    "bg-indigo-neo text-white border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111]",
   "dark-solid":
-    "bg-dark-neo text-white border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5",
+    "bg-dark-neo text-white border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111]",
   outline:
-    "bg-white text-black border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111] hover:-translate-x-0.5 hover:-translate-y-0.5",
+    "bg-white text-black border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111]",
 };
 
 const MotionLink = Motion.create(Link);
@@ -33,14 +29,13 @@ const Button = ({
   ...rest
 }) => {
   const baseStyles =
-    "inline-flex items-center justify-center gap-2 px-6 py-3 font-inter font-black text-sm uppercase tracking-wide transition-all duration-150 cursor-pointer active:translate-x-1 active:translate-y-1 active:shadow-none";
+    "inline-flex cursor-pointer items-center justify-center gap-2 px-6 py-3 font-inter text-sm font-black uppercase tracking-wide transition-shadow duration-150 active:shadow-none";
   const widthClass = fullWidth ? "w-full" : "";
   const disabledClass = disabled
-    ? "opacity-50 cursor-not-allowed pointer-events-none"
+    ? "pointer-events-none cursor-not-allowed opacity-50"
     : "";
   const classes = `${baseStyles} ${variantStyles[variant] || variantStyles["yellow-solid"]} ${widthClass} ${disabledClass} ${className}`;
 
-  // If href is provided, render as Link
   if (href) {
     return (
       <MotionLink

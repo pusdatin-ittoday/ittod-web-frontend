@@ -2,10 +2,6 @@ import React from "react";
 import { motion as Motion } from "motion/react";
 import { popIn, tapPress } from "../../lib/motion";
 
-/**
- * Card statistik untuk landing page.
- * Menampilkan angka besar + label — gaya Neo-Brutalisme.
- */
 const variants = [
   "bg-[#ffd400] text-[#293f9e]",
   "bg-[#4b56be] text-[#d9dcff]",

@@ -6,7 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { MdEmail, MdKey, MdPerson } from "react-icons/md";
 // Import API functions from user.js
-import { registerUser, initiateGoogleLogin, resendVerificationEmail } from "../../api/user";
+import {
+  registerUser,
+  initiateGoogleLogin,
+  resendVerificationEmail,
+} from "../../api/user";
 
 const FormRegisterWithRouter = (props) => {
   const navigate = useNavigate();
@@ -30,17 +34,19 @@ class FormRegister extends React.Component {
       alertType: "",
       alertMessage: "",
       showResendOption: false,
-      emailForResend: ""
+      emailForResend: "",
     };
 
-    this.onNamaLengkapChangeHandler = this.onNamaLengkapChangeHandler.bind(this);
+    this.onNamaLengkapChangeHandler =
+      this.onNamaLengkapChangeHandler.bind(this);
     this.onEmailChangeHandler = this.onEmailChangeHandler.bind(this);
     this.onPasswordChangeHandler = this.onPasswordChangeHandler.bind(this);
     this.onConfirmPasswordChangeHandler =
       this.onConfirmPasswordChangeHandler.bind(this);
     this.handleLoginClick = this.handleLoginClick.bind(this);
     this.showPasswordHandler = this.showPasswordHandler.bind(this);
-    this.showConfirmPasswordHandler = this.showConfirmPasswordHandler.bind(this);
+    this.showConfirmPasswordHandler =
+      this.showConfirmPasswordHandler.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleGoogleLogin = this.handleGoogleLogin.bind(this);
     this.handleResendVerification = this.handleResendVerification.bind(this);
@@ -89,7 +95,7 @@ class FormRegister extends React.Component {
       email: "",
       password: "",
       confirmPassword: "",
-      loading: false
+      loading: false,
     });
   }
 
@@ -101,19 +107,19 @@ class FormRegister extends React.Component {
     if (this.errorTimeout) clearTimeout(this.errorTimeout);
 
     // Reset all alert states at the beginning
-    this.setState({ 
-      errorMessage: "", 
+    this.setState({
+      errorMessage: "",
       successMessage: "",
       showAlert: false,
       alertType: "",
-      alertMessage: ""
+      alertMessage: "",
     });
 
     // Client-side validation
     if (!namaLengkap || !email || !password || !confirmPassword) {
       this.setState({ errorMessage: "Semua kolom harus diisi!" });
-    } else if (namaLengkap.length < 8) {
-      this.setState({ errorMessage: "Nama lengkap minimal 8 karakter!" });
+    } else if (namaLengkap.trim().length < 2) {
+      this.setState({ errorMessage: "Nama lengkap minimal 2 karakter!" });
     } else if (password.length < 8) {
       this.setState({ errorMessage: "Password minimal 8 karakter!" });
     } else if (password !== confirmPassword) {
@@ -121,42 +127,45 @@ class FormRegister extends React.Component {
     } else {
       // Set loading state
       this.setState({ loading: true });
-      
+
       try {
         // Call the API function for registration
         const result = await registerUser({
           full_name: namaLengkap,
           email: email,
-          password: password
+          password: password,
         });
-        
+
         if (result.success) {
           // Show success alert with clear instructions about verification
           this.setState({
             showAlert: true,
-            alertType: 'success',
-            alertMessage: 'Registrasi berhasil! Silakan periksa email Anda untuk verifikasi. Setelah verifikasi, Anda dapat login dengan akun yang telah terdaftar.',
-            loading: false
+            alertType: "success",
+            alertMessage:
+              "Registrasi berhasil! Silakan periksa email Anda untuk verifikasi. Setelah verifikasi, Anda dapat login dengan akun yang telah terdaftar.",
+            loading: false,
           });
-          
+
           // Reset the form
           this.resetForm();
         } else {
           // If email already used error
           if (result.error === "Email already used") {
             this.setState({
-              errorMessage: "Email sudah terdaftar. Apakah Anda perlu mengirim ulang email verifikasi?",
+              errorMessage:
+                "Email sudah terdaftar. Apakah Anda perlu mengirim ulang email verifikasi?",
               showResendOption: true,
               emailForResend: email,
-              loading: false
+              loading: false,
             });
           } else {
             // Show error message
             this.setState({
               showAlert: true,
-              alertType: 'error',
-              alertMessage: result.error || "Registrasi gagal. Silakan coba lagi.",
-              loading: false
+              alertType: "error",
+              alertMessage:
+                result.error || "Registrasi gagal. Silakan coba lagi.",
+              loading: false,
             });
           }
         }
@@ -165,19 +174,19 @@ class FormRegister extends React.Component {
         console.error("Registration error:", error);
         this.setState({
           showAlert: true,
-          alertType: 'error',
+          alertType: "error",
           alertMessage: "An unexpected error occurred. Please try again.",
-          loading: false
+          loading: false,
         });
       }
     }
 
     // Reset messages after some time
     this.errorTimeout = setTimeout(() => {
-      this.setState({ 
-        errorMessage: "", 
+      this.setState({
+        errorMessage: "",
         successMessage: "",
-        showAlert: false 
+        showAlert: false,
       });
     }, 10000); // Increased to 10 seconds so users have more time to read the message
   }
@@ -191,19 +200,20 @@ class FormRegister extends React.Component {
         this.setState({
           successMessage: result.message,
           showResendOption: false,
-          loading: false
+          loading: false,
         });
       } else {
         this.setState({
           errorMessage: result.error,
-          loading: false
+          loading: false,
         });
       }
     } catch (error) {
       console.error("Resend verification error:", error);
       this.setState({
-        errorMessage: "An unexpected error occurred while resending verification. Please try again.",
-        loading: false
+        errorMessage:
+          "An unexpected error occurred while resending verification. Please try again.",
+        loading: false,
       });
     }
   }
@@ -226,7 +236,7 @@ class FormRegister extends React.Component {
       showAlert,
       alertType,
       alertMessage,
-      showResendOption
+      showResendOption,
     } = this.state;
 
     return (
@@ -237,7 +247,7 @@ class FormRegister extends React.Component {
         {errorMessage && <Alert message={errorMessage} type="error" />}
         {successMessage && <Alert message={successMessage} type="success" />}
         {showAlert && <Alert message={alertMessage} type={alertType} />}
-        
+
         {/* Moved resend verification button to top as single component */}
         {showResendOption && (
           <Button
@@ -310,7 +320,7 @@ class FormRegister extends React.Component {
 
         <div className="w-full flex flex-col gap-4">
           <Button
-            className={`w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 ${loading ? 'opacity-70' : 'button-hover'} cursor-pointer`}
+            className={`w-full custom-button-bg p-2 text-white rounded-md transition-all duration-300 ${loading ? "opacity-70" : "button-hover"} cursor-pointer`}
             type="submit"
             text={loading ? "Loading..." : "Registrasi"}
             disabled={loading}

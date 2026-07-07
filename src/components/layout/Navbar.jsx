@@ -61,9 +61,6 @@ const NavbarNeo = () => {
   return (
     <Motion.nav
       className="fixed inset-x-0 top-0 z-[999] border-b-[5px] border-black bg-indigo-neo text-white"
-      initial={{ y: -90 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 420, damping: 32 }}
     >
       <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between h-16 md:h-20">

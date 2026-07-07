@@ -195,7 +195,7 @@ const TimelineSection = () => {
                 ) : error ? (
                   <Motion.p
                     variants={popIn}
-                    className="pl-4 font-inter text-sm font-medium text-red-500"
+                    className="pl-4 font-inter text-sm italic text-gray-500"
                   >
                     {COMPETITION_TIMELINE_EMPTY}
                   </Motion.p>

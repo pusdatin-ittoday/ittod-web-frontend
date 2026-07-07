@@ -14,18 +14,14 @@ export const viewportOnce = {
 };
 
 export const pageTransition = {
-  initial: { opacity: 0, y: 18, filter: "blur(8px)" },
+  initial: { opacity: 1 },
   animate: {
     opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.38, ease: smooth },
+    transition: { duration: 0.01, ease: smooth },
   },
   exit: {
-    opacity: 0,
-    y: -12,
-    filter: "blur(6px)",
-    transition: { duration: 0.18, ease: smooth },
+    opacity: 1,
+    transition: { duration: 0.24, ease: smooth },
   },
 };
 

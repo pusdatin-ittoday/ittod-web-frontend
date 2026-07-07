@@ -1,16 +1,17 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { motion as Motion, useReducedMotion } from "motion/react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { popIn, revealUp, staggerContainer } from "../../lib/motion";
 
-/**
- * Hero Section — Neobrutalism Style
- * Red background with wave patterns, bold typography, dynamic rotation
- * Based on Figma design reference
- */
+const MotionLink = Motion.create(Link);
+
 const HeroSection = () => {
   const heroRef = useRef(null);
   const reduceMotion = useReducedMotion();
+  const { isAuthenticated } = useAuth();
+  const ctaTarget = isAuthenticated ? "/dashboard/beranda" : "/register";
 
   useEffect(() => {
     if (reduceMotion) return undefined;
@@ -52,11 +53,8 @@ const HeroSection = () => {
       className="relative flex min-h-[540px] w-full items-center justify-center overflow-hidden border-b-[8px] border-yellow-neo sm:min-h-[600px] md:min-h-[660px]"
       initial="hidden"
       animate="visible"
-      style={{
-        background: "#ef3741",
-      }}
+      style={{ background: "#ef3741" }}
     >
-      {/* Wave pattern overlay - layer 1 */}
       <div className="hero-wave-one pointer-events-none absolute inset-0 will-change-transform">
         <svg
           className="h-full w-full"
@@ -88,7 +86,6 @@ const HeroSection = () => {
         </svg>
       </div>
 
-      {/* Wave pattern overlay - layer 2 (pink accent) */}
       <div className="hero-wave-two pointer-events-none absolute inset-0 opacity-90 will-change-transform">
         <svg
           className="h-full w-full"
@@ -113,13 +110,10 @@ const HeroSection = () => {
         </svg>
       </div>
 
-      {/* Grid pattern overlay */}
-      {/* Main Content */}
       <Motion.div
         className="relative z-10 mx-auto w-full max-w-6xl px-4 py-12 text-center sm:px-6 sm:py-16 md:py-20"
         variants={staggerContainer}
       >
-        {/* HIMALKOM PRESENT Badge */}
         <Motion.div
           className="hero-float mb-8 inline-block border-[3px] border-black bg-white px-5 py-1.5 font-inter text-[10px] font-black uppercase tracking-[0.08em] text-[#293f9e] shadow-[5px_5px_0_#111] sm:text-xs md:mb-10 md:px-7"
           variants={popIn}
@@ -130,7 +124,6 @@ const HeroSection = () => {
           HIMALKOM PRESENT
         </Motion.div>
 
-        {/* Main Title - "IT TODAY 2026" */}
         <Motion.div
           className="mx-auto mb-14 w-fit md:mb-20"
           variants={revealUp}
@@ -185,19 +178,21 @@ const HeroSection = () => {
           </Motion.div>
         </Motion.div>
 
-        {/* Bottom Badge - CTA */}
-        <Motion.div
+        <MotionLink
+          to={ctaTarget}
           className="inline-block border-[3px] border-black bg-yellow-neo px-8 py-3 font-inter text-xl font-black tracking-[0.04em] text-[#293f9e] shadow-[6px_6px_0_#111] md:px-12 md:text-2xl"
           variants={popIn}
           style={{ rotate: -2 }}
           whileHover={{ y: -5, rotate: 2, scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
+          aria-label={
+            isAuthenticated ? "Masuk ke dashboard" : "Daftar akun IT Today"
+          }
         >
           DAFTAR SEKARANG!
-        </Motion.div>
+        </MotionLink>
       </Motion.div>
 
-      {/* Bottom border line */}
       <div className="absolute inset-x-0 bottom-0 h-[5px] bg-black" />
     </Motion.section>
   );
