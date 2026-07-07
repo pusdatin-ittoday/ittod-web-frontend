@@ -1,12 +1,49 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdHomeFilled } from "react-icons/md";
 import { GiTrophy } from "react-icons/gi";
 import { MdEvent } from "react-icons/md";
 import { FaFileUpload, FaBell } from "react-icons/fa";
 
+const participantQuotes = [
+    "Jangan lupa tidur.",
+    "Jangan lupa minum air putih.",
+    "Push code dulu, tidur kemudian.",
+    "Satu bug kelar, dua bug tumbuh.",
+    "Git commit -m 'semoga jalan'.",
+    "Ingat, localhost bukan production.",
+    "Mandi dulu baru ngoding.",
+    "Sakit pinggang? Waktunya stretching.",
+    "Ctrl + S adalah penyelamatmu.",
+    "Layar redupkan dikit, kasihan matamu.",
+    "Koneksi internet aman, kan?",
+    "Tarik napas, hembuskan, re-run.",
+    "Maju terus pantang merge conflict.",
+    "Jalankan dulu, rapikan nanti.",
+    "Kurangi kopi, banyakin air putih.",
+    "Error adalah jalan ninjamu.",
+    "Bikin segelas teh dulu biar tenang.",
+    "Koding secukupnya, istirahat seperlunya.",
+    "Sudah push hari ini?",
+    "Clean code is happy code.",
+    "Fokus ke solusi, bukan bug-nya.",
+    "Jangan sungkan tanya panitia.",
+    "Ingat, kesehatanmu nomor satu.",
+    "Kerja tim itu saling melengkapi.",
+    "Tulis code seolah yang baca psikopat.",
+    "Ada masalah? Coba restart dev server.",
+    "Setiap baris kode adalah proses.",
+    "Jangan lupa sarapan, energi itu penting.",
+    "Breathe in, breathe out, debug.",
+    "Semua akan compile pada waktunya.",
+];
+
 const Sidebar = ({ active, setActive, variant = "default" }) => {
     const navigate = useNavigate();
+    const randomQuote = useMemo(
+        () => participantQuotes[Math.floor(Math.random() * participantQuotes.length)],
+        []
+    );
 
     const menuItems = [
         { id: "beranda", label: "Beranda", icon: <MdHomeFilled className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
@@ -58,16 +95,11 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                 </div>
 
                 <div className="mt-auto hidden border-[3px] border-[#4f58d0] bg-[#191b1a] p-4 text-white shadow-[5px_5px_0_#191b1a] lg:block">
-                    <p className="text-[9px] font-bold uppercase tracking-wide text-gray-300">
-                        Next Milestone:
+                    <p className="text-base font-black leading-6 text-white">
+                        {randomQuote}
                     </p>
-                    <p className="mt-1 text-base font-black uppercase leading-6">
-                        Submission
-                        <br />
-                        Deadline
-                    </p>
-                    <p className="mt-2 text-[11px] font-bold uppercase text-gray-300">
-                        July 15, 2026
+                    <p className="mt-2 text-[11px] font-semibold leading-snug text-gray-300">
+                        kasih author aja dari tim web pdi
                     </p>
                 </div>
             </div>
