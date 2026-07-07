@@ -426,8 +426,9 @@ const DaftarEvent = () => {
 								<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
 									<FaSchool className="mr-3 shrink-0 text-[#4f5261]" size={21} />
 									<input
-										type="tel"
-										inputMode="tel"
+										type="text"
+										inputMode="text"
+										autoComplete="organization"
 										value={institution}
 										onChange={(e) => setInstitution(e.target.value)}
 										className="min-w-0 flex-1 bg-transparent font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400"
@@ -453,7 +454,9 @@ const DaftarEvent = () => {
 								<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
 									<BiLogoWhatsapp className="mr-3 shrink-0 text-[#4f5261]" size={22} />
 									<input
-										type="text"
+										type="tel"
+										inputMode="tel"
+										autoComplete="tel"
 										value={whatsapp}
 										onChange={(e) => setWhatsapp(e.target.value)}
 										className="min-w-0 flex-1 bg-transparent font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400"
