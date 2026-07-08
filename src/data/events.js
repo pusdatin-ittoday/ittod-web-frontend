@@ -77,9 +77,9 @@ export const landingStats = [
  * Timeline items untuk landing page
  */
 export const timelineEvents = [
-  { title: "Bootcamp", date: "24 & 31 Agustus 2026", type: "event" },
-  { title: "Workshop", date: "7 September 2026", type: "event" },
-  { title: "Seminar Nasional", date: "14 September 2026", type: "event" },
+  { title: "Bootcamp", date: "5 & 12 September 2026", type: "event" },
+  { title: "Workshop", date: "19 September 2026", type: "event" },
+  { title: "Seminar Nasional", date: "20 September 2026", type: "event" },
   { title: "Final & Awarding", date: "27 September 2026", type: "event" },
 ];
 
