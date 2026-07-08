@@ -230,7 +230,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <p className="max-w-[220px] break-words border-2 border-red-300 bg-red-50 px-3 py-2 text-right font-space-grotesk text-xs font-semibold leading-relaxed text-red-700 shadow-[3px_3px_0_0_#EF4444] sm:hidden">
+                                        <p className="max-w-[220px] break-words border-2 border-red-300 bg-red-50 px-3 py-2 text-justify font-space-grotesk text-xs font-semibold leading-relaxed text-red-700 shadow-[3px_3px_0_0_#EF4444] sm:hidden">
                                             {anggota.verificationError}
                                         </p>
                                     </div>
