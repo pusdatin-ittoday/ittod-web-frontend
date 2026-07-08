@@ -8,10 +8,12 @@ import Sidebar from "../../components/Dashboard/Sidebar.jsx";
 import Footer from "../../components/Footer.jsx";
 import FallbackNotFound from "../Fallback/FallbackNotFound.jsx";
 import { requireCompleteProfile } from "../../utils/profileCompletion.js";
+import { useAlert } from "../../context/AlertContext.jsx";
 
 const RegistCompetition = () => {
     const navigate = useNavigate();
     const { competitionSlug } = useParams(); // e.g. "gametoday", "hacktoday"
+    const { showAlert: showGlobalAlert } = useAlert();
 
     const [NamaTim, setNamaTim] = useState("");
     const [competitionId, setCompetitionId] = useState(null);
@@ -30,7 +32,7 @@ const RegistCompetition = () => {
 
     useEffect(() => {
         const guardTeamRegistration = async () => {
-            const isComplete = await requireCompleteProfile(navigate);
+            const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
             if (isComplete) {
                 setIsCheckingProfile(false);
             }
@@ -76,7 +78,7 @@ const RegistCompetition = () => {
         // Prevent multiple submissions
         if (isSubmitting) return;
 
-        if (!(await requireCompleteProfile(navigate))) {
+        if (!(await requireCompleteProfile(navigate, showGlobalAlert))) {
             return;
         }
 

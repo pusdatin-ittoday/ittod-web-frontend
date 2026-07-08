@@ -46,7 +46,8 @@ class EditProfile extends Component {
             ktmFileName: "",
             showProgressRestoredMessage: false,
             ktmChanged: false,
-            twibbonChanged: false
+            twibbonChanged: false,
+            isSubmitting: false
         };
 
         this.fieldLabels = {
@@ -229,6 +230,7 @@ class EditProfile extends Component {
 
     handleSubmit = async (e) => {
         e.preventDefault();
+        this.setState({ isSubmitting: true });
         const {
             full_name,
             birth_date,
@@ -286,6 +288,7 @@ class EditProfile extends Component {
             this.setState({
                 showErrorBox: true,
                 errorFields: emptyFieldsList,
+                isSubmitting: false
             });
             return;
         }
@@ -326,7 +329,8 @@ class EditProfile extends Component {
                     console.error("Twibbon upload failed:", twibbonError);
                     this.setState({
                         showErrorBox: true,
-                        errorFields: [twibbonError.response?.data?.message || "Gagal mengunggah Twibbon. Silakan coba lagi."]
+                        errorFields: [twibbonError.response?.data?.message || "Gagal mengunggah Twibbon. Silakan coba lagi."],
+                        isSubmitting: false
                     });
                     return;
                 }
@@ -358,7 +362,8 @@ class EditProfile extends Component {
             console.error("Error updating profile:", error);
             this.setState({
                 showErrorBox: true,
-                errorFields: [error.response?.data?.message || "Failed to update profile. Please try again."]
+                errorFields: [error.response?.data?.message || "Failed to update profile. Please try again."],
+                isSubmitting: false
             });
         }
     };
@@ -370,6 +375,7 @@ class EditProfile extends Component {
     render() {
         const {
             full_name,
+            isSubmitting,
             birth_date,
             phone_number,
             jenis_kelamin,
@@ -827,9 +833,10 @@ class EditProfile extends Component {
                             </Link>
                             <button
                                 type="submit"
-                                className="border-[2.25px] border-[#1A1C1C] bg-[#FCD400] px-9 py-3 text-xs font-black uppercase text-[#6E5C00] shadow-[3px_3px_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1C1C] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                disabled={isSubmitting}
+                                className={`border-[2.25px] border-[#1A1C1C] px-9 py-3 text-xs font-black uppercase shadow-[3px_3px_0_#1A1C1C] transition-all ${isSubmitting ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70' : 'bg-[#FCD400] text-[#6E5C00] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1C1C] active:translate-x-1 active:translate-y-1 active:shadow-none'}`}
                             >
-                                Simpan
+                                {isSubmitting ? 'Menyimpan...' : 'Simpan'}
                             </button>
                         </div>
                     </form>

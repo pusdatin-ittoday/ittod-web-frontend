@@ -19,6 +19,7 @@ import Footer from "../components/Footer";
 import FallbackNotFound from "./Fallback/FallbackNotFound";
 import { normalizeIndonesianPhoneNumber } from "../utils/phoneNumber";
 import LoadingState from "../components/ui/LoadingState";
+import { useAlert } from "../context/AlertContext";
 
 const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
 
@@ -65,6 +66,7 @@ const EventRegistrationShell = ({ children }) => (
 const DaftarEvent = () => {
 	const { target } = useParams();
 	const navigate = useNavigate();
+	const { showAlert: showGlobalAlert } = useAlert();
 
 	const [needsToPay, setNeedsToPay] = useState(false);
 	const [institution, setInstitution] = useState("");
@@ -206,13 +208,13 @@ const DaftarEvent = () => {
 	}, [target, workshopChoice]);
 
 	// File handling methods similar to EditProfil
-	const handlePaymentFileChange = (file) => {
+	const handlePaymentFileChange = async (file) => {
 		if (file && file.size <= 2 * 1024 * 1024) {
 			// 2MB limit
 			setPaymentFile(file);
 			setPaymentFileName(file.name);
 		} else if (file) {
-			alert("Ukuran file maksimal 2MB.");
+			await showGlobalAlert({ message: "Ukuran file maksimal 2MB." });
 			setPaymentFile(null);
 			setPaymentFileName("");
 			if (paymentFileInputRef.current) {

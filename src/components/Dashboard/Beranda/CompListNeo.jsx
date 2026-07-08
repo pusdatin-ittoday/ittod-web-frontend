@@ -4,6 +4,7 @@ import { getCurrentUser, getUserCompetitions, getAnnouncements } from "../../../
 import { postCompePayment } from "../../../api/compeFile";
 import CompCardNeo from "./CompCardNeo";
 import { requireCompleteProfile } from "../../../utils/profileCompletion";
+import { useAlert } from "../../../context/AlertContext";
 
 const BellIcon = () => (
     <svg className="w-[36px] h-[32px] flex-shrink-0" viewBox="0 0 52 47" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -26,9 +27,10 @@ const CompListNeo = () => {
     const [announcements, setAnnouncements] = useState([]);
     const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
     const navigate = useNavigate();
+    const { showAlert } = useAlert();
 
     const handleJoinTeam = async () => {
-        if (await requireCompleteProfile(navigate)) {
+        if (await requireCompleteProfile(navigate, showAlert)) {
             navigate("/dashboard/ikut-lomba", { state: { showJoinForm: true } });
         }
     };

@@ -2,9 +2,10 @@ import React, { Suspense, lazy } from "react";
 import { AnimatePresence, motion as Motion } from "motion/react";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { AlertProvider } from "./context/AlertContext";
 import MotionProvider from "./components/motion/MotionProvider";
-import RouteWaveTransition from "./components/motion/RouteWaveTransition";
 import { pageTransition } from "./lib/motion";
+import LoadingState from "./components/ui/LoadingState";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const EventDetailPage = lazy(() => import("./pages/EventDetailPage"));
@@ -37,16 +38,6 @@ const FallbackNotFound = lazy(
 );
 const Sponsors = lazy(() => import("./Sponsors"));
 
-const RouteLoading = () => (
-  <div
-    className="min-h-screen bg-[#f7f7f4]"
-    aria-busy="true"
-    aria-live="polite"
-  >
-    <span className="sr-only">Loading</span>
-  </div>
-);
-
 const ProtectedDashboard = ({ children }) => (
   <ProtectedRoute>{children}</ProtectedRoute>
 );
@@ -54,7 +45,7 @@ const ProtectedDashboard = ({ children }) => (
 const AppRoutes = () => {
   return (
     <div className="min-h-screen bg-[#f7f7f4]">
-      <Suspense fallback={<RouteLoading />}>
+      <Suspense fallback={<LoadingState />}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/home" element={<LandingPage />} />
@@ -183,13 +174,15 @@ const AppRoutes = () => {
 
 const App = () => {
   return (
-    <AuthProvider>
-      <MotionProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </MotionProvider>
-    </AuthProvider>
+    <AlertProvider>
+      <AuthProvider>
+        <MotionProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </MotionProvider>
+      </AuthProvider>
+    </AlertProvider>
   );
 };
 
