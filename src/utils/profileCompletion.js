@@ -5,7 +5,6 @@ const REQUIRED_PROFILE_FIELDS = [
   ["birth_date", "Tanggal Lahir"],
   ["phone_number", "Nomor HP"],
   ["jenis_kelamin", "Jenis Kelamin"],
-  ["id_line", "ID Line"],
   ["id_discord", "ID Discord"],
   ["id_instagram", "ID Instagram"],
   ["pendidikan", "Status Pendidikan"],
