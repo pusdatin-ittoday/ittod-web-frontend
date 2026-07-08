@@ -59,13 +59,12 @@ const SubmitCompetition = () => {
       return;
     }
 
-    const submissionData = {
-      submission_object: formData,
-    };
-
     setIsSubmitting(true);
     try {
-      const response = await upsertCompetitionFile(teamId, submissionData);
+      const response = await upsertCompetitionFile({
+        team_id: teamId,
+        submission_object: formData,
+      });
 
       if (!response.success) {
         throw new Error(response.error || "Gagal mengirim submission");
