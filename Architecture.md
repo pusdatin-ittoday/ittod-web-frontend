@@ -45,6 +45,7 @@ The frontend provides the user interface for landing pages, event discovery, das
 - Dashboard header (`DashboardNeoHeader`) uses the same visual style as the landing navbar (indigo background, thick black border, yellow hover effects) with a prominent LOGOUT button in red, ensuring visual consistency across authenticated and public pages. On mobile and tablet viewports, it displays a hamburger menu with a slide-down panel containing navigation links (Home, Event, Competition, Contact Us) plus PROFILE and LOGOUT buttons styled in green and red respectively.
 - Dashboard header links use React Router navigation, preserving the active frontend authentication context when users move back to public Home, Event, Competition, or Contact Us pages.
 - Dashboard competition cards use mobile-first stacking for verification badges, member identities, rejection details, and payment controls so long names and status labels do not overflow narrow viewports.
+- Dashboard member-level rejection notes keep the desktop hover tooltip, but mobile viewports render the member's `verificationError` directly below the `REJECTED` label because touch devices do not have reliable hover access.
 - The neobrutalist dashboard sidebar replaces the former hardcoded milestone card with a lightweight randomized participant quote selected on page load, keeping the card static during the current render session and attributing it with the informal Web PDI author copy.
 
 1. **User Authentication**:

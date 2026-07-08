@@ -216,18 +216,23 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
                             <div className="flex shrink-0 items-center justify-end gap-1.5 self-end sm:self-auto">
                                 {hasMemberError ? (
-                                    <div className="relative group cursor-help flex items-center gap-1">
-                                        <MdErrorOutline className="text-red-600 text-sm" />
-                                        <span className="text-red-600 font-hanken-grotesk font-extrabold text-[12px] border-b border-dashed border-red-400">REJECTED</span>
-                                        
-                                        {/* Hover Tooltip Neo-Brutalist */}
-                                        <div className="absolute right-0 bottom-full mb-2 hidden group-hover:block z-50 w-64 p-3 bg-[#1A1C1C] text-white text-xs font-semibold rounded-md shadow-[4px_4px_0_0_#EF4444] border-2 border-red-500">
-                                            <div className="relative">
-                                                <p className="font-space-grotesk leading-relaxed">{anggota.verificationError}</p>
-                                                {/* Tooltip Arrow */}
-                                                <div className="absolute top-full right-4 w-2.5 h-2.5 bg-[#1A1C1C] border-r-2 border-b-2 border-red-500 transform rotate-45 translate-y-1.5"></div>
+                                    <div className="flex max-w-full flex-col items-end gap-2">
+                                        <div className="relative group cursor-help flex items-center gap-1">
+                                            <MdErrorOutline className="text-red-600 text-sm" />
+                                            <span className="text-red-600 font-hanken-grotesk font-extrabold text-[12px] border-b border-dashed border-red-400">REJECTED</span>
+
+                                            {/* Hover Tooltip Neo-Brutalist */}
+                                            <div className="absolute right-0 bottom-full mb-2 hidden group-hover:block z-50 w-64 p-3 bg-[#1A1C1C] text-white text-xs font-semibold rounded-md shadow-[4px_4px_0_0_#EF4444] border-2 border-red-500">
+                                                <div className="relative">
+                                                    <p className="font-space-grotesk leading-relaxed">{anggota.verificationError}</p>
+                                                    {/* Tooltip Arrow */}
+                                                    <div className="absolute top-full right-4 w-2.5 h-2.5 bg-[#1A1C1C] border-r-2 border-b-2 border-red-500 transform rotate-45 translate-y-1.5"></div>
+                                                </div>
                                             </div>
                                         </div>
+                                        <p className="max-w-[220px] break-words border-2 border-red-300 bg-red-50 px-3 py-2 text-right font-space-grotesk text-xs font-semibold leading-relaxed text-red-700 shadow-[3px_3px_0_0_#EF4444] sm:hidden">
+                                            {anggota.verificationError}
+                                        </p>
                                     </div>
                                 ) : isApproved ? (
                                     <>
