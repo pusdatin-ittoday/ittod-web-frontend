@@ -1,10 +1,8 @@
 import React, { Suspense, lazy } from "react";
-import { AnimatePresence, motion as Motion } from "motion/react";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { AlertProvider } from "./context/AlertContext";
 import MotionProvider from "./components/motion/MotionProvider";
-import { pageTransition } from "./lib/motion";
 import LoadingState from "./components/ui/LoadingState";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
@@ -137,6 +135,14 @@ const AppRoutes = () => {
           />
           <Route
             path="/dashboard/lomba/:competitionId/register"
+            element={
+              <ProtectedDashboard>
+                <RegistCompetition />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/register-competition/:competitionSlug"
             element={
               <ProtectedDashboard>
                 <RegistCompetition />

@@ -33,6 +33,16 @@ const AuthCallback = () => {
         const userResponse = await getCurrentUser();
         
         if (userResponse.success) {
+          const currentUser = userResponse.data;
+
+          localStorage.setItem("isLoggedIn", "true");
+          if (currentUser?.id) {
+            localStorage.setItem("userId", currentUser.id);
+          }
+          if (currentUser) {
+            sessionStorage.setItem("userData", JSON.stringify(currentUser));
+          }
+
           // Notify app of auth state change
           window.dispatchEvent(new Event("auth-changed"));
           

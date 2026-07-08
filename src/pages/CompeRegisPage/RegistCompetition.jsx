@@ -12,7 +12,8 @@ import { useAlert } from "../../context/AlertContext.jsx";
 
 const RegistCompetition = () => {
     const navigate = useNavigate();
-    const { competitionSlug } = useParams(); // e.g. "gametoday", "hacktoday"
+    const { competitionSlug, competitionId: routeCompetitionId } = useParams(); // e.g. "gametoday", "hacktoday"
+    const activeCompetitionId = competitionSlug || routeCompetitionId;
     const { showAlert: showGlobalAlert } = useAlert();
 
     const [NamaTim, setNamaTim] = useState("");
@@ -39,7 +40,7 @@ const RegistCompetition = () => {
         };
 
         guardTeamRegistration();
-    }, [navigate]);
+    }, [navigate, showGlobalAlert]);
 
     useEffect(() => {
         const fetchCompetitionInfo = async () => {
@@ -47,7 +48,7 @@ const RegistCompetition = () => {
             const res = await getPublicEvents("competition");
             if (res.success && res.data) {
                 const event = res.data.find(
-                    (e) => e.id.toLowerCase() === competitionSlug?.toLowerCase()
+                    (e) => e.id.toLowerCase() === activeCompetitionId?.toLowerCase()
                 );
                 if (event) {
                     setCompetitionId(event.id);
@@ -63,7 +64,7 @@ const RegistCompetition = () => {
             setIsLoading(false);
         };
         fetchCompetitionInfo();
-    }, [competitionSlug]);
+    }, [activeCompetitionId]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

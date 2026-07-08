@@ -29,6 +29,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("authToken");
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("userId");
       sessionStorage.removeItem("userData");
       window.dispatchEvent(new Event("auth-changed"));
     }

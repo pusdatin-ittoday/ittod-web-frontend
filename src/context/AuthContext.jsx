@@ -13,45 +13,85 @@ import {
  */
 const AuthContext = createContext({
   isAuthenticated: false,
+  isAuthLoading: true,
   user: null,
   login: () => {},
   logout: () => {},
 });
 
+const getStoredUser = () => {
+  try {
+    const savedUser = sessionStorage.getItem('userData');
+    return savedUser ? JSON.parse(savedUser) : null;
+  } catch {
+    return null;
+  }
+};
+
+const hasStoredAuthHint = () =>
+  Boolean(
+    localStorage.getItem('authToken') ||
+      localStorage.getItem('isLoggedIn') === 'true' ||
+      localStorage.getItem('userId') ||
+      sessionStorage.getItem('userData'),
+  );
+
+const clearStoredAuth = () => {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('isLoggedIn');
+  localStorage.removeItem('userId');
+  sessionStorage.removeItem('userData');
+};
+
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => hasStoredAuthHint());
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [user, setUser] = useState(() => getStoredUser());
 
   // Sinkronisasi state auth dengan localStorage/sessionStorage
   const checkAuth = async () => {
-    const savedUser = sessionStorage.getItem('userData');
+    const storedUser = getStoredUser();
+    const storedAuthHint = hasStoredAuthHint();
 
-    if (savedUser) {
+    if (storedAuthHint) {
       setIsAuthenticated(true);
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch {
+    }
+
+    if (storedUser) {
+      setUser(storedUser);
+    }
+
+    try {
+      const hasActiveSession = await checkAuthenticatedSession();
+
+      if (!hasActiveSession) {
+        setIsAuthenticated(false);
+        setUser(null);
+        clearStoredAuth();
+        return;
+      }
+
+      const userResponse = await getCurrentUser();
+      const currentUser = userResponse.success ? userResponse.data : storedUser;
+
+      setIsAuthenticated(true);
+      setUser(currentUser);
+      localStorage.setItem('isLoggedIn', 'true');
+
+      if (currentUser?.id) {
+        localStorage.setItem('userId', currentUser.id);
+      }
+
+      if (currentUser) {
+        sessionStorage.setItem('userData', JSON.stringify(currentUser));
+      }
+    } catch {
+      if (!storedAuthHint) {
+        setIsAuthenticated(false);
         setUser(null);
       }
-    }
-
-    const hasActiveSession = await checkAuthenticatedSession();
-
-    if (!hasActiveSession) {
-      setIsAuthenticated(false);
-      setUser(null);
-      sessionStorage.removeItem('userData');
-      return;
-    }
-
-    const userResponse = await getCurrentUser();
-    const currentUser = userResponse.success ? userResponse.data : null;
-
-    setIsAuthenticated(true);
-    setUser(currentUser);
-
-    if (currentUser) {
-      sessionStorage.setItem('userData', JSON.stringify(currentUser));
+    } finally {
+      setIsAuthLoading(false);
     }
   };
 
@@ -66,8 +106,20 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (token, userData) => {
-    localStorage.setItem('authToken', token);
-    sessionStorage.setItem('userData', JSON.stringify(userData));
+    if (token) {
+      localStorage.setItem('authToken', token);
+    }
+
+    localStorage.setItem('isLoggedIn', 'true');
+
+    if (userData?.id) {
+      localStorage.setItem('userId', userData.id);
+    }
+
+    if (userData) {
+      sessionStorage.setItem('userData', JSON.stringify(userData));
+    }
+
     setIsAuthenticated(true);
     setUser(userData);
     window.dispatchEvent(new Event('auth-changed'));
@@ -75,14 +127,13 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     await logoutUser();
-    localStorage.removeItem('authToken');
-    sessionStorage.removeItem('userData');
+    clearStoredAuth();
     setIsAuthenticated(false);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isAuthLoading, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

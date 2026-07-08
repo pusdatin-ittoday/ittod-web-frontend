@@ -49,20 +49,27 @@ export const loginUser = async (credentials) => {
 		// Store token if available
 		if (response.data.token) {
 			localStorage.setItem("authToken", response.data.token);
-
-			// Dispatch custom event
-			window.dispatchEvent(new Event("auth-changed"));
 		}
+
+		localStorage.setItem("isLoggedIn", "true");
 
 		// Store user data if available
 		if (response.data.user) {
 			const userData = {
+				id: response.data.user.id,
 				name: response.data.user.name || response.data.user.email.split("@")[0],
+				full_name: response.data.user.full_name,
 				email: response.data.user.email,
 				// Add other user fields as needed
 			};
+			if (userData.id) {
+				localStorage.setItem("userId", userData.id);
+			}
 			sessionStorage.setItem("userData", JSON.stringify(userData));
 		}
+
+		// Dispatch custom event after auth storage is ready
+		window.dispatchEvent(new Event("auth-changed"));
 
 		return {
 			success: true,
@@ -135,6 +142,9 @@ export const getCurrentUser = async () => {
 		// If unauthorized, clear token
 		if (error.response && error.response.status === 401) {
 			localStorage.removeItem("authToken");
+			localStorage.removeItem("isLoggedIn");
+			localStorage.removeItem("userId");
+			sessionStorage.removeItem("userData");
 		}
 
 		return {
@@ -160,6 +170,8 @@ export const logoutUser = async () => {
 	// Remove tokens and user data
 	localStorage.removeItem("authToken");
 	localStorage.removeItem("user");
+	localStorage.removeItem("isLoggedIn");
+	localStorage.removeItem("userId");
 	sessionStorage.removeItem("userData");
 	// Notify listeners
 	window.dispatchEvent(new Event("auth-changed"));
