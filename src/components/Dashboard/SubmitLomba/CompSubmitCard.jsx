@@ -139,7 +139,7 @@ const CompSubmitCard = ({ variant = "default" }) => {
               id: comp.competitionId,
               title: comp.competitionName,
               image: comp.logo_url,
-              submitLink: `submit-competition/${comp.competitionId}`,
+              submitLink: `dashboard/lomba/${comp.competitionId}/submit`,
               isSubmitted: !!comp.submissionData
             }));
 
