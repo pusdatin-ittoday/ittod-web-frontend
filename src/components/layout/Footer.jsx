@@ -12,10 +12,7 @@ import { DEFAULT_CONTACTS } from '../../data/contacts';
 const socialLinks = [
   { icon: '/instagram.svg', url: 'https://www.instagram.com/ittoday_ipb/', label: 'Instagram' },
   { icon: '/linkedin.svg', url: 'https://www.linkedin.com/company/ittoday/', label: 'LinkedIn' },
-  { icon: '/x.svg', url: 'https://x.com/ittoday_ipb', label: 'X' },
   { icon: '/tiktok.svg', url: 'https://www.tiktok.com/@ittoday_ipb', label: 'TikTok' },
-  { icon: '/facebook.svg', url: 'https://www.facebook.com/people/Ittoday-Ipb/', label: 'Facebook' },
-  { icon: '/line.svg', url: 'https://line.me/R/ti/p/@ukd0443x', label: 'LINE' },
 ];
 
 const FooterNeo = () => {
