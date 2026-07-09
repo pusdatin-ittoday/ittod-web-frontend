@@ -8,7 +8,9 @@ import { getCurrentUser, getUserCompetitions } from "../../../api/user";
 import { postCompePayment } from "../../../api/compeFile";
 
 
-const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser}) => {
+const isRekening = false;
+
+const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }) => {
 
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [pembayaran, setPembayaran] = useState(null);
@@ -105,31 +107,31 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
         // VERIFIKASI 2 LANGKAH:
         // 1. Cek Berkas (is_document_verified) - oleh panitia
         // 2. Cek Transaksi (is_verified) - oleh admin keuangan
-        
+
         const isTeamVerified = data.isVerified === true || data.isVerified === 'approved';
         const isDocumentVerified = data.isDocumentVerified === "approved";
         const isPendingVerification = data.pendingVerification;
         const hasTeamError = Boolean(data.verificationError && data.verificationError.trim() !== "");
-        
+
         // Check if any member has verification error (document rejected)
         const membersWithErrors = membersArray.filter(m => m.verificationError && m.verificationError.trim() !== "");
-        
+
         // Document rejection: ada team error ketika document belum verified, ATAU ada member dengan verificationError
         const hasTeamDocumentError = hasTeamError && !isDocumentVerified;
         const hasDocumentError = hasTeamDocumentError || membersWithErrors.length > 0;
-        
+
         // Prioritaskan team.verification_error, baru member verificationError
-        const documentErrorReason = hasDocumentError ? 
-            (hasTeamDocumentError ? data.verificationError.trim() : (membersWithErrors[0]?.verificationError || "Berkas ditolak")) : 
+        const documentErrorReason = hasDocumentError ?
+            (hasTeamDocumentError ? data.verificationError.trim() : (membersWithErrors[0]?.verificationError || "Berkas ditolak")) :
             null;
-            
+
         // Transaction rejection: team error ketika document sudah verified
         const hasTransactionError = hasTeamError && isDocumentVerified;
         const isRejected = hasTransactionError || hasDocumentError;
-        
+
         // Kalau dokumen ditolak, TIDAK ada "Menunggu Verifikasi"
         const showPendingVerification = isDocumentVerified && isPendingVerification && !isRejected && !hasDocumentError;
-        
+
         // Kalau dokumen belum diverifikasi, tidak bisa upload pembayaran
         const needsVerification = isTeamLeader && isDocumentVerified && !isTeamVerified && !isPendingVerification && !hasTransactionError && !hasDocumentError;
 
@@ -239,7 +241,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                 <div className="mt-4 space-y-2 bg-[#6b3a5c]/40 rounded-lg p-2">
                     {membersArray.map((anggota, idx) => (
                         <div key={idx} className={`flex items-center justify-between gap-2 sm:gap-4 p-2 rounded-lg ${idx === 0 ? "bg-gradient-to-r from-amber-500/20 to-amber-600/5 border-l-2 border-amber-400" :
-                                "bg-white/5 hover:bg-white/10 transition-all duration-200"
+                            "bg-white/5 hover:bg-white/10 transition-all duration-200"
                             }`}>
                             {/* For the member section - with vertical layout on mobile */}
                             <div className="flex items-start sm:items-center gap-2 flex-1 min-w-0">
@@ -262,7 +264,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                             {/* Status with vertical layout on mobile */}
                             {(() => {
                                 const hasMemberError = anggota.verificationError && anggota.verificationError.trim() !== "";
-                                
+
                                 if (hasMemberError) {
                                     return (
                                         <div className="text-xs sm:text-sm font-medium flex-shrink-0 flex flex-col items-start px-2 py-1.5 rounded-md bg-red-500/20 text-red-300 border border-red-400/30">
@@ -276,9 +278,9 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                                         </div>
                                     );
                                 }
-                                
+
                                 const isApproved = data.isDocumentVerified === "approved";
-                                
+
                                 if (isApproved) {
                                     return (
                                         <div className="text-xs sm:text-sm font-medium flex-shrink-0 flex flex-row items-center px-2 py-1.5 rounded-md bg-green-500/20 text-green-300 border border-green-400/30">
@@ -313,7 +315,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                         </p>
                     </div>
                 )}
-                
+
                 {/* Reminder for document not verified */}
                 {!isDocumentVerified && (
                     <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-yellow-600/10 border border-yellow-400/30 shadow-inner">
@@ -393,11 +395,17 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser})
                             <div className="mb-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-md px-3 sm:px-4 py-3 text-white">
                                 <div className="mb-3">
                                     <p className="text-xs sm:text-sm font-bold text-pink-300 mb-1">Informasi Rekening:</p>
-                                    <div className="bg-[#7b446c]/60 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/90 font-mono shadow-inner">
-                                        Blu by BCA DIGITAL<br />
-                                        <span className="text-lg  font-bold tracking-widest text-pink-100">0027 4625 4702</span><br />
-                                        <span className="text-xs sm:text-sm font-semibold text-pink-100">a/n M Althaf Faiz Rafianto</span>
-                                    </div>
+                                    {isRekening ? (
+                                        <div className="bg-[#7b446c]/60 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/90 font-mono shadow-inner">
+                                            Blu by BCA DIGITAL<br />
+                                            <span className="text-lg  font-bold tracking-widest text-pink-100">0027 4625 4702</span><br />
+                                            <span className="text-xs sm:text-sm font-semibold text-pink-100">a/n M Althaf Faiz Rafianto</span>
+                                        </div>
+                                    ) : (
+                                        <div className="bg-[#7b446c]/60 rounded-lg px-3 py-2 text-xs sm:text-sm text-pink-200 italic shadow-inner">
+                                            Saat ini pembayaran belum dibuka. Mohon maaf atas gangguannya.
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="mb-3">
                                     <p className="text-xs sm:text-sm font-bold text-pink-300 mb-1">Kode Kompetisi:</p>
@@ -528,7 +536,7 @@ const CompListPage = () => {
 
         Object.entries(data).forEach(([key, comp]) => {
 
-        // Cek status verifikasi dari berbagai sumber
+            // Cek status verifikasi dari berbagai sumber
             const isVerified = isApproved(comp.is_verified) || isApproved(comp.isVerified);
 
             // Check if user upload payment proof through API through payment_proof_id

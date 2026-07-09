@@ -7,21 +7,23 @@ import { getPublicEventById } from "../../../api/eventPublic";
 
 const CheckIcon = ({ className = "w-3 h-3 text-[#1A1C1C]" }) => (
     <svg className={className} viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5.28784 8.97392L9.51658 4.73039L8.47552 3.68473L5.28419 6.88722L3.71789 5.32637L2.68048 6.37565L5.28784 8.97392ZM6.13493 12.2378C5.28402 12.2393 4.4662 12.0805 3.7438 11.7613C3.00061 11.4422 2.35387 11.0084 1.80357 10.4601C1.25328 9.91167 0.817257 9.26645 0.495513 8.52439C0.17377 7.78232 0.0121553 6.98584 0.0106702 6.13493C0.0091851 5.28402 0.168018 4.48698 0.48717 3.7438C0.806321 3.00061 1.24009 2.35387 1.78847 1.80357C2.33685 1.25328 2.98207 0.817256 3.72413 0.495513C4.4662 0.173769 5.26268 0.0121553 6.11359 0.0106702C6.9645 0.0091851 7.76154 0.168018 8.50472 0.487169C9.24791 0.81725 9.89465 1.24009 10.4449 1.78847C10.9952 2.33685 11.4313 2.98207 11.753 3.72413C12.0748 4.4662 12.2364 5.26268 12.2378 6.11359C12.2393 6.9645 12.0805 7.76154 11.7614 8.50472C11.4422 9.24791 11.0084 9.89465 10.4601 10.4449C9.91167 10.9952 9.26645 11.4313 8.52439 11.753C7.78232 12.0747 6.98584 12.2364 6.13493 12.2378ZM6.13223 10.692C7.41303 10.6898 8.49374 10.2468 9.37439 9.36306C10.255 8.47934 10.6942 7.39708 10.692 6.11629C10.6898 4.83549 10.2468 3.75478 9.36306 2.87413C8.47934 1.99349 7.39708 1.55428 6.11629 1.55652C4.83549 1.55876 3.75478 2.00173 2.87413 2.88546C1.99349 3.76918 1.55428 4.85144 1.55652 6.13223C1.55876 7.41303 2.00173 8.49374 2.88546 9.37439C3.76918 10.255 4.85144 10.6942 6.13223 10.692Z" fill="currentColor"/>
+        <path d="M5.28784 8.97392L9.51658 4.73039L8.47552 3.68473L5.28419 6.88722L3.71789 5.32637L2.68048 6.37565L5.28784 8.97392ZM6.13493 12.2378C5.28402 12.2393 4.4662 12.0805 3.7438 11.7613C3.00061 11.4422 2.35387 11.0084 1.80357 10.4601C1.25328 9.91167 0.817257 9.26645 0.495513 8.52439C0.17377 7.78232 0.0121553 6.98584 0.0106702 6.13493C0.0091851 5.28402 0.168018 4.48698 0.48717 3.7438C0.806321 3.00061 1.24009 2.35387 1.78847 1.80357C2.33685 1.25328 2.98207 0.817256 3.72413 0.495513C4.4662 0.173769 5.26268 0.0121553 6.11359 0.0106702C6.9645 0.0091851 7.76154 0.168018 8.50472 0.487169C9.24791 0.81725 9.89465 1.24009 10.4449 1.78847C10.9952 2.33685 11.4313 2.98207 11.753 3.72413C12.0748 4.4662 12.2364 5.26268 12.2378 6.11359C12.2393 6.9645 12.0805 7.76154 11.7614 8.50472C11.4422 9.24791 11.0084 9.89465 10.4601 10.4449C9.91167 10.9952 9.26645 11.4313 8.52439 11.753C7.78232 12.0747 6.98584 12.2364 6.13493 12.2378ZM6.13223 10.692C7.41303 10.6898 8.49374 10.2468 9.37439 9.36306C10.255 8.47934 10.6942 7.39708 10.692 6.11629C10.6898 4.83549 10.2468 3.75478 9.36306 2.87413C8.47934 1.99349 7.39708 1.55428 6.11629 1.55652C4.83549 1.55876 3.75478 2.00173 2.87413 2.88546C1.99349 3.76918 1.55428 4.85144 1.55652 6.13223C1.55876 7.41303 2.00173 8.49374 2.88546 9.37439C3.76918 10.255 4.85144 10.6942 6.13223 10.692Z" fill="currentColor" />
     </svg>
 );
 
 const WhatsappIcon = () => (
     <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M2.68241 7.31604L7.34862 7.3812L7.36491 6.21465L2.6987 6.14949L2.68241 7.31604ZM2.70685 5.56622L9.70616 5.66395L9.72245 4.4974L2.72314 4.39966L2.70685 5.56622ZM2.73128 3.81639L9.73059 3.91412L9.74688 2.74757L2.74757 2.64984L2.73128 3.81639ZM0 12.226L0.149135 1.5457C0.155 1.115 0.310192 0.751803 0.614263 0.456107C0.918334 0.16041 1.28572 0.0155694 1.71642 0.0215835L10.851 0.149135C11.2817 0.155149 11.6449 0.310192 11.9406 0.614263C12.2363 0.918334 12.3811 1.28572 12.3751 1.71642L12.2802 8.51791C12.2741 8.94861 12.1191 9.31181 11.815 9.60751C11.511 9.90321 11.1436 10.048 10.7129 10.042L2.36568 9.92547L0 12.226ZM1.89148 8.37285L10.7345 8.49633L10.8294 1.69484L1.69484 1.56728L1.59588 8.65406L1.89148 8.37285ZM1.59986 8.36878L1.69484 1.56728L1.59986 8.36878Z" fill="white"/>
+        <path d="M2.68241 7.31604L7.34862 7.3812L7.36491 6.21465L2.6987 6.14949L2.68241 7.31604ZM2.70685 5.56622L9.70616 5.66395L9.72245 4.4974L2.72314 4.39966L2.70685 5.56622ZM2.73128 3.81639L9.73059 3.91412L9.74688 2.74757L2.74757 2.64984L2.73128 3.81639ZM0 12.226L0.149135 1.5457C0.155 1.115 0.310192 0.751803 0.614263 0.456107C0.918334 0.16041 1.28572 0.0155694 1.71642 0.0215835L10.851 0.149135C11.2817 0.155149 11.6449 0.310192 11.9406 0.614263C12.2363 0.918334 12.3811 1.28572 12.3751 1.71642L12.2802 8.51791C12.2741 8.94861 12.1191 9.31181 11.815 9.60751C11.511 9.90321 11.1436 10.048 10.7129 10.042L2.36568 9.92547L0 12.226ZM1.89148 8.37285L10.7345 8.49633L10.8294 1.69484L1.69484 1.56728L1.59588 8.65406L1.89148 8.37285ZM1.59986 8.36878L1.69484 1.56728L1.59986 8.36878Z" fill="white" />
     </svg>
 );
 
 const PremiumBadgeIcon = () => (
     <svg className="w-5 h-5 text-[#1A1C1C]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#FCD400" stroke="#1A1C1C" strokeWidth="2" strokeLinejoin="round"/>
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#FCD400" stroke="#1A1C1C" strokeWidth="2" strokeLinejoin="round" />
     </svg>
 );
+
+const isRekening = false;
 
 const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
     const navigate = useNavigate();
@@ -296,7 +298,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
             {showUploadModal && (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-2 sm:px-4">
                     <div className="border-[4px] border-[#1A1C1C] bg-white rounded-none w-full max-w-md text-black shadow-[8px_8px_0_#000] max-h-[90vh] flex flex-col overflow-hidden">
-                        
+
                         {/* Modal Header */}
                         <div className="border-b-[4px] border-[#1A1C1C] bg-[#3D45A0] px-5 py-4 text-left">
                             <h3 className="text-xl font-space-grotesk font-black uppercase text-white tracking-tight">
@@ -306,23 +308,29 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
                         {/* Modal Body */}
                         <div className="p-5 overflow-y-auto custom-scrollbar flex-1 flex flex-col gap-4 text-xs font-bold leading-relaxed">
-                            
+
                             {/* Bank Info Section */}
                             <div className="border-[2px] border-black bg-[#FFD600]/20 p-4 flex flex-col gap-2">
                                 <p className="font-space-grotesk text-[10px] sm:text-xs tracking-wider text-[#3D45A0] font-black uppercase">
                                     Informasi Rekening:
                                 </p>
-                                <div className="space-y-1">
-                                    <h4 className="text-sm sm:text-base font-space-grotesk font-black text-[#121212]">
-                                        Blu by BCA DIGITAL
-                                    </h4>
-                                    <p className="font-mono text-base sm:text-lg tracking-wider text-[#121212] font-extrabold select-all">
-                                        0027 4625 4702
-                                    </p>
-                                    <p className="text-xs sm:text-sm font-space-grotesk font-bold text-[#121212]">
-                                        a/n M Althaf Faiz Rafianto
-                                    </p>
-                                </div>
+                                {isRekening ? (
+                                    <div className="space-y-1">
+                                        <h4 className="text-sm sm:text-base font-space-grotesk font-black text-[#121212]">
+                                            Blu by BCA DIGITAL
+                                        </h4>
+                                        <p className="font-mono text-base sm:text-lg tracking-wider text-[#121212] font-extrabold select-all">
+                                            0027 4625 4702
+                                        </p>
+                                        <p className="text-xs sm:text-sm font-space-grotesk font-bold text-[#121212]">
+                                            a/n M Althaf Faiz Rafianto
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="text-xs sm:text-sm font-space-grotesk font-bold text-[#121212] italic">
+                                        Saat ini pembayaran belum dibuka. Mohon maaf atas gangguannya.
+                                    </div>
+                                )}
                             </div>
 
                             {/* Competition Codes & Pricing */}
