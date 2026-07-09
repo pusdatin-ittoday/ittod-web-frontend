@@ -23,7 +23,7 @@ const PremiumBadgeIcon = () => (
     </svg>
 );
 
-const isRekening = false;
+const isRekening = true;
 
 const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
     const navigate = useNavigate();
@@ -317,13 +317,13 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                                 {isRekening ? (
                                     <div className="space-y-1">
                                         <h4 className="text-sm sm:text-base font-space-grotesk font-black text-[#121212]">
-                                            Blu by BCA DIGITAL
+                                            Seabank
                                         </h4>
                                         <p className="font-mono text-base sm:text-lg tracking-wider text-[#121212] font-extrabold select-all">
-                                            0027 4625 4702
+                                            901429379205
                                         </p>
                                         <p className="text-xs sm:text-sm font-space-grotesk font-bold text-[#121212]">
-                                            a/n M Althaf Faiz Rafianto
+                                            a/n Asty Athetha Loethan
                                         </p>
                                     </div>
                                 ) : (
@@ -363,7 +363,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                             <div className="border-l-[4px] border-[#3D45A0] bg-gray-100 p-3.5 text-[10px] sm:text-xs text-justify">
                                 <span className="text-black font-black uppercase mr-1">Contoh:</span>
                                 <span className="text-[#121212]">
-                                    Ryan harus bayar sebanyak 100.000 rupiah jika Ryan ingin ikut GameToday pada Batch-2. Ryan harus transfer <span className="text-[#3D45A0] font-black">100.002</span> Rupiah ke M Althaf Faiz Rafianto.
+                                    Ryan harus bayar sebanyak 100.000 rupiah jika Ryan ingin ikut GameToday pada Batch-2. Ryan harus transfer <span className="text-[#3D45A0] font-black">100.002</span> Rupiah ke Asty Athetha Loethan.
                                 </span>
                             </div>
 

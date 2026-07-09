@@ -63,7 +63,7 @@ const EventRegistrationShell = ({ children }) => (
 	</div>
 );
 
-const isRekening = false;
+const isRekening = true;
 
 const DaftarEvent = () => {
 	const { target } = useParams();
@@ -525,16 +525,16 @@ const DaftarEvent = () => {
 													</p>
 													{isRekening ? (
 														<div className="border-2 border-black bg-white px-3 py-3 font-mono text-xs text-black sm:text-sm">
-															Bank Mandiri
+															Seabank
 															<br />
 															<div className="flex flex-row items-center">
 																<span className="text-lg font-bold tracking-widest text-pink-100">
 																	<div className="flex items-center gap-4">
-																		1330032143554
+																		901429379205
 																		<button
 																			className="border border-white rounded-xl py-1 px-2 text-xs "
 																			onClick={() =>
-																				handleCopyToClipboard("1330032143554")
+																				handleCopyToClipboard("901429379205")
 																			}
 																		>
 																			{hasCopied
@@ -546,7 +546,7 @@ const DaftarEvent = () => {
 															</div>
 															<br />
 															<span className="text-xs sm:text-sm font-semibold text-pink-100">
-																a/n M Althaf Faiz Rafianto
+																a/n Asty Athetha Loethan
 															</span>
 														</div>
 													) : (

@@ -8,7 +8,7 @@ import { getCurrentUser, getUserCompetitions } from "../../../api/user";
 import { postCompePayment } from "../../../api/compeFile";
 
 
-const isRekening = false;
+const isRekening = true;
 
 const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }) => {
 
@@ -397,9 +397,9 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
                                     <p className="text-xs sm:text-sm font-bold text-pink-300 mb-1">Informasi Rekening:</p>
                                     {isRekening ? (
                                         <div className="bg-[#7b446c]/60 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/90 font-mono shadow-inner">
-                                            Blu by BCA DIGITAL<br />
-                                            <span className="text-lg  font-bold tracking-widest text-pink-100">0027 4625 4702</span><br />
-                                            <span className="text-xs sm:text-sm font-semibold text-pink-100">a/n M Althaf Faiz Rafianto</span>
+                                            Seabank<br />
+                                            <span className="text-lg  font-bold tracking-widest text-pink-100">901429379205</span><br />
+                                            <span className="text-xs sm:text-sm font-semibold text-pink-100">a/n Asty Athetha Loethan</span>
                                         </div>
                                     ) : (
                                         <div className="bg-[#7b446c]/60 rounded-lg px-3 py-2 text-xs sm:text-sm text-pink-200 italic shadow-inner">
@@ -418,12 +418,12 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
                                 </div>
                                 <div className="mb-3">
                                     <p className="text-xs sm:text-sm text-white/90 mb-1">
-                                        <b className="text-pink-100 line-through">Harga Batch 1:</b><span className="line-through">Rp 80.000</span><br />
+                                        <b className="text-pink-100">Harga Batch 1:</b> Rp 80.000<br />
                                         <b className="text-pink-100">Harga Batch 2:</b> Rp 100.000
                                     </p>
                                 </div>
                                 <div className="bg-white/10 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/80 italic shadow-inner text-justify">
-                                    <span className="font-bold text-pink-100">Contoh:</span> Ryan harus bayar sebanyak <span className="font-bold text-pink-100">100.000</span> rupiah jika Ryan ingin ikut <span className="font-bold text-pink-100">GameToday</span> pada Batch-2. Ryan harus transfer <span className="font-bold text-pink-100">100.002</span> Rupiah ke Althaf Faiz Rafianto.
+                                    <span className="font-bold text-pink-100">Contoh:</span> Ryan harus bayar sebanyak <span className="font-bold text-pink-100">100.000</span> rupiah jika Ryan ingin ikut <span className="font-bold text-pink-100">GameToday</span> pada Batch-2. Ryan harus transfer <span className="font-bold text-pink-100">100.002</span> Rupiah ke Asty Athetha Loethan.
                                 </div>
                             </div>
                         </div>
