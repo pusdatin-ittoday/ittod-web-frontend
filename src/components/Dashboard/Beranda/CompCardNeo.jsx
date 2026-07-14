@@ -336,39 +336,6 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                                 )}
                             </div>
 
-                            {/* Competition Codes & Pricing */}
-                            <div className="flex flex-col gap-4 sm:flex-row">
-                                {/* Kode Kompetisi */}
-                                <div className="flex-1 border-[2px] border-black p-3.5 flex flex-col gap-2">
-                                    <p className="font-space-grotesk text-[10px] tracking-wider text-gray-500 font-black uppercase">
-                                        Kode Kompetisi:
-                                    </p>
-                                    <ul className="space-y-1 text-[10px] sm:text-xs text-[#121212] font-bold">
-                                        <li>01 : HackToday</li>
-                                        <li>02 : GameToday</li>
-                                        <li>03 : UXToday</li>
-                                        <li>04 : Minetoday</li>
-                                    </ul>
-                                </div>
-                                {/* Harga */}
-                                <div className="flex-1 border-[2px] border-black p-3.5 flex flex-col gap-2">
-                                    <p className="font-space-grotesk text-[10px] tracking-wider text-gray-500 font-black uppercase">
-                                        Harga:
-                                    </p>
-                                    <div className="space-y-1 text-[10px] sm:text-xs text-[#121212] font-bold">
-                                        <p>Batch 1: <span className="text-[#3D45A0]">Rp 80.000</span></p>
-                                        <p>Batch 2: <span className="text-[#3D45A0]">Rp 100.000</span></p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Important Note */}
-                            <div className="border-l-[4px] border-[#3D45A0] bg-gray-100 p-3.5 text-[10px] sm:text-xs text-justify">
-                                <span className="text-black font-black uppercase mr-1">Contoh:</span>
-                                <span className="text-[#121212]">
-                                    Ryan harus bayar sebanyak 100.000 rupiah jika Ryan ingin ikut GameToday pada Batch-2. Ryan harus transfer <span className="text-[#3D45A0] font-black">100.002</span> Rupiah ke Asty Athetha Loethan.
-                                </span>
-                            </div>
 
                             {/* Upload Area */}
                             <div className="flex flex-col gap-2">
