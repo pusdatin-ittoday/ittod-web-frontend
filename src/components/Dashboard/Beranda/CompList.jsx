@@ -10,6 +10,18 @@ import { postCompePayment } from "../../../api/compeFile";
 
 const isRekening = true;
 
+const getCurrentBatchInfo = (timelines) => {
+    if (!timelines || timelines.length === 0) return { batchName: "Batch 1", price: "80.000", isBatch2: false };
+    const now = new Date();
+    const sorted = [...timelines].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const batch2Index = sorted.findIndex(t => t.title.toLowerCase().includes('batch 2'));
+    
+    if (batch2Index !== -1 && now >= new Date(sorted[batch2Index].date)) {
+        return { batchName: "Batch 2", price: "100.000", isBatch2: true };
+    }
+    return { batchName: "Batch 1", price: "80.000", isBatch2: false };
+};
+
 const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }) => {
 
     const [showUploadModal, setShowUploadModal] = useState(false);
@@ -80,6 +92,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
 
     const renderCompetition = (key, data) => {
         const isIndividual = data.participationType === "individual";
+        const batchInfo = getCurrentBatchInfo(data.timelines);
 
         // Check dan pastikan members selalu dalam bentuk array untuk rendering
         const membersArray = Array.isArray(data.members)
@@ -408,12 +421,11 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
                                 </div>
                                 <div className="mb-3">
                                     <p className="text-xs sm:text-sm text-white/90 mb-1">
-                                        <b className="text-pink-100">Harga Batch 1:</b> Rp 80.000<br />
-                                        <b className="text-pink-100">Harga Batch 2:</b> Rp 100.000
+                                        <b className="text-pink-100">Harga {batchInfo.batchName}:</b> Rp {batchInfo.price}
                                     </p>
                                 </div>
                                 <div className="bg-white/10 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/80 italic shadow-inner text-justify">
-                                    <span className="font-bold text-pink-100">Contoh:</span> Ryan harus bayar sebanyak <span className="font-bold text-pink-100">100.000</span> rupiah jika Ryan ingin ikut <span className="font-bold text-pink-100">GameToday</span> pada Batch-2. Ryan harus transfer <span className="font-bold text-pink-100">100.002</span> Rupiah ke Asty Athetha Loethan.
+                                    <span className="font-bold text-pink-100">Contoh:</span> Ryan harus bayar sebanyak <span className="font-bold text-pink-100">{batchInfo.price}</span> rupiah jika Ryan ingin ikut <span className="font-bold text-pink-100">{data.competitionName}</span> pada {batchInfo.batchName}. Ryan harus transfer <span className="font-bold text-pink-100">{batchInfo.isBatch2 ? "100.002" : "80.002"}</span> Rupiah ke Asty Athetha Loethan.
                                 </div>
                             </div>
                         </div>

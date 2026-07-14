@@ -25,6 +25,18 @@ const PremiumBadgeIcon = () => (
 
 const isRekening = true;
 
+const getCurrentBatchInfo = (timelines) => {
+    if (!timelines || timelines.length === 0) return { batchName: "Batch 1", price: "80.000", isBatch2: false };
+    const now = new Date();
+    const sorted = [...timelines].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const batch2Index = sorted.findIndex(t => t.title.toLowerCase().includes('batch 2'));
+    
+    if (batch2Index !== -1 && now >= new Date(sorted[batch2Index].date)) {
+        return { batchName: "Batch 2", price: "100.000", isBatch2: true };
+    }
+    return { batchName: "Batch 1", price: "80.000", isBatch2: false };
+};
+
 const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
     const navigate = useNavigate();
     const [showUploadModal, setShowUploadModal] = useState(false);
@@ -32,6 +44,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [loadingUpload, setLoadingUpload] = useState(false);
+    const batchInfo = getCurrentBatchInfo(data.timelines);
 
     const pembayaranInputRef = useRef(null);
 
@@ -336,6 +349,38 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                                 )}
                             </div>
 
+                            {/* Competition Codes & Pricing */}
+                            <div className="flex flex-col gap-4 sm:flex-row">
+                                {/* Kode Kompetisi */}
+                                <div className="flex-1 border-[2px] border-black p-3.5 flex flex-col gap-2">
+                                    <p className="font-space-grotesk text-[10px] tracking-wider text-gray-500 font-black uppercase">
+                                        Kode Kompetisi:
+                                    </p>
+                                    <ul className="space-y-1 text-[10px] sm:text-xs text-[#121212] font-bold">
+                                        <li>01 : HackToday</li>
+                                        <li>02 : GameToday</li>
+                                        <li>03 : UXToday</li>
+                                        <li>04 : Minetoday</li>
+                                    </ul>
+                                </div>
+                                {/* Harga */}
+                                <div className="flex-1 border-[2px] border-black p-3.5 flex flex-col gap-2">
+                                    <p className="font-space-grotesk text-[10px] tracking-wider text-gray-500 font-black uppercase">
+                                        Harga:
+                                    </p>
+                                    <div className="space-y-1 text-[10px] sm:text-xs text-[#121212] font-bold">
+                                        <p>{batchInfo.batchName}: <span className="text-[#3D45A0]">Rp {batchInfo.price}</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Important Note */}
+                            <div className="border-l-[4px] border-[#3D45A0] bg-gray-100 p-3.5 text-[10px] sm:text-xs text-justify">
+                                <span className="text-black font-black uppercase mr-1">Contoh:</span>
+                                <span className="text-[#121212]">
+                                    Ryan harus bayar sebanyak {batchInfo.price} rupiah jika Ryan ingin ikut {data.competitionName} pada {batchInfo.batchName}. Ryan harus transfer <span className="text-[#3D45A0] font-black">{batchInfo.isBatch2 ? "100.002" : "80.002"}</span> Rupiah ke Asty Athetha Loethan.
+                                </span>
+                            </div>
 
                             {/* Upload Area */}
                             <div className="flex flex-col gap-2">

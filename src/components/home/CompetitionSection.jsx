@@ -73,7 +73,7 @@ const CompetitionSection = () => {
           const futureEvents = timelineResponse.data
             .map(t => ({
                 ...t,
-                dateObj: new Date(t.start_date || t.date)
+                dateObj: new Date(t.end_date || t.start_date || t.date)
             }))
             .filter(e => e.dateObj > now)
             .sort((a, b) => a.dateObj - b.dateObj);
