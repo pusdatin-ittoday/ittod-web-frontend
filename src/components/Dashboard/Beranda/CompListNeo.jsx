@@ -181,7 +181,7 @@ const CompListNeo = () => {
     };
 
     const handleTwibbonClick = () => {
-        window.open("https://www.twibbonize.com/twibbon-ittoday-2025", "_blank");
+        window.open("https://drive.google.com/drive/folders/1NlgIwLuzBk7ss4ALHBdGdT4EfOkL-JLR", "_blank");
     };
 
     useEffect(() => {

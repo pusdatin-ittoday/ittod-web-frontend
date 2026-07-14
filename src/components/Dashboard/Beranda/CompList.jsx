@@ -59,7 +59,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
     };
 
     const handleTwibbonClick = () => {
-        window.open("https://www.twibbonize.com/twibbon-ittoday-2025", "_blank");
+        window.open("https://drive.google.com/drive/folders/1NlgIwLuzBk7ss4ALHBdGdT4EfOkL-JLR", "_blank");
     };
 
     // Perbaikan filter kompetisi untuk mendukung members sebagai objek
@@ -70,26 +70,12 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
         return true; // The backend already filters teams by the user's ID
     });
 
-    const linkWhatsapp = {
-        gameToday: "https://chat.whatsapp.com/DZ7vHHwgC6J6SLgJmTD949?mode=r_c",
-        uxToday: "https://chat.whatsapp.com/JVZ8EXWwCwf0YUdhxJYuEx",
-        hackToday: "https://chat.whatsapp.com/IXSPAbcNk3hJUEafPUWMAS?mode=ac_t",
-        mineToday: "https://chat.whatsapp.com/HBZ8a4VbYbi4v08b2t45h7?mode=r_c",
-    };
-
-    const competitionNameToKey = {
-        "GameToday": "gameToday",
-        "UXToday": "uxToday",
-        "HackToday": "hackToday",
-        "MineToday": "mineToday",
-    };
-
-    const handleWhatsappClick = (key) => {
-        if (!key || !linkWhatsapp[key]) {
+    const handleWhatsappClick = (url) => {
+        if (!url) {
             alert("Grup Whatsapp tidak ditemukan untuk kompetisi ini.");
             return;
         }
-        window.open(linkWhatsapp[key], "_blank");
+        window.open(url, "_blank");
     };
 
     const renderCompetition = (key, data) => {
@@ -190,7 +176,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
                         {isTeamVerified && (
                             <div className="flex flex-row gap-2">
                                 <button
-                                    onClick={() => handleWhatsappClick(competitionNameToKey[data.competitionName])}
+                                    onClick={() => handleWhatsappClick(data.whatsappGroupLink)}
                                     className="cursor-pointer font-bold bg-green-500 text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm button-hover transition duration-300 hover:scale-105 w-full sm:w-auto"
                                 >
                                     <FaWhatsapp className="inline mr-1 " /> Grup Whatsapp
