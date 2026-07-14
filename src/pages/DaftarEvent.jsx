@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { BiLogoWhatsapp } from "react-icons/bi";
 import { FaSchool, FaFileUpload } from "react-icons/fa";
 import { MdCalendarMonth, MdErrorOutline } from "react-icons/md";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp, FaDiscord } from "react-icons/fa";
 import { registerEvent, getJoinEvent } from "../utils/api/event";
 import {
 	checkIpbOrMinetoday,
@@ -391,10 +391,13 @@ const DaftarEvent = () => {
 											<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl justify-center items-center">
 												<button
 													onClick={() => window.open(linkWhatsapp, "_blank", "noopener,noreferrer")}
-													className="w-full min-w-[180px] max-w-[320px] flex-1 cursor-pointer border-[3px] border-black bg-[#18c964] px-3 py-3 text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] sm:w-auto sm:text-sm"
+													className={`w-full min-w-[180px] max-w-[320px] flex-1 cursor-pointer border-[3px] border-black px-3 py-3 text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] sm:w-auto sm:text-sm ${linkWhatsapp?.toLowerCase().includes("discord") ? "bg-[#5865F2]" : "bg-[#18c964]"}`}
 												>
-													<FaWhatsapp className="inline mr-1" /> Grup{" "}
-													{displayName}
+													{linkWhatsapp?.toLowerCase().includes("discord") ? (
+														<><FaDiscord className="inline mr-1" /> Grup Discord</>
+													) : (
+														<><FaWhatsapp className="inline mr-1" /> Grup Whatsapp</>
+													)}
 												</button>
 												<button
 													onClick={() => {
@@ -402,7 +405,7 @@ const DaftarEvent = () => {
 													}}
 													className="w-full min-w-[160px] flex-shrink-0 border-[3px] border-black bg-white px-4 py-3 text-xs font-black uppercase text-[#087a3d] shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 sm:w-auto sm:text-sm"
 												>
-													{hasCopied.main ? "Link Disalin!" : "Salin Link WhatsApp"}
+													{hasCopied.main ? "Link Disalin!" : (linkWhatsapp?.toLowerCase().includes("discord") ? "Salin Link Discord" : "Salin Link WhatsApp")}
 												</button>
 											</div>
 										) : (

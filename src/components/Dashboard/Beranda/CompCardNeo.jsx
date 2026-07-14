@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaUpload, FaReceipt } from "react-icons/fa";
+import { FaUpload, FaReceipt, FaDiscord } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { getPublicEventById } from "../../../api/eventPublic";
@@ -78,7 +78,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
     const handleWhatsappClick = () => {
         if (!whatsappLink) {
-            alert("Grup Whatsapp tidak ditemukan untuk kompetisi ini.");
+            alert("Grup tidak ditemukan untuk kompetisi ini.");
             return;
         }
         window.open(whatsappLink, "_blank");
@@ -144,10 +144,13 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                             {whatsappLink && (
                                 <button
                                     onClick={handleWhatsappClick}
-                                    className="flex w-full items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#25D366] px-4 py-2 text-sm font-space-grotesk text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto"
+                                    className={`flex w-full items-center justify-center gap-2 border-2 border-[#1A1C1C] px-4 py-2 text-sm font-space-grotesk text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto ${whatsappLink.toLowerCase().includes("discord") ? "bg-[#5865F2]" : "bg-[#25D366]"}`}
                                 >
-                                    <WhatsappIcon />
-                                    Grup Whatsapp
+                                    {whatsappLink.toLowerCase().includes("discord") ? (
+                                        <><FaDiscord className="text-lg" /> Grup Discord</>
+                                    ) : (
+                                        <><WhatsappIcon /> Grup Whatsapp</>
+                                    )}
                                 </button>
                             )}
                             <div className="flex w-full items-center justify-center gap-2 border-2 border-[#1A1C1C] bg-[#4ADE80] px-4 py-2 text-sm font-space-grotesk font-bold text-black shadow-[4px_4px_0_0_#000] sm:w-auto">
