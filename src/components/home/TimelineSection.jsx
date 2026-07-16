@@ -58,23 +58,11 @@ const TimelineSection = () => {
         timeZone: "Asia/Jakarta",
       }).format(d);
 
-    const formatTime = (d) =>
-      new Intl.DateTimeFormat("id-ID", {
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZone: "Asia/Jakarta",
-      }).format(d);
-
     if (endDateString) {
       const endDate = parseWIB(endDateString);
       if (endDate && !Number.isNaN(endDate.getTime())) {
         if (getLocalDateString(date) === getLocalDateString(endDate)) {
-          const startTime = formatTime(date);
-          const endTime = formatTime(endDate);
-          if (startTime === endTime) {
-            return `${formatter.format(date)}, ${startTime} WIB`;
-          }
-          return `${formatter.format(date)}, ${startTime} - ${endTime} WIB`;
+          return formatter.format(date);
         } else {
           if (getMonthYearString(date) === getMonthYearString(endDate)) {
             return `${getDayString(date)} - ${getDayString(endDate)} ${getMonthYearString(date)}`;
@@ -84,7 +72,7 @@ const TimelineSection = () => {
       }
     }
 
-    return `${formatter.format(date)}, ${formatTime(date)} WIB`;
+    return formatter.format(date);
   };
 
   useEffect(() => {
