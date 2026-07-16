@@ -84,8 +84,8 @@ export const timelineEvents = [
 ];
 
 export const timelineCompetitions = [
-  { title: "Pendaftaran Pertama", date: "5 Juli - 19 Juli 2026", type: "competition" },
-  { title: "Pendaftaran Kedua", date: "21 Juli - 10 Agustus 2026", type: "competition" },
+  { title: "Pendaftaran Batch Pertama", date: "17 - 30 Juli 2026", type: "competition" },
+  { title: "Pendaftaran Batch Kedua", date: "31 Juli - 10 Agustus 2026", type: "competition" },
   { title: "Pengumuman Finalis", date: "20 September 2026", type: "competition" },
   { title: "Final & Awarding", date: "3 Oktober 2026", type: "competition" },
 ];

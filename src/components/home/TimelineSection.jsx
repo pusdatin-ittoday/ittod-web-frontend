@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion as Motion } from "motion/react";
 import { getCompetitionTimelines, getEventTimelines } from "../../api/eventPublic";
 import { timelineCompetitions as staticTimelineCompetitions } from "../../data/events";
+import { parseWIB } from "../../utils/dateFormatter";
 import {
   lineDraw,
   popIn,
@@ -25,7 +26,9 @@ const TimelineSection = () => {
 
   const formatDate = (dateString, endDateString = null) => {
     if (!dateString) return "";
-    const date = new Date(dateString);
+    const date = parseWIB(dateString);
+    if (!date || Number.isNaN(date.getTime())) return "";
+
     const options = {
       day: "numeric",
       month: "long",
@@ -34,28 +37,54 @@ const TimelineSection = () => {
     };
     const formatter = new Intl.DateTimeFormat("id-ID", options);
 
+    const getLocalDateString = (d) =>
+      new Intl.DateTimeFormat("id-ID", {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+        timeZone: "Asia/Jakarta",
+      }).format(d);
+
+    const getMonthYearString = (d) =>
+      new Intl.DateTimeFormat("id-ID", {
+        month: "long",
+        year: "numeric",
+        timeZone: "Asia/Jakarta",
+      }).format(d);
+
+    const getDayString = (d) =>
+      new Intl.DateTimeFormat("id-ID", {
+        day: "numeric",
+        timeZone: "Asia/Jakarta",
+      }).format(d);
+
+    const formatTime = (d) =>
+      new Intl.DateTimeFormat("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Asia/Jakarta",
+      }).format(d);
+
     if (endDateString) {
-      const endDate = new Date(endDateString);
-
-      const getMonthYearString = (d) =>
-        new Intl.DateTimeFormat("id-ID", {
-          month: "long",
-          year: "numeric",
-          timeZone: "Asia/Jakarta",
-        }).format(d);
-      const getDayString = (d) =>
-        new Intl.DateTimeFormat("id-ID", {
-          day: "numeric",
-          timeZone: "Asia/Jakarta",
-        }).format(d);
-
-      if (getMonthYearString(date) === getMonthYearString(endDate)) {
-        return `${getDayString(date)} - ${getDayString(endDate)} ${getMonthYearString(date)}`;
+      const endDate = parseWIB(endDateString);
+      if (endDate && !Number.isNaN(endDate.getTime())) {
+        if (getLocalDateString(date) === getLocalDateString(endDate)) {
+          const startTime = formatTime(date);
+          const endTime = formatTime(endDate);
+          if (startTime === endTime) {
+            return `${formatter.format(date)}, ${startTime} WIB`;
+          }
+          return `${formatter.format(date)}, ${startTime} - ${endTime} WIB`;
+        } else {
+          if (getMonthYearString(date) === getMonthYearString(endDate)) {
+            return `${getDayString(date)} - ${getDayString(endDate)} ${getMonthYearString(date)}`;
+          }
+          return `${formatter.format(date)} - ${formatter.format(endDate)}`;
+        }
       }
-      return `${formatter.format(date)} - ${formatter.format(endDate)}`;
     }
 
-    return formatter.format(date);
+    return `${formatter.format(date)}, ${formatTime(date)} WIB`;
   };
 
   useEffect(() => {
@@ -74,7 +103,7 @@ const TimelineSection = () => {
               id: item.id,
               title: item.title,
               date: formatDate(item.start_date, item.end_date),
-              dateObj: new Date(item.start_date),
+              dateObj: parseWIB(item.start_date),
             }));
             mapped.sort((a, b) => a.dateObj - b.dateObj);
             setTimelineCompetitions(mapped);
@@ -86,8 +115,8 @@ const TimelineSection = () => {
           const mapped = nonCompEvents.map((item) => ({
             id: item.id,
             title: item.title,
-            date: formatDate(item.date),
-            dateObj: new Date(item.date),
+            date: formatDate(item.date, item.end_date),
+            dateObj: parseWIB(item.date),
           }));
           mapped.sort((a, b) => a.dateObj - b.dateObj);
           setTimelineEvents(mapped);
