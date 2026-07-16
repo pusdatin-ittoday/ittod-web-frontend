@@ -3,6 +3,7 @@ import { FaUpload, FaReceipt, FaDiscord } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { getPublicEventById } from "../../../api/eventPublic";
+import { parseWIB } from "../../../utils/dateFormatter";
 
 
 const CheckIcon = ({ className = "w-3 h-3 text-[#1A1C1C]" }) => (
@@ -28,10 +29,10 @@ const isRekening = true;
 const getCurrentBatchInfo = (timelines) => {
     if (!timelines || timelines.length === 0) return { batchName: "Batch 1", price: "80.000", isBatch2: false };
     const now = new Date();
-    const sorted = [...timelines].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const sorted = [...timelines].sort((a, b) => parseWIB(a.date) - parseWIB(b.date));
     const batch2Index = sorted.findIndex(t => t.title.toLowerCase().includes('batch 2'));
     
-    if (batch2Index !== -1 && now >= new Date(sorted[batch2Index].date)) {
+    if (batch2Index !== -1 && now >= parseWIB(sorted[batch2Index].date)) {
         return { batchName: "Batch 2", price: "100.000", isBatch2: true };
     }
     return { batchName: "Batch 1", price: "80.000", isBatch2: false };

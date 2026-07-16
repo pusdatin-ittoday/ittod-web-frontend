@@ -3,6 +3,7 @@ import { motion as Motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { getEvents } from "../../services/eventService";
 import { getCompetitionTimelines } from "../../api/eventPublic";
+import { parseWIB } from "../../utils/dateFormatter";
 import {
   hoverLift,
   popIn,
@@ -48,12 +49,37 @@ const CompetitionSection = () => {
   const [competitions, setCompetitions] = useState(defaultCompetitions);
   const [loading, setLoading] = useState(false);
   const [targetEvent, setTargetEvent] = useState(null);
+  const [allTimelines, setAllTimelines] = useState([]);
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
+
+  const evaluateTargetEvent = (timelines) => {
+    if (!timelines || timelines.length === 0) return null;
+    const now = new Date();
+    let nextTarget = null;
+    const sortedTimelines = [...timelines]
+      .map(t => ({
+          ...t,
+          startDateObj: parseWIB(t.start_date || t.date),
+          endDateObj: parseWIB(t.end_date || t.start_date || t.date)
+      }))
+      .sort((a, b) => a.startDateObj - b.startDateObj);
+
+    for (const t of sortedTimelines) {
+      if (now < t.startDateObj) {
+        nextTarget = { ...t, targetDate: t.startDateObj, phase: "starts in" };
+        break;
+      } else if (now < t.endDateObj) {
+        nextTarget = { ...t, targetDate: t.endDateObj, phase: "closes in" };
+        break;
+      }
+    }
+    return nextTarget;
+  };
 
   useEffect(() => {
     const fetchCompetitionsAndTimelines = async () => {
@@ -68,18 +94,10 @@ const CompetitionSection = () => {
         }
 
         if (timelineResponse.success && Array.isArray(timelineResponse.data)) {
-          const now = new Date();
-          // Find the closest future event
-          const futureEvents = timelineResponse.data
-            .map(t => ({
-                ...t,
-                dateObj: new Date(t.end_date || t.start_date || t.date)
-            }))
-            .filter(e => e.dateObj > now)
-            .sort((a, b) => a.dateObj - b.dateObj);
-            
-          if (futureEvents.length > 0) {
-            setTargetEvent(futureEvents[0]);
+          setAllTimelines(timelineResponse.data);
+          const nextTarget = evaluateTargetEvent(timelineResponse.data);
+          if (nextTarget) {
+            setTargetEvent(nextTarget);
           }
         }
       } catch (error) {
@@ -94,11 +112,12 @@ const CompetitionSection = () => {
 
     const intervalId = setInterval(() => {
       const now = new Date().getTime();
-      const distance = targetEvent.dateObj.getTime() - now;
+      const distance = targetEvent.targetDate.getTime() - now;
 
       if (distance < 0) {
         clearInterval(intervalId);
-        setTargetEvent(null); // Or trigger a refetch
+        const nextTarget = evaluateTargetEvent(allTimelines);
+        setTargetEvent(nextTarget);
         return;
       }
 
@@ -140,11 +159,11 @@ const CompetitionSection = () => {
           {targetEvent && (
             <div className="flex flex-col items-center mt-4 w-full">
               <span className="font-space-grotesk text-xl sm:text-2xl md:text-3xl font-black uppercase text-[#111827] text-center mb-2">
-                {targetEvent.title || targetEvent.name || "Next Agenda"} closes in:
+                {targetEvent.title || targetEvent.name || "Next Agenda"} {targetEvent.phase}:
               </span>
               <div className="flex items-center justify-center gap-2 mb-6 text-[#111827] font-space-grotesk font-bold text-sm sm:text-base bg-[#ffe477] px-4 py-2 border-[3px] border-[#111827] shadow-[4px_4px_0_#111827]">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                {targetEvent.dateObj.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' })} WIB
+                {targetEvent.targetDate.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' })} WIB
               </div>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
                 {[

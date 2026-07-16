@@ -1,11 +1,12 @@
 import React from 'react';
 import { FiCalendar, FiClock } from 'react-icons/fi';
+import { parseWIB } from '../../utils/dateFormatter';
 
 const formatAgendaDate = (value) => {
   if (!value) return { date: 'Tanggal menyusul', time: null };
 
-  const parsedDate = new Date(value);
-  if (Number.isNaN(parsedDate.getTime())) {
+  const parsedDate = parseWIB(value);
+  if (!parsedDate || Number.isNaN(parsedDate.getTime())) {
     return { date: 'Tanggal menyusul', time: null };
   }
 
@@ -32,7 +33,7 @@ const AgendaSidebar = ({ timelines = [], type = 'event' }) => {
   const isCompetition = type === 'competition';
   const accentColor = 'bg-yellow-neo';
   const sortedTimelines = [...timelines].sort(
-    (first, second) => new Date(first.date).getTime() - new Date(second.date).getTime(),
+    (first, second) => parseWIB(first.date).getTime() - parseWIB(second.date).getTime(),
   );
 
   return (
