@@ -238,6 +238,7 @@ const PengumumanNeo = () => {
                                     date={ann.updated_at || ann.created_at}
                                     category={cat}
                                     eventTitle={ann.event?.title}
+                                    isPinned={!!ann.is_pinned}
                                 />
                             );
                         })
