@@ -4,6 +4,7 @@ import { getCurrentUser, getUserCompetitions, getAnnouncements } from "../../../
 import { postCompePayment } from "../../../api/compeFile";
 import CompCardNeo from "./CompCardNeo";
 import { requireCompleteProfile } from "../../../utils/profileCompletion";
+import TextWithLinks from "../../../utils/TextWithLinks";
 import { useAlert } from "../../../context/AlertContext";
 import CalendarWidget from "./CalendarWidget";
 
@@ -376,8 +377,8 @@ const CompListNeo = () => {
                                                     : ""}
                                             </span>
                                         </div>
-                                        <p className="text-xs font-semibold leading-relaxed text-[#464652] font-hanken-grotesk">
-                                            {announcement.description}
+                                        <p className="text-xs font-semibold leading-relaxed text-[#464652] font-hanken-grotesk whitespace-pre-wrap">
+                                            <TextWithLinks text={announcement.description} linkClassName="text-blue-600 hover:text-blue-800 underline" />
                                         </p>
                                     </div>
                                 );

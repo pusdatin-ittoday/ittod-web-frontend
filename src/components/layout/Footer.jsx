@@ -117,7 +117,7 @@ const FooterNeo = () => {
               <a href={`mailto:${DEFAULT_CONTACTS.email}`} className="hover:text-white transition-colors">
                 {DEFAULT_CONTACTS.email}
               </a>
-              <a href={`tel:+${DEFAULT_CONTACTS.phone}`} className="hover:text-white transition-colors">
+              <a href={`https://wa.me/${DEFAULT_CONTACTS.phone}`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                 {DEFAULT_CONTACTS.formattedPhone}
               </a>
             </div>

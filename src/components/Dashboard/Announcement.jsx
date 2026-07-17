@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { GrAnnounce } from "react-icons/gr";
 import { getAnnouncements } from "../../api/user";
+import TextWithLinks from "../../utils/TextWithLinks";
 
 const Announcement = () => {
     const [announcements, setAnnouncements] = useState([]);
@@ -63,7 +64,9 @@ const Announcement = () => {
                       ? new Date(announcement.updated_at).toLocaleDateString()
                       : ""}
                   </p>
-                  <p className="mt-2 text-base">{announcement.description}</p>
+                  <p className="mt-2 text-base">
+                    <TextWithLinks text={announcement.description} linkClassName="text-blue-400 hover:text-blue-300 underline" />
+                  </p>
                 </div>
               ))
             )}

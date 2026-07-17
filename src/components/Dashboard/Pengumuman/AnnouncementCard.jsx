@@ -1,4 +1,5 @@
 import React from 'react';
+import TextWithLinks from '../../../utils/TextWithLinks';
 
 const CATEGORY_STYLES = {
     important: {
@@ -55,8 +56,8 @@ const AnnouncementCard = ({ title, description, date, category, eventTitle, isPi
                 {title}
             </h3>
 
-            <p className="font-['Hanken_Grotesk'] text-sm leading-relaxed text-[#464652] pb-2">
-                {description}
+            <p className="font-['Hanken_Grotesk'] text-sm leading-relaxed text-[#464652] pb-2 whitespace-pre-wrap">
+                <TextWithLinks text={description} linkClassName="text-blue-600 hover:text-blue-800 underline" />
             </p>
         </article>
     );
