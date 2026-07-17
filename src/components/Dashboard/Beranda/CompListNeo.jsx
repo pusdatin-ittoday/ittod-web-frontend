@@ -4,6 +4,7 @@ import { getCurrentUser, getUserCompetitions, getAnnouncements } from "../../../
 import { postCompePayment } from "../../../api/compeFile";
 import CompCardNeo from "./CompCardNeo";
 import { requireCompleteProfile } from "../../../utils/profileCompletion";
+import { getCompetitionTimelines } from "../../../api/eventPublic";
 import TextWithLinks from "../../../utils/TextWithLinks";
 import { useAlert } from "../../../context/AlertContext";
 import CalendarWidget from "./CalendarWidget";
@@ -28,6 +29,7 @@ const CompListNeo = () => {
     const [currentUser, setCurrentUser] = useState("Crew");
     const [announcements, setAnnouncements] = useState([]);
     const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+    const [globalCompTimelines, setGlobalCompTimelines] = useState([]);
     const navigate = useNavigate();
     const { showAlert } = useAlert();
 
@@ -190,11 +192,16 @@ const CompListNeo = () => {
             setLoading(true);
             setLoadingAnnouncements(true);
             try {
-                const [userResponse, competitionsResponse, announcementsResponse] = await Promise.all([
+                const [userResponse, competitionsResponse, announcementsResponse, compTimelineResponse] = await Promise.all([
                     getCurrentUser(),
                     getUserCompetitions(),
-                    getAnnouncements()
+                    getAnnouncements(),
+                    getCompetitionTimelines()
                 ]);
+
+                if (compTimelineResponse.success) {
+                    setGlobalCompTimelines(compTimelineResponse.data);
+                }
 
                 let name = "Crew";
                 let isUserDataComplete = false;
@@ -290,11 +297,14 @@ const CompListNeo = () => {
                                 </p>
                             </div>
                         ) : filteredCompetitions.length > 0 ? (
-                            filteredCompetitions.map(([key, data]) => (
+                            filteredCompetitions.map(([key, comp]) => (
                                 <CompCardNeo
                                     key={key}
                                     compKey={key}
-                                    data={data}
+                                    data={{
+                                        ...comp,
+                                        timelines: globalCompTimelines.length > 0 ? globalCompTimelines : comp.timelines
+                                    }}
                                     currentUser={currentUser}
                                     onVerify={handleVerify}
                                 />
