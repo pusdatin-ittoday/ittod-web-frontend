@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MdChevronLeft, MdChevronRight, MdEvent } from "react-icons/md";
 import { getCompetitionTimelines, getEventTimelines } from "../../../api/eventPublic";
+import { getUserCompetitions, getUserEvents } from "../../../api/user";
 
 const CalendarWidget = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -12,14 +13,26 @@ const CalendarWidget = () => {
         const fetchTimelines = async () => {
             setLoading(true);
             try {
-                const [compRes, eventRes] = await Promise.all([
+                const [compRes, eventRes, userCompRes, userEventRes] = await Promise.all([
                     getCompetitionTimelines(),
-                    getEventTimelines()
+                    getEventTimelines(),
+                    getUserCompetitions(),
+                    getUserEvents()
                 ]);
                 
                 const allEvents = [];
 
-                if (compRes.success && Array.isArray(compRes.data)) {
+                let hasJoinedCompetition = false;
+                if (userCompRes.success && userCompRes.data) {
+                    hasJoinedCompetition = Object.keys(userCompRes.data).length > 0;
+                }
+
+                let joinedEventIds = new Set();
+                if (userEventRes.success && Array.isArray(userEventRes.data)) {
+                    userEventRes.data.forEach(ue => joinedEventIds.add(ue.event_id));
+                }
+
+                if (compRes.success && Array.isArray(compRes.data) && hasJoinedCompetition) {
                     allEvents.push(...compRes.data.map(e => ({
                         ...e,
                         type: "Competition",
@@ -28,7 +41,7 @@ const CalendarWidget = () => {
                 }
 
                 if (eventRes.success && Array.isArray(eventRes.data)) {
-                    allEvents.push(...eventRes.data.map(e => ({
+                    allEvents.push(...eventRes.data.filter(e => joinedEventIds.has(e.event_id)).map(e => ({
                         ...e,
                         type: "Event",
                         dateObj: new Date(e.start_date || e.date)

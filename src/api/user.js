@@ -320,6 +320,29 @@ export const getUserCompetitions = async () => {
 };
 
 /**
+ * Get the events that the current user has joined
+ * @returns {Promise<Object>} The user's events data
+ */
+export const getUserEvents = async () => {
+	try {
+		const response = await instance.get("/api/event/");
+		return {
+			success: true,
+			data: response.data,
+		};
+	} catch (error) {
+		console.error("Error fetching user event data:", error);
+		return {
+			success: false,
+			error:
+				error.response?.data?.message ||
+				error.response?.data?.error ||
+				"Failed to fetch event data.",
+		};
+	}
+};
+
+/**
  * Announcement API
  */
 
