@@ -15,7 +15,8 @@ const getCurrentBatchInfo = (timelines) => {
     if (!timelines || timelines.length === 0) return { batchName: "Batch 1", price: "80.000", isBatch2: false };
     const now = new Date();
     const sorted = [...timelines].sort((a, b) => parseWIB(a.date) - parseWIB(b.date));
-    const batch2Index = sorted.findIndex(t => t.title.toLowerCase().includes('batch 2'));
+    const batch2Regex = /(batch|gelombang)\s*(2|dua|kedua)/i;
+    const batch2Index = sorted.findIndex(t => batch2Regex.test(t.title));
     
     if (batch2Index !== -1 && now >= parseWIB(sorted[batch2Index].date)) {
         return { batchName: "Batch 2", price: "100.000", isBatch2: true };
