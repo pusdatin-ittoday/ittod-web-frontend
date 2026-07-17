@@ -128,11 +128,6 @@ const FooterNeo = () => {
         {/* Bottom Bar */}
         <div className="flex flex-col items-center justify-between gap-4 border-t-2 border-[#343735] pt-6 font-inter text-[10px] font-bold uppercase tracking-widest text-gray-500 md:flex-row">
           <p>© 2026 IT TODAY</p>
-          <div className="flex items-center gap-8">
-            <Link to="#" className="hover:text-gray-300 transition-colors">PRIVACY</Link>
-            <Link to="#" className="hover:text-gray-300 transition-colors">TERMS</Link>
-            <Link to="#" className="hover:text-gray-300 transition-colors">BRAND</Link>
-          </div>
         </div>
       </div>
     </footer>

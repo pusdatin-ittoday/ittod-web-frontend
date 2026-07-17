@@ -99,7 +99,7 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                         {randomQuote}
                     </p>
                     <p className="mt-2 text-[11px] font-semibold leading-snug text-gray-300">
-                        kasih author aja dari tim web pdi
+                        Ayo Daftar IT Today
                     </p>
                 </div>
             </div>
