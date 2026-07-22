@@ -367,7 +367,7 @@ const CompListNeo = () => {
                                 );
                             }
 
-                            return visibleAnnouncements.slice(0, 2).map((announcement, idx) => {
+                            return visibleAnnouncements.map((announcement, idx) => {
                                 const tilt = idx % 2 === 0 ? "-rotate-[0.6deg]" : "rotate-[0.8deg]";
                                 const cardBg = idx % 2 === 0 ? "bg-white" : "bg-[#E2E2E2]";
                                 return (
