@@ -281,9 +281,9 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                             Edit Data
                         </button>
                     ) : (
-                        <div className="border-[3px] border-[#1A1C1C] bg-[#fffbeb] p-4 text-xs font-bold text-amber-700 shadow-[4px_4px_0_0_#000] flex items-center gap-2">
-                            <span>⚠️</span>
-                            <span>Lengkapi berkas agar panitia dapat memverifikasi tim Anda dan membuka menu pembayaran.</span>
+                        <div className="border-[3px] border-[#1A1C1C] bg-[#eff6ff] p-4 text-xs font-bold text-blue-800 shadow-[4px_4px_0_0_#000] flex items-center gap-2">
+                            <span className="text-base">⏳</span>
+                            <span>Berkas sedang diperiksa panitia. Pembayaran terbuka setelah disetujui.</span>
                         </div>
                     )
                 )}
