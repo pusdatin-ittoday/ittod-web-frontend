@@ -362,6 +362,21 @@ export const getAnnouncements = async () => {
 	}
 };
 
+export const markAnnouncementsAsRead = async () => {
+	try {
+		const response = await instance.post("/api/user/read-announcements");
+		return {
+			success: true,
+			data: response.data,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error: error.response?.data?.message || "Failed to mark announcements as read",
+		};
+	}
+};
+
 export const resendVerificationEmail = async (email) => {
 	try {
 		const response = await instance.post("api/auth/resend-verification-email", {

@@ -1,9 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdHomeFilled } from "react-icons/md";
 import { GiTrophy } from "react-icons/gi";
 import { MdEvent } from "react-icons/md";
 import { FaFileUpload, FaBell } from "react-icons/fa";
+import { getAnnouncements, getCurrentUser } from "../../api/user";
 
 const participantQuotes = [
     "Jangan lupa tidur.",
@@ -45,9 +46,49 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
         []
     );
 
+    const [hasUnreadAnnouncements, setHasUnreadAnnouncements] = useState(false);
+
+    useEffect(() => {
+        const checkUnreadAnnouncements = async () => {
+            try {
+                const [announcementsRes, userRes] = await Promise.all([
+                    getAnnouncements(),
+                    getCurrentUser()
+                ]);
+
+                if (announcementsRes.success && userRes.success && announcementsRes.data.length > 0) {
+                    const announcements = announcementsRes.data;
+                    const latestAnnouncement = announcements.reduce((latest, current) => {
+                        return new Date(current.created_at) > new Date(latest.created_at) ? current : latest;
+                    });
+                    
+                    const lastReadDate = userRes.data?.last_read_announcements_at;
+                    
+                    if (!lastReadDate || new Date(latestAnnouncement.created_at) > new Date(lastReadDate)) {
+                        setHasUnreadAnnouncements(true);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to check unread announcements:", error);
+            }
+        };
+
+        checkUnreadAnnouncements();
+    }, []);
+
     const menuItems = [
         { id: "beranda", label: "Beranda", icon: <MdHomeFilled className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
-        { id: "pengumuman", label: "Pengumuman", icon: <FaBell className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
+        { 
+            id: "pengumuman", 
+            label: "Pengumuman", 
+            icon: <FaBell className="text-sm sm:text-base lg:text-lg xl:text-xl" />,
+            badge: hasUnreadAnnouncements && (
+                <span className="absolute -top-2.5 -right-2.5 z-10 flex h-6 w-6 items-center justify-center rounded-md border-2 border-[#191b1a] bg-red-500 text-xs font-black text-white shadow-[2px_2px_0_#191b1a]">
+                    <span className="animate-ping absolute -z-10 inline-flex h-full w-full rounded-md bg-red-400 opacity-75"></span>
+                    !
+                </span>
+            )
+        },
         { id: "ikut-lomba", label: "Ikut Lomba", icon: <GiTrophy className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
         { id: "ikut-event", label: "Ikut Event", icon: <MdEvent className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
         { id: "submit-lomba", label: "Submit Lomba", icon: <FaFileUpload className="text-sm sm:text-base lg:text-lg xl:text-xl" /> }
@@ -82,7 +123,7 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                                 if (setActive) setActive(item.id);
                                 navigate(`/dashboard/${item.id}`);
                             }}
-                            className={`flex min-h-14 items-center gap-3 border-[3px] border-black px-3 py-3 text-left text-xs font-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none sm:text-sm ${
+                            className={`relative flex min-h-14 items-center gap-3 border-[3px] border-black px-3 py-3 text-left text-xs font-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none sm:text-sm ${
                                 active === item.id
                                     ? "bg-[#ffd400] text-[#191b1a]"
                                     : "bg-white text-[#191b1a]"
@@ -90,6 +131,7 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                         >
                             <span className="shrink-0 text-base">{item.icon}</span>
                             <span>{item.label}</span>
+                            {item.badge}
                         </button>
                     ))}
                 </div>
@@ -121,7 +163,7 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                             if (setActive) setActive(item.id);
                             navigate(`/dashboard/${item.id}`);
                         }}
-                        className={`px-4 sm:px-6 md:px-8 py-1 sm:py-2.5 md:py-3 lg:px-8 lg:text-start lg:py-2 xl:py-3 xl:px-10
+                        className={`relative px-4 sm:px-6 md:px-8 py-1 sm:py-2.5 md:py-3 lg:px-8 lg:text-start lg:py-2 xl:py-3 xl:px-10
                             text-xs sm:text-sm md:text-base lg:text-sm xl:text-base
                             rounded-md lg:font-medium text-center sm:text-left button-hover 
                             transition duration-300 ease-in-out cursor-pointer
@@ -133,9 +175,10 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                             }`}
                     >
                         <span className="flex-shrink-0">{item.icon}</span>
-                        <span className="whitespace-nowrap text-center sm:text-left leading-tight">
+                        <span className="whitespace-nowrap text-center sm:text-left leading-tight flex-1">
                             {item.label}
                         </span>
+                        {item.badge}
                     </button>
                 ))}
             </div>
