@@ -234,6 +234,19 @@ const RegistCompetition = () => {
                                     : "Kamu akan secara otomatis menjadi ketua tim."}
                             </p>
 
+                            {participationType === "team" && (
+                                <div className="mt-4 border-[3px] border-black bg-[#e8fbef] p-4 text-xs font-bold text-[#156b3b] shadow-[4px_4px_0_#191b1a]">
+                                    Ingin bergabung ke tim yang sudah dibuat oleh temanmu?{" "}
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate("/dashboard/ikut-lomba", { state: { showJoinForm: true } })}
+                                        className="underline font-black text-[#3f46b8] hover:text-black cursor-pointer"
+                                    >
+                                        Klik di sini untuk Join Team menggunakan Kode Tim
+                                    </button>
+                                </div>
+                            )}
+
                             <form
                                 onSubmit={handleSubmit}
                                 className="mt-7 flex flex-col gap-5"
