@@ -10,6 +10,8 @@ import AgendaSidebar from '../components/ui/AgendaSidebar';
 import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
 import LoadingState from '../components/ui/LoadingState';
+import EventGallery from '../components/event/EventGallery';
+import { getEventGalleryImages, getEventGalleryLabel } from '../data/eventGalleryData';
 
 const formatWaLink = (num) => {
   if (!num) return '#';
@@ -102,6 +104,22 @@ const EventDetailPage = () => {
                   <h2 className="mb-5 w-fit border-b-[4px] border-yellow-neo pb-2 font-inter text-2xl font-black uppercase leading-tight text-[#171918] md:text-4xl">
                     About The {event.title}
                   </h2>
+
+                  {/*
+                   * Tugas 3: Kondisi khusus codetoday.
+                   * Galeri foto TIDAK ditampilkan jika slug adalah 'codetoday'.
+                   * Untuk semua slug lain, galeri dirender jika data tersedia.
+                   */}
+                  {slug !== 'codetoday' && (() => {
+                    const galleryImages = getEventGalleryImages(slug);
+                    const galleryLabel = getEventGalleryLabel(slug);
+                    return galleryImages ? (
+                      <EventGallery
+                        images={galleryImages}
+                        title={`Dokumentasi ${galleryLabel}`}
+                      />
+                    ) : null;
+                  })()}
 
                   <p className="mb-9 whitespace-pre-wrap font-inter text-sm leading-relaxed text-[#2e3238] md:text-base">
                     {event.description}
