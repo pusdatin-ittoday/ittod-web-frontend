@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import NavbarNeo from '../components/layout/Navbar';
 import FooterNeo from '../components/layout/Footer';
 import HeroSection from '../components/home/HeroSection';
-import AboutSection from '../components/home/AboutSection';
+import GallerySection from '../components/home/GallerySection';
 import MainEventSection from '../components/home/MainEventSection';
 import CompetitionSection from '../components/home/CompetitionSection';
 import TimelineSection from '../components/home/TimelineSection';
@@ -36,7 +36,7 @@ const LandingPage = () => {
       <NavbarNeo />
       <main className="pt-16 md:pt-20">
         <HeroSection />
-        <AboutSection />
+        <GallerySection />
         <MainEventSection />
         <CompetitionSection />
         <TimelineSection />

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#1a1c1c"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="400" cy="240" r="60" fill="rgba(255,255,255,0.15)"/>
+  <polygon points="400,195 420,230 445,230 426,250 434,280 400,262 366,280 374,250 355,230 380,230" fill="white" opacity="0.9"/>
+  <text x="400" y="360" text-anchor="middle" font-size="36" fill="white" font-family="Inter,Arial,sans-serif" font-weight="900" letter-spacing="3">AWARDING</text>
+  <text x="400" y="400" text-anchor="middle" font-size="14" fill="rgba(255,255,255,0.5)" font-family="Inter,Arial,sans-serif" letter-spacing="2">IT TODAY 2026 • DOCUMENTATION</text>
+</svg>

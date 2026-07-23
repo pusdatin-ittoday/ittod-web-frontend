@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EC4899"/>
+      <stop offset="100%" stop-color="#1a1c1c"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="400" cy="240" r="60" fill="rgba(255,255,255,0.15)"/>
+  <rect x="380" y="215" width="40" height="50" rx="8" fill="white" opacity="0.9"/>
+  <circle cx="392" cy="235" r="5" fill="#EC4899"/>
+  <circle cx="408" cy="235" r="5" fill="#EC4899"/>
+  <rect x="390" y="245" width="20" height="3" rx="1" fill="#EC4899"/>
+  <text x="400" y="360" text-anchor="middle" font-size="26" fill="white" font-family="Inter,Arial,sans-serif" font-weight="900" letter-spacing="2">GRAND FINAL GAME TODAY</text>
+  <text x="400" y="400" text-anchor="middle" font-size="14" fill="rgba(255,255,255,0.5)" font-family="Inter,Arial,sans-serif" letter-spacing="2">IT TODAY 2026 • DOCUMENTATION</text>
+</svg>

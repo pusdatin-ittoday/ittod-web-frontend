@@ -1,17 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { motion as Motion, useReducedMotion } from "motion/react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
 import { popIn, revealUp, staggerContainer } from "../../lib/motion";
-
-const MotionLink = Motion.create(Link);
 
 const HeroSection = () => {
   const heroRef = useRef(null);
   const reduceMotion = useReducedMotion();
-  const { isAuthenticated } = useAuth();
-  const ctaTarget = isAuthenticated ? "/dashboard/beranda" : "/register";
 
   useEffect(() => {
     if (reduceMotion) return undefined;
@@ -125,7 +119,7 @@ const HeroSection = () => {
         </Motion.div>
 
         <Motion.div
-          className="mx-auto mb-14 w-fit md:mb-20"
+          className="mx-auto mb-6 w-fit md:mb-10"
           variants={revealUp}
           style={{ rotate: -2 }}
         >
@@ -178,22 +172,19 @@ const HeroSection = () => {
           </Motion.div>
         </Motion.div>
 
-        <MotionLink
-          to={ctaTarget}
-          className="inline-block border-[3px] border-black bg-yellow-neo px-8 py-3 font-inter text-xl font-black tracking-[0.04em] text-[#293f9e] shadow-[6px_6px_0_#111] md:px-12 md:text-2xl"
+        {/* Badge "- 2026 -" */}
+        <Motion.div
+          className="inline-block border-[3px] border-black bg-yellow-neo px-6 py-1.5 font-inter text-sm font-black tracking-[0.08em] text-[#293f9e] shadow-[5px_5px_0_#111] sm:px-8 sm:text-base"
           variants={popIn}
           style={{ rotate: -2 }}
-          whileHover={{ y: -5, rotate: 2, scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          aria-label={
-            isAuthenticated ? "Masuk ke dashboard" : "Daftar akun IT Today"
-          }
+          whileHover={{ rotate: 2, scale: 1.05 }}
+          whileTap={{ scale: 0.97 }}
         >
-          DAFTAR SEKARANG!
-        </MotionLink>
+          — 2026 —
+        </Motion.div>
       </Motion.div>
 
-      <div className="absolute inset-x-0 bottom-0 h-[5px] bg-black" />
+
     </Motion.section>
   );
 };

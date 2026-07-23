@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#1a1c1c"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="400" cy="240" r="60" fill="rgba(255,255,255,0.15)"/>
+  <rect x="385" y="205" width="30" height="55" rx="3" fill="white" opacity="0.9"/>
+  <rect x="380" y="260" width="40" height="8" rx="2" fill="white" opacity="0.7"/>
+  <line x1="400" y1="195" x2="400" y2="210" stroke="white" stroke-width="4" opacity="0.9"/>
+  <text x="400" y="360" text-anchor="middle" font-size="28" fill="white" font-family="Inter,Arial,sans-serif" font-weight="900" letter-spacing="2">GRAND FINAL MINE TODAY</text>
+  <text x="400" y="400" text-anchor="middle" font-size="14" fill="rgba(255,255,255,0.5)" font-family="Inter,Arial,sans-serif" letter-spacing="2">IT TODAY 2026 • DOCUMENTATION</text>
+</svg>
