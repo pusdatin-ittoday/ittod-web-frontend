@@ -49,20 +49,27 @@ export const loginUser = async (credentials) => {
 		// Store token if available
 		if (response.data.token) {
 			localStorage.setItem("authToken", response.data.token);
-
-			// Dispatch custom event
-			window.dispatchEvent(new Event("auth-changed"));
 		}
+
+		localStorage.setItem("isLoggedIn", "true");
 
 		// Store user data if available
 		if (response.data.user) {
 			const userData = {
+				id: response.data.user.id,
 				name: response.data.user.name || response.data.user.email.split("@")[0],
+				full_name: response.data.user.full_name,
 				email: response.data.user.email,
 				// Add other user fields as needed
 			};
+			if (userData.id) {
+				localStorage.setItem("userId", userData.id);
+			}
 			sessionStorage.setItem("userData", JSON.stringify(userData));
 		}
+
+		// Dispatch custom event after auth storage is ready
+		window.dispatchEvent(new Event("auth-changed"));
 
 		return {
 			success: true,
@@ -135,6 +142,9 @@ export const getCurrentUser = async () => {
 		// If unauthorized, clear token
 		if (error.response && error.response.status === 401) {
 			localStorage.removeItem("authToken");
+			localStorage.removeItem("isLoggedIn");
+			localStorage.removeItem("userId");
+			sessionStorage.removeItem("userData");
 		}
 
 		return {
@@ -160,6 +170,8 @@ export const logoutUser = async () => {
 	// Remove tokens and user data
 	localStorage.removeItem("authToken");
 	localStorage.removeItem("user");
+	localStorage.removeItem("isLoggedIn");
+	localStorage.removeItem("userId");
 	sessionStorage.removeItem("userData");
 	// Notify listeners
 	window.dispatchEvent(new Event("auth-changed"));
@@ -308,6 +320,29 @@ export const getUserCompetitions = async () => {
 };
 
 /**
+ * Get the events that the current user has joined
+ * @returns {Promise<Object>} The user's events data
+ */
+export const getUserEvents = async () => {
+	try {
+		const response = await instance.get("/api/event/");
+		return {
+			success: true,
+			data: response.data,
+		};
+	} catch (error) {
+		console.error("Error fetching user event data:", error);
+		return {
+			success: false,
+			error:
+				error.response?.data?.message ||
+				error.response?.data?.error ||
+				"Failed to fetch event data.",
+		};
+	}
+};
+
+/**
  * Announcement API
  */
 
@@ -323,6 +358,21 @@ export const getAnnouncements = async () => {
 		return {
 			success: false,
 			error: error.response?.data?.message || "Failed to fetch announcements",
+		};
+	}
+};
+
+export const markAnnouncementsAsRead = async () => {
+	try {
+		const response = await instance.post("/api/user/read-announcements");
+		return {
+			success: true,
+			data: response.data,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error: error.response?.data?.message || "Failed to mark announcements as read",
 		};
 	}
 };

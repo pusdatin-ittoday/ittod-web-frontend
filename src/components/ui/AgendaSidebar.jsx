@@ -1,26 +1,84 @@
 import React from 'react';
 import { FiCalendar, FiClock } from 'react-icons/fi';
+import { parseWIB } from '../../utils/dateFormatter';
 
-const formatAgendaDate = (value) => {
-  if (!value) return { date: 'Tanggal menyusul', time: null };
+const formatAgendaDate = (startDateValue, endDateValue = null) => {
+  if (!startDateValue) return { date: 'Tanggal menyusul', time: null };
 
-  const parsedDate = new Date(value);
-  if (Number.isNaN(parsedDate.getTime())) {
+  const parsedStartDate = parseWIB(startDateValue);
+  if (!parsedStartDate || Number.isNaN(parsedStartDate.getTime())) {
     return { date: 'Tanggal menyusul', time: null };
   }
 
-  return {
-    date: new Intl.DateTimeFormat('id-ID', {
+  const getLocalDateString = (d) =>
+    new Intl.DateTimeFormat('id-ID', {
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      timeZone: 'Asia/Jakarta',
+    }).format(d);
+
+  const getMonthYearString = (d) =>
+    new Intl.DateTimeFormat('id-ID', {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'Asia/Jakarta',
+    }).format(d);
+
+  const getDayString = (d) =>
+    new Intl.DateTimeFormat('id-ID', {
+      day: 'numeric',
+      timeZone: 'Asia/Jakarta',
+    }).format(d);
+
+  const formatTime = (d) =>
+    new Intl.DateTimeFormat('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Asia/Jakarta',
+    }).format(d);
+
+  const formatDateSingle = (d) =>
+    new Intl.DateTimeFormat('id-ID', {
       day: '2-digit',
       month: 'long',
       year: 'numeric',
       timeZone: 'Asia/Jakarta',
-    }).format(parsedDate),
-    time: new Intl.DateTimeFormat('id-ID', {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'Asia/Jakarta',
-    }).format(parsedDate),
+    }).format(d);
+
+  if (endDateValue) {
+    const parsedEndDate = parseWIB(endDateValue);
+    if (parsedEndDate && !Number.isNaN(parsedEndDate.getTime())) {
+      if (getLocalDateString(parsedStartDate) === getLocalDateString(parsedEndDate)) {
+        // Same day
+        const startTime = formatTime(parsedStartDate);
+        const endTime = formatTime(parsedEndDate);
+        
+        return {
+          date: formatDateSingle(parsedStartDate),
+          time: startTime === endTime ? startTime : `${startTime} - ${endTime}`,
+        };
+      } else {
+        // Different days
+        let dateRangeStr = '';
+        if (getMonthYearString(parsedStartDate) === getMonthYearString(parsedEndDate)) {
+          dateRangeStr = `${getDayString(parsedStartDate)} - ${getDayString(parsedEndDate)} ${getMonthYearString(parsedStartDate)}`;
+        } else {
+          dateRangeStr = `${formatDateSingle(parsedStartDate)} - ${formatDateSingle(parsedEndDate)}`;
+        }
+        
+        return {
+          date: dateRangeStr,
+          time: null,
+        };
+      }
+    }
+  }
+
+  // Single date
+  return {
+    date: formatDateSingle(parsedStartDate),
+    time: formatTime(parsedStartDate),
   };
 };
 
@@ -32,7 +90,7 @@ const AgendaSidebar = ({ timelines = [], type = 'event' }) => {
   const isCompetition = type === 'competition';
   const accentColor = 'bg-yellow-neo';
   const sortedTimelines = [...timelines].sort(
-    (first, second) => new Date(first.date).getTime() - new Date(second.date).getTime(),
+    (first, second) => parseWIB(first.date).getTime() - parseWIB(second.date).getTime(),
   );
 
   return (
@@ -63,7 +121,7 @@ const AgendaSidebar = ({ timelines = [], type = 'event' }) => {
         ) : (
           <ol className="space-y-0">
             {sortedTimelines.map((agenda, index) => {
-              const formatted = formatAgendaDate(agenda.date);
+              const formatted = formatAgendaDate(agenda.date, agenda.end_date);
               const isLast = index === sortedTimelines.length - 1;
 
               return (

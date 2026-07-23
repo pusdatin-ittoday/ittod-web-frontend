@@ -71,3 +71,26 @@ export const getCompetitionTimelines = async () => {
         };
     }
 };
+
+/**
+ * Fetch all event timelines
+ * @returns {Promise<Object>} The event timelines data
+ */
+export const getEventTimelines = async () => {
+    try {
+        const response = await instance.get("/api/timeline");
+        return {
+            success: true,
+            data: response.data,
+        };
+    } catch (error) {
+        console.error("Error fetching event timelines:", error);
+        return {
+            success: false,
+            error:
+                error.response?.data?.message ||
+                error.response?.data?.error ||
+                "Failed to fetch event timelines.",
+        };
+    }
+};

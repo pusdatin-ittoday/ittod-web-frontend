@@ -46,7 +46,8 @@ class EditProfile extends Component {
             ktmFileName: "",
             showProgressRestoredMessage: false,
             ktmChanged: false,
-            twibbonChanged: false
+            twibbonChanged: false,
+            isSubmitting: false
         };
 
         this.fieldLabels = {
@@ -229,6 +230,7 @@ class EditProfile extends Component {
 
     handleSubmit = async (e) => {
         e.preventDefault();
+        this.setState({ isSubmitting: true });
         const {
             full_name,
             birth_date,
@@ -252,7 +254,6 @@ class EditProfile extends Component {
             full_name,
             birth_date,
             phone_number,
-            id_line,
             id_discord,
             id_instagram,
             pendidikan,
@@ -287,6 +288,7 @@ class EditProfile extends Component {
             this.setState({
                 showErrorBox: true,
                 errorFields: emptyFieldsList,
+                isSubmitting: false
             });
             return;
         }
@@ -325,6 +327,12 @@ class EditProfile extends Component {
                     });
                 } catch (twibbonError) {
                     console.error("Twibbon upload failed:", twibbonError);
+                    this.setState({
+                        showErrorBox: true,
+                        errorFields: [twibbonError.response?.data?.message || "Gagal mengunggah Twibbon. Silakan coba lagi."],
+                        isSubmitting: false
+                    });
+                    return;
                 }
             }
 
@@ -354,7 +362,8 @@ class EditProfile extends Component {
             console.error("Error updating profile:", error);
             this.setState({
                 showErrorBox: true,
-                errorFields: [error.response?.data?.message || "Failed to update profile. Please try again."]
+                errorFields: [error.response?.data?.message || "Failed to update profile. Please try again."],
+                isSubmitting: false
             });
         }
     };
@@ -366,6 +375,7 @@ class EditProfile extends Component {
     render() {
         const {
             full_name,
+            isSubmitting,
             birth_date,
             phone_number,
             jenis_kelamin,
@@ -455,16 +465,23 @@ class EditProfile extends Component {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                                 <div className="flex flex-col gap-1.5">
-                                    <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
-                                        Nama Lengkap
-                                    </label>
+                                    <div className="flex justify-between items-end">
+                                        <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
+                                            Nama Lengkap
+                                        </label>
+                                        <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
+                                            *Wajib
+                                        </span>
+                                    </div>
                                     <div className="relative">
                                         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-4.5" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M2 16H3.425L13.2 6.225L11.775 4.8L2 14.575V16ZM0 18V13.75L13.2 0.575C13.4 0.391667 13.6208 0.25 13.8625 0.15C14.1042 0.05 14.3583 0 14.625 0C14.8917 0 15.15 0.05 15.4 0.15C15.65 0.25 15.8667 0.4 16.05 0.6L17.425 2C17.625 2.18333 17.7708 2.4 17.8625 2.65C17.9542 2.9 18 3.15 18 3.4C18 3.66667 17.9542 3.92083 17.8625 4.1625C17.7708 4.40417 17.625 4.625 17.425 4.825L4.25 18H0ZM16 3.4L14.6 2L16 3.4ZM12.475 5.525L11.775 4.8L13.2 6.225L12.475 5.525Z" fill="#464652"/>
                                         </svg>
                                         <input
-                                            type="tel"
-                                            inputMode="tel"
+                                            type="text"
+                                            inputMode="text"
+                                            autoComplete="name"
+                                            autoCapitalize="words"
                                             name="full_name"
                                             placeholder="Nama Lengkap"
                                             value={full_name}
@@ -475,9 +492,14 @@ class EditProfile extends Component {
                                 </div>
 
                                 <div className="flex flex-col gap-1.5">
-                                    <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
-                                        Tanggal Lahir
-                                    </label>
+                                    <div className="flex justify-between items-end">
+                                        <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
+                                            Tanggal Lahir
+                                        </label>
+                                        <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
+                                            *Wajib
+                                        </span>
+                                    </div>
                                     <div className="relative">
                                         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-4.5" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M2 20C1.45 20 0.979167 19.8042 0.5875 19.4125C0.195833 19.0208 0 18.55 0 18V4C0 3.45 0.195833 2.97917 0.5875 2.5875C0.979167 2.19583 1.45 2 2 2H3V0H5V2H13V0H15V2H16C16.5 2 17.0208 2.19583 17.4125 2.5875C17.8042 2.97917 18 3.45 18 4V18C18 18.55 17.8042 19.0208 17.4125 19.4125C17.0208 19.8042 16.55 20 16 20H2ZM2 18H16V8H2V18ZM2 6H16V4H2V6ZM2 6V4V6Z" fill="#464652"/>
@@ -493,15 +515,22 @@ class EditProfile extends Component {
                                 </div>
 
                                 <div className="flex flex-col gap-1.5">
-                                    <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
-                                        Nomor HP
-                                    </label>
+                                    <div className="flex justify-between items-end">
+                                        <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
+                                            Nomor HP
+                                        </label>
+                                        <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
+                                            *Wajib
+                                        </span>
+                                    </div>
                                     <div className="relative">
                                         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-4.5" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M16.95 18C14.8667 18 12.8083 17.5458 10.775 16.6375C8.74167 15.7292 6.89167 14.4417 5.225 12.775C3.55833 11.1083 2.27083 9.25833 1.3625 7.225C0.454167 5.19167 0 3.13333 0 1.05C0 0.75 0.1 0.5 0.3 0.3C0.5 0.1 0.75 0 1.05 0H5.1C5.33333 0 5.54167 0.0791667 5.725 0.2375C5.90833 0.395833 6.01667 0.583333 6.05 0.8L6.7 4.3C6.73333 4.56667 6.725 4.79167 6.675 4.975C6.625 5.15833 6.53333 5.31667 6.4 5.45L3.975 7.9C4.30833 8.51667 4.70417 9.1125 5.1625 9.6875C5.62083 10.2625 6.125 10.8167 6.675 11.35C7.19167 11.8667 7.73333 12.3458 8.3 12.7875C8.86667 13.2292 9.46667 13.6333 10.1 14L12.45 11.65C12.6 11.5 12.7958 11.3875 13.0375 11.3125C13.2792 11.2375 13.5167 11.2167 13.75 11.25L17.2 11.95C17.4333 12.0167 17.625 12.1375 17.775 12.3125C17.925 12.4875 18 12.6833 18 12.9V16.95C18 17.25 17.9 17.5 17.7 17.7C17.5 17.9 17.25 18 16.95 18ZM3.025 6L4.675 4.35L4.25 2H2.025C2.10833 2.68333 2.225 3.35833 2.375 4.025C2.525 4.69167 2.74167 5.35 3.025 6ZM11.975 14.95C12.625 15.2333 13.2875 15.4583 13.9625 15.625C14.6375 15.7917 15.3167 15.9 16 15.95V13.75L13.65 13.275L11.975 14.95Z" fill="#464652"/>
                                         </svg>
                                         <input
-                                            type="text"
+                                            type="tel"
+                                            inputMode="tel"
+                                            autoComplete="tel"
                                             name="phone_number"
                                             placeholder="Nomor HP"
                                             value={phone_number}
@@ -512,9 +541,14 @@ class EditProfile extends Component {
                                 </div>
 
                                 <div className="flex flex-col gap-1.5">
-                                    <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
-                                        Jenis Kelamin
-                                    </label>
+                                    <div className="flex justify-between items-end">
+                                        <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
+                                            Jenis Kelamin
+                                        </label>
+                                        <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
+                                            *Wajib
+                                        </span>
+                                    </div>
                                     <div className="relative">
                                         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-4.5" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1.5 20V12.5H0V7C0 6.45 0.195833 5.97917 0.5875 5.5875C0.979167 5.19583 1.45 5 2 5H5C5.55 5 6.02083 5.19583 6.4125 5.5875C6.80417 5.97917 7 6.45 7 7V12.5H5.5V20H1.5ZM3.5 4C2.95 4 2.47917 3.80417 2.0875 3.4125C1.69583 3.02083 1.5 2.55 1.5 2C1.5 1.45 1.69583 0.979167 2.0875 0.5875C2.47917 0.195833 2.95 0 3.5 0C4.05 0 4.52083 0.195833 4.9125 0.5875C5.30417 0.979167 5.5 1.45 5.5 2C5.5 2.55 5.30417 3.02083 4.9125 3.4125C4.52083 3.80417 4.05 4 3.5 4ZM12.5 4C11.95 4 11.4792 3.80417 11.0875 3.4125C10.6958 3.02083 10.5 2.55 10.5 2C10.5 1.45 10.6958 0.979167 11.0875 0.5875C11.4792 0.195833 11.95 0 12.5 0C13.05 0 13.5208 0.195833 13.9125 0.5875C14.3042 0.979167 14.5 1.45 14.5 2C14.5 2.55 14.3042 3.02083 13.9125 3.4125C13.5208 3.80417 13.05 4 12.5 4Z" fill="#464652"/>
@@ -550,6 +584,8 @@ class EditProfile extends Component {
                                         </svg>
                                         <input
                                             type="text"
+                                            inputMode="text"
+                                            autoComplete="off"
                                             name="id_line"
                                             placeholder="ID Line"
                                             value={id_line}
@@ -560,15 +596,22 @@ class EditProfile extends Component {
                                 </div>
 
                                 <div className="flex flex-col gap-1.5">
-                                    <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
-                                        ID Discord
-                                    </label>
+                                    <div className="flex justify-between items-end">
+                                        <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
+                                            ID Discord
+                                        </label>
+                                        <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
+                                            *Wajib
+                                        </span>
+                                    </div>
                                     <div className="relative">
                                         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-4.5" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M3 16L4 12H0L0.5 10H4.5L5.5 6H1.5L2 4H6L7 0H9L8 4H12L13 0H15L14 4H18L17.5 6H13.5L12.5 10H16.5L16 12H12L11 16H9L10 12H6L5 16H3ZM6.5 10H10.5L11.5 6H7.5L6.5 10Z" fill="#464652"/>
                                         </svg>
                                         <input
                                             type="text"
+                                            inputMode="text"
+                                            autoComplete="off"
                                             name="id_discord"
                                             placeholder="ID Discord"
                                             value={id_discord}
@@ -579,15 +622,22 @@ class EditProfile extends Component {
                                 </div>
 
                                 <div className="flex flex-col gap-1.5 md:col-span-2">
-                                    <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
-                                        ID Instagram
-                                    </label>
+                                    <div className="flex justify-between items-end">
+                                        <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
+                                            ID Instagram
+                                        </label>
+                                        <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
+                                            *Wajib
+                                        </span>
+                                    </div>
                                     <div className="relative">
                                         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-4.5" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M10 14.5C11.25 14.5 12.3125 14.0625 13.1875 13.1875C14.0625 12.3125 14.5 11.25 14.5 10C14.5 8.75 14.0625 7.6875 13.1875 6.8125C12.3125 5.9375 11.25 5.5 10 5.5C8.75 5.5 7.6875 5.9375 6.8125 6.8125C5.9375 7.6875 5.5 8.75 5.5 10C5.5 11.25 5.9375 12.3125 6.8125 13.1875C7.6875 14.0625 8.75 14.5 10 14.5ZM10 12.5C9.3 12.5 8.70833 12.2583 8.225 11.775C7.74167 11.2917 7.5 10.7 7.5 10C7.5 9.3 7.74167 8.70833 8.225 8.225C8.70833 7.74167 9.3 7.5 10 7.5C10.7 7.5 11.2917 7.74167 11.775 8.225C12.2583 8.70833 12.5 9.3 12.5 10C12.5 10.7 12.2583 11.2917 11.775 11.775C11.2917 12.2583 10.7 12.5 10 12.5ZM2 18C1.45 18 0.979167 17.8042 0.5875 17.4125C0.195833 17.0208 0 16.55 0 16V4C0 3.45 0.195833 2.97917 0.5875 2.5875C0.979167 2.19583 1.45 2 2 2H5.15L7 0H13L14.85 2H18C18.55 2 19.0208 2.19583 19.4125 2.5875C19.8042 2.97917 20 3.45 20 4V16C20 16.55 19.8042 17.0208 19.4125 17.4125C19.0208 17.8042 18.55 18 18 18H2ZM2 16H18V4H13.95L12.125 2H7.875L6.05 4H2V16Z" fill="#464652"/>
                                         </svg>
                                         <input
                                             type="text"
+                                            inputMode="text"
+                                            autoComplete="off"
                                             name="id_instagram"
                                             placeholder="ID Instagram"
                                             value={id_instagram}
@@ -609,9 +659,14 @@ class EditProfile extends Component {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                                 <div className="flex flex-col gap-1.5">
-                                    <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
-                                        Status Pendidikan
-                                    </label>
+                                    <div className="flex justify-between items-end">
+                                        <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
+                                            Status Pendidikan
+                                        </label>
+                                        <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
+                                            *Wajib
+                                        </span>
+                                    </div>
                                     <div className="relative">
                                         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-4.5" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M6.5 16C5.95 16 5.47917 15.8042 5.0875 15.4125C4.69583 15.0208 4.5 14.55 4.5 14V11H7.5V8.75C6.91667 8.71667 6.3625 8.5875 5.8375 8.3625C5.3125 8.1375 4.83333 7.8 4.4 7.35V6.25H3.25L0 3C0.6 2.23333 1.34167 1.69167 2.225 1.375C3.10833 1.05833 4 0.9 4.9 0.9C5.35 0.9 5.7875 0.933333 6.2125 1C6.6375 1.06667 7.06667 1.19167 7.5 1.375V0H19.5V13C19.5 13.8333 19.2083 14.5417 18.625 15.125C18.0417 15.7083 17.3333 16 16.5 16H6.5ZM9.5 11H15.5V13C15.5 13.2833 15.5958 13.5208 15.7875 13.7125C15.9792 13.9042 16.2167 14 16.5 14C16.7833 14 17.0208 13.9042 17.2125 13.7125C17.4042 13.5208 17.5 13.2833 17.5 13V2H9.5V2.6L15.5 8.6V10H14.1L11.25 7.15L11.05 7.35C10.8167 7.58333 10.5708 7.79167 10.3125 7.975C10.0542 8.15833 9.78333 8.3 9.5 8.4V11ZM4.1 4.25H6.4V6.4C6.6 6.53333 6.80833 6.625 7.025 6.675C7.24167 6.725 7.46667 6.75 7.7 6.75C8.08333 6.75 8.42917 6.69167 8.7375 6.575C9.04583 6.45833 9.35 6.25 9.65 5.95L9.85 5.75L8.45 4.35C7.96667 3.86667 7.425 3.50417 6.825 3.2625C6.225 3.02083 5.58333 2.9 4.9 2.9C4.56667 2.9 4.25 2.925 3.95 2.975C3.65 3.025 3.35 3.1 3.05 3.2L4.1 4.25ZM13.5 13H6.5V14H13.65C13.6 13.85 13.5625 13.6917 13.5375 13.525C13.5125 13.3583 13.5 13.1833 13.5 13ZM6.5 14C6.5 13.85 6.5 13.6917 6.5 13.525C6.5 13.3583 6.5 13.1833 6.5 13C6.5 13.1667 6.5 13.3333 6.5 13.5C6.5 13.6667 6.5 13.8333 6.5 14Z" fill="#464652"/>
@@ -640,15 +695,22 @@ class EditProfile extends Component {
                                 </div>
 
                                 <div className="flex flex-col gap-1.5">
-                                    <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
-                                        Nama Sekolah/Institusi
-                                    </label>
+                                    <div className="flex justify-between items-end">
+                                        <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
+                                            Nama Sekolah/Institusi
+                                        </label>
+                                        <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
+                                            *Wajib
+                                        </span>
+                                    </div>
                                     <div className="relative">
                                         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-4.5" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M0 18V4H4V0H14V8H18V18H10V14H8V18H0ZM2 16H4V14H2V16ZM2 12H4V10H2V12ZM2 8H4V6H2V8ZM6 12H8V10H6V12ZM6 8H8V6H6V8ZM6 4H8V2H6V4ZM10 12H12V10H10V12ZM10 8H12V6H10V8ZM10 4H12V2H10V4ZM14 16H16V14H14V16ZM14 12H16V10H14V12Z" fill="#464652"/>
                                         </svg>
                                         <input
                                             type="text"
+                                            inputMode="text"
+                                            autoComplete="organization"
                                             name="nama_sekolah"
                                             placeholder="Nama Sekolah/Institusi"
                                             value={nama_sekolah}
@@ -711,12 +773,17 @@ class EditProfile extends Component {
 
                                 <div className="flex flex-col gap-1.5 md:col-span-2 mt-2">
                                     <div className="flex justify-between items-center">
+                                        <div className="flex justify-between items-end">
                                         <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
                                             Twibbon (JPG/PNG, MAX 2MB)
                                         </label>
+                                        <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
+                                            *Wajib
+                                        </span>
+                                    </div>
                                         <button
                                             type="button"
-                                            onClick={() => window.open("https://www.twibbonize.com/twibbon-ittoday-2025", "_blank")}
+                                            onClick={() => window.open("https://drive.google.com/drive/folders/1NlgIwLuzBk7ss4ALHBdGdT4EfOkL-JLR", "_blank")}
                                             className="border-[1.5px] border-[#1A1C1C] bg-[#34399F] px-4.5 py-1.5 text-xs font-black uppercase text-white shadow-[3px_3px_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center gap-1.5"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -778,9 +845,10 @@ class EditProfile extends Component {
                             </Link>
                             <button
                                 type="submit"
-                                className="border-[2.25px] border-[#1A1C1C] bg-[#FCD400] px-9 py-3 text-xs font-black uppercase text-[#6E5C00] shadow-[3px_3px_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1C1C] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                disabled={isSubmitting}
+                                className={`border-[2.25px] border-[#1A1C1C] px-9 py-3 text-xs font-black uppercase shadow-[3px_3px_0_#1A1C1C] transition-all ${isSubmitting ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70' : 'bg-[#FCD400] text-[#6E5C00] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1C1C] active:translate-x-1 active:translate-y-1 active:shadow-none'}`}
                             >
-                                Simpan
+                                {isSubmitting ? 'Menyimpan...' : 'Simpan'}
                             </button>
                         </div>
                     </form>

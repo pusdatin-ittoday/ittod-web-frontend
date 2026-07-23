@@ -5,7 +5,6 @@ const REQUIRED_PROFILE_FIELDS = [
   ["birth_date", "Tanggal Lahir"],
   ["phone_number", "Nomor HP"],
   ["jenis_kelamin", "Jenis Kelamin"],
-  ["id_line", "ID Line"],
   ["id_discord", "ID Discord"],
   ["id_instagram", "ID Instagram"],
   ["pendidikan", "Status Pendidikan"],
@@ -20,13 +19,15 @@ export const getMissingProfileFields = (user = {}) =>
     return value === null || value === undefined || String(value).trim() === "";
   }).map(([, label]) => label);
 
-export const requireCompleteProfile = async (navigate) => {
+export const requireCompleteProfile = async (navigate, showAlert) => {
   const response = await getCurrentUser();
 
   if (!response.success || !response.data) {
-    window.alert(
-      "Data profil belum dapat diperiksa. Silakan coba lagi beberapa saat."
-    );
+    if (showAlert) {
+      await showAlert({ message: "Data profil belum dapat diperiksa. Silakan coba lagi beberapa saat." });
+    } else {
+      window.alert("Data profil belum dapat diperiksa. Silakan coba lagi beberapa saat.");
+    }
     navigate("/edit-profile");
     return false;
   }
@@ -34,11 +35,12 @@ export const requireCompleteProfile = async (navigate) => {
   const missingFields = getMissingProfileFields(response.data);
 
   if (missingFields.length > 0) {
-    window.alert(
-      `Lengkapi Data Diri dan Data Institusi sebelum mendaftar lomba atau bergabung dengan tim.\n\nData yang belum lengkap:\n- ${missingFields.join(
-        "\n- "
-      )}`
-    );
+    const alertMsg = `Lengkapi Data Diri dan Data Institusi sebelum mendaftar lomba atau bergabung dengan tim.\n\nData yang belum lengkap:\n- ${missingFields.join("\n- ")}`;
+    if (showAlert) {
+      await showAlert({ message: alertMsg });
+    } else {
+      window.alert(alertMsg);
+    }
     navigate("/edit-profile");
     return false;
   }

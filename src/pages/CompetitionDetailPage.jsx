@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FiFileText, FiUserPlus } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
 import NavbarNeo from '../components/layout/Navbar';
@@ -11,6 +11,10 @@ import CompetitionCategoryGrid from '../components/competition/CompetitionCatego
 import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
 import LoadingState from '../components/ui/LoadingState';
+import { registerTeam } from '../api/compe';
+import { requireCompleteProfile } from '../utils/profileCompletion';
+import { useAlert } from '../context/AlertContext';
+import { useAuth } from '../context/AuthContext';
 
 const formatWaLink = (num) => {
   if (!num) return '#';
@@ -28,14 +32,24 @@ const cleanDisplayNumber = (num) => {
     .trim();
 };
 
+const isIndividualParticipation = (value) => {
+  if (!value) return false;
+  const normalized = String(value).trim().toLowerCase();
+  return normalized === 'individual' || normalized === 'individu';
+};
+
 /**
  * Competition Detail Page — template tunggal, render berdasarkan :slug (id) dari API.
  * Layout 2 kolom: AboutChallengeCard + CompetitionInfoSidebar.
  */
 const CompetitionDetailPage = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
+  const { showAlert } = useAlert();
+  const { isAuthenticated } = useAuth();
   const [competition, setCompetition] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -56,6 +70,55 @@ const CompetitionDetailPage = () => {
     };
     fetchCompetition();
   }, [slug]);
+
+  const isIndividualCompetition = isIndividualParticipation(
+    competition?.participation_type ||
+      competition?.participationType ||
+      competition?.participant_type ||
+      competition?.participantType,
+  );
+
+  const handleRegisterClick = async () => {
+    if (!competition || isRegistering) return;
+
+    if (!isAuthenticated) {
+      navigate(`/login?redirectTo=${encodeURIComponent(`/competition/${slug}`)}`);
+      return;
+    }
+
+    if (!isIndividualCompetition) {
+      navigate(`/dashboard/lomba/${competition.id || slug}/register`);
+      return;
+    }
+
+    const canContinue = await requireCompleteProfile(navigate, showAlert);
+    if (!canContinue) return;
+
+    const confirmed = await showAlert({
+      isConfirm: true,
+      message: `Apakah kamu yakin ingin mendaftar ${competition.title}? Pendaftaran ini bersifat individu dan tidak menggunakan tim.`,
+    });
+
+    if (!confirmed) return;
+
+    setIsRegistering(true);
+    const response = await registerTeam({
+      competition_id: competition.id || slug,
+    });
+    setIsRegistering(false);
+
+    if (!response.success) {
+      await showAlert({
+        message: `Pendaftaran gagal: ${response.error}`,
+      });
+      return;
+    }
+
+    await showAlert({
+      message: 'Pendaftaran individu berhasil!',
+    });
+    navigate('/dashboard/ikut-lomba');
+  };
 
   if (loading) {
     return <LoadingState />;
@@ -125,10 +188,11 @@ const CompetitionDetailPage = () => {
                     </Button>
                     <Button
                       variant="indigo-solid"
-                      href={`/register-competition/${slug}`}
+                      onClick={handleRegisterClick}
+                      disabled={isRegistering}
                       className="flex flex-1 items-center justify-center gap-2 text-center uppercase tracking-wider"
                     >
-                      <FiUserPlus size={18} /> Daftar Sekarang
+                      <FiUserPlus size={18} /> {isRegistering ? 'Mendaftar...' : 'Daftar Sekarang'}
                     </Button>
                   </div>
 

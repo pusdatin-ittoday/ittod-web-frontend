@@ -9,6 +9,7 @@ import { getCurrentUser } from '../api/user';
 import { getPublicEventById } from '../api/eventPublic';
 import { registerTeam } from '../api/compe';
 import { useRegisStatus } from '../hooks/useRegisStatus';
+import { useAlert } from '../context/AlertContext';
 
 const EventDetail = () => {
   const { eventId } = useParams();
@@ -17,6 +18,7 @@ const EventDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isRegistering, setIsRegistering] = useState(false);
+  const { showAlert } = useAlert();
 
   const isRegisOpen = useRegisStatus(eventId);
 
@@ -68,9 +70,10 @@ const EventDetail = () => {
       if (isRegisOpen) {
         if (eventData?.type === 'competition') {
           if (eventData.participation_type === 'individual') {
-            const confirmed = window.confirm(
-              `Apakah kamu yakin ingin mendaftar ${eventData.title}? Pendaftaran ini bersifat individu dan tidak menggunakan tim.`
-            );
+            const confirmed = await showAlert({
+              message: `Apakah kamu yakin ingin mendaftar ${eventData.title}? Pendaftaran ini bersifat individu dan tidak menggunakan tim.`,
+              isConfirm: true
+            });
 
             if (!confirmed) {
               return;
@@ -86,13 +89,10 @@ const EventDetail = () => {
                 throw new Error(response.error || 'Gagal mendaftar');
               }
 
-              alert('Pendaftaran individu berhasil!');
+              await showAlert({ message: 'Pendaftaran individu berhasil!' });
               navigate('/dashboard/ikut-lomba');
             } catch (registrationError) {
-              alert(
-                registrationError.message ||
-                  'Terjadi kesalahan saat mendaftar kompetisi'
-              );
+              await showAlert({ message: registrationError.message || 'Terjadi kesalahan saat mendaftar kompetisi' });
             } finally {
               setIsRegistering(false);
             }

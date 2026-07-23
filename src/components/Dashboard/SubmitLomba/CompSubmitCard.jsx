@@ -4,6 +4,7 @@ import { TfiClipboard } from "react-icons/tfi";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser, getUserCompetitions } from "../../../api/user";
 import { requireCompleteProfile } from "../../../utils/profileCompletion";
+import { useAlert } from "../../../context/AlertContext";
 
 // Removed hardcoded eventsData
 
@@ -86,6 +87,7 @@ const CardSubmit = ({ title, image, submitLink }) => {
 
 const CompSubmitCard = ({ variant = "default" }) => {
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [userData, setUserData] = useState({ name: "" });
   const [competitions, setCompetitions] = useState([]);
@@ -94,7 +96,7 @@ const CompSubmitCard = ({ variant = "default" }) => {
   const [noCompetitions, setNoCompetitions] = useState(false);
 
   const handleJoinTeam = async () => {
-    if (await requireCompleteProfile(navigate)) {
+    if (await requireCompleteProfile(navigate, showAlert)) {
       navigate("/dashboard/ikut-lomba", { state: { showJoinForm: true } });
     }
   };
@@ -137,7 +139,7 @@ const CompSubmitCard = ({ variant = "default" }) => {
               id: comp.competitionId,
               title: comp.competitionName,
               image: comp.logo_url,
-              submitLink: `submit-competition/${comp.competitionId}`,
+              submitLink: `dashboard/lomba/${comp.competitionId}/submit`,
               isSubmitted: !!comp.submissionData
             }));
 

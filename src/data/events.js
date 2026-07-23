@@ -77,15 +77,15 @@ export const landingStats = [
  * Timeline items untuk landing page
  */
 export const timelineEvents = [
-  { title: "Bootcamp", date: "24 & 31 Agustus 2026", type: "event" },
-  { title: "Workshop", date: "7 September 2026", type: "event" },
-  { title: "Seminar Nasional", date: "14 September 2026", type: "event" },
+  { title: "Bootcamp", date: "5 & 12 September 2026", type: "event" },
+  { title: "Workshop", date: "19 September 2026", type: "event" },
+  { title: "Seminar Nasional", date: "20 September 2026", type: "event" },
   { title: "Final & Awarding", date: "27 September 2026", type: "event" },
 ];
 
 export const timelineCompetitions = [
-  { title: "Pendaftaran Pertama", date: "5 Juli - 19 Juli 2026", type: "competition" },
-  { title: "Pendaftaran Kedua", date: "21 Juli - 10 Agustus 2026", type: "competition" },
+  { title: "Pendaftaran Batch Pertama", date: "17 - 30 Juli 2026", type: "competition" },
+  { title: "Pendaftaran Batch Kedua", date: "31 Juli - 10 Agustus 2026", type: "competition" },
   { title: "Pengumuman Finalis", date: "20 September 2026", type: "competition" },
   { title: "Final & Awarding", date: "3 Oktober 2026", type: "competition" },
 ];

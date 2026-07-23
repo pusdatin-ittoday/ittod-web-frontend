@@ -12,10 +12,7 @@ import { DEFAULT_CONTACTS } from '../../data/contacts';
 const socialLinks = [
   { icon: '/instagram.svg', url: 'https://www.instagram.com/ittoday_ipb/', label: 'Instagram' },
   { icon: '/linkedin.svg', url: 'https://www.linkedin.com/company/ittoday/', label: 'LinkedIn' },
-  { icon: '/x.svg', url: 'https://x.com/ittoday_ipb', label: 'X' },
   { icon: '/tiktok.svg', url: 'https://www.tiktok.com/@ittoday_ipb', label: 'TikTok' },
-  { icon: '/facebook.svg', url: 'https://www.facebook.com/people/Ittoday-Ipb/', label: 'Facebook' },
-  { icon: '/line.svg', url: 'https://line.me/R/ti/p/@ukd0443x', label: 'LINE' },
 ];
 
 const FooterNeo = () => {
@@ -120,7 +117,7 @@ const FooterNeo = () => {
               <a href={`mailto:${DEFAULT_CONTACTS.email}`} className="hover:text-white transition-colors">
                 {DEFAULT_CONTACTS.email}
               </a>
-              <a href={`tel:+${DEFAULT_CONTACTS.phone}`} className="hover:text-white transition-colors">
+              <a href={`https://wa.me/${DEFAULT_CONTACTS.phone}`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                 {DEFAULT_CONTACTS.formattedPhone}
               </a>
             </div>
@@ -131,11 +128,6 @@ const FooterNeo = () => {
         {/* Bottom Bar */}
         <div className="flex flex-col items-center justify-between gap-4 border-t-2 border-[#343735] pt-6 font-inter text-[10px] font-bold uppercase tracking-widest text-gray-500 md:flex-row">
           <p>© 2026 IT TODAY</p>
-          <div className="flex items-center gap-8">
-            <Link to="#" className="hover:text-gray-300 transition-colors">PRIVACY</Link>
-            <Link to="#" className="hover:text-gray-300 transition-colors">TERMS</Link>
-            <Link to="#" className="hover:text-gray-300 transition-colors">BRAND</Link>
-          </div>
         </div>
       </div>
     </footer>

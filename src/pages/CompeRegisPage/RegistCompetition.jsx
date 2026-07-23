@@ -8,10 +8,13 @@ import Sidebar from "../../components/Dashboard/Sidebar.jsx";
 import Footer from "../../components/Footer.jsx";
 import FallbackNotFound from "../Fallback/FallbackNotFound.jsx";
 import { requireCompleteProfile } from "../../utils/profileCompletion.js";
+import { useAlert } from "../../context/AlertContext.jsx";
 
 const RegistCompetition = () => {
     const navigate = useNavigate();
-    const { competitionSlug } = useParams(); // e.g. "gametoday", "hacktoday"
+    const { competitionSlug, competitionId: routeCompetitionId } = useParams(); // e.g. "gametoday", "hacktoday"
+    const activeCompetitionId = competitionSlug || routeCompetitionId;
+    const { showAlert: showGlobalAlert } = useAlert();
 
     const [NamaTim, setNamaTim] = useState("");
     const [competitionId, setCompetitionId] = useState(null);
@@ -30,14 +33,14 @@ const RegistCompetition = () => {
 
     useEffect(() => {
         const guardTeamRegistration = async () => {
-            const isComplete = await requireCompleteProfile(navigate);
+            const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
             if (isComplete) {
                 setIsCheckingProfile(false);
             }
         };
 
         guardTeamRegistration();
-    }, [navigate]);
+    }, [navigate, showGlobalAlert]);
 
     useEffect(() => {
         const fetchCompetitionInfo = async () => {
@@ -45,7 +48,7 @@ const RegistCompetition = () => {
             const res = await getPublicEvents("competition");
             if (res.success && res.data) {
                 const event = res.data.find(
-                    (e) => e.id.toLowerCase() === competitionSlug?.toLowerCase()
+                    (e) => e.id.toLowerCase() === activeCompetitionId?.toLowerCase()
                 );
                 if (event) {
                     setCompetitionId(event.id);
@@ -61,7 +64,7 @@ const RegistCompetition = () => {
             setIsLoading(false);
         };
         fetchCompetitionInfo();
-    }, [competitionSlug]);
+    }, [activeCompetitionId]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -76,7 +79,7 @@ const RegistCompetition = () => {
         // Prevent multiple submissions
         if (isSubmitting) return;
 
-        if (!(await requireCompleteProfile(navigate))) {
+        if (!(await requireCompleteProfile(navigate, showGlobalAlert))) {
             return;
         }
 
@@ -230,6 +233,19 @@ const RegistCompetition = () => {
                                     ? "Pendaftaran ini bersifat individu dan tidak menggunakan tim."
                                     : "Kamu akan secara otomatis menjadi ketua tim."}
                             </p>
+
+                            {participationType === "team" && (
+                                <div className="mt-4 border-[3px] border-black bg-[#e8fbef] p-4 text-xs font-bold text-[#156b3b] shadow-[4px_4px_0_#191b1a]">
+                                    Ingin bergabung ke tim yang sudah dibuat oleh temanmu?{" "}
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate("/dashboard/ikut-lomba", { state: { showJoinForm: true } })}
+                                        className="underline font-black text-[#3f46b8] hover:text-black cursor-pointer"
+                                    >
+                                        Klik di sini untuk Join Team menggunakan Kode Tim
+                                    </button>
+                                </div>
+                            )}
 
                             <form
                                 onSubmit={handleSubmit}

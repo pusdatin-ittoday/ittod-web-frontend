@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion as Motion } from "motion/react";
-import { getCompetitionTimelines } from "../../api/eventPublic";
-import { timelineEvents, timelineCompetitions as staticTimelineCompetitions } from "../../data/events";
+import { getCompetitionTimelines, getEventTimelines } from "../../api/eventPublic";
+import { timelineCompetitions as staticTimelineCompetitions } from "../../data/events";
+import { parseWIB } from "../../utils/dateFormatter";
 import {
   lineDraw,
   popIn,
@@ -19,12 +20,15 @@ const COMPETITION_TIMELINE_EMPTY =
  */
 const TimelineSection = () => {
   const [timelineCompetitions, setTimelineCompetitions] = useState(staticTimelineCompetitions);
+  const [timelineEvents, setTimelineEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const formatDate = (dateString, endDateString = null) => {
     if (!dateString) return "";
-    const date = new Date(dateString);
+    const date = parseWIB(dateString);
+    if (!date || Number.isNaN(date.getTime())) return "";
+
     const options = {
       day: "numeric",
       month: "long",
@@ -33,25 +37,39 @@ const TimelineSection = () => {
     };
     const formatter = new Intl.DateTimeFormat("id-ID", options);
 
+    const getLocalDateString = (d) =>
+      new Intl.DateTimeFormat("id-ID", {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+        timeZone: "Asia/Jakarta",
+      }).format(d);
+
+    const getMonthYearString = (d) =>
+      new Intl.DateTimeFormat("id-ID", {
+        month: "long",
+        year: "numeric",
+        timeZone: "Asia/Jakarta",
+      }).format(d);
+
+    const getDayString = (d) =>
+      new Intl.DateTimeFormat("id-ID", {
+        day: "numeric",
+        timeZone: "Asia/Jakarta",
+      }).format(d);
+
     if (endDateString) {
-      const endDate = new Date(endDateString);
-
-      const getMonthYearString = (d) =>
-        new Intl.DateTimeFormat("id-ID", {
-          month: "long",
-          year: "numeric",
-          timeZone: "Asia/Jakarta",
-        }).format(d);
-      const getDayString = (d) =>
-        new Intl.DateTimeFormat("id-ID", {
-          day: "numeric",
-          timeZone: "Asia/Jakarta",
-        }).format(d);
-
-      if (getMonthYearString(date) === getMonthYearString(endDate)) {
-        return `${getDayString(date)} - ${getDayString(endDate)} ${getMonthYearString(date)}`;
+      const endDate = parseWIB(endDateString);
+      if (endDate && !Number.isNaN(endDate.getTime())) {
+        if (getLocalDateString(date) === getLocalDateString(endDate)) {
+          return formatter.format(date);
+        } else {
+          if (getMonthYearString(date) === getMonthYearString(endDate)) {
+            return `${getDayString(date)} - ${getDayString(endDate)} ${getMonthYearString(date)}`;
+          }
+          return `${formatter.format(date)} - ${formatter.format(endDate)}`;
+        }
       }
-      return `${formatter.format(date)} - ${formatter.format(endDate)}`;
     }
 
     return formatter.format(date);
@@ -59,24 +77,43 @@ const TimelineSection = () => {
 
   useEffect(() => {
     const fetchTimelines = async () => {
+      setLoading(true);
       setError(false);
       try {
-        // Fetch global competition timelines
-        const compRes = await getCompetitionTimelines();
+        const [compRes, eventRes] = await Promise.all([
+          getCompetitionTimelines(),
+          getEventTimelines()
+        ]);
+
         if (compRes.success && compRes.data) {
           if (compRes.data.length > 0) {
             const mapped = compRes.data.map((item) => ({
               id: item.id,
               title: item.title,
               date: formatDate(item.start_date, item.end_date),
-              dateObj: new Date(item.start_date),
+              dateObj: parseWIB(item.start_date),
             }));
             mapped.sort((a, b) => a.dateObj - b.dateObj);
             setTimelineCompetitions(mapped);
           }
         }
+
+        if (eventRes.success && eventRes.data) {
+          const nonCompEvents = eventRes.data.filter(item => item.event?.type !== 'competition');
+          const mapped = nonCompEvents.map((item) => ({
+            id: item.id,
+            title: item.title,
+            date: formatDate(item.date, item.end_date),
+            dateObj: parseWIB(item.date),
+          }));
+          mapped.sort((a, b) => a.dateObj - b.dateObj);
+          setTimelineEvents(mapped);
+        }
       } catch (err) {
         console.error("Error loading timelines:", err);
+        setError(true);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -124,49 +161,70 @@ const TimelineSection = () => {
                 Main Events
               </h3>
               <Motion.div className="space-y-6" variants={staggerContainer}>
-                {timelineEvents.map((item, index) => (
-                  <Motion.div
-                    key={index}
-                    className="group flex items-start gap-4"
-                    variants={revealUp}
+                {loading ? (
+                  <div className="flex justify-center py-10">
+                    <Motion.div
+                      className="h-8 w-8 rounded-full border-4 border-black border-t-[#ffd400]"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 0.8,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    />
+                  </div>
+                ) : timelineEvents.length === 0 ? (
+                  <Motion.p
+                    variants={popIn}
+                    className="pl-4 font-inter text-sm italic text-gray-500"
                   >
-                    {/* Bullet */}
-                    <div className="relative mt-0.5 flex w-4 shrink-0 justify-center">
-                      <Motion.div
-                        variants={timelineDot}
-                        className={`z-10 h-4 w-4 rounded-full border-2 border-[#171918] transition-transform duration-200 group-hover:scale-125 ${
-                          index === timelineEvents.length - 1
-                            ? "bg-[#4246b8]"
-                            : "bg-[#ffd400]"
-                        }`}
-                      />
-                      {index < timelineEvents.length - 1 && (
+                    Belum ada timeline main event yang tersedia
+                  </Motion.p>
+                ) : (
+                  timelineEvents.map((item, index) => (
+                    <Motion.div
+                      key={item.id || index}
+                      className="group flex items-start gap-4"
+                      variants={revealUp}
+                    >
+                      {/* Bullet */}
+                      <div className="relative mt-0.5 flex w-4 shrink-0 justify-center">
                         <Motion.div
-                          variants={lineDraw}
-                          className={`absolute top-3 h-9 w-[3px] ${
+                          variants={timelineDot}
+                          className={`z-10 h-4 w-4 rounded-full border-2 border-[#171918] transition-transform duration-200 group-hover:scale-125 ${
                             index === timelineEvents.length - 1
                               ? "bg-[#4246b8]"
                               : "bg-[#ffd400]"
                           }`}
                         />
-                      )}
-                    </div>
-                    <div>
-                      <p
-                        className={`font-inter text-sm font-black uppercase sm:text-base ${
-                          index === timelineEvents.length - 1
-                            ? "text-[#4246b8]"
-                            : "text-[#171918]"
-                        }`}
-                      >
-                        {item.title}
-                      </p>
-                      <p className="mt-1 font-inter text-xs font-medium text-[#4d505c] sm:text-sm">
-                        {item.date}
-                      </p>
-                    </div>
-                  </Motion.div>
-                ))}
+                        {index < timelineEvents.length - 1 && (
+                          <Motion.div
+                            variants={lineDraw}
+                            className={`absolute top-3 h-9 w-[3px] ${
+                              index === timelineEvents.length - 1
+                                ? "bg-[#4246b8]"
+                                : "bg-[#ffd400]"
+                            }`}
+                          />
+                        )}
+                      </div>
+                      <div>
+                        <p
+                          className={`font-inter text-sm font-black uppercase sm:text-base ${
+                            index === timelineEvents.length - 1
+                              ? "text-[#4246b8]"
+                              : "text-[#171918]"
+                          }`}
+                        >
+                          {item.title}
+                        </p>
+                        <p className="mt-1 font-inter text-xs font-medium text-[#4d505c] sm:text-sm">
+                          {item.date}
+                        </p>
+                      </div>
+                    </Motion.div>
+                  ))
+                )}
               </Motion.div>
             </div>
 

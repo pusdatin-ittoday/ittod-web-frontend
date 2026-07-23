@@ -7,6 +7,7 @@ import { getPublicEvents } from "../../../api/eventPublic";
 import { registerTeam } from "../../../api/compe";
 import PaginationControls from "../PaginationControls";
 import { requireCompleteProfile } from "../../../utils/profileCompletion";
+import { useAlert } from "../../../context/AlertContext";
 
 const NEO_CARD_COLORS = [
   "bg-[#e8fbef] text-[#156b3b]",
@@ -113,6 +114,7 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
 const CompRegisCard = ({ variant = "default" }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { showAlert } = useAlert();
   const [showForm, setShowForm] = useState(false);
   const [teamId, setTeamId] = useState('');
   const [loadingJoin, setLoadingJoin] = useState(false);
@@ -129,13 +131,14 @@ const CompRegisCard = ({ variant = "default" }) => {
   const [currentPage, setCurrentPage] = useState(0);
 
   const handleRegisterIndividual = async (eventId, eventTitle) => {
-    if (!(await requireCompleteProfile(navigate))) {
+    if (!(await requireCompleteProfile(navigate, showAlert))) {
       return;
     }
 
-    const confirmed = window.confirm(
-      `Apakah kamu yakin ingin mendaftar ${eventTitle}? Pendaftaran ini bersifat individu dan tidak menggunakan tim.`
-    );
+    const confirmed = await showAlert({
+      message: `Apakah kamu yakin ingin mendaftar ${eventTitle}? Pendaftaran ini bersifat individu dan tidak menggunakan tim.`,
+      isConfirm: true
+    });
 
     if (!confirmed) {
       return;
@@ -145,7 +148,7 @@ const CompRegisCard = ({ variant = "default" }) => {
       setLoadingRegister(true);
       const userRes = await getCurrentUser();
       if (!userRes.success || !userRes.data) {
-        alert("Gagal mendapatkan data user");
+        await showAlert({ message: "Gagal mendapatkan data user" });
         return;
       }
       const user = userRes.data;
@@ -156,13 +159,13 @@ const CompRegisCard = ({ variant = "default" }) => {
       });
 
       if (res.success) {
-        alert("Pendaftaran berhasil!");
+        await showAlert({ message: "Pendaftaran berhasil!" });
         window.location.href = "/dashboard/ikut-lomba";
       } else {
-        alert(res.error || "Gagal mendaftar");
+        await showAlert({ message: res.error || "Gagal mendaftar" });
       }
     } catch {
-      alert("Terjadi kesalahan sistem saat mendaftar");
+      await showAlert({ message: "Terjadi kesalahan sistem saat mendaftar" });
     } finally {
       setLoadingRegister(false);
     }
@@ -188,7 +191,7 @@ const CompRegisCard = ({ variant = "default" }) => {
   );
 
   const handleRegisterTeam = async (eventId) => {
-    if (!(await requireCompleteProfile(navigate))) {
+    if (!(await requireCompleteProfile(navigate, showAlert))) {
       return;
     }
 
@@ -198,7 +201,7 @@ const CompRegisCard = ({ variant = "default" }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!(await requireCompleteProfile(navigate))) {
+    if (!(await requireCompleteProfile(navigate, showAlert))) {
       return;
     }
 
@@ -206,14 +209,14 @@ const CompRegisCard = ({ variant = "default" }) => {
 
     try {
       await joinTeam(teamId);
-      alert("Berhasil bergabung dengan tim!");
+      await showAlert({ message: "Berhasil bergabung dengan tim!" });
       setTeamId('');
       setShowForm(false);
       navigate('/dashboard/beranda');
     } catch (error) {
       console.error(error);
       const errorMsg = error.response?.data?.error || error.message || "Gagal bergabung dengan tim. Pastikan kode tim benar.";
-      alert(errorMsg);
+      await showAlert({ message: errorMsg });
     } finally {
       setLoadingJoin(false);
     }
@@ -225,7 +228,7 @@ const CompRegisCard = ({ variant = "default" }) => {
       return;
     }
 
-    if (!(await requireCompleteProfile(navigate))) {
+    if (!(await requireCompleteProfile(navigate, showAlert))) {
       return;
     }
 

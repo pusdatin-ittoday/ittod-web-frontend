@@ -4,6 +4,10 @@ import { getCurrentUser, getUserCompetitions, getAnnouncements } from "../../../
 import { postCompePayment } from "../../../api/compeFile";
 import CompCardNeo from "./CompCardNeo";
 import { requireCompleteProfile } from "../../../utils/profileCompletion";
+import { getCompetitionTimelines } from "../../../api/eventPublic";
+import TextWithLinks from "../../../utils/TextWithLinks";
+import { useAlert } from "../../../context/AlertContext";
+import CalendarWidget from "./CalendarWidget";
 
 const BellIcon = () => (
     <svg className="w-[36px] h-[32px] flex-shrink-0" viewBox="0 0 52 47" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,10 +29,12 @@ const CompListNeo = () => {
     const [currentUser, setCurrentUser] = useState("Crew");
     const [announcements, setAnnouncements] = useState([]);
     const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+    const [globalCompTimelines, setGlobalCompTimelines] = useState([]);
     const navigate = useNavigate();
+    const { showAlert } = useAlert();
 
     const handleJoinTeam = async () => {
-        if (await requireCompleteProfile(navigate)) {
+        if (await requireCompleteProfile(navigate, showAlert)) {
             navigate("/dashboard/ikut-lomba", { state: { showJoinForm: true } });
         }
     };
@@ -178,7 +184,7 @@ const CompListNeo = () => {
     };
 
     const handleTwibbonClick = () => {
-        window.open("https://www.twibbonize.com/twibbon-ittoday-2025", "_blank");
+        window.open("https://drive.google.com/drive/folders/1NlgIwLuzBk7ss4ALHBdGdT4EfOkL-JLR", "_blank");
     };
 
     useEffect(() => {
@@ -186,11 +192,16 @@ const CompListNeo = () => {
             setLoading(true);
             setLoadingAnnouncements(true);
             try {
-                const [userResponse, competitionsResponse, announcementsResponse] = await Promise.all([
+                const [userResponse, competitionsResponse, announcementsResponse, compTimelineResponse] = await Promise.all([
                     getCurrentUser(),
                     getUserCompetitions(),
-                    getAnnouncements()
+                    getAnnouncements(),
+                    getCompetitionTimelines()
                 ]);
+
+                if (compTimelineResponse.success) {
+                    setGlobalCompTimelines(compTimelineResponse.data);
+                }
 
                 let name = "Crew";
                 let isUserDataComplete = false;
@@ -286,11 +297,14 @@ const CompListNeo = () => {
                                 </p>
                             </div>
                         ) : filteredCompetitions.length > 0 ? (
-                            filteredCompetitions.map(([key, data]) => (
+                            filteredCompetitions.map(([key, comp]) => (
                                 <CompCardNeo
                                     key={key}
                                     compKey={key}
-                                    data={data}
+                                    data={{
+                                        ...comp,
+                                        timelines: globalCompTimelines.length > 0 ? globalCompTimelines : comp.timelines
+                                    }}
                                     currentUser={currentUser}
                                     onVerify={handleVerify}
                                 />
@@ -329,67 +343,74 @@ const CompListNeo = () => {
                 </div>
             </div>
 
-            <aside className="w-full xl:w-[360px] border-[4px] border-[#1A1C1C] bg-[#FCD400] p-5 sm:p-7 shadow-[6px_6px_0_0_#1A1C1C] flex flex-col gap-5 flex-shrink-0 self-stretch xl:self-auto">
-                <div className="flex items-center gap-2.5">
-                    <BellIcon />
-                    <h2 className="break-words text-xl font-extrabold uppercase text-[#1A1C1C] tracking-tight leading-none sm:text-3xl">
-                        Announcements
-                    </h2>
-                </div>
+            <div className="flex flex-col gap-6 w-full xl:w-[360px] flex-shrink-0 self-stretch xl:self-auto">
+                <aside className="w-full border-[4px] border-[#1A1C1C] bg-[#FCD400] p-5 sm:p-7 shadow-[6px_6px_0_0_#1A1C1C] flex flex-col gap-5">
+                    <div className="flex items-center gap-2.5">
+                        <BellIcon />
+                        <h2 className="break-words text-xl font-extrabold uppercase text-[#1A1C1C] tracking-tight leading-none sm:text-3xl">
+                            Announcements
+                        </h2>
+                    </div>
 
-                <div className="space-y-5 overflow-y-auto max-h-[600px] px-3 py-2 custom-scrollbar">
-                    {(() => {
-                        const visibleAnnouncements = announcements;
+                    <div className="space-y-5 overflow-y-auto max-h-[600px] px-3 py-2 custom-scrollbar">
+                        {(() => {
+                            const visibleAnnouncements = announcements;
 
-                        if (loadingAnnouncements) {
-                            return <div className="text-center font-bold text-black py-4">Loading...</div>;
-                        }
-                        if (visibleAnnouncements.length === 0) {
-                            return (
-                                <div className="border-[3px] border-[#1A1C1C] bg-white p-4 shadow-[4px_4px_0_0_#1A1C1C] text-center font-bold text-xs">
-                                    Belum ada pengumuman.
-                                </div>
-                            );
-                        }
-
-                        return visibleAnnouncements.slice(0, 2).map((announcement, idx) => {
-                            const tilt = idx % 2 === 0 ? "-rotate-[0.6deg]" : "rotate-[0.8deg]";
-                            const cardBg = idx % 2 === 0 ? "bg-white" : "bg-[#E2E2E2]";
-                            return (
-                                <div
-                                    key={announcement.id}
-                                    className={`border-[3px] border-[#1A1C1C] p-4 shadow-[4px_4px_0_0_#1A1C1C] transform ${tilt} ${cardBg} transition duration-300`}
-                                >
-                                    <h4 className="text-base sm:text-lg font-bold leading-tight text-black mb-1.5 font-space-grotesk">
-                                        {announcement.title}
-                                    </h4>
-                                    <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 opacity-60 mb-2 font-space-grotesk">
-                                        <span>{announcement.event ? announcement.event.title.toUpperCase() : "UMUM"}</span>
-                                        <span>•</span>
-                                        <span>
-                                            {announcement.updated_at
-                                                ? new Date(announcement.updated_at).toLocaleDateString()
-                                                : ""}
-                                        </span>
+                            if (loadingAnnouncements) {
+                                return <div className="text-center font-bold text-black py-4">Loading...</div>;
+                            }
+                            if (visibleAnnouncements.length === 0) {
+                                return (
+                                    <div className="border-[3px] border-[#1A1C1C] bg-white p-4 shadow-[4px_4px_0_0_#1A1C1C] text-center font-bold text-xs">
+                                        Belum ada pengumuman.
                                     </div>
-                                    <p className="text-xs font-semibold leading-relaxed text-[#464652] font-hanken-grotesk">
-                                        {announcement.description}
-                                    </p>
-                                </div>
-                            );
-                        });
-                    })()}
-                </div>
+                                );
+                            }
 
-                <div className="mt-auto text-center">
-                    <button
-                        onClick={() => navigate('/dashboard/pengumuman')}
-                        className="text-base font-space-grotesk text-[#1A1C1C] underline hover:text-[#34399F] transition duration-200"
-                    >
-                        VIEW ALL BROADCASTS
-                    </button>
+                            return visibleAnnouncements.map((announcement, idx) => {
+                                const tilt = idx % 2 === 0 ? "-rotate-[0.6deg]" : "rotate-[0.8deg]";
+                                const cardBg = idx % 2 === 0 ? "bg-white" : "bg-[#E2E2E2]";
+                                return (
+                                    <div
+                                        key={announcement.id}
+                                        className={`border-[3px] border-[#1A1C1C] p-4 shadow-[4px_4px_0_0_#1A1C1C] transform ${tilt} ${cardBg} transition duration-300`}
+                                    >
+                                        <h4 className="text-base sm:text-lg font-bold leading-tight text-black mb-1.5 font-space-grotesk">
+                                            {announcement.title}
+                                        </h4>
+                                        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 opacity-60 mb-2 font-space-grotesk">
+                                            <span>{announcement.event ? announcement.event.title.toUpperCase() : "UMUM"}</span>
+                                            <span>•</span>
+                                            <span>
+                                                {announcement.updated_at
+                                                    ? new Date(announcement.updated_at).toLocaleDateString()
+                                                    : ""}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs font-semibold leading-relaxed text-[#464652] font-hanken-grotesk whitespace-pre-wrap">
+                                            <TextWithLinks text={announcement.description} linkClassName="text-blue-600 hover:text-blue-800 underline" />
+                                        </p>
+                                    </div>
+                                );
+                            });
+                        })()}
+                    </div>
+
+                    <div className="mt-4 sm:mt-auto text-center">
+                        <button
+                            onClick={() => navigate('/dashboard/pengumuman')}
+                            className="text-base font-space-grotesk text-[#1A1C1C] underline hover:text-[#34399F] transition duration-200"
+                        >
+                            VIEW ALL BROADCASTS
+                        </button>
+                    </div>
+                </aside>
+                
+                {/* Calendar section below announcements */}
+                <div className="w-full">
+                    <CalendarWidget />
                 </div>
-            </aside>
+            </div>
         </div>
     );
 };

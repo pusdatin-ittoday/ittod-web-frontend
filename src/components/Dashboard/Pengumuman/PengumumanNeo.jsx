@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAnnouncements, getUserCompetitions } from "../../../api/user";
+import { getAnnouncements, getUserCompetitions, markAnnouncementsAsRead } from "../../../api/user";
 import { getPublicEvents } from "../../../api/eventPublic";
 import AnnouncementCard from "./AnnouncementCard";
 import AnnouncementSidebar from "./AnnouncementSidebar";
@@ -63,6 +63,7 @@ const PengumumanNeo = () => {
                     getAnnouncements(),
                     getUserCompetitions(),
                     getPublicEvents(),
+                    markAnnouncementsAsRead() // Mark as read when the page is loaded
                 ]);
 
                 // 1. Process announcements
@@ -238,6 +239,7 @@ const PengumumanNeo = () => {
                                     date={ann.updated_at || ann.created_at}
                                     category={cat}
                                     eventTitle={ann.event?.title}
+                                    isPinned={!!ann.is_pinned}
                                 />
                             );
                         })
