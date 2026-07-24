@@ -71,7 +71,7 @@ const MainEventSection = () => {
           >
             {events.map((event) => (
               <MotionLink
-                to={`/event/${event.id}`}
+                to={`/event/${event.slug || event.id}`}
                 key={event.id}
                 variants={popIn}
                 whileHover={hoverLift}

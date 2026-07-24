@@ -221,7 +221,7 @@ const CompetitionSection = () => {
             {competitions.map((comp) => {
               return (
                 <MotionLink
-                  to={`/competition/${comp.id}`}
+                  to={`/competition/${comp.slug || comp.id}`}
                   key={comp.id}
                   variants={popIn}
                   whileHover={hoverLift}

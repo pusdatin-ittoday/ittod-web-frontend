@@ -63,7 +63,7 @@ const FooterNeo = () => {
             <ul className="space-y-4">
               {footerEvents.map((item) => (
                 <li key={item.id}>
-                  <Link to={`/event/${item.id}`} className="font-inter text-[13px] font-medium text-gray-300 transition-colors duration-200 hover:text-yellow-neo">
+                  <Link to={`/event/${item.slug || item.id}`} className="font-inter text-[13px] font-medium text-gray-300 transition-colors duration-200 hover:text-yellow-neo">
                     {item.title}
                   </Link>
                 </li>
@@ -78,7 +78,7 @@ const FooterNeo = () => {
               {footerCompetitions.map((item) => (
                 <Link 
                   key={item.id} 
-                  to={`/competition/${item.id}`} 
+                  to={`/competition/${item.slug || item.id}`} 
                   className="font-inter text-[13px] font-medium text-gray-300 transition-colors duration-200 hover:text-yellow-neo"
                 >
                   {item.title}

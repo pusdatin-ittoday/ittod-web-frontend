@@ -31,7 +31,7 @@ const Event = () => {
               title={evt.title}
               description={evt.description}
               imageSrc={evt.logo_url}
-              linkHref={`/event/${evt.id}`}
+              linkHref={`/event/${evt.slug || evt.id}`}
             />
           ))}
         </div>

@@ -12,9 +12,9 @@
  */
 
 const EVENT_GALLERY_MAP = {
-  'national-seminar': {
+  'seminar-nasional-it-today': {
     folder: 'national-seminar',
-    label: 'Seminar',
+    label: 'Seminar Nasional IT Today',
   },
   workshop: {
     folder: 'workshop',

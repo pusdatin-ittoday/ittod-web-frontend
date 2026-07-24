@@ -105,22 +105,6 @@ const EventDetailPage = () => {
                     About The {event.title}
                   </h2>
 
-                  {/*
-                   * Tugas 3: Kondisi khusus codetoday.
-                   * Galeri foto TIDAK ditampilkan jika slug adalah 'codetoday'.
-                   * Untuk semua slug lain, galeri dirender jika data tersedia.
-                   */}
-                  {slug !== 'codetoday' && (() => {
-                    const galleryImages = getEventGalleryImages(slug);
-                    const galleryLabel = getEventGalleryLabel(slug);
-                    return galleryImages ? (
-                      <EventGallery
-                        images={galleryImages}
-                        title={`Dokumentasi ${galleryLabel}`}
-                      />
-                    ) : null;
-                  })()}
-
                   <p className="mb-9 whitespace-pre-wrap font-inter text-sm leading-relaxed text-[#2e3238] md:text-base">
                     {event.description}
                   </p>
@@ -168,6 +152,20 @@ const EventDetailPage = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Gallery — di bawah About card, terbatas kolom kiri, tidak muncul untuk codetoday */}
+                {slug !== 'codetoday' && (() => {
+                  const galleryImages = getEventGalleryImages(slug);
+                  const galleryLabel = getEventGalleryLabel(slug);
+                  return galleryImages ? (
+                    <div className="mt-8 overflow-hidden">
+                      <EventGallery
+                        images={galleryImages}
+                        title={`Dokumentasi ${galleryLabel}`}
+                      />
+                    </div>
+                  ) : null;
+                })()}
               </div>
 
               {/* Right: Sidebar */}

@@ -33,7 +33,7 @@ const Lomba = () => {
               title={comp.title}
               description={comp.description}
               imageSrc={comp.logo_url}
-              linkHref={`/competition/${comp.id}`}
+              linkHref={`/competition/${comp.slug || comp.id}`}
             />
           ))}
         </div>

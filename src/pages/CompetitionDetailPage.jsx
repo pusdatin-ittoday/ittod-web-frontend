@@ -11,6 +11,8 @@ import CompetitionCategoryGrid from '../components/competition/CompetitionCatego
 import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
 import LoadingState from '../components/ui/LoadingState';
+import EventGallery from '../components/event/EventGallery';
+import { getEventGalleryImages, getEventGalleryLabel } from '../data/eventGalleryData';
 import { registerTeam } from '../api/compe';
 import { requireCompleteProfile } from '../utils/profileCompletion';
 import { useAlert } from '../context/AlertContext';
@@ -229,6 +231,20 @@ const CompetitionDetailPage = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Gallery — di bawah About card, terbatas lebar kolom kiri */}
+                {(() => {
+                  const galleryImages = getEventGalleryImages(slug);
+                  const galleryLabel = getEventGalleryLabel(slug);
+                  return galleryImages ? (
+                    <div className="mt-8 overflow-hidden">
+                      <EventGallery
+                        images={galleryImages}
+                        title={`Dokumentasi ${galleryLabel}`}
+                      />
+                    </div>
+                  ) : null;
+                })()}
               </div>
 
               {/* Right: Sidebar */}
@@ -238,6 +254,7 @@ const CompetitionDetailPage = () => {
             </div>
           </div>
         </section>
+
         <GetInTouchSection compact />
       </main>
       <FooterNeo />
