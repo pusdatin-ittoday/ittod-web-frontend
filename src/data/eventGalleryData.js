@@ -28,7 +28,15 @@ const EVENT_GALLERY_MAP = {
     folder: 'uxtoday',
     label: 'UX Today',
   },
+  'ux-today': {
+    folder: 'uxtoday',
+    label: 'UX Today',
+  },
   gametoday: {
+    folder: 'gametoday',
+    label: 'Game Today',
+  },
+  'game-today': {
     folder: 'gametoday',
     label: 'Game Today',
   },
@@ -36,7 +44,15 @@ const EVENT_GALLERY_MAP = {
     folder: 'minetoday',
     label: 'Mine Today',
   },
+  'mine-today': {
+    folder: 'minetoday',
+    label: 'Mine Today',
+  },
   hacktoday: {
+    folder: 'hacktoday',
+    label: 'Hack Today',
+  },
+  'hack-today': {
     folder: 'hacktoday',
     label: 'Hack Today',
   },

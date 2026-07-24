@@ -154,7 +154,7 @@ const EventDetailPage = () => {
                 </div>
 
                 {/* Gallery — di bawah About card, terbatas kolom kiri, tidak muncul untuk codetoday */}
-                {slug !== 'codetoday' && (() => {
+                {slug !== 'codetoday' && slug !== 'code-today' && (() => {
                   const galleryImages = getEventGalleryImages(slug);
                   const galleryLabel = getEventGalleryLabel(slug);
                   return galleryImages ? (
