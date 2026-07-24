@@ -3,30 +3,30 @@ import { motion as Motion, AnimatePresence } from "motion/react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const GALLERY_ITEMS = [
-  { id: 1, label: "SEMINAR", src: "/assets/gallery/seminar.jpeg" },
-  { id: 2, label: "BOOTCAMP", src: "/assets/gallery/bootcamp.jpeg" },
-  { id: 3, label: "WORKSHOP", src: "/assets/gallery/workshop.jpeg" },
+  { id: 1, label: "SEMINAR", src: "/assets/gallery/seminar.webp" },
+  { id: 2, label: "BOOTCAMP", src: "/assets/gallery/bootcamp.webp" },
+  { id: 3, label: "WORKSHOP", src: "/assets/gallery/workshop.webp" },
   {
     id: 4,
     label: "GRAND FINAL UX TODAY",
-    src: "/assets/gallery/grand-final-ux.JPG",
+    src: "/assets/gallery/grand-final-ux.webp",
   },
   {
     id: 5,
     label: "GRAND FINAL MINE TODAY",
-    src: "/assets/gallery/grand-final-mine.JPG",
+    src: "/assets/gallery/grand-final-mine.webp",
   },
   {
     id: 6,
     label: "GRAND FINAL HACK TODAY",
-    src: "/assets/gallery/grand-final-hack.JPG",
+    src: "/assets/gallery/grand-final-hack.webp",
   },
   {
     id: 7,
     label: "GRAND FINAL GAME TODAY",
-    src: "/assets/gallery/grand-final-game.JPG",
+    src: "/assets/gallery/grand-final-game.webp",
   },
-  { id: 8, label: "AWARDING", src: "/assets/gallery/awarding.jpeg" },
+  { id: 8, label: "AWARDING", src: "/assets/gallery/awarding.webp" },
 ];
 
 /**

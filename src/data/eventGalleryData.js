@@ -73,9 +73,9 @@ export function getEventGalleryImages(slug) {
 
   const base = `/images/events/${entry.folder}`;
   return [
-    `${base}/doc-1.jpg`,
-    `${base}/doc-2.jpg`,
-    `${base}/doc-3.jpg`,
+    `${base}/doc-1.webp`,
+    `${base}/doc-2.webp`,
+    `${base}/doc-3.webp`,
   ];
 }
 
