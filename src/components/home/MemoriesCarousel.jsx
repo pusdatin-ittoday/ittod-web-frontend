@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { motion as Motion, AnimatePresence } from "motion/react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const GALLERY_ITEMS = [
   { id: 1, label: "SEMINAR", src: "/assets/gallery/seminar.jpeg" },
@@ -177,8 +178,6 @@ const MemoriesCarousel = () => {
         onMouseLeave={onMouseLeave}
         style={{ cursor: isDragging ? "grabbing" : "grab" }}
       >
-        {/* Arrow buttons removed to match reference image */}
-
         {/* Slides */}
         <div className="absolute inset-0 flex items-center justify-center">
           {GALLERY_ITEMS.map((item, index) => {
@@ -186,30 +185,38 @@ const MemoriesCarousel = () => {
             const isActive = index === activeIndex;
 
             return (
-              <Motion.div
-                key={item.id}
-                className="absolute flex w-[70%] max-w-[480px] flex-col items-center sm:w-[60%] md:w-[55%]"
-                animate={{
-                  x: style.x,
-                  scale: style.scale,
-                  opacity: style.opacity,
-                  filter: style.filter,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 30,
-                  mass: 0.8,
-                }}
-                style={{
-                  zIndex: style.zIndex,
-                  transformOrigin: "center center",
-                }}
-              >
-                {/* Image container */}
-                <div
-                  className="aspect-[4/3] w-full overflow-hidden border-[4px] border-[#1a1c1c] bg-black"
+                <Motion.div
+                  key={item.id}
+                  className="absolute flex w-[70%] max-w-[480px] flex-col items-center sm:w-[60%] md:w-[55%]"
+                  animate={{
+                    x: style.x,
+                    scale: style.scale,
+                    opacity: style.opacity,
+                    filter: style.filter,
+                  }}
+                  whileHover={!isActive ? { scale: style.scale * 1.05, filter: "brightness(0.9)" } : {}}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30,
+                    mass: 0.8,
+                  }}
+                  onClick={(e) => {
+                    // Prevent click if we were dragging
+                    if (Math.abs(dragStartX.current - dragCurrentX.current) < 5 && !isActive) {
+                      goTo(index);
+                    }
+                  }}
+                  style={{
+                    zIndex: style.zIndex,
+                    transformOrigin: "center center",
+                    cursor: isActive ? (isDragging ? "grabbing" : "grab") : "pointer"
+                  }}
                 >
+                  {/* Image container */}
+                  <div
+                    className="aspect-[4/3] w-full overflow-hidden border-[4px] border-[#1a1c1c] bg-black transition-all"
+                  >
                   <img
                     src={item.src}
                     alt={item.label}
@@ -232,20 +239,42 @@ const MemoriesCarousel = () => {
         </div>
       </div>
 
-      {/* Dot pagination */}
-      <div className="mt-6 flex items-center justify-center gap-2 sm:mt-8 md:gap-2.5">
-        {GALLERY_ITEMS.map((item, index) => (
-          <button
-            key={item.id}
-            onClick={() => goTo(index)}
-            className={`rounded-full transition-all duration-300 ${index === activeIndex
-              ? "h-3 w-3 bg-[#1a1c1c] md:h-3.5 md:w-3.5"
-              : "h-2.5 w-2.5 bg-[#1a1c1c]/40 hover:bg-[#1a1c1c]/60 md:h-3 md:w-3"
+      {/* Pagination Container (Arrows + Dots) */}
+      <div className="mt-6 flex items-center justify-center gap-4 sm:mt-8 md:gap-6">
+        {/* Left Arrow */}
+        <button
+          onClick={goPrev}
+          className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-yellow-neo text-black shadow-[3px_3px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0_#000] md:h-10 md:w-10"
+          aria-label="Previous slide"
+        >
+          <FiChevronLeft size={20} className="md:h-6 md:w-6" />
+        </button>
+
+        {/* Dots */}
+        <div className="flex items-center gap-2 md:gap-2.5">
+          {GALLERY_ITEMS.map((item, index) => (
+            <button
+              key={item.id}
+              onClick={() => goTo(index)}
+              className={`rounded-full transition-all duration-300 ${
+                index === activeIndex
+                  ? "h-3 w-3 bg-[#1a1c1c] md:h-3.5 md:w-3.5"
+                  : "h-2.5 w-2.5 bg-[#1a1c1c]/40 hover:bg-[#1a1c1c]/60 md:h-3 md:w-3"
               }`}
-            aria-label={`Go to slide ${index + 1}: ${item.label}`}
-            aria-current={index === activeIndex ? "true" : "false"}
-          />
-        ))}
+              aria-label={`Go to slide ${index + 1}: ${item.label}`}
+              aria-current={index === activeIndex ? "true" : "false"}
+            />
+          ))}
+        </div>
+
+        {/* Right Arrow */}
+        <button
+          onClick={goNext}
+          className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-yellow-neo text-black shadow-[3px_3px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0_#000] md:h-10 md:w-10"
+          aria-label="Next slide"
+        >
+          <FiChevronRight size={20} className="md:h-6 md:w-6" />
+        </button>
       </div>
     </div>
   );
