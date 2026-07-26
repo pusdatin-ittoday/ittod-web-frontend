@@ -11,22 +11,6 @@ const HeroSection = () => {
     if (reduceMotion) return undefined;
 
     const ctx = gsap.context(() => {
-      gsap.to(".hero-wave-one", {
-        xPercent: 3,
-        yPercent: -1.5,
-        duration: 6,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-      gsap.to(".hero-wave-two", {
-        xPercent: -2.5,
-        yPercent: 1.5,
-        duration: 5.2,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
       gsap.to(".hero-float", {
         y: -10,
         rotate: 1.25,
@@ -172,15 +156,26 @@ const HeroSection = () => {
           </Motion.div>
         </Motion.div>
 
-        {/* Badge "- 2026 -" */}
-        <Motion.div
-          className="inline-block border-[3px] border-black bg-yellow-neo px-6 py-1.5 font-inter text-sm font-black tracking-[0.08em] text-[#293f9e] shadow-[5px_5px_0_#111] sm:px-8 sm:text-base"
-          variants={popIn}
-          style={{ rotate: -2 }}
-          whileHover={{ rotate: 2, scale: 1.05 }}
-          whileTap={{ scale: 0.97 }}
-        >
-          — 2026 —
+        {/* Theme Text */}
+        <Motion.div variants={popIn} className="mt-8 flex justify-center w-full px-4">
+          <h2
+            className="font-[Anybody] text-2xl font-black uppercase italic leading-[1.2] tracking-[-0.02em] text-[#293f9e] sm:text-4xl md:text-5xl lg:text-6xl text-center max-w-[95vw] md:max-w-5xl"
+            style={{
+              WebkitTextStroke: "clamp(2px, 0.3vw, 5px) #ffffff",
+              paintOrder: "stroke fill",
+            }}
+          >
+            <Motion.span
+              className="inline-block px-2"
+              style={{ rotate: -2 }}
+              animate={reduceMotion ? undefined : { y: [0, -5, 0], rotate: [-2, 0, -2] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+              whileHover={{ scale: 1.03, rotate: -1 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Empowering Digital Innovators for Sustainability
+            </Motion.span>
+          </h2>
         </Motion.div>
       </Motion.div>
 
