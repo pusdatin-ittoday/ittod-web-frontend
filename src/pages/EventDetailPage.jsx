@@ -111,12 +111,21 @@ const EventDetailPage = () => {
 
                   {/* CTA: Daftar Sekarang */}
                   <Button
-                    variant="yellow-solid"
+                    variant={event.is_active ? "yellow-solid" : "transparent"}
                     fullWidth
-                    href={`/daftar-event/${slug}`}
+                    href={event.is_active ? `/daftar-event/${slug}` : undefined}
+                    disabled={!event.is_active}
                     className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
                   >
-                    <FiUserPlus size={20} /> Daftar Sekarang
+                    {event.is_active ? 
+                    <>
+                      <FiUserPlus size={20} />
+                      Daftar Sekarang
+                    </> 
+                    : 
+                    <>
+                      Pendaftaran Ditutup/Belum Dibuka
+                    </>}
                   </Button>
 
                   {/* Contact Person */}

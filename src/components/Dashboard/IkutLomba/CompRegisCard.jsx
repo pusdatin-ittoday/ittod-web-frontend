@@ -8,6 +8,7 @@ import { registerTeam } from "../../../api/compe";
 import PaginationControls from "../PaginationControls";
 import { requireCompleteProfile } from "../../../utils/profileCompletion";
 import { useAlert } from "../../../context/AlertContext";
+import { FiUserPlus } from 'react-icons/fi';
 
 const NEO_CARD_COLORS = [
   "bg-[#e8fbef] text-[#156b3b]",
@@ -37,9 +38,11 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
 
         <div className="mt-auto pt-6">
           {!isActive ? (
-            <div className="border-[3px] border-black bg-[#ff8c75] px-4 py-3 text-center text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a]">
-              Pendaftaran Ditutup
-            </div>
+            <>
+              <div className="border-[3px] border-black px-4 py-3 text-center text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a] opacity-50 pointer-events-none cursor-not-allowed">
+                Pendaftaran Ditutup/Belum Dibuka
+              </div>
+            </>
           ) : participationType === "individual" ? (
             <button
               type="button"
@@ -55,7 +58,10 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
               onClick={() => onRegisterTeam(eventId)}
               className={actionClass}
             >
-              Daftar Sekarang
+              <div className="flex justify-center items-center gap-2">
+                <FiUserPlus size={20} />
+                Daftar Sekarang
+              </div>
             </button>
           )}
         </div>
@@ -85,8 +91,8 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
 
           <div className="w-full flex justify-center mt-auto">
             {!isActive ? (
-              <div className="text-xs sm:text-sm button-hover bg-red-500 text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 cursor-pointer text-center">
-                Pendaftaran Ditutup
+              <div className="text-xs sm:text-sm bg-red-500 text-white px-3 py-1.5 rounded-lg shadow-lg font-medium text-center opacity-50 pointer-events-none cursor-not-allowed">
+                Pendaftaran Ditutup/Belum Dibuka
               </div>
             ) : participationType === 'individual' ? (
               <button

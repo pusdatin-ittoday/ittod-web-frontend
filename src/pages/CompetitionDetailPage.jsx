@@ -189,12 +189,18 @@ const CompetitionDetailPage = () => {
                       <FiFileText size={18} /> Download Guidebook
                     </Button>
                     <Button
-                      variant="indigo-solid"
+                      variant={competition.is_active ? "indigo-solid" : "transparent"}
                       onClick={handleRegisterClick}
-                      disabled={isRegistering}
+                      disabled={isRegistering || !competition.is_active}
                       className="flex flex-1 items-center justify-center gap-2 text-center uppercase tracking-wider"
                     >
-                      <FiUserPlus size={18} /> {isRegistering ? 'Mendaftar...' : 'Daftar Sekarang'}
+                      {competition.is_active ? (
+                        <>
+                          <FiUserPlus size={18} /> {isRegistering ? 'Mendaftar...' : 'Daftar Sekarang'}
+                        </>
+                      ) : (
+                        'Pendaftaran Ditutup / Belum Dibuka'
+                      )}
                     </Button>
                   </div>
 

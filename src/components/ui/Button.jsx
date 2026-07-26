@@ -12,6 +12,8 @@ const variantStyles = {
     "bg-dark-neo text-white border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111]",
   outline:
     "bg-white text-black border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111]",
+  transparent:
+    "bg-transparent text-inherit border-[3px] border-black shadow-[5px_5px_0_#111] hover:shadow-[7px_7px_0_#111]",
 };
 
 const MotionLink = Motion.create(Link);
