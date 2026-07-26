@@ -159,9 +159,9 @@ const HeroSection = () => {
         {/* Theme Text */}
         <Motion.div variants={popIn} className="mt-8 flex justify-center w-full px-4">
           <h2
-            className="font-[Anybody] text-2xl font-black uppercase italic leading-[1.2] tracking-[-0.02em] text-[#293f9e] sm:text-4xl md:text-5xl lg:text-6xl text-center max-w-[95vw] md:max-w-5xl"
+            className="font-[Anybody] text-sm font-black uppercase italic leading-[1.2] tracking-[-0.02em] text-[#293f9e] sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl text-center whitespace-nowrap"
             style={{
-              WebkitTextStroke: "clamp(2px, 0.3vw, 5px) #ffffff",
+              WebkitTextStroke: "clamp(1px, 0.25vw, 4px) #ffffff",
               paintOrder: "stroke fill",
             }}
           >
