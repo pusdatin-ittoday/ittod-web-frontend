@@ -68,11 +68,14 @@ const GallerySection = () => {
           </h3>
           <p className="pt-4 font-inter text-sm font-medium leading-7 text-[#4d505c] sm:text-base sm:leading-7">
             IT Today merupakan rangkaian kegiatan tahunan Himpunan Mahasiswa
-            Ilmu Komputer (Himalkom) IPB yang telah berlangsung sejak 2003.
-            Memasuki tahun ke-23, IT Today 2026 mengusung tema &quot;Modern
-            Brutalist Street&quot; untuk menggabungkan inovasi teknologi dengan
-            ekspresi urban yang autentik. Bersiaplah untuk pengalaman yang tidak
-            hanya mencerahkan otak tetapi juga menggetarkan jiwa.
+            Ilmu Komputer (Himalkom) IPB yang telah hadir sejak tahun 2003.
+            Memasuki tahun ke-23, IT Today 2026 mengusung tema{" "}
+            <strong className="font-inter text-sm font-black leading-7 text-[#293f9e] sm:text-base sm:leading-7">
+              Empowering Digital Innovators for Sustainability
+            </strong>
+            , sebagai wujud komitmen dalam membangun ekosistem inovasi digital yang tidak hanya menjawab tantangan masa kini, tetapi juga berkontribusi pada masa depan yang berkelanjutan. Melalui berbagai kompetisi, seminar, dan kegiatan inspiratif, IT Today mengajak generasi muda untuk berkolaborasi,
+            berinovasi, dan menciptakan teknologi yang memberikan dampak
+            positif bagi masyarakat serta lingkungan.
           </p>
         </Motion.div>
 
