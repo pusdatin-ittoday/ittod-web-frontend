@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import NavbarNeo from '../components/layout/Navbar';
 import FooterNeo from '../components/layout/Footer';
 import HeroSection from '../components/home/HeroSection';
-import GallerySection from '../components/home/GallerySection';
-import MainEventSection from '../components/home/MainEventSection';
-import CompetitionSection from '../components/home/CompetitionSection';
-import TimelineSection from '../components/home/TimelineSection';
-import PartnersSection from '../components/home/PartnersSection';
-import GetInTouchSection from '../components/home/GetInTouchSection';
+
+const GallerySection = lazy(() => import('../components/home/GallerySection'));
+const MainEventSection = lazy(() => import('../components/home/MainEventSection'));
+const CompetitionSection = lazy(() => import('../components/home/CompetitionSection'));
+const TimelineSection = lazy(() => import('../components/home/TimelineSection'));
+const PartnersSection = lazy(() => import('../components/home/PartnersSection'));
+const GetInTouchSection = lazy(() => import('../components/home/GetInTouchSection'));
 
 /**
  * Landing Page — compose semua section top-to-bottom.
@@ -36,12 +37,14 @@ const LandingPage = () => {
       <NavbarNeo />
       <main className="pt-16 md:pt-20">
         <HeroSection />
-        <GallerySection />
-        <MainEventSection />
-        <CompetitionSection />
-        <TimelineSection />
-        <PartnersSection />
-        <GetInTouchSection />
+        <Suspense fallback={<div className="min-h-[200px]" />}>
+          <GallerySection />
+          <MainEventSection />
+          <CompetitionSection />
+          <TimelineSection />
+          <PartnersSection />
+          <GetInTouchSection />
+        </Suspense>
       </main>
       <FooterNeo />
     </div>
