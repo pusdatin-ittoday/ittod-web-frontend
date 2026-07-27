@@ -89,6 +89,7 @@ const DaftarEvent = () => {
 	const [isActive, setIsActive] = useState(true);
 	const [checkingActive, setCheckingActive] = useState(true);
 	const [exists, setExists] = useState(true);
+	const [currentEvent, setCurrentEvent] = useState(null);
 	const displayName = targetDisplayName[target] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : "Event");
 
 	const paymentFileInputRef = useRef(null);
@@ -229,20 +230,24 @@ const DaftarEvent = () => {
 					}
 
 					if (event) {
+						setCurrentEvent(event);
 						setExists(true);
 						if (event.is_active !== undefined) {
 							setIsActive(event.is_active);
 						}
 						setLinkWhatsapp(event.whatsapp_group_link || "");
 					} else {
+						setCurrentEvent(null);
 						setExists(false);
 						setLinkWhatsapp("");
 					}
 				} else {
+					setCurrentEvent(null);
 					setExists(false);
 				}
 			} catch (e) {
 				console.error("Error fetching event configuration:", e);
+				setCurrentEvent(null);
 				setExists(false);
 				setLinkWhatsapp("");
 			}
@@ -322,14 +327,16 @@ const DaftarEvent = () => {
 		setWhatsapp(normalizedWhatsapp);
 		setLoading(true);
 
-		// Determine the event ID using the mapping
-		let eventId;
-		if (target === "workshop") {
-			eventId = eventIdMapping[workshopChoice] || workshopChoice;
-		} else {
-			eventId =
-				eventIdMapping[target === "national-seminar" ? "seminar" : target] ||
-				target;
+		// Determine the event ID using currentEvent if available, or mapping fallback
+		let eventId = currentEvent?.id || currentEvent?.slug;
+		if (!eventId) {
+			if (target === "workshop") {
+				eventId = eventIdMapping[workshopChoice] || workshopChoice;
+			} else {
+				eventId =
+					eventIdMapping[target === "national-seminar" || target === "seminar" ? "seminar" : target] ||
+					target;
+			}
 		}
 
 		// Handle file upload for bootcamp
