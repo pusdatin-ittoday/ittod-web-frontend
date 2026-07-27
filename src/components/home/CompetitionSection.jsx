@@ -161,31 +161,33 @@ const CompetitionSection = () => {
               <span className="font-space-grotesk text-xl sm:text-2xl md:text-3xl font-black uppercase text-[#111827] text-center mb-2">
                 {targetEvent.title || targetEvent.name || "Next Agenda"} {targetEvent.phase}:
               </span>
-              <div className="flex items-center justify-center gap-2 mb-6 text-[#111827] font-space-grotesk font-bold text-sm sm:text-base bg-[#ffe477] px-4 py-2 border-[3px] border-[#111827] shadow-[4px_4px_0_#111827]">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                {targetEvent.targetDate.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' })} WIB
+              <div className="flex items-center justify-center gap-2 mb-6 text-[#111827] font-space-grotesk font-bold text-xs sm:text-base bg-[#ffe477] px-3 py-1.5 sm:px-4 sm:py-2 border-[3px] border-[#111827] shadow-[3px_3px_0_#111827] sm:shadow-[4px_4px_0_#111827] max-w-full text-center">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>{targetEvent.targetDate.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' })} WIB</span>
               </div>
-              <div className="flex items-center justify-center gap-1.5 sm:gap-4 md:gap-6 max-w-full px-1">
-                {[
-                  { label: 'Days', value: timeLeft.days },
-                  { label: 'Hours', value: timeLeft.hours },
-                  { label: 'Minutes', value: timeLeft.minutes },
-                  { label: 'Seconds', value: timeLeft.seconds }
-                ].map((item, idx, arr) => (
-                  <React.Fragment key={idx}>
-                    <div className="flex flex-col items-center justify-center rounded-full border-[3px] sm:border-[4px] md:border-[5px] border-[#111827] bg-white text-[#111827] shadow-[3px_3px_0_#111827] sm:shadow-[5px_5px_0_#111827] md:shadow-[6px_6px_0_#111827] w-[60px] h-[60px] sm:w-[95px] sm:h-[95px] md:w-[130px] md:h-[130px] transition-transform hover:scale-105 flex-shrink-0">
-                      <span className="text-[7.5px] sm:text-xs md:text-sm font-black uppercase font-space-grotesk mb-0.5 sm:mb-1 md:mb-1.5">{item.label}</span>
-                      <div className="w-[55%] border-t-[2px] sm:border-t-[3px] md:border-t-[4px] border-[#111827] mb-0.5 sm:mb-1 md:mb-2"></div>
-                      <span className="font-black text-base sm:text-2xl md:text-5xl leading-none">{item.value.toString().padStart(2, '0')}</span>
-                    </div>
-                    {idx < arr.length - 1 && (
-                      <div className="flex flex-col gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
-                        <div className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full bg-[#111827]"></div>
-                        <div className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full bg-[#111827]"></div>
+              <div className="w-full max-w-full overflow-hidden px-1">
+                <div className="flex items-center justify-between sm:justify-center gap-1 sm:gap-4 md:gap-6 w-full max-w-[600px] mx-auto">
+                  {[
+                    { label: 'Days', value: timeLeft.days },
+                    { label: 'Hours', value: timeLeft.hours },
+                    { label: 'Minutes', value: timeLeft.minutes },
+                    { label: 'Seconds', value: timeLeft.seconds }
+                  ].map((item, idx, arr) => (
+                    <React.Fragment key={idx}>
+                      <div className="flex flex-col items-center justify-center rounded-full border-[3px] sm:border-[4px] md:border-[5px] border-[#111827] bg-white text-[#111827] shadow-[2px_2px_0_#111827] sm:shadow-[5px_5px_0_#111827] md:shadow-[6px_6px_0_#111827] aspect-square w-[21%] max-w-[65px] sm:w-[95px] sm:max-w-[95px] md:w-[130px] md:max-w-[130px] transition-transform hover:scale-105 shrink-0">
+                        <span className="text-[7px] sm:text-xs md:text-sm font-black uppercase font-space-grotesk mb-0.5 sm:mb-1 md:mb-1.5">{item.label}</span>
+                        <div className="w-[50%] border-t-[1.5px] sm:border-t-[3px] md:border-t-[4px] border-[#111827] mb-0.5 sm:mb-1 md:mb-2"></div>
+                        <span className="font-black text-sm sm:text-2xl md:text-5xl leading-none">{item.value.toString().padStart(2, '0')}</span>
                       </div>
-                    )}
-                  </React.Fragment>
-                ))}
+                      {idx < arr.length - 1 && (
+                        <div className="flex flex-col gap-1 sm:gap-2 md:gap-3 shrink-0">
+                          <div className="w-1 h-1 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full bg-[#111827]"></div>
+                          <div className="w-1 h-1 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full bg-[#111827]"></div>
+                        </div>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
               </div>
             </div>
           )}
