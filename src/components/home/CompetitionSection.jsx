@@ -165,7 +165,7 @@ const CompetitionSection = () => {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 {targetEvent.targetDate.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' })} WIB
               </div>
-              <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+              <div className="flex items-center justify-center gap-1.5 sm:gap-4 md:gap-6 max-w-full px-1">
                 {[
                   { label: 'Days', value: timeLeft.days },
                   { label: 'Hours', value: timeLeft.hours },
@@ -173,15 +173,15 @@ const CompetitionSection = () => {
                   { label: 'Seconds', value: timeLeft.seconds }
                 ].map((item, idx, arr) => (
                   <React.Fragment key={idx}>
-                    <div className="flex flex-col items-center justify-center rounded-full border-[5px] border-[#111827] bg-white text-[#111827] shadow-[6px_6px_0_#111827] w-[75px] h-[75px] sm:w-[100px] sm:h-[100px] md:w-[130px] md:h-[130px] transition-transform hover:scale-105">
-                      <span className="text-[9px] sm:text-xs md:text-sm font-black uppercase font-space-grotesk mb-1 md:mb-1.5">{item.label}</span>
-                      <div className="w-[60%] border-t-[3px] sm:border-t-[4px] border-[#111827] mb-1 md:mb-2"></div>
-                      <span className="font-black text-xl sm:text-3xl md:text-5xl leading-none">{item.value.toString().padStart(2, '0')}</span>
+                    <div className="flex flex-col items-center justify-center rounded-full border-[3px] sm:border-[4px] md:border-[5px] border-[#111827] bg-white text-[#111827] shadow-[3px_3px_0_#111827] sm:shadow-[5px_5px_0_#111827] md:shadow-[6px_6px_0_#111827] w-[60px] h-[60px] sm:w-[95px] sm:h-[95px] md:w-[130px] md:h-[130px] transition-transform hover:scale-105 flex-shrink-0">
+                      <span className="text-[7.5px] sm:text-xs md:text-sm font-black uppercase font-space-grotesk mb-0.5 sm:mb-1 md:mb-1.5">{item.label}</span>
+                      <div className="w-[55%] border-t-[2px] sm:border-t-[3px] md:border-t-[4px] border-[#111827] mb-0.5 sm:mb-1 md:mb-2"></div>
+                      <span className="font-black text-base sm:text-2xl md:text-5xl leading-none">{item.value.toString().padStart(2, '0')}</span>
                     </div>
                     {idx < arr.length - 1 && (
-                      <div className="flex flex-col gap-2 sm:gap-3">
-                        <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#111827]"></div>
-                        <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#111827]"></div>
+                      <div className="flex flex-col gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
+                        <div className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full bg-[#111827]"></div>
+                        <div className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full bg-[#111827]"></div>
                       </div>
                     )}
                   </React.Fragment>
