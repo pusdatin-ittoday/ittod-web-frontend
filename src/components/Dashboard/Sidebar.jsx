@@ -109,9 +109,6 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                     <h2 className="text-xl font-black uppercase text-[#333bb0]">
                         Dashboard
                     </h2>
-                    <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                        V.2026.Street
-                    </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-1">
@@ -123,14 +120,14 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                                 if (setActive) setActive(item.id);
                                 navigate(`/dashboard/${item.id}`);
                             }}
-                            className={`relative flex min-h-14 items-center gap-3 border-[3px] border-black px-3 py-3 text-left text-xs font-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none sm:text-sm ${
+                            className={`relative flex flex-col lg:flex-row justify-center lg:justify-start min-h-14 items-center gap-1 lg:gap-3 border-[3px] border-black px-1 lg:px-3 py-2 lg:py-3 text-center lg:text-left text-[11px] lg:text-xs font-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none sm:text-sm ${
                                 active === item.id
                                     ? "bg-[#ffd400] text-[#191b1a]"
                                     : "bg-white text-[#191b1a]"
                             }`}
                         >
-                            <span className="shrink-0 text-base">{item.icon}</span>
-                            <span>{item.label}</span>
+                            <span className="shrink-0 text-lg lg:text-base">{item.icon}</span>
+                            <span className="leading-tight">{item.label}</span>
                             {item.badge}
                         </button>
                     ))}

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { isAuthenticated, logoutUser } from '../api/user';
+import NavbarNotificationBell from './NavbarNotificationBell';
 
 class Navbar extends Component {
   constructor(props) {
@@ -43,6 +44,9 @@ class Navbar extends Component {
         <>
           <li className="block lg:hidden">
             <a href="/dashboard/beranda" className={navLinkBase}>Dashboard</a>
+          </li>
+          <li className="block lg:hidden">
+            <a href="/dashboard/pengumuman" className={navLinkBase}>Pengumuman</a>
           </li>
           <li className="block lg:hidden">
             <span onClick={this.handleLogout} className={`${navLinkBase} cursor-pointer`}>Logout</span>
@@ -197,11 +201,13 @@ class Navbar extends Component {
             {/* Dropdown Profil untuk Desktop */}
             <div className="hidden lg:block relative ">
               {isLoggedIn ? (
-                <div className="relative ">
-                  <button
-                    onClick={this.toggleDropdown}
-                    className="flex items-center gap-2 text-white focus:outline-none"
-                  >
+                <div className="flex items-center gap-6">
+                  <NavbarNotificationBell />
+                  <div className="relative">
+                    <button
+                      onClick={this.toggleDropdown}
+                      className="flex items-center gap-2 text-white focus:outline-none"
+                    >
                     <img
                       src="/profile.svg"
                       alt="Profile"
@@ -224,6 +230,7 @@ class Navbar extends Component {
                       </button>
                     </div>
                   )}
+                  </div>
                 </div>
               ) : (
                 <button
@@ -235,13 +242,17 @@ class Navbar extends Component {
               )}
             </div>
 
-            {/* Tombol Toggle Menu untuk Mobile */}
-            <button
-              aria-label="Toggle Menu"
-              className={`w-[40px] h-[40px] lg:hidden block cursor-pointer text-white focus:outline-none relative group transition-all duration-300 ease-in-out hover:scale-110 ${active ? 'rotate-0' : ''
-                }`}
-              onClick={this.handleClick}
-            >
+            {/* Action Buttons for Mobile */}
+            <div className="flex items-center gap-4 lg:hidden">
+              {isLoggedIn && <NavbarNotificationBell />}
+              
+              {/* Tombol Toggle Menu untuk Mobile */}
+              <button
+                aria-label="Toggle Menu"
+                className={`w-[40px] h-[40px] block cursor-pointer text-white focus:outline-none relative group transition-all duration-300 ease-in-out hover:scale-110 ${active ? 'rotate-0' : ''
+                  }`}
+                onClick={this.handleClick}
+              >
               <div className="relative w-full h-full flex items-center justify-center">
                 {/* Hamburger lines with individual animations */}
                 <div className="relative w-6 h-6 flex flex-col justify-center items-center">
@@ -263,6 +274,7 @@ class Navbar extends Component {
                 </div>
               </div>
             </button>
+          </div>
           </div>
         </div>
       </div>

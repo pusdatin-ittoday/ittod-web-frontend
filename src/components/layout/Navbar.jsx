@@ -3,6 +3,7 @@ import { AnimatePresence, motion as Motion } from "motion/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { tapPress } from "../../lib/motion";
+import NavbarNotificationBell from "../NavbarNotificationBell";
 
 /**
  * Navbar Neo-Brutalisme — background indigo, auth-aware.
@@ -100,8 +101,10 @@ const NavbarNeo = () => {
           </ul>
 
           {/* Desktop auth button */}
-          <div className="hidden min-w-[150px] items-center justify-end lg:flex">
+          <div className="hidden min-w-[150px] items-center justify-end lg:flex gap-4">
             {isAuthenticated ? (
+              <>
+                <NavbarNotificationBell variant="neo" />
               <MotionLink
                 to="/dashboard/beranda"
                 whileHover={{ x: -3, y: -3 }}
@@ -110,6 +113,7 @@ const NavbarNeo = () => {
               >
                 PROFILE
               </MotionLink>
+              </>
             ) : (
               <MotionLink
                 to="/login"
@@ -122,7 +126,9 @@ const NavbarNeo = () => {
             )}
           </div>
 
-          {/* Mobile hamburger */}
+          {/* Mobile Actions */}
+          <div className="flex lg:hidden items-center gap-4">
+            {isAuthenticated && <NavbarNotificationBell variant="neo" />}
           <Motion.button
             className="flex cursor-pointer flex-col gap-1.5 border-2 border-black bg-yellow-neo p-2 shadow-[3px_3px_0_#111] lg:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -145,6 +151,7 @@ const NavbarNeo = () => {
               }`}
             />
           </Motion.button>
+          </div>
         </div>
       </div>
 

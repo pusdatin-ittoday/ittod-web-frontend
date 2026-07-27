@@ -33,7 +33,8 @@ const CalendarWidget = () => {
                     allEvents.push(...compRes.data.map(e => ({
                         ...e,
                         type: "Competition",
-                        dateObj: new Date(e.start_date || e.date)
+                        dateObj: new Date(e.start_date || e.date),
+                        endDateObj: e.end_date ? new Date(e.end_date) : null
                     })));
                 }
 
@@ -41,10 +42,12 @@ const CalendarWidget = () => {
                     allEvents.push(...eventRes.data.filter(e => joinedEventIds.has(e.event_id)).map(e => ({
                         ...e,
                         type: "Event",
-                        dateObj: new Date(e.start_date || e.date)
+                        dateObj: new Date(e.start_date || e.date),
+                        endDateObj: e.end_date ? new Date(e.end_date) : null
                     })));
                 }
                 
+                allEvents.sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
                 setEvents(allEvents);
             } catch (error) {
                 console.error("Error fetching timelines for calendar:", error);
@@ -86,6 +89,18 @@ const CalendarWidget = () => {
                d1.getFullYear() === d2.getFullYear();
     };
 
+    const isDateBetween = (date, start, end) => {
+        if (!start) return false;
+        
+        const d = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+        const s = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
+        
+        if (!end) return d === s;
+        
+        const e = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime();
+        return d >= s && d <= e;
+    };
+
     const isToday = (day) => {
         const today = new Date();
         return isSameDay(new Date(currentDate.getFullYear(), currentDate.getMonth(), day), today);
@@ -96,11 +111,12 @@ const CalendarWidget = () => {
     };
 
     const getEventsForDate = (date) => {
-        return events.filter(e => isSameDay(e.dateObj, date));
+        return events.filter(e => isDateBetween(date, e.dateObj, e.endDateObj));
     };
 
     const getEventsForDay = (day) => {
-        return getEventsForDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), day));
+        return events.filter(e => isDateBetween(new Date(currentDate.getFullYear(), currentDate.getMonth(), day), e.dateObj, e.endDateObj))
+                     .sort((a,b) => events.findIndex(e => e.id === a.id) - events.findIndex(e => e.id === b.id));
     };
 
     const selectedEvents = getEventsForDate(selectedDate);
@@ -170,18 +186,22 @@ const CalendarWidget = () => {
                                         `}
                                     >
                                         {day}
-                                        {hasEvents && !selected && (
-                                            <div className="absolute bottom-0.5 sm:bottom-1 flex gap-0.5">
-                                                {dayEvents.slice(0, 3).map((_, i) => (
-                                                    <div key={i} className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#E12E55]"></div>
-                                                ))}
-                                            </div>
-                                        )}
-                                        {hasEvents && selected && (
-                                            <div className="absolute bottom-0.5 sm:bottom-1 flex gap-0.5">
-                                                {dayEvents.slice(0, 3).map((_, i) => (
-                                                    <div key={i} className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#1A1C1C]"></div>
-                                                ))}
+                                        {hasEvents && (
+                                            <div className="absolute bottom-0.5 sm:bottom-1 flex gap-0.5 justify-center w-full">
+                                                {dayEvents.map((event) => {
+                                                    const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                                                    const isStart = isSameDay(dayDate, event.dateObj);
+                                                    const isEnd = event.endDateObj ? isSameDay(dayDate, event.endDateObj) : false;
+                                                    
+                                                    if (!isStart && !isEnd) return null;
+                                                    
+                                                    return (
+                                                        <div key={event.id} className="flex gap-[2px]">
+                                                            {isStart && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#00A859]" title="Mulai" />}
+                                                            {!isStart && isEnd && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#E12E55]" title="Selesai" />}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         )}
                                     </button>
@@ -201,10 +221,33 @@ const CalendarWidget = () => {
                 
                 {selectedEvents.length > 0 ? (
                     <div className="space-y-3 max-h-40 overflow-y-auto custom-scrollbar pr-2">
-                        {selectedEvents.map((event, idx) => (
+                        {selectedEvents.map((event, idx) => {
+                            const isStart = isSameDay(selectedDate, event.dateObj);
+                            const isEnd = event.endDateObj ? isSameDay(selectedDate, event.endDateObj) : false;
+                            
+                            return (
                             <div key={idx} className="bg-white border-[3px] border-[#1A1C1C] p-3 shadow-[2px_2px_0_0_#1A1C1C]">
-                                <div className="text-[10px] font-bold text-[#34399F] uppercase mb-1 tracking-wider">
-                                    {event.type}
+                                <div className="flex justify-between items-start mb-1">
+                                    <div className="flex items-center gap-2">
+                                        <div className="text-[10px] font-bold text-[#34399F] uppercase tracking-wider">
+                                            {event.type}
+                                        </div>
+                                        {isStart && (
+                                            <div className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#00A859]/20 text-[#00A859] uppercase">
+                                                Open
+                                            </div>
+                                        )}
+                                        {!isStart && isEnd && (
+                                            <div className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#E12E55]/20 text-[#E12E55] uppercase">
+                                                Close
+                                            </div>
+                                        )}
+                                    </div>
+                                    {event.endDateObj && !isSameDay(event.dateObj, event.endDateObj) && (
+                                        <div className="text-[9px] font-bold text-gray-500 uppercase">
+                                            {event.dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - {event.endDateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="font-black text-sm text-[#1A1C1C] leading-tight font-space-grotesk">
                                     {event.title}
@@ -215,7 +258,8 @@ const CalendarWidget = () => {
                                     </div>
                                 )}
                             </div>
-                        ))}
+                        );
+                    })}
                     </div>
                 ) : (
                     <div className="bg-white border-[3px] border-[#1A1C1C] p-4 text-center text-sm font-bold text-[#464652] shadow-[2px_2px_0_0_#1A1C1C] font-hanken-grotesk">
