@@ -18,19 +18,63 @@ const NEO_CARD_COLORS = [
 ];
 const ITEMS_PER_PAGE = 4;
 
+const getLogoFallback = (title, image) => {
+  if (image) return image;
+  if (!title) return null;
+  const t = title.toLowerCase();
+  if (t.includes("code")) return "/logo-competition/CODETODAY.webp";
+  if (t.includes("game")) return "/logo-competition/GAMETODAY.webp";
+  if (t.includes("hack")) return "/logo-competition/HACKTODAY.webp";
+  if (t.includes("mine")) return "/logo-competition/MINETODAY.webp";
+  if (t.includes("ux")) return "/logo-competition/UXTODAY.webp";
+  if (t.includes("workshop")) return "/logo-event/WORKSHOP.webp";
+  if (t.includes("bootcamp")) return "/logo-event/BOOTCAMP.webp";
+  if (t.includes("seminar")) return "/logo-event/SEMINAR-NASIONAL.webp";
+  return null;
+};
+
+const getShortDescription = (title, description) => {
+  if (!description) return "";
+  const t = (title || "").toLowerCase();
+  if (t.includes("mine")) {
+    return "MineToday adalah salah satu kompetisi dalam IT Today 2026 yang bertujuan untuk menguji kemampuan peserta dalam data mining, analisis data, dan pemodelan prediktif.";
+  }
+  if (description.length > 200) {
+    return description.substring(0, 195).trim() + "...";
+  }
+  return description;
+};
+
 const IkutLomba = ({ title, description, image, isActive, eventId, participationType, maxParticipants, onRegisterIndividual, onRegisterTeam, loadingRegister, variant = "default", colorIndex = 0 }) => {
   if (variant === "neobrutal") {
     const actionClass =
       "block w-full border-[3px] border-black bg-[#ffd400] px-4 py-3 text-center text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-60";
+
+    const logoSrc = getLogoFallback(title, image);
+    const shortDesc = getShortDescription(title, description);
 
     return (
       <article
         className={`flex min-h-[210px] h-full flex-col border-[4px] border-[#191b1a] p-5 shadow-[7px_7px_0_#191b1a] sm:p-6 ${NEO_CARD_COLORS[colorIndex % NEO_CARD_COLORS.length]
           }`}
       >
-        <h3 className="mt-3 text-xl font-black uppercase leading-tight">{title}</h3>
+        <div className="flex items-center gap-3.5">
+          {logoSrc && (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border-[3px] border-black bg-white p-1 shadow-[3px_3px_0_#191b1a]">
+              <img
+                src={logoSrc}
+                alt={title}
+                className="max-h-full max-w-full object-contain"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+          <h3 className="text-xl font-black uppercase leading-tight">{title}</h3>
+        </div>
         <p className="mt-4 text-sm font-medium leading-relaxed opacity-80">
-          {description}
+          {shortDesc}
         </p>
         {participationType === "team" ? (
           maxParticipants && (

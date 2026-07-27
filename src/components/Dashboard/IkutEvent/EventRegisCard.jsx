@@ -10,9 +10,33 @@ import PaginationControls from "../PaginationControls";
 const NEO_CARD_COLORS = ["bg-[#e8fbef]", "bg-[#ffe26b]", "bg-[#565bc5] text-white"];
 const ITEMS_PER_PAGE = 4;
 
+const getLogoFallback = (title, image) => {
+  if (image) return image;
+  if (!title) return null;
+  const t = title.toLowerCase();
+  if (t.includes("workshop")) return "/logo-event/WORKSHOP.webp";
+  if (t.includes("bootcamp")) return "/logo-event/BOOTCAMP.webp";
+  if (t.includes("seminar")) return "/logo-event/SEMINAR-NASIONAL.webp";
+  if (t.includes("code")) return "/logo-competition/CODETODAY.webp";
+  if (t.includes("game")) return "/logo-competition/GAMETODAY.webp";
+  if (t.includes("hack")) return "/logo-competition/HACKTODAY.webp";
+  if (t.includes("mine")) return "/logo-competition/MINETODAY.webp";
+  if (t.includes("ux")) return "/logo-competition/UXTODAY.webp";
+  return null;
+};
+
+const getShortDescription = (description) => {
+  if (!description) return "";
+  if (description.length > 200) {
+    return description.substring(0, 195).trim() + "...";
+  }
+  return description;
+};
+
 const IkutEvent = ({
   title,
   description,
+  image,
   isActive,
   eventId,
   eventSlug,
@@ -20,15 +44,32 @@ const IkutEvent = ({
   waGroupLink,
   colorIndex = 0,
 }) => {
+  const logoSrc = getLogoFallback(title, image);
+  const shortDesc = getShortDescription(description);
+
   return (
     <article
       className={`flex min-h-[190px] h-full flex-col border-[4px] border-[#191b1a] p-5 shadow-[7px_7px_0_#191b1a] sm:p-6 ${
         NEO_CARD_COLORS[colorIndex % NEO_CARD_COLORS.length]
       }`}
     >
-      <h3 className="text-xl font-black uppercase leading-tight">{title}</h3>
+      <div className="flex items-center gap-3.5">
+        {logoSrc && (
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border-[3px] border-black bg-white p-1 shadow-[3px_3px_0_#191b1a]">
+            <img
+              src={logoSrc}
+              alt={title}
+              className="max-h-full max-w-full object-contain"
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
+            />
+          </div>
+        )}
+        <h3 className="text-xl font-black uppercase leading-tight">{title}</h3>
+      </div>
       <p className="mt-4 text-sm font-medium leading-relaxed opacity-80">
-        {description}
+        {shortDesc}
       </p>
       <div className="mt-auto pt-6">
         {isRegistered ? (
