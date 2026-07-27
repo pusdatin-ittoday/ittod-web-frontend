@@ -8,7 +8,7 @@ import PaginationControls from "../PaginationControls";
 const NEO_CARD_COLORS = ["bg-[#e8fbef]", "bg-[#ffe26b]", "bg-[#565bc5] text-white"];
 const ITEMS_PER_PAGE = 4;
 
-const IkutEvent = ({ title, description, image, isActive, eventId, colorIndex = 0 }) => {
+const IkutEvent = ({ title, description, isActive, eventId, colorIndex = 0 }) => {
   return (
     <article
       className={`flex min-h-[190px] h-full flex-col border-[4px] border-[#191b1a] p-5 shadow-[7px_7px_0_#191b1a] sm:p-6 ${NEO_CARD_COLORS[colorIndex % NEO_CARD_COLORS.length]

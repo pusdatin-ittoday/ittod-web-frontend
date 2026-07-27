@@ -201,7 +201,7 @@ const MemoriesCarousel = () => {
                     damping: 30,
                     mass: 0.8,
                   }}
-                  onClick={(e) => {
+                  onClick={() => {
                     // Prevent click if we were dragging
                     if (Math.abs(dragStartX.current - dragCurrentX.current) < 5 && !isActive) {
                       goTo(index);

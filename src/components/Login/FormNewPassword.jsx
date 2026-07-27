@@ -2,14 +2,14 @@ import React from "react";
 import Button from "./Button";
 import Input from "./Input";
 import Alert from "./Alert";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { MdKey } from "react-icons/md";
 import { resetPassword } from "../../api/user";
 
 const FormNewPasswordWithRouter = (props) => {
     const navigate = useNavigate();
-    const location = useLocation();
+    // const location = useLocation();
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
     

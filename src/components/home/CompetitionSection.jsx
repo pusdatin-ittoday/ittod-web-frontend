@@ -47,7 +47,7 @@ const defaultCompetitions = [
  */
 const CompetitionSection = () => {
   const [competitions, setCompetitions] = useState(defaultCompetitions);
-  const [loading, setLoading] = useState(false);
+  const loading = false;
   const [targetEvent, setTargetEvent] = useState(null);
   const [allTimelines, setAllTimelines] = useState([]);
   const [timeLeft, setTimeLeft] = useState({

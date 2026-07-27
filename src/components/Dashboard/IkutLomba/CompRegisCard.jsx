@@ -18,7 +18,7 @@ const NEO_CARD_COLORS = [
 ];
 const ITEMS_PER_PAGE = 4;
 
-const IkutLomba = ({ title, description, image, isActive, eventId, participationType, onRegisterIndividual, onRegisterTeam, loadingRegister, variant = "default", colorIndex = 0 }) => {
+const IkutLomba = ({ title, description, image, isActive, eventId, participationType, maxParticipants, onRegisterIndividual, onRegisterTeam, loadingRegister, variant = "default", colorIndex = 0 }) => {
   if (variant === "neobrutal") {
     const actionClass =
       "block w-full border-[3px] border-black bg-[#ffd400] px-4 py-3 text-center text-xs font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-60";
@@ -35,6 +35,11 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
         <p className="mt-4 text-sm font-medium leading-relaxed opacity-80">
           {description}
         </p>
+        {participationType === "team" && maxParticipants && (
+          <p className="mt-2 text-xs font-bold uppercase tracking-wide opacity-90">
+            Maksimal Anggota Tim: {maxParticipants} Orang
+          </p>
+        )}
 
         <div className="mt-auto pt-6">
           {!isActive ? (
@@ -87,6 +92,11 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
           <div className="text-center w-full flex flex-col justify-start mb-1 sm:mb-4">
             <h3 className="decoration-white/50 leading-tight font-playfair text-sm sm:text-xl lg:text-xl mb-1 sm:mb-2 font-bold text-glow-beranda">{title}</h3>
             <p className="text-xs sm:text-sm leading-relaxed">{description}</p>
+            {participationType === "team" && maxParticipants && (
+              <p className="text-pink-300 font-semibold text-xs mt-1 uppercase tracking-wide">
+                Maksimal Anggota Tim: {maxParticipants} Orang
+              </p>
+            )}
           </div>
 
           <div className="w-full flex justify-center mt-auto">
@@ -338,6 +348,7 @@ const CompRegisCard = ({ variant = "default" }) => {
                   isActive={event.is_active}
                   eventId={event.id}
                   participationType={event.participation_type}
+                  maxParticipants={event.max_member}
                   onRegisterIndividual={handleRegisterIndividual}
                   onRegisterTeam={handleRegisterTeam}
                   loadingRegister={loadingRegister}

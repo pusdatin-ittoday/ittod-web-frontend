@@ -93,8 +93,8 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
     };
 
     const renderCompetition = (key, data) => {
-        const isIndividual = data.participationType === "individual";
-        const batchInfo = getCurrentBatchInfo(data.timelines);
+
+        // const batchInfo = getCurrentBatchInfo(data.timelines);
 
         // Check dan pastikan members selalu dalam bentuk array untuk rendering
         const membersArray = Array.isArray(data.members)
@@ -423,11 +423,11 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
                                 </div>
                                 <div className="mb-3">
                                     <p className="text-xs sm:text-sm text-white/90 mb-1">
-                                        <b className="text-pink-100">Harga {batchInfo.batchName}:</b> Rp {batchInfo.price}
+                                        <b className="text-pink-100">Harga {currentCompKey && competitions[currentCompKey] ? getCurrentBatchInfo(competitions[currentCompKey].timelines).batchName : ""}:</b> Rp {currentCompKey && competitions[currentCompKey] ? getCurrentBatchInfo(competitions[currentCompKey].timelines).price : ""}
                                     </p>
                                 </div>
                                 <div className="bg-white/10 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/80 italic shadow-inner text-justify">
-                                    <span className="font-bold text-pink-100">Contoh:</span> Ryan harus bayar sebanyak <span className="font-bold text-pink-100">{batchInfo.price}</span> rupiah jika Ryan ingin ikut <span className="font-bold text-pink-100">{data.competitionName}</span> pada {batchInfo.batchName}. Ryan harus transfer <span className="font-bold text-pink-100">{batchInfo.isBatch2 ? "100.002" : "80.002"}</span> Rupiah ke Asty Athetha Loethan.
+                                    <span className="font-bold text-pink-100">Contoh:</span> Ryan harus bayar sebanyak <span className="font-bold text-pink-100">{currentCompKey && competitions[currentCompKey] ? getCurrentBatchInfo(competitions[currentCompKey].timelines).price : ""}</span> rupiah jika Ryan ingin ikut <span className="font-bold text-pink-100">{currentCompKey && competitions[currentCompKey] ? competitions[currentCompKey].competitionName : ""}</span> pada {currentCompKey && competitions[currentCompKey] ? getCurrentBatchInfo(competitions[currentCompKey].timelines).batchName : ""}. Ryan harus transfer <span className="font-bold text-pink-100">{currentCompKey && competitions[currentCompKey] && getCurrentBatchInfo(competitions[currentCompKey].timelines).isBatch2 ? "100.002" : "80.002"}</span> Rupiah ke Asty Athetha Loethan.
                                 </div>
                             </div>
                         </div>

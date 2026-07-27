@@ -89,8 +89,7 @@ const CompSubmitCard = ({ variant = "default" }) => {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-  const [userData, setUserData] = useState({ name: "" });
-  const [competitions, setCompetitions] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [noCompetitions, setNoCompetitions] = useState(false);
@@ -117,20 +116,17 @@ const CompSubmitCard = ({ variant = "default" }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [userResponse, competitionsResponse] = await Promise.all([
+        const [, competitionsResponse] = await Promise.all([
           getCurrentUser(),
           getUserCompetitions()
         ]);
 
         // Process user data
-        if (userResponse.success && userResponse.data) {
-          const fullName = userResponse.data.full_name || userResponse.data.name || "User";
-          setUserData({ name: fullName });
-        }
+        // Process user data if needed
 
         // Process competitions data
         if (competitionsResponse.success && competitionsResponse.data) {
-          setCompetitions(competitionsResponse.data);
+          // setCompetitions(competitionsResponse.data);
           // Filter the events based on user's competitions that require submission AND are verified
           const userCompetitions = competitionsResponse.data || [];
           const filtered = userCompetitions
