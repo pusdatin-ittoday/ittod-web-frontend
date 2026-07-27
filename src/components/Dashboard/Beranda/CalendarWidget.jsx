@@ -22,17 +22,14 @@ const CalendarWidget = () => {
                 
                 const allEvents = [];
 
-                let hasJoinedCompetition = false;
-                if (userCompRes.success && userCompRes.data) {
-                    hasJoinedCompetition = Object.keys(userCompRes.data).length > 0;
-                }
+
 
                 let joinedEventIds = new Set();
                 if (userEventRes.success && Array.isArray(userEventRes.data)) {
                     userEventRes.data.forEach(ue => joinedEventIds.add(ue.event_id));
                 }
 
-                if (compRes.success && Array.isArray(compRes.data) && hasJoinedCompetition) {
+                if (compRes.success && Array.isArray(compRes.data)) {
                     allEvents.push(...compRes.data.map(e => ({
                         ...e,
                         type: "Competition",
