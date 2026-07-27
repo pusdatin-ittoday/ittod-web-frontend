@@ -159,21 +159,22 @@ const HeroSection = () => {
         {/* Theme Text */}
         <Motion.div variants={popIn} className="mt-8 flex justify-center w-full px-4">
           <h2
-            className="font-[Anybody] text-sm font-black uppercase italic leading-[1.2] tracking-[-0.02em] text-[#293f9e] sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl text-center whitespace-nowrap"
+            className="font-inter text-xs font-black uppercase italic leading-[1.3] tracking-tight text-[#293f9e] sm:text-base md:text-2xl lg:text-3xl xl:text-4xl text-center max-w-full"
             style={{
               WebkitTextStroke: "clamp(1px, 0.25vw, 4px) #ffffff",
               paintOrder: "stroke fill",
             }}
           >
             <Motion.span
-              className="inline-block px-2"
+              className="inline-block px-1 sm:px-2"
               style={{ rotate: -2 }}
               animate={reduceMotion ? undefined : { y: [0, -5, 0], rotate: [-2, 0, -2] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
               whileHover={{ scale: 1.03, rotate: -1 }}
               whileTap={{ scale: 0.98 }}
             >
-              Empowering Digital Innovators for Sustainability
+              <span className="block sm:inline">Empowering Digital Innovators </span>
+              <span className="block sm:inline">for Sustainability</span>
             </Motion.span>
           </h2>
         </Motion.div>
