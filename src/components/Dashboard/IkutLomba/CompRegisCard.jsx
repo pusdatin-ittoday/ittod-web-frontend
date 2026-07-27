@@ -28,18 +28,21 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
         className={`flex min-h-[210px] h-full flex-col border-[4px] border-[#191b1a] p-5 shadow-[7px_7px_0_#191b1a] sm:p-6 ${NEO_CARD_COLORS[colorIndex % NEO_CARD_COLORS.length]
           }`}
       >
-        <p className="text-[9px] font-black uppercase tracking-wide opacity-60">
-          {title}
-        </p>
         <h3 className="mt-3 text-xl font-black uppercase leading-tight">{title}</h3>
         <p className="mt-4 text-sm font-medium leading-relaxed opacity-80">
           {description}
         </p>
-        {participationType === "team" && maxParticipants && (
+        {participationType === "team" ? (
+          maxParticipants && (
+            <p className="mt-2 text-xs font-bold uppercase tracking-wide opacity-90">
+              Maksimal Anggota Tim: {maxParticipants} Orang
+            </p>
+          )
+        ) : participationType === "individual" ? (
           <p className="mt-2 text-xs font-bold uppercase tracking-wide opacity-90">
-            Maksimal Anggota Tim: {maxParticipants} Orang
+            Kategori: Individu
           </p>
-        )}
+        ) : null}
 
         <div className="mt-auto pt-6">
           {!isActive ? (
@@ -92,11 +95,17 @@ const IkutLomba = ({ title, description, image, isActive, eventId, participation
           <div className="text-center w-full flex flex-col justify-start mb-1 sm:mb-4">
             <h3 className="decoration-white/50 leading-tight font-playfair text-sm sm:text-xl lg:text-xl mb-1 sm:mb-2 font-bold text-glow-beranda">{title}</h3>
             <p className="text-xs sm:text-sm leading-relaxed">{description}</p>
-            {participationType === "team" && maxParticipants && (
+            {participationType === "team" ? (
+              maxParticipants && (
+                <p className="text-pink-300 font-semibold text-xs mt-1 uppercase tracking-wide">
+                  Maksimal Anggota Tim: {maxParticipants} Orang
+                </p>
+              )
+            ) : participationType === "individual" ? (
               <p className="text-pink-300 font-semibold text-xs mt-1 uppercase tracking-wide">
-                Maksimal Anggota Tim: {maxParticipants} Orang
+                Kategori: Individu
               </p>
-            )}
+            ) : null}
           </div>
 
           <div className="w-full flex justify-center mt-auto">
