@@ -5,6 +5,24 @@ import { AlertProvider } from "./context/AlertContext";
 import MotionProvider from "./components/motion/MotionProvider";
 import LoadingState from "./components/ui/LoadingState";
 
+const routeTitleMap = {
+  "/": "IT TODAY 2026 — The Biggest IT Event | IPB University",
+  "/home": "IT TODAY 2026 — The Biggest IT Event | IPB University",
+  "/login": "Masuk — IT TODAY 2026",
+  "/register": "Daftar Akun — IT TODAY 2026",
+  "/verify-password": "Verifikasi Password — IT TODAY 2026",
+  "/forget-password": "Lupa Password — IT TODAY 2026",
+  "/new-password": "Password Baru — IT TODAY 2026",
+  "/edit-profile": "Edit Profil — IT TODAY 2026",
+  "/dashboard/beranda": "Dashboard — IT TODAY 2026",
+  "/dashboard/ikut-lomba": "Daftar Lomba — IT TODAY 2026",
+  "/dashboard/ikut-event": "Daftar Event — IT TODAY 2026",
+  "/dashboard/pengumuman": "Pengumuman — IT TODAY 2026",
+  "/dashboard/submit-lomba": "Pengumpulan Karya Lomba — IT TODAY 2026",
+  "/dashboard/edit-profile": "Edit Profil — IT TODAY 2026",
+  "/sponsors": "Sponsor Kami — IT TODAY 2026",
+};
+
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
@@ -14,6 +32,43 @@ const ScrollToTop = () => {
     }
     window.scrollTo(0, 0);
   }, [pathname]);
+
+  return null;
+};
+
+const PageTitleUpdater = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const pathname = location.pathname;
+
+    if (routeTitleMap[pathname]) {
+      document.title = routeTitleMap[pathname];
+      return;
+    }
+
+    if (pathname.startsWith("/daftar-event/")) {
+      const target = pathname.replace("/daftar-event/", "");
+      const formatted = target
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+      document.title = `Pendaftaran ${formatted} — IT TODAY 2026`;
+      return;
+    }
+
+    if (pathname.startsWith("/register-competition/")) {
+      const target = pathname.replace("/register-competition/", "");
+      const formatted = target.toUpperCase();
+      document.title = `Pendaftaran ${formatted} — IT TODAY 2026`;
+      return;
+    }
+
+    if (pathname.startsWith("/dashboard/lomba/")) {
+      document.title = `Pendaftaran Lomba — IT TODAY 2026`;
+      return;
+    }
+  }, [location]);
 
   return null;
 };
@@ -57,6 +112,7 @@ const AppRoutes = () => {
   return (
     <div className="min-h-screen bg-[#f7f7f4]">
       <ScrollToTop />
+      <PageTitleUpdater />
       <Suspense fallback={<LoadingState />}>
         <Routes>
           <Route path="/" element={<LandingPage />} />

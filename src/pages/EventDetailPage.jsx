@@ -48,6 +48,9 @@ const EventDetailPage = () => {
       if (response.success && response.data) {
         // Map API fields to UI fields
         const apiData = response.data;
+        if (apiData.title) {
+          document.title = `${apiData.title} — IT TODAY 2026`;
+        }
         const formattedEvent = {
           ...apiData,
           tagline: `${apiData.title.toUpperCase()} // 2026`,

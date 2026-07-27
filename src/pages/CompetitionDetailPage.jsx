@@ -59,6 +59,9 @@ const CompetitionDetailPage = () => {
       const response = await getEventBySlug(slug);
       if (response.success && response.data) {
         const apiData = response.data;
+        if (apiData.title) {
+          document.title = `${apiData.title} — IT TODAY 2026`;
+        }
         const formattedComp = {
           ...apiData,
           tagline: `${apiData.title.toUpperCase()} // 2026`,
