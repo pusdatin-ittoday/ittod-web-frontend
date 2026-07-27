@@ -52,11 +52,11 @@ const AnnouncementCard = ({ title, description, date, category, eventTitle, isPi
                 </span>
             </div>
 
-            <h3 className="font-['Anybody'] text-2xl uppercase leading-tight text-[#1A1C1C] mt-2">
+            <h3 className="font-inter font-black text-2xl uppercase leading-tight text-[#1A1C1C] mt-2">
                 {title}
             </h3>
 
-            <p className="font-['Hanken_Grotesk'] text-sm leading-relaxed text-[#464652] pb-2 whitespace-pre-wrap">
+            <p className="font-inter text-sm font-medium leading-relaxed text-[#464652] pb-2 whitespace-pre-wrap">
                 <TextWithLinks text={description} linkClassName="text-blue-600 hover:text-blue-800 underline" />
             </p>
         </article>

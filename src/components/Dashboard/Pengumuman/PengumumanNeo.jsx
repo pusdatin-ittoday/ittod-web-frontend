@@ -193,7 +193,7 @@ const PengumumanNeo = () => {
                 {/* Header */}
                 <div className="relative mb-6 self-start">
                     <div className="transform -rotate-2 border-b-[8px] border-[#FCD400] pb-1">
-                        <h1 className="font-['Anybody'] text-4xl sm:text-5xl font-extrabold uppercase text-[#34399F] tracking-tight">
+                        <h1 className="font-inter font-black text-4xl sm:text-5xl uppercase text-[#34399F] tracking-tight">
                             ANNOUNCEMENTS
                         </h1>
                     </div>
@@ -224,7 +224,7 @@ const PengumumanNeo = () => {
                 <div className="flex flex-col gap-6">
                     {paginatedAnnouncements.length === 0 ? (
                         <div className="border-[4px] border-[#1A1C1C] bg-white p-10 text-center shadow-[6px_6px_0_#000]">
-                            <p className="font-['Space_Grotesk'] text-base font-bold text-gray-500">
+                            <p className="font-inter font-bold text-base text-gray-500">
                                 Tidak ada pengumuman untuk kategori ini.
                             </p>
                         </div>
