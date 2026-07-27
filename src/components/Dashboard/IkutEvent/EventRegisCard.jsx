@@ -1,63 +1,131 @@
 import React from "react";
 import Button from "../../ui/Button";
 import { FiUserPlus } from "react-icons/fi";
+import { FaWhatsapp, FaDiscord } from "react-icons/fa";
 
 import { getPublicEvents } from "../../../api/eventPublic";
+import { getJoinEvent } from "../../../utils/api/event";
 import PaginationControls from "../PaginationControls";
 
 const NEO_CARD_COLORS = ["bg-[#e8fbef]", "bg-[#ffe26b]", "bg-[#565bc5] text-white"];
 const ITEMS_PER_PAGE = 4;
 
-const IkutEvent = ({ title, description, isActive, eventId, colorIndex = 0 }) => {
+const IkutEvent = ({
+  title,
+  description,
+  isActive,
+  eventId,
+  eventSlug,
+  isRegistered,
+  waGroupLink,
+  colorIndex = 0,
+}) => {
   return (
     <article
-      className={`flex min-h-[190px] h-full flex-col border-[4px] border-[#191b1a] p-5 shadow-[7px_7px_0_#191b1a] sm:p-6 ${NEO_CARD_COLORS[colorIndex % NEO_CARD_COLORS.length]
-        }`}
+      className={`flex min-h-[190px] h-full flex-col border-[4px] border-[#191b1a] p-5 shadow-[7px_7px_0_#191b1a] sm:p-6 ${
+        NEO_CARD_COLORS[colorIndex % NEO_CARD_COLORS.length]
+      }`}
     >
       <h3 className="text-xl font-black uppercase leading-tight">{title}</h3>
       <p className="mt-4 text-sm font-medium leading-relaxed opacity-80">
         {description}
       </p>
       <div className="mt-auto pt-6">
-        <Button
-          variant={isActive ? "yellow-solid" : "transparent"}
-          fullWidth
-          href={isActive ? `/daftar-event/${eventId}` : undefined}
-          disabled={!isActive}
-          className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
-        >
-          {isActive ?
-            <>
-              <FiUserPlus size={20} />
-              Daftar Sekarang
-            </>
-            :
-            <>
-              Pendaftaran Ditutup/Belum Dibuka
-            </>}
-        </Button>
+        {isRegistered ? (
+          waGroupLink ? (
+            <a
+              href={waGroupLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex w-full items-center justify-center gap-2 border-[3px] border-black py-4 text-center text-sm font-black uppercase tracking-wider text-white shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] md:text-base ${
+                waGroupLink.toLowerCase().includes("discord")
+                  ? "bg-[#5865F2]"
+                  : "bg-[#18c964]"
+              }`}
+            >
+              {waGroupLink.toLowerCase().includes("discord") ? (
+                <>
+                  <FaDiscord size={20} /> Grup Discord
+                </>
+              ) : (
+                <>
+                  <FaWhatsapp size={20} /> Grup WhatsApp
+                </>
+              )}
+            </a>
+          ) : (
+            <Button
+              variant="yellow-solid"
+              fullWidth
+              href={`/daftar-event/${eventSlug || eventId}`}
+              className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
+            >
+              <FaWhatsapp size={20} />
+              Grup WhatsApp
+            </Button>
+          )
+        ) : (
+          <Button
+            variant={isActive ? "yellow-solid" : "transparent"}
+            fullWidth
+            href={isActive ? `/daftar-event/${eventSlug || eventId}` : undefined}
+            disabled={!isActive}
+            className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
+          >
+            {isActive ? (
+              <>
+                <FiUserPlus size={20} />
+                Daftar Sekarang
+              </>
+            ) : (
+              <>Pendaftaran Ditutup/Belum Dibuka</>
+            )}
+          </Button>
+        )}
       </div>
-
     </article>
   );
 };
 
 const EventRegisCard = () => {
   const [eventsData, setEventsData] = React.useState([]);
+  const [userEvents, setUserEvents] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [currentPage, setCurrentPage] = React.useState(0);
 
   React.useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchData = async () => {
       setLoading(true);
-      const res = await getPublicEvents('non_competition');
-      if (res.success && res.data) {
-        setEventsData(res.data);
-        setCurrentPage(0);
+      try {
+        const [publicRes, userRes] = await Promise.allSettled([
+          getPublicEvents("non_competition"),
+          getJoinEvent(),
+        ]);
+
+        if (
+          publicRes.status === "fulfilled" &&
+          publicRes.value?.success &&
+          publicRes.value?.data
+        ) {
+          setEventsData(publicRes.value.data);
+          setCurrentPage(0);
+        }
+
+        if (userRes.status === "fulfilled") {
+          const res = userRes.value;
+          const events = res?.data || res;
+          const list = events?.data || events?.events || events;
+          if (Array.isArray(list)) {
+            setUserEvents(list);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching event registration data:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
-    fetchEvents();
+    fetchData();
   }, []);
 
   const totalPages = Math.ceil(eventsData.length / ITEMS_PER_PAGE);
@@ -97,6 +165,33 @@ const EventRegisCard = () => {
                 visibleEvents.length % 2 === 1 && idx === visibleEvents.length - 1;
               const absoluteIndex = currentPage * ITEMS_PER_PAGE + idx;
 
+              const userReg = userEvents.find((ue) => {
+                const ueId = (ue?.event_id || ue?.id || "").toString().toLowerCase();
+                const ueSlug = (ue?.event?.slug || ue?.slug || "").toString().toLowerCase();
+                const ueTitle = (ue?.event?.title || ue?.title || "").toString().toLowerCase();
+
+                const currentId = (event.id || "").toString().toLowerCase();
+                const currentSlug = (event.slug || "").toString().toLowerCase();
+                const currentTitle = (event.title || "").toString().toLowerCase();
+
+                if (
+                  ueId === currentId ||
+                  ueSlug === currentId ||
+                  (currentSlug && (ueId === currentSlug || ueSlug === currentSlug))
+                ) {
+                  return true;
+                }
+
+                if (currentTitle.includes("seminar") && ueTitle.includes("seminar")) return true;
+                if (currentTitle.includes("bootcamp") && ueTitle.includes("bootcamp")) return true;
+                if (currentTitle.includes("workshop") && ueTitle.includes("workshop")) return true;
+
+                return false;
+              });
+
+              const isRegistered = !!userReg;
+              const waGroupLink = userReg?.event?.whatsapp_group_link || event.whatsapp_group_link;
+
               return (
                 <div
                   key={event.id}
@@ -112,6 +207,9 @@ const EventRegisCard = () => {
                     image={event.logo_url}
                     isActive={event.is_active}
                     eventId={event.id}
+                    eventSlug={event.slug}
+                    isRegistered={isRegistered}
+                    waGroupLink={waGroupLink}
                     colorIndex={absoluteIndex}
                   />
                 </div>

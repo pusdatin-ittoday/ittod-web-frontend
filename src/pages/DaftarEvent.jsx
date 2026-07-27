@@ -126,30 +126,39 @@ const DaftarEvent = () => {
 		initializeUserData();
 	}, []);
 
-	// Check if user already registered for Bootcamp or National Seminar on load
+	// Check if user already registered for event on load
 	useEffect(() => {
 		const checkExistingRegistration = async () => {
-			if (target !== "bootcamp" && target !== "national-seminar") return;
 			try {
 				const res = await getJoinEvent();
 				const events = res?.data || res;
 				const list = events?.data || events?.events || events;
+				const currentTarget = (target === "workshop" && workshopChoice ? workshopChoice : target || "").toLowerCase();
+
 				const isRegistered = Array.isArray(list)
 					? list.some((e) => {
-						const id = (e?.event_id || e?.id || e?.slug || "")
-							.toString()
-							.toLowerCase();
-						const name = (e?.event_name || e?.name || e?.title || "")
-							.toString()
-							.toLowerCase();
-						if (target === "bootcamp") {
-							return id.includes("bootcamp") || name.includes("bootcamp");
-						} else if (target === "national-seminar") {
-							return id.includes("seminar") || name.includes("seminar");
+						const eId = (e?.event_id || e?.id || "").toString().toLowerCase();
+						const eSlug = (e?.event?.slug || e?.slug || "").toString().toLowerCase();
+						const eTitle = (e?.event?.title || e?.event_name || e?.name || e?.title || "").toString().toLowerCase();
+
+						if (!currentTarget) return false;
+
+						if (eId === currentTarget || eSlug === currentTarget) return true;
+
+						if (currentTarget.includes("bootcamp")) {
+							return eId.includes("bootcamp") || eSlug.includes("bootcamp") || eTitle.includes("bootcamp");
 						}
-						return false;
+						if (currentTarget.includes("seminar")) {
+							return eId.includes("seminar") || eSlug.includes("seminar") || eTitle.includes("seminar");
+						}
+						if (currentTarget.includes("workshop") || currentTarget.includes("cyber") || currentTarget.includes("ux") || currentTarget.includes("learning")) {
+							return eId.includes("workshop") || eSlug.includes("workshop") || eTitle.includes("workshop") ||
+								(workshopChoice && (eTitle.includes(workshopChoice.toLowerCase()) || eSlug.includes(workshopChoice.toLowerCase())));
+						}
+						return eId.includes(currentTarget) || eSlug.includes(currentTarget) || eTitle.includes(currentTarget);
 					})
 					: false;
+
 				if (isRegistered) {
 					setAlreadyRegistered(true);
 					setSubmitted(true);
@@ -160,7 +169,7 @@ const DaftarEvent = () => {
 		};
 
 		checkExistingRegistration();
-	}, [target]);
+	}, [target, workshopChoice]);
 
 	// Fetch the current event configuration from Admin/database.
 	useEffect(() => {
@@ -176,14 +185,48 @@ const DaftarEvent = () => {
 			try {
 				const res = await getPublicEvents("non_competition");
 				if (res.success && res.data) {
-					const routeEventId =
-						target === "workshop"
-							? workshopChoice
-							: (target === "national-seminar" || target === "seminar")
-								? "seminar"
-								: target;
-					const eventId = eventIdMapping[routeEventId] || routeEventId;
-					const event = res.data.find(e => e.id.toLowerCase() === eventId.toLowerCase());
+					const rawTarget = (target === "workshop" ? workshopChoice : target || "").toLowerCase().trim();
+					
+					// 1. Direct match by id or slug
+					let event = res.data.find(e => 
+						(e.id && e.id.toLowerCase() === rawTarget) ||
+						(e.slug && e.slug.toLowerCase() === rawTarget)
+					);
+
+					// 2. Mapped query match
+					if (!event) {
+						const routeEventId =
+							target === "workshop"
+								? workshopChoice
+								: (target === "national-seminar" || target === "seminar" || target === "seminar-nasional")
+									? "seminar"
+									: target;
+						const mappedId = eventIdMapping[routeEventId] || routeEventId;
+						event = res.data.find(e => 
+							(e.id && e.id.toLowerCase() === mappedId.toLowerCase()) ||
+							(e.slug && e.slug.toLowerCase() === mappedId.toLowerCase())
+						);
+					}
+
+					// 3. Substring title/slug/id match
+					if (!event) {
+						event = res.data.find(e => {
+							const title = (e.title || "").toLowerCase();
+							const slug = (e.slug || "").toLowerCase();
+							const id = (e.id || "").toLowerCase();
+
+							if (rawTarget.includes("seminar") || rawTarget.includes("national")) {
+								return title.includes("seminar") || slug.includes("seminar") || id.includes("seminar");
+							}
+							if (rawTarget.includes("bootcamp")) {
+								return title.includes("bootcamp") || slug.includes("bootcamp") || id.includes("bootcamp");
+							}
+							if (rawTarget.includes("workshop")) {
+								return title.includes("workshop") || slug.includes("workshop") || id.includes("workshop");
+							}
+							return title.includes(rawTarget) || slug.includes(rawTarget) || id.includes(rawTarget);
+						});
+					}
 
 					if (event) {
 						setExists(true);

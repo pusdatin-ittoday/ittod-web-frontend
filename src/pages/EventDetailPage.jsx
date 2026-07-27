@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FiUserPlus } from 'react-icons/fi';
-import { FaWhatsapp } from 'react-icons/fa';
+import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
 import NavbarNeo from '../components/layout/Navbar';
 import FooterNeo from '../components/layout/Footer';
 import PageBanner from '../components/ui/PageBanner';
@@ -9,6 +9,7 @@ import Button from '../components/ui/Button';
 import AgendaSidebar from '../components/ui/AgendaSidebar';
 import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
+import { getJoinEvent } from '../utils/api/event';
 import LoadingState from '../components/ui/LoadingState';
 import EventGallery from '../components/event/EventGallery';
 import { getEventGalleryImages, getEventGalleryLabel } from '../data/eventGalleryData';
@@ -37,6 +38,8 @@ const EventDetailPage = () => {
   const { slug } = useParams();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [userWaLink, setUserWaLink] = useState("");
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -51,6 +54,37 @@ const EventDetailPage = () => {
           icon: apiData.logo_url,
         };
         setEvent(formattedEvent);
+
+        // Check user registration status
+        try {
+          const userRes = await getJoinEvent();
+          const userEventsData = userRes?.data || userRes;
+          const list = userEventsData?.data || userEventsData?.events || userEventsData;
+          if (Array.isArray(list)) {
+            const matched = list.find((ue) => {
+              const ueId = (ue?.event_id || ue?.id || "").toString().toLowerCase();
+              const ueSlug = (ue?.event?.slug || ue?.slug || "").toString().toLowerCase();
+              const ueTitle = (ue?.event?.title || ue?.title || "").toString().toLowerCase();
+
+              const curId = (apiData.id || "").toString().toLowerCase();
+              const curSlug = (apiData.slug || slug || "").toString().toLowerCase();
+              const curTitle = (apiData.title || "").toString().toLowerCase();
+
+              if (ueId === curId || ueSlug === curId || (curSlug && (ueId === curSlug || ueSlug === curSlug))) return true;
+              if (curTitle.includes("seminar") && ueTitle.includes("seminar")) return true;
+              if (curTitle.includes("bootcamp") && ueTitle.includes("bootcamp")) return true;
+              if (curTitle.includes("workshop") && ueTitle.includes("workshop")) return true;
+              return false;
+            });
+
+            if (matched) {
+              setIsRegistered(true);
+              setUserWaLink(matched.event?.whatsapp_group_link || apiData.whatsapp_group_link || "");
+            }
+          }
+        } catch {
+          // Ignore if user is not logged in or fails to fetch joined events
+        }
       }
       setLoading(false);
     };
@@ -82,6 +116,8 @@ const EventDetailPage = () => {
     );
   }
 
+  const effectiveWaLink = userWaLink || event.whatsapp_group_link;
+
   return (
     <div className="min-h-screen bg-[#f7f7f4] text-black">
       <NavbarNeo />
@@ -109,24 +145,58 @@ const EventDetailPage = () => {
                     {event.description}
                   </p>
 
-                  {/* CTA: Daftar Sekarang */}
-                  <Button
-                    variant={event.is_active ? "yellow-solid" : "transparent"}
-                    fullWidth
-                    href={event.is_active ? `/daftar-event/${slug}` : undefined}
-                    disabled={!event.is_active}
-                    className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
-                  >
-                    {event.is_active ? 
-                    <>
-                      <FiUserPlus size={20} />
-                      Daftar Sekarang
-                    </> 
-                    : 
-                    <>
-                      Pendaftaran Ditutup/Belum Dibuka
-                    </>}
-                  </Button>
+                  {/* CTA: WhatsApp Link if Registered / Daftar Sekarang if Not */}
+                  {isRegistered ? (
+                    effectiveWaLink ? (
+                      <a
+                        href={effectiveWaLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`flex w-full items-center justify-center gap-2 border-[3px] border-black py-4 text-center font-inter text-sm font-black uppercase tracking-wider text-white shadow-[4px_4px_0_#111] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#111] md:text-base ${
+                          effectiveWaLink.toLowerCase().includes("discord")
+                            ? "bg-[#5865F2]"
+                            : "bg-[#18c964]"
+                        }`}
+                      >
+                        {effectiveWaLink.toLowerCase().includes("discord") ? (
+                          <>
+                            <FaDiscord size={20} /> Grup Discord
+                          </>
+                        ) : (
+                          <>
+                            <FaWhatsapp size={20} /> Grup WhatsApp
+                          </>
+                        )}
+                      </a>
+                    ) : (
+                      <Button
+                        variant="yellow-solid"
+                        fullWidth
+                        href={`/daftar-event/${slug}`}
+                        className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
+                      >
+                        <FaWhatsapp size={20} />
+                        Grup WhatsApp
+                      </Button>
+                    )
+                  ) : (
+                    <Button
+                      variant={event.is_active ? "yellow-solid" : "transparent"}
+                      fullWidth
+                      href={event.is_active ? `/daftar-event/${slug}` : undefined}
+                      disabled={!event.is_active}
+                      className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
+                    >
+                      {event.is_active ? (
+                        <>
+                          <FiUserPlus size={20} />
+                          Daftar Sekarang
+                        </>
+                      ) : (
+                        <>Pendaftaran Ditutup/Belum Dibuka</>
+                      )}
+                    </Button>
+                  )}
 
                   {/* Contact Person */}
                   {(event.contact_person1 || event.contact_person2) && (
