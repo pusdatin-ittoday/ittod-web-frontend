@@ -236,6 +236,10 @@ const CompetitionSection = () => {
                     <img
                       src={comp.logo_url || "/images/DummyImg2.jpeg"}
                       alt={comp.title}
+                      width="300"
+                      height="240"
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-contain p-7 transition-transform duration-500 ease-out group-hover:rotate-2 group-hover:scale-110 sm:p-9"
                       onError={(e) => {
                         e.target.src = "/images/DummyImg2.jpeg";

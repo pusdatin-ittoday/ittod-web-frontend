@@ -220,6 +220,8 @@ const MemoriesCarousel = () => {
                   <img
                     src={item.src}
                     alt={item.label}
+                    width="400"
+                    height="300"
                     className="h-full w-full object-cover"
                     draggable={false}
                     loading="lazy"

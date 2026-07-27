@@ -83,6 +83,10 @@ const MainEventSection = () => {
                   <img
                     src={event.logo_url || "/images/DummyImg2.jpeg"}
                     alt={event.title}
+                    width="160"
+                    height="120"
+                    loading="lazy"
+                    decoding="async"
                     className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110"
                     onError={(e) => {
                       e.target.src = "/images/DummyImg2.jpeg";
