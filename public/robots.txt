@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://ittoday.web.id/sitemap.xml
