@@ -87,9 +87,16 @@ const EventDetailPage = () => {
         }
       }
       setLoading(false);
+      window.scrollTo(0, 0);
     };
     fetchEvent();
   }, [slug]);
+
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo(0, 0);
+    }
+  }, [loading]);
 
   if (loading) {
     return <LoadingState />;

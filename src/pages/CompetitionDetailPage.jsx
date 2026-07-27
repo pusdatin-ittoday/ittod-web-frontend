@@ -69,9 +69,16 @@ const CompetitionDetailPage = () => {
         setCompetition(formattedComp);
       }
       setLoading(false);
+      window.scrollTo(0, 0);
     };
     fetchCompetition();
   }, [slug]);
+
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo(0, 0);
+    }
+  }, [loading]);
 
   const isIndividualCompetition = isIndividualParticipation(
     competition?.participation_type ||

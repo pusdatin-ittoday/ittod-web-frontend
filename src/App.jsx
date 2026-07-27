@@ -1,9 +1,22 @@
-import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import React, { Suspense, lazy, useEffect } from "react";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { AlertProvider } from "./context/AlertContext";
 import MotionProvider from "./components/motion/MotionProvider";
 import LoadingState from "./components/ui/LoadingState";
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const EventDetailPage = lazy(() => import("./pages/EventDetailPage"));
@@ -43,6 +56,7 @@ const ProtectedDashboard = ({ children }) => (
 const AppRoutes = () => {
   return (
     <div className="min-h-screen bg-[#f7f7f4]">
+      <ScrollToTop />
       <Suspense fallback={<LoadingState />}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
