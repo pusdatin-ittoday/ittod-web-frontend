@@ -49,7 +49,7 @@ const EventDetailPage = () => {
         // Map API fields to UI fields
         const apiData = response.data;
         if (apiData.title) {
-          document.title = `${apiData.title} — IT TODAY 2026`;
+          document.title = `${apiData.title} - IT TODAY 2026`;
         }
         const formattedEvent = {
           ...apiData,
