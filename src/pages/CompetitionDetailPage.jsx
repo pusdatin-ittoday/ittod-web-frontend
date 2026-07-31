@@ -17,6 +17,7 @@ import { registerTeam } from '../api/compe';
 import { requireCompleteProfile } from '../utils/profileCompletion';
 import { useAlert } from '../context/AlertContext';
 import { useAuth } from '../context/AuthContext';
+import CompetitionResultsBoard from '../components/competition/CompetitionResultsBoard';
 
 const formatWaLink = (num) => {
   if (!num) return '#';
@@ -248,7 +249,7 @@ const CompetitionDetailPage = () => {
                   )}
                 </div>
 
-                {/* Gallery — di bawah About card, terbatas lebar kolom kiri */}
+                {/* Gallery */}
                 {(() => {
                   const galleryImages = getEventGalleryImages(slug);
                   const galleryLabel = getEventGalleryLabel(slug);
@@ -261,6 +262,9 @@ const CompetitionDetailPage = () => {
                     </div>
                   ) : null;
                 })()}
+
+                {/* Finalis & Juara Board */}
+                <CompetitionResultsBoard eventId={competition?.id || slug} />
               </div>
 
               {/* Right: Sidebar */}
