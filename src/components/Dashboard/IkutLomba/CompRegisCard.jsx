@@ -200,6 +200,7 @@ const CompRegisCard = ({ variant = "default" }) => {
   const [currentPage, setCurrentPage] = useState(0);
 
   const handleRegisterIndividual = async (eventId, eventTitle) => {
+    if (loadingRegister) return;
     if (!(await requireCompleteProfile(navigate, showAlert))) {
       return;
     }
@@ -269,6 +270,7 @@ const CompRegisCard = ({ variant = "default" }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loadingJoin) return;
 
     if (!(await requireCompleteProfile(navigate, showAlert))) {
       return;
