@@ -56,7 +56,7 @@ class EditProfile extends Component {
             phone_number: "Nomor HP (gunakan 08..., 628..., atau +628...)",
             jenis_kelamin: "Jenis Kelamin",
             id_line: "ID Line",
-            id_discord: "ID Discord",
+            id_discord: "Username Discord",
             id_instagram: "ID Instagram",
             pendidikan: "Status Pendidikan",
             nama_sekolah: "Nama Sekolah/Institusi",
@@ -598,7 +598,7 @@ class EditProfile extends Component {
                                 <div className="flex flex-col gap-1.5">
                                     <div className="flex justify-between items-end">
                                         <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
-                                            ID Discord
+                                            Username Discord
                                         </label>
                                         <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
                                             *Wajib
@@ -613,7 +613,7 @@ class EditProfile extends Component {
                                             inputMode="text"
                                             autoComplete="off"
                                             name="id_discord"
-                                            placeholder="ID Discord"
+                                            placeholder="Username Discord"
                                             value={id_discord}
                                             onChange={this.handleChange}
                                             className={`w-full border border-[#1A1C1C] bg-[#F3F3F3] pl-10 pr-3 py-2.5 text-xs font-semibold text-[#1A1C1C] placeholder:text-gray-400 focus:outline-none focus:bg-white ${errorFields.includes(this.fieldLabels.id_discord) ? 'border-red-500 ring-1 ring-red-500 bg-red-50' : ''}`}
