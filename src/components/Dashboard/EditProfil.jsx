@@ -311,20 +311,14 @@ class EditProfile extends Component {
                 formData.append('profileImage', KTM);
             }
 
-            const response = await instance.patch('/api/user', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            const response = await instance.patch('/api/user', formData);
 
             if (twibbon && twibbonChanged) {
                 const twibbonForm = new FormData();
                 twibbonForm.append('userTwibbon', twibbon);
 
                 try {
-                    await instance.put('/api/user/twibbon', twibbonForm, {
-                        headers: { 'Content-Type': 'multipart/form-data' }
-                    });
+                    await instance.put('/api/user/twibbon', twibbonForm);
                 } catch (twibbonError) {
                     console.error("Twibbon upload failed:", twibbonError);
                     this.setState({
