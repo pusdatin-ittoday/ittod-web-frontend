@@ -133,10 +133,16 @@ const SubmitCompetition = () => {
           );
 
           if (team && team.teamID) {
-            const isApproved = team.isVerified === true || team.isVerified === 1 || team.isVerified === 'approved';
-            if (!isApproved) {
+            const isPaymentApproved = team.isVerified === true || team.isVerified === 1 || team.isVerified === 'approved';
+            const isDocumentApproved = team.isDocumentVerified === true || team.isDocumentVerified === 1 || team.isDocumentVerified === 'approved';
+            const isFullyApproved = isPaymentApproved && isDocumentApproved;
+
+            if (!isFullyApproved) {
+              const reason = !isPaymentApproved
+                ? "Pembayaran tim Anda belum diverifikasi oleh admin."
+                : "Berkas tim Anda belum diverifikasi oleh panitia lomba.";
               setAlertType("error");
-              setAlertMessage("Pendaftaran tim Anda belum disetujui (Approved) oleh admin");
+              setAlertMessage(`Akses ditolak: ${reason} Jika ada kesalahan, silakan hubungi panitia.`);
               setShowAlert(true);
               setTimeout(() => {
                 navigate("/dashboard/submit-lomba");
