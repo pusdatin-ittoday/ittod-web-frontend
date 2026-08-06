@@ -200,7 +200,9 @@ const CompSubmitCard = ({ variant = "default" }) => {
 
           // 1. Competitions requiring internal submission
           const submissionComps = userCompetitions
-            .filter(comp => comp.requiresSubmission === true && (comp.isVerified === true || comp.isVerified === 1 || comp.isVerified === 'approved'))
+            .filter(comp => comp.requiresSubmission === true && 
+              (comp.isVerified === true || comp.isVerified === 1 || comp.isVerified === 'approved') &&
+              (comp.isDocumentVerified === true || comp.isDocumentVerified === 1 || comp.isDocumentVerified === 'approved'))
             .map(comp => ({
               id: comp.competitionId,
               title: comp.competitionName,
@@ -212,7 +214,9 @@ const CompSubmitCard = ({ variant = "default" }) => {
 
           // 2. Competitions with external platform link (non-submission internal)
           const externalComps = userCompetitions
-            .filter(comp => comp.externalPlatformLink && comp.requiresSubmission !== true && (comp.isVerified === true || comp.isVerified === 1 || comp.isVerified === 'approved'))
+            .filter(comp => comp.externalPlatformLink && comp.requiresSubmission !== true && 
+              (comp.isVerified === true || comp.isVerified === 1 || comp.isVerified === 'approved') &&
+              (comp.isDocumentVerified === true || comp.isDocumentVerified === 1 || comp.isDocumentVerified === 'approved'))
             .map(comp => ({
               id: comp.competitionId,
               title: comp.competitionName,
