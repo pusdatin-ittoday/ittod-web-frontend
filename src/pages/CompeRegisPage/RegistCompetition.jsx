@@ -157,8 +157,8 @@ const RegistCompetition = () => {
             
             // Redirect after showing success message
             setTimeout(() => {
-                window.location.href = "/dashboard/ikut-lomba"; 
-            }, 2000);
+                window.location.href = "/dashboard/beranda"; 
+            }, 1500);
             
         } catch (error) {
             console.error("Registration error:", error);
