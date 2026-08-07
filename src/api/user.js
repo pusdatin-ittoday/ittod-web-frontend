@@ -581,3 +581,31 @@ export const checkIpbOrMinetoday = async () => {
 		};
 	}
 };
+
+export const submitUserFeedback = async (formData) => {
+	try {
+		const response = await instance.post("/api/user/feedback", formData, {
+			headers: { "Content-Type": "multipart/form-data" },
+		});
+		return { success: true, data: response.data };
+	} catch (error) {
+		console.error("Error submitting user feedback:", error);
+		return {
+			success: false,
+			error: error.response?.data?.message || "Gagal mengirim feedback.",
+		};
+	}
+};
+
+export const getUserFeedbacks = async () => {
+	try {
+		const response = await instance.get("/api/user/feedback");
+		return { success: true, data: response.data.data };
+	} catch (error) {
+		console.error("Error getting user feedbacks:", error);
+		return {
+			success: false,
+			error: error.response?.data?.message || "Gagal memuat feedback.",
+		};
+	}
+};

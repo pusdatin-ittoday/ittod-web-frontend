@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MdHomeFilled } from "react-icons/md";
+import { MdHomeFilled, MdFeedback } from "react-icons/md";
 import { GiTrophy } from "react-icons/gi";
 import { MdEvent } from "react-icons/md";
 import { FaFileUpload, FaBell, FaDiscord } from "react-icons/fa";
@@ -139,6 +139,21 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                         <span className="shrink-0 text-lg lg:text-base"><FaDiscord className="text-white" /></span>
                         <span className="leading-tight">Join Discord</span>
                     </button>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            if (setActive) setActive("feedback");
+                            navigate("/dashboard/feedback");
+                        }}
+                        className={`relative flex flex-col lg:flex-row justify-center lg:justify-start min-h-14 items-center gap-1 lg:gap-3 border-[3px] border-black px-1 lg:px-3 py-2 lg:py-3 text-center lg:text-left text-[11px] lg:text-xs font-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none sm:text-sm cursor-pointer ${
+                            active === "feedback"
+                                ? "bg-[#ffd400] text-[#191b1a]"
+                                : "bg-white text-[#191b1a]"
+                        }`}
+                    >
+                        <span className="shrink-0 text-lg lg:text-base"><MdFeedback className="text-xl text-[#3f46b8]" /></span>
+                        <span className="leading-tight">Feedback & Saran</span>
+                    </button>
                 </div>
 
                 <div className="mt-auto hidden border-[3px] border-[#4f58d0] bg-[#191b1a] p-4 text-white shadow-[5px_5px_0_#191b1a] lg:block">
@@ -199,6 +214,28 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                     <span className="flex-shrink-0"><FaDiscord /></span>
                     <span className="whitespace-nowrap text-center sm:text-left leading-tight flex-1">
                         Join Discord
+                    </span>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => {
+                        if (setActive) setActive("feedback");
+                        navigate("/dashboard/feedback");
+                    }}
+                    className={`px-4 sm:px-6 md:px-8 py-1 sm:py-2.5 md:py-3 lg:px-8 lg:text-start lg:py-2 xl:py-3 xl:px-10
+                        text-xs sm:text-sm md:text-base lg:text-sm xl:text-base
+                        rounded-md lg:font-medium text-center sm:text-left button-hover 
+                        transition duration-300 ease-in-out cursor-pointer
+                        w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start
+                        gap-1 sm:gap-2 min-h-[3rem] sm:min-h-0
+                        ${active === "feedback"
+                            ? "custom-button-bg text-white"
+                            : "bg-[#3a2b5a] custom-button-bg-2 transition duration-300 ease-in-out text-white/90 hover:text-white"
+                        }`}
+                >
+                    <span className="flex-shrink-0"><MdFeedback /></span>
+                    <span className="whitespace-nowrap text-center sm:text-left leading-tight flex-1">
+                        Feedback & Saran
                     </span>
                 </button>
             </div>

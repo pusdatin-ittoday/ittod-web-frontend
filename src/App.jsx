@@ -18,6 +18,7 @@ const routeTitleMap = {
   "/dashboard/ikut-lomba": "Daftar Lomba - IT TODAY 2026",
   "/dashboard/ikut-event": "Daftar Event - IT TODAY 2026",
   "/dashboard/pengumuman": "Pengumuman - IT TODAY 2026",
+  "/dashboard/feedback": "Feedback & Saran - IT TODAY 2026",
   "/dashboard/submit-lomba": "Pengumpulan Karya Lomba - IT TODAY 2026",
   "/dashboard/edit-profile": "Edit Profil - IT TODAY 2026",
   "/sponsors": "Sponsor Kami - IT TODAY 2026",
@@ -157,6 +158,14 @@ const AppRoutes = () => {
           />
           <Route
             path="/dashboard/pengumuman"
+            element={
+              <ProtectedDashboard>
+                <DashboardWrapper />
+              </ProtectedDashboard>
+            }
+          />
+          <Route
+            path="/dashboard/feedback"
             element={
               <ProtectedDashboard>
                 <DashboardWrapper />
