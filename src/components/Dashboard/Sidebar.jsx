@@ -145,7 +145,7 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                             if (setActive) setActive("feedback");
                             navigate("/dashboard/feedback");
                         }}
-                        className={`relative flex flex-col lg:flex-row justify-center lg:justify-start min-h-14 items-center gap-1 lg:gap-3 border-[3px] border-black px-1 lg:px-3 py-2 lg:py-3 text-center lg:text-left text-[11px] lg:text-xs font-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none sm:text-sm cursor-pointer ${
+                        className={`mt-3 sm:mt-4 lg:mt-5 relative flex flex-col lg:flex-row justify-center lg:justify-start min-h-14 items-center gap-1 lg:gap-3 border-[3px] border-black px-1 lg:px-3 py-2 lg:py-3 text-center lg:text-left text-[11px] lg:text-xs font-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none sm:text-sm cursor-pointer ${
                             active === "feedback"
                                 ? "bg-[#ffd400] text-[#191b1a]"
                                 : "bg-white text-[#191b1a]"
@@ -222,7 +222,7 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                         if (setActive) setActive("feedback");
                         navigate("/dashboard/feedback");
                     }}
-                    className={`px-4 sm:px-6 md:px-8 py-1 sm:py-2.5 md:py-3 lg:px-8 lg:text-start lg:py-2 xl:py-3 xl:px-10
+                    className={`mt-2 lg:mt-4 px-4 sm:px-6 md:px-8 py-1 sm:py-2.5 md:py-3 lg:px-8 lg:text-start lg:py-2 xl:py-3 xl:px-10
                         text-xs sm:text-sm md:text-base lg:text-sm xl:text-base
                         rounded-md lg:font-medium text-center sm:text-left button-hover 
                         transition duration-300 ease-in-out cursor-pointer
