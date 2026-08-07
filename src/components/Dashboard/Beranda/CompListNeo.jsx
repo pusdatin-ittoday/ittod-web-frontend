@@ -216,6 +216,11 @@ const CompListNeo = () => {
                     ));
                 }
 
+                const flashMsg = sessionStorage.getItem("flash_success_message");
+                if (flashMsg) {
+                    sessionStorage.removeItem("flash_success_message");
+                    showAlert({ message: flashMsg });
+                }
 
             } catch (error) {
                 console.error("Error fetching dashboard data:", error);

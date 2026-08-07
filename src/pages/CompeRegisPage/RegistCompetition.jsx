@@ -146,19 +146,16 @@ const RegistCompetition = () => {
             // Reset form
             setNamaTim("");
             
-            // Show success message and redirect
-            setAlertType("success");
-            setAlertMessage(
-                participationType === "individual"
-                    ? "Pendaftaran individu berhasil!"
-                    : "Pendaftaran tim berhasil!"
-            );
-            setShowAlert(true);
-            
+            const successMsg = participationType === "individual"
+                ? "🎉 Pendaftaran individu berhasil diselesaikan!"
+                : `🎉 Pendaftaran tim "${NamaTim.trim()}" berhasil dibuat! Silakan bagikan Kode Tim kepada anggota Anda.`;
+
+            sessionStorage.setItem("flash_success_message", successMsg);
+
             // Redirect after showing success message
             setTimeout(() => {
                 window.location.href = "/dashboard/beranda"; 
-            }, 1500);
+            }, 1000);
             
         } catch (error) {
             console.error("Registration error:", error);
