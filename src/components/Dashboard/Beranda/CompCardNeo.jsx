@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaUpload, FaReceipt, FaDiscord, FaEdit } from "react-icons/fa";
+import { FaUpload, FaReceipt, FaDiscord, FaEdit, FaLock } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { getPublicEventById } from "../../../api/eventPublic";
@@ -211,8 +211,12 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                                             <span>Ubah (1x)</span>
                                         </button>
                                     ) : (
-                                        <span className="text-[10px] font-bold text-gray-500 bg-gray-200 border border-gray-400 px-1.5 py-0.5 rounded">
-                                            (1/1 kali - Terkunci)
+                                        <span
+                                            className="inline-flex items-center gap-1 border-2 border-[#1A1C1C] bg-[#E5E7EB] px-2 py-0.5 text-xs font-black uppercase text-[#1A1C1C] shadow-[2px_2px_0_0_#000] select-none"
+                                            title="Nama tim telah diubah 1 kali dan terkunci"
+                                        >
+                                            <FaLock className="text-[10px] text-[#1A1C1C]" />
+                                            <span>Nama Tim Terkunci</span>
                                         </span>
                                     )
                                 )}
