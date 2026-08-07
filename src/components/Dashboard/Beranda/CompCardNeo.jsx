@@ -409,7 +409,7 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                     </div>
                     <button
                         type="button"
-                        onClick={() => window.open("https://discord.gg/your-discord-link", "_blank")}
+                        onClick={() => window.open("https://discord.gg/S4U2UA49uc", "_blank")}
                         className="w-full sm:w-auto border-[2px] border-[#1A1C1C] bg-[#5865F2] px-3.5 py-2 text-xs font-black uppercase text-white shadow-[3px_3px_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
                     >
                         <FaDiscord className="text-sm text-white" />
