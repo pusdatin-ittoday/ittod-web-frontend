@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { MdErrorOutline } from "react-icons/md";
+import { FaDiscord } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import instance from "../../api/axios";
 import { getImageUrlFromR2 } from "../../api/user";
@@ -590,13 +591,23 @@ class EditProfile extends Component {
                                 </div>
 
                                 <div className="flex flex-col gap-1.5">
-                                    <div className="flex justify-between items-end">
-                                        <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
-                                            Username Discord
-                                        </label>
-                                        <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
-                                            *Wajib
-                                        </span>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex justify-between items-end gap-1.5">
+                                            <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
+                                                Username Discord
+                                            </label>
+                                            <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
+                                                *Wajib
+                                            </span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => window.open("https://discord.gg/your-discord-link", "_blank")}
+                                            className="border-[1.5px] border-[#1A1C1C] bg-[#5865F2] px-3.5 py-1 text-xs font-black uppercase text-white shadow-[3px_3px_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center gap-1.5"
+                                        >
+                                            <FaDiscord className="text-sm text-white" />
+                                            <span className="font-space-grotesk font-normal text-xs text-white">Join Discord</span>
+                                        </button>
                                     </div>
                                     <div className="relative">
                                         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-4.5" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
