@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaUpload, FaReceipt, FaDiscord } from "react-icons/fa";
+import { FaUpload, FaReceipt, FaDiscord, FaEdit } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { getPublicEventById } from "../../../api/eventPublic";
+import { updateTeamName } from "../../../api/compe";
 import { parseWIB } from "../../../utils/dateFormatter";
 
 
@@ -46,6 +47,17 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [loadingUpload, setLoadingUpload] = useState(false);
+
+    const [currentTeamName, setCurrentTeamName] = useState(data.teamName);
+    const [isNameChanged, setIsNameChanged] = useState(data.isNameChanged ?? false);
+    const [showEditNameModal, setShowEditNameModal] = useState(false);
+    const [newTeamName, setNewTeamName] = useState("");
+    const [loadingEditName, setLoadingEditName] = useState(false);
+
+    useEffect(() => {
+        setCurrentTeamName(data.teamName);
+        setIsNameChanged(data.isNameChanged ?? false);
+    }, [data.teamName, data.isNameChanged]);
     const batchInfo = getCurrentBatchInfo(data.timelines);
 
     const pembayaranInputRef = useRef(null);
@@ -99,6 +111,48 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
         window.open(whatsappLink, "_blank");
     };
 
+    const handleEditTeamNameSubmit = async () => {
+        const trimmed = newTeamName.trim();
+        if (!trimmed) {
+            setAlertMessage("Nama tim tidak boleh kosong");
+            setShowAlert(true);
+            return;
+        }
+        if (trimmed.length < 3) {
+            setAlertMessage("Nama tim minimal 3 karakter");
+            setShowAlert(true);
+            return;
+        }
+        if (trimmed.length > 50) {
+            setAlertMessage("Nama tim maksimal 50 karakter");
+            setShowAlert(true);
+            return;
+        }
+        if (trimmed === (currentTeamName || data.teamName)) {
+            setAlertMessage("Nama tim baru harus berbeda dari nama tim saat ini");
+            setShowAlert(true);
+            return;
+        }
+
+        setLoadingEditName(true);
+        const res = await updateTeamName({
+            team_id: data.teamID,
+            team_name: trimmed,
+        });
+
+        if (res.success) {
+            setCurrentTeamName(res.data.team_name || trimmed);
+            setIsNameChanged(true);
+            setShowEditNameModal(false);
+            setAlertMessage("Nama tim berhasil diubah!");
+            setShowAlert(true);
+        } else {
+            setAlertMessage(res.error || "Gagal mengubah nama tim");
+            setShowAlert(true);
+        }
+        setLoadingEditName(false);
+    };
+
     const handleVerifyClick = () => {
         setPembayaran(null);
         if (pembayaranInputRef.current) pembayaranInputRef.current.value = "";
@@ -137,10 +191,32 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
                     <div className="space-y-1 text-sm font-space-grotesk text-gray-700">
                         {!isIndividual && (
-                            <p className="flex flex-col gap-0.5 min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
                                 <span className="opacity-55">Team Name:</span>
-                                <span className="font-extrabold text-[#1A1C1C]">{data.teamName || "-"}</span>
-                            </p>
+                                <span className="font-extrabold text-[#1A1C1C]">
+                                    {currentTeamName || data.teamName || "-"}
+                                </span>
+                                {isTeamLeader && (
+                                    !isNameChanged ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setNewTeamName(currentTeamName || data.teamName || "");
+                                                setShowEditNameModal(true);
+                                            }}
+                                            className="inline-flex items-center gap-1 border border-black bg-[#ffd400] px-2 py-0.5 text-xs font-bold text-black shadow-[2px_2px_0_#000] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
+                                            title="Ubah Nama Tim (1x saja)"
+                                        >
+                                            <FaEdit className="text-[11px]" />
+                                            <span>Ubah (1x)</span>
+                                        </button>
+                                    ) : (
+                                        <span className="text-[10px] font-bold text-gray-500 bg-gray-200 border border-gray-400 px-1.5 py-0.5 rounded">
+                                            (1/1 kali - Terkunci)
+                                        </span>
+                                    )
+                                )}
+                            </div>
                         )}
                         <p className="flex flex-col gap-0.5 min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-2">
                             <span className="opacity-55">
@@ -440,11 +516,57 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 </div>
             )}
 
+            {showEditNameModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+                    <div className="w-full max-w-md border-[4px] border-[#1A1C1C] bg-white p-5 sm:p-6 shadow-[8px_8px_0_0_#1A1C1C]">
+                        <h3 className="text-xl font-black uppercase text-[#34399F] tracking-tight">
+                            Ubah Nama Tim
+                        </h3>
+                        <p className="mt-2 text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-300 p-2.5 rounded">
+                            ⚠️ <strong>Perhatian:</strong> Nama tim hanya dapat diubah <strong>1 kali</strong>. Pastikan ejaan nama tim baru sudah benar!
+                        </p>
+
+                        <div className="mt-4 space-y-2">
+                            <label className="block text-xs font-bold uppercase tracking-wide text-gray-700">
+                                Nama Tim Baru
+                            </label>
+                            <input
+                                type="text"
+                                value={newTeamName}
+                                onChange={(e) => setNewTeamName(e.target.value)}
+                                placeholder="Masukkan nama tim baru"
+                                className="w-full border-2 border-[#1A1C1C] p-2.5 text-sm font-bold text-[#1A1C1C] focus:outline-none focus:ring-2 focus:ring-[#34399F]"
+                                maxLength={50}
+                            />
+                        </div>
+
+                        <div className="mt-6 flex justify-end gap-3">
+                            <button
+                                type="button"
+                                disabled={loadingEditName}
+                                onClick={() => setShowEditNameModal(false)}
+                                className="border-2 border-[#1A1C1C] bg-[#E5E7EB] px-4 py-2 text-xs font-black uppercase text-[#1A1C1C] shadow-[3px_3px_0_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#000]"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="button"
+                                disabled={loadingEditName}
+                                onClick={handleEditTeamNameSubmit}
+                                className="border-2 border-[#1A1C1C] bg-[#ffd400] px-4 py-2 text-xs font-black uppercase text-[#1A1C1C] shadow-[3px_3px_0_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50"
+                            >
+                                {loadingEditName ? "Menyimpan..." : "Simpan Nama Tim"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {showAlert && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] px-4">
                     <div className="border-[3px] border-[#1A1C1C] bg-white p-4 rounded-none max-w-xs w-full text-black shadow-[5px_5px_0_0_#000]">
                         <div className="flex items-center gap-3 mb-4">
-                            <MdErrorOutline className="text-2xl text-red-500" />
+                            <MdErrorOutline className="text-2xl text-red-500 shrink-0" />
                             <h3 className="text-sm font-bold">{alertMessage}</h3>
                         </div>
                         <button
