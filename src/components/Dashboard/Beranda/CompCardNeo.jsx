@@ -391,6 +391,31 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                         {isRejected ? "Upload Ulang Bukti Pembayaran" : "Upload Bukti Pembayaran"}
                     </button>
                 )}
+
+                {/* Join Discord CTA Banner */}
+                <div className="mt-3 border-[3px] border-[#1A1C1C] bg-[#5865F2]/10 p-3.5 shadow-[4px_4px_0_0_#1A1C1C] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded border-2 border-[#1A1C1C] bg-[#5865F2] flex items-center justify-center text-white shrink-0 shadow-[2px_2px_0_#1A1C1C]">
+                            <FaDiscord className="text-lg text-white" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-space-grotesk text-xs font-black uppercase text-[#1A1C1C]">
+                                Komunitas Discord IT Today
+                            </span>
+                            <span className="text-[11px] font-semibold text-gray-700">
+                                Silakan join Discord resmi untuk informasi & pengumuman lomba terbaru!
+                            </span>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => window.open("https://discord.gg/your-discord-link", "_blank")}
+                        className="w-full sm:w-auto border-[2px] border-[#1A1C1C] bg-[#5865F2] px-3.5 py-2 text-xs font-black uppercase text-white shadow-[3px_3px_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
+                    >
+                        <FaDiscord className="text-sm text-white" />
+                        <span>Join Discord</span>
+                    </button>
+                </div>
             </div>
 
             {showUploadModal && (
