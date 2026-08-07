@@ -61,7 +61,7 @@ class EditProfile extends Component {
             pendidikan: "Status Pendidikan",
             nama_sekolah: "Nama Sekolah/Institusi",
             KTM: "Kartu Institusi",
-            twibbon: "Twibbon"
+            twibbon: "Bukti Upload Twibbon"
         };
         this.twibbonInputRef = React.createRef();
     }
@@ -769,7 +769,7 @@ class EditProfile extends Component {
                                     <div className="flex justify-between items-center">
                                         <div className="flex justify-between items-end">
                                         <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
-                                            Twibbon (JPG/PNG, MAX 2MB)
+                                            Bukti Upload Twibbon (JPG/PNG, MAX 2MB)
                                         </label>
                                         <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
                                             *Wajib
