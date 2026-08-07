@@ -254,20 +254,12 @@ const CompListNeo = () => {
                             </h1>
                         </div>
 
-                        <div className="flex flex-wrap gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+                        <div className="flex gap-3 w-full sm:w-auto mt-2 sm:mt-0">
                             <button
                                 onClick={handleTwibbonClick}
                                 className="flex-1 sm:flex-initial border-[3px] border-[#1A1C1C] bg-[#34399F] px-4 py-2.5 text-xs font-bold uppercase text-white shadow-[4px_4px_0_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#1A1C1C] active:translate-x-1 active:translate-y-1 active:shadow-none"
                             >
                                 Twibbon
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => window.open("https://discord.gg/your-discord-link", "_blank")}
-                                className="flex-1 sm:flex-initial border-[3px] border-[#1A1C1C] bg-[#5865F2] px-4 py-2.5 text-xs font-bold uppercase text-white shadow-[4px_4px_0_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#1A1C1C] active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center justify-center gap-1.5 cursor-pointer"
-                            >
-                                <FaDiscord className="text-sm text-white" />
-                                <span>Join Discord</span>
                             </button>
                             <button
                                 onClick={handleEditUser}
