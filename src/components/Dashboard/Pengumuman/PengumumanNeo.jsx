@@ -78,7 +78,14 @@ const PengumumanNeo = () => {
                         rawAnn = Object.values(resultData);
                     }
                 }
-                setAnnouncements(rawAnn);
+                const sortedAnn = [...rawAnn].sort((a, b) => {
+                    const pA = Number(a.priority) || 0;
+                    const pB = Number(b.priority) || 0;
+                    if (pB !== pA) return pB - pA;
+                    if (b.is_pinned !== a.is_pinned) return (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0);
+                    return new Date(b.created_at) - new Date(a.created_at);
+                });
+                setAnnouncements(sortedAnn);
 
                 // 2. Process user competitions and map timelines
                 let compData = [];

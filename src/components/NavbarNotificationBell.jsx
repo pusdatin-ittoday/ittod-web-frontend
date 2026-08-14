@@ -20,22 +20,15 @@ const NavbarNotificationBell = ({ variant }) => {
                 if (result && result.success && result.data) {
                     const dataArray = Array.isArray(result.data) ? result.data : Object.values(result.data);
                     
-                    const pinned = dataArray.filter(a => a.is_pinned);
-                    const unpinned = dataArray.filter(a => !a.is_pinned).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+                    const sortedData = [...dataArray].sort((a, b) => {
+                        const pA = Number(a.priority) || 0;
+                        const pB = Number(b.priority) || 0;
+                        if (pB !== pA) return pB - pA;
+                        if (b.is_pinned !== a.is_pinned) return (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0);
+                        return new Date(b.created_at) - new Date(a.created_at);
+                    });
                     
-                    let displayAnnouncements = [];
-                    if (pinned.length > 0) {
-                        displayAnnouncements.push(pinned[0]);
-                        if (pinned.length > 1) {
-                            displayAnnouncements.push(pinned[1]);
-                        } else if (unpinned.length > 0) {
-                            displayAnnouncements.push(unpinned[0]);
-                        }
-                    } else {
-                        displayAnnouncements = unpinned.slice(0, 2);
-                    }
-                    
-                    setAnnouncements(displayAnnouncements);
+                    setAnnouncements(sortedData.slice(0, 2));
                     
                     if (dataArray.length > 0) {
                         const latest = dataArray.reduce((prev, current) => 

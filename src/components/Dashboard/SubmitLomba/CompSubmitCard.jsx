@@ -53,6 +53,44 @@ const CardSubmitNeo = ({ title, submitLink, isSubmitted }) => {
   );
 };
 
+const CardExternalLinkNeo = ({ title, externalLink }) => {
+  return (
+    <div className="w-full max-w-[550px] border-[4px] border-[#1A1C1C] bg-[#FFF] p-8 sm:p-12 shadow-[6px_6px_0_0_#000] flex flex-col items-center justify-between gap-6 relative overflow-hidden">
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex items-center gap-2 text-[#6D28D9]">
+          <svg className="w-5 h-5 fill-current text-[#6D28D9]" viewBox="0 0 24 24">
+            <path d="M14 3h7v7l-2-2-5 5-2-2 5-5-3-3zm-4 18H3v-7l2 2 5-5 2 2-5 5 3 3z"/>
+          </svg>
+          <span className="font-anybody text-xs sm:text-sm font-bold uppercase tracking-wider text-[#1A1C1C]">
+            PLATFORM KOMPETISI
+          </span>
+        </div>
+        <p className="font-hanken-grotesk text-sm text-[#464652] text-center">
+          Akses Platform Kompetisi Eksternal
+        </p>
+      </div>
+
+      <div className="my-6">
+        <h3 className="font-anybody text-3xl sm:text-4xl font-extrabold text-[#6D28D9] tracking-wide uppercase text-center">
+          {title}
+        </h3>
+      </div>
+
+      <a
+        href={externalLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full flex items-center justify-center gap-3 border-[4px] border-[#1A1C1C] bg-[#6D28D9] py-4 text-base sm:text-lg font-anybody font-extrabold text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer text-center"
+      >
+        BUKA PLATFORM
+        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+          <path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
+        </svg>
+      </a>
+    </div>
+  );
+};
+
 const CardSubmit = ({ title, image, submitLink }) => {
   const navigate = useNavigate();
 
@@ -79,6 +117,41 @@ const CardSubmit = ({ title, image, submitLink }) => {
           >
             Submit
           </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const CardExternalLink = ({ title, image, externalLink }) => {
+  return (
+    <div className="font-dm-sans flex flex-col items-center text-white">
+      <div className="w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] aspect-[1/1]">
+        <img
+          src={image || '/images/DummyImg2.jpeg'}
+          alt={title}
+          className="w-full h-full object-cover rounded-lg hover:scale-105 hover:brightness-120 transition duration-300 ease-in-out"
+          onError={(e) => {
+            e.target.src = '/images/DummyImg2.jpeg';
+          }}
+        />
+      </div>
+      <div className="text-center max-w-[200px]">
+        <h3 className="decoration-white/50 white-text-glow text-2xl mb-5 font-bold">{title}</h3>
+      </div>
+      {externalLink && (
+        <div className="flex gap-5">
+          <a
+            href={externalLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 button-hover bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer inline-flex items-center gap-1.5"
+          >
+            Buka Platform
+            <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+              <path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
+            </svg>
+          </a>
         </div>
       )}
     </div>
@@ -121,26 +194,41 @@ const CompSubmitCard = ({ variant = "default" }) => {
           getUserCompetitions()
         ]);
 
-        // Process user data
-        // Process user data if needed
-
         // Process competitions data
         if (competitionsResponse.success && competitionsResponse.data) {
-          // setCompetitions(competitionsResponse.data);
-          // Filter the events based on user's competitions that require submission AND are verified
           const userCompetitions = competitionsResponse.data || [];
-          const filtered = userCompetitions
-            .filter(comp => comp.requiresSubmission === true && (comp.isVerified === true || comp.isVerified === 1 || comp.isVerified === 'approved'))
+
+          // 1. Competitions requiring internal submission
+          const submissionComps = userCompetitions
+            .filter(comp => comp.requiresSubmission === true && 
+              (comp.isVerified === true || comp.isVerified === 1 || comp.isVerified === 'approved') &&
+              (comp.isDocumentVerified === true || comp.isDocumentVerified === 1 || comp.isDocumentVerified === 'approved'))
             .map(comp => ({
               id: comp.competitionId,
               title: comp.competitionName,
               image: comp.logo_url,
               submitLink: `dashboard/lomba/${comp.competitionId}/submit`,
-              isSubmitted: !!comp.submissionData
+              isSubmitted: !!comp.submissionData,
+              type: 'submission'
             }));
 
-          setFilteredEvents(filtered);
-          setNoCompetitions(filtered.length === 0);
+          // 2. Competitions with external platform link (non-submission internal)
+          const externalComps = userCompetitions
+            .filter(comp => comp.externalPlatformLink && comp.requiresSubmission !== true && 
+              (comp.isVerified === true || comp.isVerified === 1 || comp.isVerified === 'approved') &&
+              (comp.isDocumentVerified === true || comp.isDocumentVerified === 1 || comp.isDocumentVerified === 'approved'))
+            .map(comp => ({
+              id: comp.competitionId,
+              title: comp.competitionName,
+              image: comp.logo_url,
+              externalLink: comp.externalPlatformLink,
+              type: 'external'
+            }));
+
+          const allCards = [...submissionComps, ...externalComps];
+
+          setFilteredEvents(allCards);
+          setNoCompetitions(allCards.length === 0);
         } else {
           console.error("Failed to fetch competitions:", competitionsResponse.error);
           setNoCompetitions(true);
@@ -212,14 +300,22 @@ const CompSubmitCard = ({ variant = "default" }) => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center">
-            {filteredEvents.map((event, idx) => (
-              <CardSubmitNeo
-                key={idx}
-                title={event.title}
-                submitLink={event.submitLink}
-                isSubmitted={event.isSubmitted}
-              />
-            ))}
+            {filteredEvents.map((event, idx) =>
+              event.type === "external" ? (
+                <CardExternalLinkNeo
+                  key={idx}
+                  title={event.title}
+                  externalLink={event.externalLink}
+                />
+              ) : (
+                <CardSubmitNeo
+                  key={idx}
+                  title={event.title}
+                  submitLink={event.submitLink}
+                  isSubmitted={event.isSubmitted}
+                />
+              )
+            )}
           </div>
         )}
       </div>
@@ -270,14 +366,23 @@ const CompSubmitCard = ({ variant = "default" }) => {
         /* Grid daftar kompetisi dengan scroll */
         <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
           <div className="grid grid-cols-2 gap-x-8 gap-y-6 justify-items-center">
-            {filteredEvents.map((event, idx) => (
-              <CardSubmit
-                key={idx}
-                title={event.title}
-                image={event.image}
-                submitLink={event.submitLink}
-              />
-            ))}
+            {filteredEvents.map((event, idx) =>
+              event.type === "external" ? (
+                <CardExternalLink
+                  key={idx}
+                  title={event.title}
+                  image={event.image}
+                  externalLink={event.externalLink}
+                />
+              ) : (
+                <CardSubmit
+                  key={idx}
+                  title={event.title}
+                  image={event.image}
+                  submitLink={event.submitLink}
+                />
+              )
+            )}
           </div>
         </div>
       )}

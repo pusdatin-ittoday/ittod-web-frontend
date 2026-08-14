@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaDiscord } from "react-icons/fa";
 import { getCurrentUser, getUserCompetitions } from "../../../api/user";
 import { postCompePayment } from "../../../api/compeFile";
 import CompCardNeo from "./CompCardNeo";
@@ -216,6 +217,11 @@ const CompListNeo = () => {
                     ));
                 }
 
+                const flashMsg = sessionStorage.getItem("flash_success_message");
+                if (flashMsg) {
+                    sessionStorage.removeItem("flash_success_message");
+                    showAlert({ message: flashMsg });
+                }
 
             } catch (error) {
                 console.error("Error fetching dashboard data:", error);

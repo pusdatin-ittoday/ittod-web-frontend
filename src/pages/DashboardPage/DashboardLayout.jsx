@@ -8,6 +8,7 @@ import IkutLomba from "../../components/Dashboard/IkutLomba/IkutLomba";
 import IkutEvent from "../../components/Dashboard/IkutEvent/IkutEvent";
 import SubmitLomba from "../../components/Dashboard/SubmitLomba/SubmitLomba";
 import Pengumuman from "../../components/Dashboard/Pengumuman/Pengumuman";
+import FeedbackPage from "../../components/Dashboard/Feedback/FeedbackPage";
 import DashboardNeoHeader from "../../components/Dashboard/DashboardNeoHeader";
 import Footer from "../../components/Footer";
 
@@ -15,7 +16,7 @@ import Footer from "../../components/Footer";
 class DashboardLayout extends Component {
   constructor(props) {
     super(props);
-    const validTabs = ["beranda", "ikut-lomba", "ikut-event", "submit-lomba", "submit-gametoday", "submit-uxtoday", "submit-minetoday", "pengumuman"];
+    const validTabs = ["beranda", "ikut-lomba", "ikut-event", "submit-lomba", "submit-gametoday", "submit-uxtoday", "submit-minetoday", "pengumuman", "feedback"];
     const initialTab = validTabs.includes(props.activeTab) ? props.activeTab : "beranda";
 
     this.state = {
@@ -61,13 +62,15 @@ class DashboardLayout extends Component {
         return <SubmitLomba />;
       case "pengumuman":
         return <Pengumuman />;
+      case "feedback":
+        return <FeedbackPage />;
       default:
         return <Beranda />;
     }
   };
 
   render() {
-    const usesNeobrutalDashboard = ["ikut-event", "ikut-lomba", "beranda", "pengumuman", "submit-lomba"].includes(
+    const usesNeobrutalDashboard = ["ikut-event", "ikut-lomba", "beranda", "pengumuman", "submit-lomba", "feedback"].includes(
       this.state.active
     );
 
@@ -94,6 +97,8 @@ class DashboardLayout extends Component {
                 <Pengumuman variant="neobrutal" />
               ) : this.state.active === "submit-lomba" ? (
                 <SubmitLomba variant="neobrutal" />
+              ) : this.state.active === "feedback" ? (
+                <FeedbackPage />
               ) : (
                 <Beranda variant="neobrutal" />
               )}

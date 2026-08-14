@@ -5,12 +5,12 @@ const REQUIRED_PROFILE_FIELDS = [
   ["birth_date", "Tanggal Lahir"],
   ["phone_number", "Nomor HP"],
   ["jenis_kelamin", "Jenis Kelamin"],
-  ["id_discord", "ID Discord"],
+  ["id_discord", "Username Discord"],
   ["id_instagram", "ID Instagram"],
   ["pendidikan", "Status Pendidikan"],
   ["nama_sekolah", "Nama Sekolah/Institusi"],
   ["ktm_key", "Kartu Institusi"],
-  ["twibbon_key", "Twibbon"],
+  ["twibbon_key", "Bukti Upload Twibbon"],
 ];
 
 export const getMissingProfileFields = (user = {}) =>

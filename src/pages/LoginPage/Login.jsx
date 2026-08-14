@@ -24,12 +24,22 @@ const Login = () => {
     const [needsVerification, setNeedsVerification] = useState(false);
     const [resendLoading, setResendLoading] = useState(false);
 
-    // Initial effect to show verified alerts
+    // Initial effect to show verified alerts and URL errors
     useEffect(() => {
         if (verified && verificationMessage) {
             setSuccessMessage(verificationMessage);
         }
-    }, [verified, verificationMessage]);
+        
+        const params = new URLSearchParams(location.search);
+        const errorParam = params.get("error");
+        if (errorParam) {
+            if (errorParam === 'internal_error') {
+                setErrorMessage("Terjadi kesalahan internal saat login dengan Google.");
+            } else {
+                setErrorMessage(errorParam);
+            }
+        }
+    }, [verified, verificationMessage, location.search]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
