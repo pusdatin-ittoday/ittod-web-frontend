@@ -20,7 +20,7 @@ const RegistCompetition = () => {
     const [competitionId, setCompetitionId] = useState(null);
     const [competitionTitle, setCompetitionTitle] = useState("");
     const [participationType, setParticipationType] = useState("team");
-    
+
     // UI reactivity states
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
@@ -70,7 +70,7 @@ const RegistCompetition = () => {
         const { name, value } = e.target;
         if (name === "NamaTim") {
             setNamaTim(value);
-        } 
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -132,11 +132,11 @@ const RegistCompetition = () => {
 
         try {
             const response = await registerTeam(submissionData);
-            
+
             if (!response.success) {
                 throw new Error(response.error || "Failed to register team");
             }
-            
+
             console.log("Form Submitted Successfully!");
             console.log("Submitted Data:", submissionData);
 
@@ -145,7 +145,7 @@ const RegistCompetition = () => {
 
             // Reset form
             setNamaTim("");
-            
+
             const successMsg = participationType === "individual"
                 ? "🎉 Pendaftaran individu berhasil diselesaikan!"
                 : `🎉 Pendaftaran tim "${NamaTim.trim()}" berhasil dibuat! Silakan bagikan Kode Tim kepada anggota Anda.`;
@@ -154,9 +154,9 @@ const RegistCompetition = () => {
 
             // Redirect after showing success message
             setTimeout(() => {
-                window.location.href = "/dashboard/beranda"; 
+                window.location.href = "/dashboard/beranda";
             }, 1000);
-            
+
         } catch (error) {
             console.error("Registration error:", error);
             setAlertType("error");
@@ -211,7 +211,7 @@ const RegistCompetition = () => {
                 <aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
                     <Sidebar
                         active="ikut-lomba"
-                        setActive={() => {}}
+                        setActive={() => { }}
                         variant="neobrutal"
                     />
                 </aside>
@@ -270,8 +270,8 @@ const RegistCompetition = () => {
                                         {isSubmitting
                                             ? "Mendaftar..."
                                             : participationType === "individual"
-                                              ? "Daftar"
-                                              : "Submit"}
+                                                ? "Daftar"
+                                                : "Submit"}
                                     </button>
                                     <button
                                         type="button"

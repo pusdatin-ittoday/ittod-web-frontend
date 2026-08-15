@@ -5,6 +5,7 @@ import { FaWhatsapp, FaDiscord } from "react-icons/fa";
 
 import { getPublicEvents } from "../../../api/eventPublic";
 import { getJoinEvent } from "../../../utils/api/event";
+import { checkIpbOrMinetoday } from "../../../api/user";
 import PaginationControls from "../PaginationControls";
 
 const NEO_CARD_COLORS = ["bg-[#e8fbef]", "bg-[#ffe26b]", "bg-[#565bc5] text-white"];
@@ -43,9 +44,11 @@ const IkutEvent = ({
   isRegistered,
   waGroupLink,
   colorIndex = 0,
+  isIPB = false,
 }) => {
   const logoSrc = getLogoFallback(title, image);
   const shortDesc = getShortDescription(description);
+  const isBootcamp = (title || "").toLowerCase().includes("bootcamp");
 
   return (
     <article
@@ -66,7 +69,14 @@ const IkutEvent = ({
             />
           </div>
         )}
-        <h3 className="text-xl font-black uppercase leading-tight">{title}</h3>
+        <div>
+          <h3 className="text-xl font-black uppercase leading-tight">{title}</h3>
+          {isBootcamp && isIPB && (
+            <div className="mt-1.5 inline-flex items-center gap-1 border-2 border-black bg-[#18c964] px-2 py-0.5 text-[10px] sm:text-[11px] font-black uppercase text-white shadow-[2px_2px_0_#191b1a]">
+              <span>GRATIS UNTUK MAHASISWA IPB</span>
+            </div>
+          )}
+        </div>
       </div>
       <p className="mt-4 text-sm font-medium leading-relaxed opacity-80">
         {shortDesc}
@@ -133,14 +143,16 @@ const EventRegisCard = () => {
   const [userEvents, setUserEvents] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [currentPage, setCurrentPage] = React.useState(0);
+  const [isIPB, setIsIPB] = React.useState(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [publicRes, userRes] = await Promise.allSettled([
+        const [publicRes, userRes, ipbRes] = await Promise.allSettled([
           getPublicEvents("non_competition"),
           getJoinEvent(),
+          checkIpbOrMinetoday(),
         ]);
 
         if (
@@ -159,6 +171,10 @@ const EventRegisCard = () => {
           if (Array.isArray(list)) {
             setUserEvents(list);
           }
+        }
+
+        if (ipbRes.status === "fulfilled" && ipbRes.value?.data) {
+          setIsIPB(Boolean(ipbRes.value.data.isIPB));
         }
       } catch (err) {
         console.error("Error fetching event registration data:", err);
@@ -252,6 +268,7 @@ const EventRegisCard = () => {
                     isRegistered={isRegistered}
                     waGroupLink={waGroupLink}
                     colorIndex={absoluteIndex}
+                    isIPB={isIPB}
                   />
                 </div>
               );

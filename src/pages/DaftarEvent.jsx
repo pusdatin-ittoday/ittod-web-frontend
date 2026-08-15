@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { BiLogoWhatsapp } from "react-icons/bi";
-import { FaSchool, FaFileUpload } from "react-icons/fa";
+import { FaSchool, FaFileUpload, FaUserEdit, FaInfoCircle, FaCheckCircle } from "react-icons/fa";
 import { MdCalendarMonth, MdErrorOutline } from "react-icons/md";
 import { FaWhatsapp, FaDiscord } from "react-icons/fa";
 import { registerEvent, getJoinEvent } from "../utils/api/event";
@@ -20,6 +20,7 @@ import FallbackNotFound from "./Fallback/FallbackNotFound";
 import { normalizeIndonesianPhoneNumber } from "../utils/phoneNumber";
 import LoadingState from "../components/ui/LoadingState";
 import { useAlert } from "../context/AlertContext";
+import { requireCompleteProfile } from "../utils/profileCompletion";
 
 const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
 
@@ -71,6 +72,8 @@ const DaftarEvent = () => {
 	const { showAlert: showGlobalAlert } = useAlert();
 
 	const [needsToPay, setNeedsToPay] = useState(false);
+	const [isIPB, setIsIPB] = useState(false);
+	const [isRegisteredToMinetoday, setIsRegisteredToMinetoday] = useState(false);
 	const [institution, setInstitution] = useState("");
 	const [dateOfBirth, setDateOfBirth] = useState("");
 	const [whatsapp, setWhatsapp] = useState("");
@@ -90,9 +93,17 @@ const DaftarEvent = () => {
 	const [checkingActive, setCheckingActive] = useState(true);
 	const [exists, setExists] = useState(true);
 	const [currentEvent, setCurrentEvent] = useState(null);
+	const [currentUserProfile, setCurrentUserProfile] = useState(null);
+	const [hasOpenedIntelligo, setHasOpenedIntelligo] = useState(() => {
+		return localStorage.getItem("hasOpenedIntelligo") === "true";
+	});
 	const displayName = targetDisplayName[target] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : "Event");
 
 	const paymentFileInputRef = useRef(null);
+
+	const isCurrentIPB = isIPB || /(ipb|institut pertanian bogor)/i.test(institution);
+	const effectiveIsIPB = isCurrentIPB;
+	const effectiveIsMineToday = !isCurrentIPB && isRegisteredToMinetoday;
 
 	// Fetch user data to pre-fill institution and whatsapp fields
 	useEffect(() => {
@@ -100,25 +111,30 @@ const DaftarEvent = () => {
 			try {
 				// Fetch user data
 				const userResponse = await getCurrentUser();
+				let userInst = "";
 				if (userResponse.data) {
-					setInstitution(userResponse.data.nama_sekolah || "");
+					setCurrentUserProfile(userResponse.data);
+					userInst = userResponse.data.nama_sekolah || "";
+					setInstitution(userInst);
 					// Convert ISO date to yyyy-MM-dd format
 					const birthDate = userResponse.data.birth_date
 						? new Date(userResponse.data.birth_date).toISOString().split("T")[0]
 						: "";
 					setDateOfBirth(birthDate);
 					setWhatsapp(userResponse.data.phone_number || "");
-					setNeedsToPay(userResponse.data.needs_to_pay ?? true);
 				}
 
 				// Check IPB or MineToday status
 				const ipbResponse = await checkIpbOrMinetoday();
-				if (
+				const detectedIPB = Boolean(
 					ipbResponse.data?.isIPB ||
-					ipbResponse.data?.isRegisteredToMinetoday
-				) {
-					setNeedsToPay(false);
-				}
+					/(ipb|institut pertanian bogor)/i.test(userInst)
+				);
+				const detectedMinetoday = Boolean(ipbResponse.data?.isRegisteredToMinetoday);
+
+				setIsIPB(detectedIPB);
+				setIsRegisteredToMinetoday(detectedMinetoday);
+				setNeedsToPay(!detectedIPB);
 			} catch (error) {
 				console.error("Error initializing user data:", error);
 			}
@@ -187,9 +203,9 @@ const DaftarEvent = () => {
 				const res = await getPublicEvents("non_competition");
 				if (res.success && res.data) {
 					const rawTarget = (target === "workshop" ? workshopChoice : target || "").toLowerCase().trim();
-					
+
 					// 1. Direct match by id or slug
-					let event = res.data.find(e => 
+					let event = res.data.find(e =>
 						(e.id && e.id.toLowerCase() === rawTarget) ||
 						(e.slug && e.slug.toLowerCase() === rawTarget)
 					);
@@ -203,7 +219,7 @@ const DaftarEvent = () => {
 									? "seminar"
 									: target;
 						const mappedId = eventIdMapping[routeEventId] || routeEventId;
-						event = res.data.find(e => 
+						event = res.data.find(e =>
 							(e.id && e.id.toLowerCase() === mappedId.toLowerCase()) ||
 							(e.slug && e.slug.toLowerCase() === mappedId.toLowerCase())
 						);
@@ -294,20 +310,53 @@ const DaftarEvent = () => {
 		});
 	};
 
+	const handleOpenIntelligoLink = async () => {
+		const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
+		if (!isComplete) return;
+
+		setHasOpenedIntelligo(true);
+		localStorage.setItem("hasOpenedIntelligo", "true");
+		window.open("https://bit.ly/ai-bootcamp-ittoday", "_blank", "noopener,noreferrer");
+
+		// Auto record registration to bootcamp for account tracking
+		try {
+			const eventId = currentEvent?.id || currentEvent?.slug || "Bootcamp";
+			registerToBootcamp({
+				eventId,
+				institutionName: currentUserProfile?.nama_sekolah || institution,
+				phoneNumber: currentUserProfile?.phone_number || whatsapp,
+				bundling: "",
+			}).catch(() => {});
+		} catch (e) {
+			// ignore
+		}
+	};
+
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		setError("");
 		setShowAlert(false);
 
+		const isBootcamp = target === "bootcamp";
+		const currentInst = (institution || currentUserProfile?.nama_sekolah || "").trim();
+		const currentBirth = dateOfBirth || (currentUserProfile?.birth_date ? new Date(currentUserProfile.birth_date).toISOString().split("T")[0] : "");
+		const currentPhone = (whatsapp || currentUserProfile?.phone_number || "").trim();
+
 		const missingFields = [];
-		if (!institution.trim()) missingFields.push({ label: "Institusi" });
-		if (!dateOfBirth) missingFields.push({ label: "Tanggal Lahir" });
-		if (!whatsapp.trim()) missingFields.push({ label: "Nomor WhatsApp" });
+		if (!currentInst) missingFields.push({ label: isBootcamp ? "Asal Institusi/Sekolah (Silakan lengkapi di Edit Profil)" : "Institusi" });
+		if (!currentBirth && !isBootcamp) missingFields.push({ label: "Tanggal Lahir" });
+		if (!currentPhone) missingFields.push({ label: isBootcamp ? "Nomor WhatsApp (Silakan lengkapi di Edit Profil)" : "Nomor WhatsApp" });
 		if (target === "workshop" && !workshopChoice)
 			missingFields.push({ label: "Bidang Workshop" });
 
-		const normalizedWhatsapp = normalizeIndonesianPhoneNumber(whatsapp);
-		if (whatsapp.trim() && !normalizedWhatsapp) {
+		const isMineTodayParticipant = isBootcamp && !isCurrentIPB && isRegisteredToMinetoday;
+
+		if (isMineTodayParticipant && !paymentFile) {
+			missingFields.push({ label: "Bukti Pembayaran (Transfer Bank)" });
+		}
+
+		const normalizedWhatsapp = normalizeIndonesianPhoneNumber(currentPhone);
+		if (currentPhone && !normalizedWhatsapp) {
 			setIncompleteFields([
 				{
 					label:
@@ -324,6 +373,8 @@ const DaftarEvent = () => {
 			return;
 		}
 
+		setInstitution(currentInst);
+		setDateOfBirth(currentBirth);
 		setWhatsapp(normalizedWhatsapp);
 		setLoading(true);
 
@@ -340,13 +391,13 @@ const DaftarEvent = () => {
 		}
 
 		// Handle file upload for bootcamp
-		if (target === "bootcamp" && paymentFile) {
+		if (isBootcamp && paymentFile) {
 			// First register to bootcamp
 			registerToBootcamp({
 				eventId: eventId,
 				institutionName: institution,
 				phoneNumber: normalizedWhatsapp,
-				bundling: bootcampBundling,
+				bundling: bootcampBundling || "",
 			})
 				.then(() => {
 					return uploadBootcampPayment(paymentFile);
@@ -366,13 +417,50 @@ const DaftarEvent = () => {
 				.finally(() => {
 					setLoading(false);
 				});
+		} else if (isBootcamp) {
+			// Register to bootcamp without payment file (IPB free or General)
+			registerToBootcamp({
+				eventId: eventId,
+				institutionName: institution,
+				phoneNumber: normalizedWhatsapp,
+				bundling: bootcampBundling || "",
+			})
+				.then(() => {
+					setSubmitted(true);
+				})
+				.catch((error) => {
+					// Fallback to registerEvent
+					return registerEvent({
+						eventId: eventId,
+						institutionName: institution,
+						phoneNumber: normalizedWhatsapp,
+						date_of_birth: dateOfBirth
+							? new Date(dateOfBirth).toISOString().split("T")[0]
+							: null,
+					})
+						.then(() => {
+							setSubmitted(true);
+						})
+						.catch((err) => {
+							setError(
+								"Terjadi kesalahan saat mendaftar: " +
+								(err.response?.data?.message ||
+									err.response?.data?.error ||
+									err.message ||
+									"Gagal mendaftar")
+							);
+						});
+				})
+				.finally(() => {
+					setLoading(false);
+				});
 		} else {
 			// Use existing registerEvent function for non-file uploads
 			registerEvent({
 				eventId: eventId,
 				institutionName: institution,
 				phoneNumber: normalizedWhatsapp,
-				dateOfBirth: dateOfBirth
+				date_of_birth: dateOfBirth
 					? new Date(dateOfBirth).toISOString().split("T")[0]
 					: null,
 			})
@@ -411,73 +499,150 @@ const DaftarEvent = () => {
 	}
 
 	return (
-		<EventRegistrationShell>
-			<div className="w-full max-w-5xl">
-				{/* Form Pendaftaran */}
-				<section className="border-[4px] border-black bg-[#f4f4f2] p-4 shadow-[8px_8px_0_#191b1a] sm:p-6 lg:p-8">
-					<div className="border-[3px] border-black bg-white p-6 shadow-[7px_7px_0_#191b1a] sm:p-8 lg:p-10">
-						<p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#3f46b8]">
+		<div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
+			<DashboardNeoHeader />
+
+			<div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[650px] lg:flex-row">
+				<aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
+					<Sidebar
+						active="ikut-event"
+						setActive={() => { }}
+						variant="neobrutal"
+					/>
+				</aside>
+
+				<main className="flex min-w-0 flex-1 items-start justify-center px-4 py-8 sm:px-7 lg:px-10 lg:py-10">
+					<div className="w-full max-w-3xl border-[4px] border-black bg-white p-6 shadow-[8px_8px_0_#191b1a] sm:p-8">
+				{/* Header Section */}
+				<div className="border-b-4 border-black pb-5">
+					<div className="flex flex-wrap items-center justify-between gap-2">
+						<span className="inline-block border-2 border-black bg-[#1E3A8A] px-3 py-1 text-xs font-black uppercase text-white shadow-[2px_2px_0_#191b1a]">
 							{displayName}
-						</p>
-						<h1 className="mt-3 text-2xl font-black sm:text-3xl">
-							Form Pendaftaran
-						</h1>
-						{error && error.includes("You already registered in this event!") && (
-							<div className="mt-5 border-[3px] border-black bg-[#ff8c75] px-6 py-3 text-center text-sm font-bold shadow-[5px_5px_0_#191b1a]">
-								<span className="font-bold">{error}</span>
+						</span>
+						{target === "bootcamp" && effectiveIsIPB && (
+							<span className="inline-block border-2 border-black bg-[#18c964] px-3 py-1 text-xs font-black uppercase text-white shadow-[2px_2px_0_#191b1a]">
+								Mahasiswa IPB • Gratis
+							</span>
+						)}
+						{target === "bootcamp" && !effectiveIsIPB && effectiveIsMineToday && (
+							<div className="inline-flex items-center gap-1.5 border-2 border-black bg-[#ffd400] px-2.5 py-1 text-xs font-black uppercase text-black shadow-[2px_2px_0_#191b1a]">
+								<span>Peserta MineToday:</span>
+								<span className="line-through text-gray-700 text-[11px]">Rp 499.000</span>
+								<span className="text-black">Rp 50.000</span>
+							</div>
+						)}
+						{target === "bootcamp" && !effectiveIsIPB && !effectiveIsMineToday && (
+							<div className="inline-flex items-center gap-1.5 border-2 border-black bg-[#ffd400] px-2.5 py-1 text-xs font-black uppercase text-black shadow-[2px_2px_0_#191b1a]">
+								<span>Peserta Umum:</span>
+								<span className="line-through text-gray-700 text-[11px]">Rp 499.000</span>
+								<span className="text-black">Rp 99.000</span>
+							</div>
+						)}
+					</div>
+					<h1 className="mt-3 text-2xl font-black uppercase tracking-tight text-black sm:text-3xl">
+						{target === "bootcamp"
+							? "Pendaftaran Bootcamp Offline Artificial Intelligence"
+							: `Form Pendaftaran ${displayName}`}
+					</h1>
+					<p className="mt-1.5 text-xs sm:text-sm font-bold text-gray-600">
+						{target === "bootcamp"
+							? "IT TODAY IPB × INTELLIGO ID"
+							: "Lengkapi data pendaftaran kegiatan di bawah ini."}
+					</p>
+				</div>
+
+				{error && (
+					<div className="mt-5 border-[3px] border-black bg-[#ff8c75] px-6 py-3 text-center text-sm font-bold text-black shadow-[5px_5px_0_#191b1a]">
+						<span className="font-bold">{error}</span>
+					</div>
+				)}
+
+				{submitted ? (
+					<div className="mt-7 flex flex-col gap-6 text-center font-semibold">
+						<div className="border-[3px] border-black bg-[#e8fbef] p-6 shadow-[5px_5px_0_#191b1a]">
+							<div className="mx-auto flex h-14 w-14 items-center justify-center border-2 border-black bg-[#18c964] text-white shadow-[3px_3px_0_#191b1a]">
+								<FaCheckCircle size={32} />
+							</div>
+							<h2 className="mt-4 text-xl font-black uppercase tracking-tight text-black sm:text-2xl">
+								{alreadyRegistered ? "Anda Sudah Terdaftar!" : "Pendaftaran Berhasil!"}
+							</h2>
+							<p className="mt-2 text-xs font-medium text-gray-800 sm:text-sm">
+								{target === "bootcamp" && effectiveIsMineToday
+									? "Bukti pembayaran Bootcamp Anda telah berhasil dikirim dan sedang dalam proses verifikasi oleh panitia IT Today 2026."
+									: target === "bootcamp"
+									? "Data pendaftaran Bootcamp Anda telah berhasil dicatat pada sistem IT Today 2026."
+									: "Terima kasih telah mendaftar pada kegiatan IT Today 2026."}
+							</p>
+						</div>
+
+						{/* Khusus Bootcamp: Konfirmasi WhatsApp Panitia tampil setelah mendaftar */}
+						{target === "bootcamp" && !effectiveIsIPB && !effectiveIsMineToday && (
+							<div className="border-[3px] border-black bg-[#FFF6BF] p-5 text-left text-black shadow-[4px_4px_0_#191b1a]">
+								<div className="flex items-center gap-2">
+									<FaWhatsapp className="text-[#087a3d]" size={18} />
+									<p className="text-xs font-black uppercase tracking-wider text-[#1E3A8A]">
+										Konfirmasi Pendaftaran ke WhatsApp Panitia:
+									</p>
+								</div>
+								<p className="mt-2 text-xs text-gray-800 font-medium">
+									Setelah mendaftar dan menyelesaikan pembayaran melalui Intelligo ID (Rp 99.000), silakan lakukan konfirmasi ke salah satu kontak panitia berikut:
+								</p>
+								<div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+									<a
+										href="https://wa.me/6281212258550?text=Halo%20kak%20Arafah,%20saya%20sudah%20mendaftar%20Bootcamp%20AI%20via%20Intelligo"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+									>
+										<FaWhatsapp size={16} /> 081212258550 (Arafah)
+									</a>
+									<a
+										href="https://wa.me/6285135453902?text=Halo%20kak%20Wisnu,%20saya%20sudah%20mendaftar%20Bootcamp%20AI%20via%20Intelligo"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+									>
+										<FaWhatsapp size={16} /> 085135453902 (Wisnu)
+									</a>
+								</div>
 							</div>
 						)}
 
-						{submitted ? (
-							<div className="mt-7 flex flex-col gap-5 text-center font-semibold">
-								<div className="flex flex-col gap-5">
-									<p className="text-base font-black sm:text-lg">
-										{alreadyRegistered
-											? "You're already registered."
-											: "Terima kasih telah mendaftar. Silakan masuk ke grup WhatsApp event berikut:"}
-									</p>
-									<div className="flex flex-col gap-3 w-full items-center">
-										{linkWhatsapp ? (
-											<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl justify-center items-center">
-												<button
-													onClick={() => window.open(linkWhatsapp, "_blank", "noopener,noreferrer")}
-													className={`w-full min-w-[180px] max-w-[320px] flex-1 cursor-pointer border-[3px] border-black px-3 py-3 text-xs font-black uppercase text-white shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] sm:w-auto sm:text-sm ${linkWhatsapp?.toLowerCase().includes("discord") ? "bg-[#5865F2]" : "bg-[#18c964]"}`}
-												>
-													{linkWhatsapp?.toLowerCase().includes("discord") ? (
-														<><FaDiscord className="inline mr-1" /> Grup Discord</>
-													) : (
-														<><FaWhatsapp className="inline mr-1" /> Grup Whatsapp</>
-													)}
-												</button>
-												<button
-													onClick={() => {
-														handleCopyToClipboard(linkWhatsapp, "main");
-													}}
-													className="w-full min-w-[160px] flex-shrink-0 border-[3px] border-black bg-white px-4 py-3 text-xs font-black uppercase text-[#087a3d] shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 sm:w-auto sm:text-sm"
-												>
-													{hasCopied.main ? "Link Disalin!" : (linkWhatsapp?.toLowerCase().includes("discord") ? "Salin Link Discord" : "Salin Link WhatsApp")}
-												</button>
-											</div>
-										) : (
-											<p className="border-[3px] border-black bg-[#ffe26b] px-5 py-3 text-sm font-bold shadow-[4px_4px_0_#191b1a]">
-												Link grup WhatsApp belum tersedia. Silakan hubungi panitia.
-											</p>
-										)}
-									</div>
-								</div>
-								<div className="flex flex-row justify-center gap-4">
+						{/* Grup WhatsApp / Discord Event */}
+						{linkWhatsapp ? (
+							<div className="border-[3px] border-black bg-white p-5 shadow-[4px_4px_0_#191b1a]">
+								<p className="text-xs font-black uppercase tracking-wider text-black mb-3">
+									Grup Resmi Kegiatan:
+								</p>
+								<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl mx-auto justify-center items-center">
 									<button
-										onClick={() => {
-											navigate("/dashboard/ikut-event");
-										}}
-										className="cursor-pointer border-[3px] border-black bg-[#ffd400] px-6 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#191b1a]"
+										onClick={() => window.open(linkWhatsapp, "_blank", "noopener,noreferrer")}
+										className={`w-full min-w-[180px] max-w-[320px] flex-1 cursor-pointer border-[3px] border-black px-4 py-3 text-xs font-black uppercase text-white shadow-[3px_3px_0_#191b1a] transition-all hover:-translate-y-0.5 sm:text-sm ${linkWhatsapp?.toLowerCase().includes("discord") ? "bg-[#5865F2]" : "bg-[#18c964]"}`}
 									>
-										Kembali ke Dashboard
+										{linkWhatsapp?.toLowerCase().includes("discord") ? (
+											<><FaDiscord className="inline mr-1" /> Gabung Discord</>
+										) : (
+											<><FaWhatsapp className="inline mr-1" /> Gabung Grup WhatsApp</>
+										)}
 									</button>
 								</div>
 							</div>
-						) : (
-							<form onSubmit={handleSubmit} className="mt-7 space-y-5">
+						) : null}
+
+						<div className="flex flex-row justify-center pt-2">
+							<button
+								onClick={() => navigate("/dashboard/ikut-event")}
+								className="cursor-pointer border-[3px] border-black bg-[#ffd400] px-8 py-3.5 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#191b1a]"
+							>
+								Kembali ke Dashboard
+							</button>
+						</div>
+					</div>
+				) : (
+					<div className="mt-7 space-y-6">
+						{/* Regular form for non-bootcamp events */}
+						{target !== "bootcamp" && (
+							<form onSubmit={handleSubmit} className="space-y-5">
 								<div>
 									<label className="mb-2 block text-xs font-black uppercase tracking-wide">Institusi</label>
 									<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
@@ -543,158 +708,6 @@ const DaftarEvent = () => {
 									</div>
 								)}
 
-								{target === "bootcamp" && needsToPay && (
-									<div className="space-y-4">
-										<div>
-											<label className="mb-2 block text-xs font-black uppercase tracking-wide">Pilih Bundling</label>
-											<select
-												value={bootcampBundling}
-												onChange={(e) => {
-													setBootcampBundling(e.target.value);
-													console.log("Selected Bundling:", e.target.value);
-												}}
-												className="w-full border-[3px] border-black bg-white px-4 py-3 font-bold text-black outline-none focus:bg-[#fff6bf]"
-												required
-											>
-												<option value="">-- Pilih Bundling --</option>
-
-												{Object.entries(bootcampBundlingMapping).map(
-													([label, value]) => (
-														<option key={value} value={value}>
-															{label}
-														</option>
-													)
-												)}
-											</select>
-										</div>
-										<label className="mb-2 block text-xs font-black uppercase tracking-wide">
-											Upload Bukti Pembayaran (jpg/png/pdf, max 2MB)
-										</label>
-										<div className="mb-4 sm:mb-6">
-											<div className="mb-4 border-[3px] border-black bg-[#565bc5] px-4 py-4 text-white shadow-[5px_5px_0_#191b1a]">
-												<div className="mb-3">
-													<p className="text-xs sm:text-sm font-bold text-pink-300 mb-1">
-														Informasi Rekening:
-													</p>
-													{isRekening ? (
-														<div className="border-2 border-black bg-white px-3 py-3 font-mono text-xs text-black sm:text-sm">
-															Seabank
-															<br />
-															<div className="flex flex-row items-center">
-																<span className="text-lg font-bold tracking-widest text-pink-100">
-																	<div className="flex items-center gap-4">
-																		901429379205
-																		<button
-																			className="border border-white rounded-xl py-1 px-2 text-xs "
-																			onClick={() =>
-																				handleCopyToClipboard("901429379205")
-																			}
-																		>
-																			{hasCopied
-																				? "Nomor Rekening telah disalin!"
-																				: "Salin Nomor Rekening"}
-																		</button>
-																	</div>
-																</span>
-															</div>
-															<br />
-															<span className="text-xs sm:text-sm font-semibold text-pink-100">
-																a/n Asty Athetha Loethan
-															</span>
-														</div>
-													) : (
-														<div className="border-2 border-black bg-yellow-100 text-yellow-800 px-3 py-3 font-bold text-xs sm:text-sm">
-															Saat ini pembayaran belum dibuka. Mohon maaf atas gangguannya.
-														</div>
-													)}
-												</div>
-												<div className="mb-3">
-													<p className="text-xs sm:text-sm font-bold text-pink-300 mb-1">
-														Kode Bayar:
-													</p>
-													<ul className="text-xs sm:text-sm text-white/90 grid grid-cols-2 gap-x-4 list-none pl-0">
-														<li>
-															<span className="font-bold text-pink-100">05</span>{" "}
-															: Bootcamp
-														</li>
-													</ul>
-												</div>
-												<div className="mb-3">
-													<p className="text-xs sm:text-sm text-white/90 mb-1">
-														<b className="text-pink-100">
-															Harga untuk Mahasiswa IPB:
-														</b>{" "}
-														Gratis
-														<br />
-														<br />
-														<b className="text-pink-100">
-															Harga untuk Peserta yang sudah mendaftar Minetoday:
-														</b>{" "}
-														Gratis
-														<br />
-														<br />
-														<b className="text-pink-100">
-															Harga untuk Peserta Umum:
-														</b>
-														<ul>
-															<li>Day 1 : Rp. 100.000</li>
-															<li>Day 2 : Rp. 100.000</li>
-															<li>Day 1 + Day 2 : Rp. 150.000</li>
-														</ul>
-													</p>
-												</div>
-												<div className="bg-white/10 rounded-lg px-3 py-2 text-xs sm:text-sm text-white/80 italic shadow-inner text-justify">
-													<span className="font-bold text-pink-100">Contoh:</span>{" "}
-													Ryan harus bayar sebanyak{" "}
-													<span className="font-bold text-pink-100">100.000</span>{" "}
-													rupiah jika Ryan ingin ikut{" "}
-													<span className="font-bold text-pink-100">
-														Day 1 Bootcamp. Ryan bukan mahasiswa IPB dan tidak
-														mendaftar Minetoday.
-													</span>{" "}
-													Maka Ryan harus transfer{" "}
-													<span className="font-bold text-pink-100">100.005</span>{" "}
-													Rupiah ke Althaf Faiz Rafianto.
-												</div>
-											</div>
-										</div>
-										<div
-											className="flex min-h-24 w-full cursor-pointer items-center justify-center border-[3px] border-dashed border-black bg-[#e8fbef] p-6 text-center font-bold text-black transition-transform hover:-translate-y-0.5"
-											onDragOver={(e) => e.preventDefault()}
-											onDrop={handlePaymentFileDrop}
-											onClick={() =>
-												paymentFileInputRef.current &&
-												paymentFileInputRef.current.click()
-											}
-										>
-											<FaFileUpload className="mr-2 text-xl text-[#3f46b8]" />
-											<div className="w-full overflow-hidden text-ellipsis">
-												<p className="truncate">
-													{paymentFile
-														? paymentFile.name
-														: paymentFileName
-															? paymentFileName
-															: "Drop file di sini atau klik untuk pilih file"}
-												</p>
-											</div>
-											<input
-												type="file"
-												name="paymentProof"
-												accept=".jpg,.jpeg,.png,.pdf"
-												ref={paymentFileInputRef}
-												onChange={handlePaymentFileInputChange}
-												style={{ display: "none" }}
-											/>
-										</div>
-										{paymentFileName && (
-											<div className="mt-2 text-xs font-semibold text-gray-700">
-												File terpilih:{" "}
-												<span className="font-semibold">{paymentFileName}</span>
-											</div>
-										)}
-									</div>
-								)}
-
 								<div className="flex flex-col gap-3 pt-2 sm:flex-row">
 									<button
 										type="button"
@@ -713,9 +726,322 @@ const DaftarEvent = () => {
 								</div>
 							</form>
 						)}
+
+						{/* Clean, Non-Nested Bootcamp Flow */}
+						{target === "bootcamp" && (
+							<div className="space-y-6">
+								{/* Case 1: Mahasiswa IPB (Free) */}
+								{effectiveIsIPB && (
+									<div className="space-y-6">
+										<div className="border-[3px] border-black bg-white p-6 shadow-[5px_5px_0_#191b1a] text-center sm:p-8">
+											{/* Intelligo Logo Container */}
+											<div className="mb-5 flex items-center justify-center">
+												<div className="flex h-32 w-full max-w-xs items-center justify-center border-2 border-black bg-[#f8f9fa] p-4 shadow-[4px_4px_0_#191b1a]">
+													<img
+														src="/sponsors/Logo-Intelligo.png"
+														alt="Intelligo.id Logo"
+														className="max-h-full max-w-full object-contain"
+														onError={(e) => {
+															e.currentTarget.style.display = "none";
+															if (e.currentTarget.parentElement) {
+																e.currentTarget.parentElement.innerHTML = "<span class='text-lg font-black tracking-wider text-[#1E3A8A]'>INTELLIGO.ID</span>";
+															}
+														}}
+													/>
+												</div>
+											</div>
+
+											<h3 className="text-base font-black uppercase sm:text-lg text-black">
+												Bootcamp Offline Artificial Intelligence
+											</h3>
+
+											<div className="my-3 inline-block border-2 border-black bg-[#18c964] px-3.5 py-1 text-xs sm:text-sm font-black uppercase text-white shadow-[2px_2px_0_#191b1a]">
+												Khusus Mahasiswa IPB: 100% Gratis
+											</div>
+
+											<p className="mx-auto mt-2 max-w-lg text-xs sm:text-sm font-medium text-gray-700 leading-relaxed">
+												Sebagai mahasiswa aktif IPB University, Anda berhak mengikuti kegiatan <b>Bootcamp Offline Artificial Intelligence</b> hasil kolaborasi resmi <b>IT Today IPB × Intelligo ID</b> secara <b>GRATIS</b>.
+											</p>
+										</div>
+
+										<div>
+											<button
+												type="button"
+												onClick={async () => {
+													const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
+													if (!isComplete) return;
+													setLoading(true);
+													registerToBootcamp({
+														eventId: currentEvent?.id || currentEvent?.slug || "Bootcamp",
+														institutionName: currentUserProfile?.nama_sekolah || institution,
+														phoneNumber: currentUserProfile?.phone_number || whatsapp,
+														bundling: "",
+													})
+														.then(() => setSubmitted(true))
+														.catch((err) => {
+															setError(err.response?.data?.message || err.message || "Gagal mendaftar");
+														})
+														.finally(() => setLoading(false));
+												}}
+												disabled={loading}
+												className="w-full cursor-pointer border-[3px] border-black bg-[#ffd400] px-7 py-4 text-sm sm:text-base font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b] active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50"
+											>
+												{loading ? "Memproses..." : "Daftar Bootcamp (Gratis)"}
+											</button>
+										</div>
+									</div>
+								)}
+
+								{/* Case 2: Peserta Lomba MineToday (1 Pintu Pembayaran ke Panitia) */}
+								{!effectiveIsIPB && effectiveIsMineToday && (
+									<div className="space-y-5">
+										<div className="border-[3px] border-black bg-[#FFF6BF] p-5 shadow-[4px_4px_0_#191b1a]">
+											<p className="text-sm font-bold text-amber-950 leading-relaxed">
+												Anda telah terdaftar pada kompetisi <b>MineToday</b>. Khusus peserta MineToday, Anda mendapatkan harga spesial untuk mengikuti <b>Bootcamp Offline Artificial Intelligence</b>:
+											</p>
+
+											{/* Pricing Highlight */}
+											<div className="mt-3 flex flex-wrap items-center gap-2">
+												<span className="text-sm sm:text-base font-bold text-gray-400 line-through">
+													Rp 499.000
+												</span>
+												<span className="text-2xl sm:text-3xl font-black text-[#1E3A8A]">
+													Rp 50.000
+												</span>
+												<span className="border-2 border-black bg-[#ffd400] px-2.5 py-0.5 text-[11px] sm:text-xs font-black uppercase text-black shadow-[2px_2px_0_#191b1a]">
+													Khusus Peserta MineToday
+												</span>
+											</div>
+
+											<p className="mt-3 text-xs text-amber-900 font-medium">
+												Pembayaran dilakukan secara 1 pintu langsung ditransfer ke rekening panitia IT Today.
+											</p>
+										</div>
+
+										{/* Box Informasi Rekening Panitia */}
+										<div className="border-[3px] border-black bg-[#1E3A8A] p-5 text-white shadow-[4px_4px_0_#191b1a]">
+											<p className="text-xs font-bold uppercase tracking-wider text-[#ffd400] mb-2">
+												Informasi Rekening Panitia:
+											</p>
+											<div className="border-2 border-black bg-white p-3 font-mono text-xs text-black sm:text-sm shadow-[2px_2px_0_#000]">
+												<p className="font-bold text-gray-700">Bank SeaBank</p>
+												<div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+													<span className="text-base sm:text-lg font-black tracking-widest text-[#1E3A8A]">
+														901429379205
+													</span>
+													<button
+														type="button"
+														className="cursor-pointer border-2 border-black bg-[#ffd400] px-3 py-1 text-xs font-black uppercase text-black shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5"
+														onClick={() => handleCopyToClipboard("901429379205", "rekening")}
+													>
+														{hasCopied.rekening ? "Disalin!" : "Salin No. Rekening"}
+													</button>
+												</div>
+												<p className="mt-1 text-xs font-bold text-gray-600">
+													a/n Asty Athetha Loethan
+												</p>
+											</div>
+											<div className="mt-3 text-xs sm:text-sm text-white/95 space-y-1">
+												<p>• Total Pembayaran: <b className="text-[#ffd400] font-black">Rp 50.005</b> (Biaya Rp 50.000 + Kode Unik 05)</p>
+											</div>
+										</div>
+
+										{/* Upload Bukti Pembayaran */}
+										<div>
+											<label className="mb-2 block text-xs font-black uppercase tracking-wide">
+												Upload Bukti Pembayaran (JPG/PNG/PDF, Maks 2MB) <span className="text-red-500">*</span>
+											</label>
+											<div
+												className="flex min-h-24 w-full cursor-pointer items-center justify-center border-[3px] border-dashed border-black bg-[#f4f4f2] p-6 text-center font-bold text-black transition-transform hover:-translate-y-0.5"
+												onDragOver={(e) => e.preventDefault()}
+												onDrop={handlePaymentFileDrop}
+												onClick={() =>
+													paymentFileInputRef.current &&
+													paymentFileInputRef.current.click()
+												}
+											>
+												<FaFileUpload className="mr-2 text-xl text-[#1E3A8A]" />
+												<div className="w-full overflow-hidden text-ellipsis">
+													<p className="truncate text-xs sm:text-sm">
+														{paymentFile
+															? paymentFile.name
+															: paymentFileName
+																? paymentFileName
+																: "Drop file di sini atau klik untuk pilih file"}
+													</p>
+												</div>
+												<input
+													type="file"
+													name="paymentProof"
+													accept=".jpg,.jpeg,.png,.pdf"
+													ref={paymentFileInputRef}
+													onChange={handlePaymentFileInputChange}
+													style={{ display: "none" }}
+												/>
+											</div>
+											{paymentFileName && (
+												<div className="mt-2 text-xs font-semibold text-gray-700">
+													File terpilih:{" "}
+													<span className="font-bold text-black">{paymentFileName}</span>
+												</div>
+											)}
+										</div>
+
+										<div>
+											<button
+												type="button"
+												onClick={async () => {
+													const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
+													if (!isComplete) return;
+													if (!paymentFile) {
+														setIncompleteFields([{ label: "Bukti Pembayaran (Transfer Bank)" }]);
+														setShowAlert(true);
+														return;
+													}
+													setLoading(true);
+													setError("");
+													try {
+														const eventId = currentEvent?.id || currentEvent?.slug || "Bootcamp";
+														try {
+															await registerToBootcamp({
+																eventId,
+																institutionName: currentUserProfile?.nama_sekolah || institution,
+																phoneNumber: currentUserProfile?.phone_number || whatsapp,
+																bundling: "",
+															});
+														} catch (regErr) {
+															console.log("Registration note:", regErr);
+														}
+
+														const uploadRes = await uploadBootcampPayment(paymentFile);
+														if (uploadRes && uploadRes.success === false) {
+															throw new Error(uploadRes.error || "Gagal mengunggah bukti pembayaran.");
+														}
+
+														setSubmitted(true);
+														await showGlobalAlert({
+															title: "Berhasil!",
+															message: "Bukti pembayaran Bootcamp Anda berhasil dikirim dan sedang diverifikasi panitia.",
+															variant: "success",
+														});
+													} catch (err) {
+														const errorMsg =
+															err.response?.data?.message ||
+															err.response?.data?.error ||
+															err.message ||
+															"Gagal mengirim bukti pembayaran.";
+														setError(errorMsg);
+														await showGlobalAlert({
+															title: "Gagal Mengirim",
+															message: errorMsg,
+															variant: "danger",
+														});
+													} finally {
+														setLoading(false);
+													}
+												}}
+												disabled={loading}
+												className="w-full sm:w-auto cursor-pointer border-[3px] border-black bg-[#ffd400] px-7 py-3.5 text-sm font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b] active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50"
+											>
+												{loading ? "Mengirim Bukti Pembayaran..." : "Kirim Bukti Pembayaran"}
+											</button>
+										</div>
+									</div>
+								)}
+
+								{/* Case 3: Peserta Umum Non-IPB & Non-MineToday (Intelligo ID Gateway) */}
+								{!effectiveIsIPB && !effectiveIsMineToday && (
+									<div className="space-y-6">
+										{/* Big Dedicated Registration Card */}
+										<div className="border-[3px] border-black bg-white p-6 shadow-[5px_5px_0_#191b1a] text-center sm:p-8">
+											{/* Big Intelligo Logo Container */}
+											<div className="mb-5 flex items-center justify-center">
+												<div className="flex h-32 w-full max-w-xs items-center justify-center border-2 border-black bg-[#f8f9fa] p-4 shadow-[4px_4px_0_#191b1a]">
+													<img
+														src="/sponsors/Logo-Intelligo.png"
+														alt="Intelligo.id Logo"
+														className="max-h-full max-w-full object-contain"
+														onError={(e) => {
+															e.currentTarget.style.display = "none";
+															if (e.currentTarget.parentElement) {
+																e.currentTarget.parentElement.innerHTML = "<span class='text-lg font-black tracking-wider text-[#1E3A8A]'>INTELLIGO.ID</span>";
+															}
+														}}
+													/>
+												</div>
+											</div>
+
+											<h3 className="text-base font-black uppercase sm:text-lg text-black">
+												Portal Pendaftaran & Pembayaran Intelligo ID
+											</h3>
+
+											{/* Pricing Highlight */}
+											<div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+												<span className="text-sm sm:text-base font-bold text-gray-400 line-through">
+													Rp 499.000
+												</span>
+												<span className="text-2xl sm:text-3xl font-black text-[#1E3A8A]">
+													Rp 99.000
+												</span>
+												<span className="border-2 border-black bg-[#ffd400] px-2.5 py-0.5 text-[11px] sm:text-xs font-black uppercase text-black shadow-[2px_2px_0_#191b1a]">
+													Khusus IT TODAY IPB
+												</span>
+											</div>
+
+											<p className="mx-auto mt-3 max-w-lg text-xs sm:text-sm font-medium text-gray-700 leading-relaxed">
+												Pendaftaran dan pembayaran <b>Bootcamp Offline Artificial Intelligence</b> untuk kategori peserta umum seharga <b className="text-[#1E3A8A]">Rp 99.000</b> (khusus pendaftar melalui IT TODAY IPB) dilakukan secara 1 pintu melalui portal resmi <b>Intelligo ID</b>.
+											</p>
+										</div>
+
+										<div>
+											<button
+												type="button"
+												onClick={handleOpenIntelligoLink}
+												className="w-full cursor-pointer border-[3px] border-black bg-[#ffd400] px-6 py-4 text-sm sm:text-base font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b] active:translate-x-0.5 active:translate-y-0.5"
+											>
+												Buka Link Pendaftaran
+											</button>
+										</div>
+
+										{/* Dynamic WhatsApp Card: Muncul dinamis setelah klik Buka Link Pendaftaran */}
+										{hasOpenedIntelligo && (
+											<div className="border-[3px] border-black bg-[#FFF6BF] p-5 text-black shadow-[4px_4px_0_#191b1a] animate-fade-in">
+												<div className="flex items-center gap-2">
+													<FaWhatsapp className="text-[#087a3d]" size={18} />
+													<p className="text-xs font-black uppercase tracking-wider text-[#1E3A8A]">
+														Konfirmasi Pendaftaran ke WhatsApp Panitia:
+													</p>
+												</div>
+												<p className="mt-2 text-xs text-gray-800 font-medium">
+													Setelah menyelesaikan pendaftaran dan pembayaran di Intelligo ID, silakan konfirmasi ke salah satu kontak panitia:
+												</p>
+												<div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+													<a
+														href="https://wa.me/6281212258550?text=Halo%20kak%20Arafah,%20saya%20sudah%20mendaftar%20Bootcamp%20AI%20via%20Intelligo"
+														target="_blank"
+														rel="noopener noreferrer"
+														className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+													>
+														<FaWhatsapp size={16} /> 081212258550 (Arafah)
+													</a>
+													<a
+														href="https://wa.me/6285135453902?text=Halo%20kak%20Wisnu,%20saya%20sudah%20mendaftar%20Bootcamp%20AI%20via%20Intelligo"
+														target="_blank"
+														rel="noopener noreferrer"
+														className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+													>
+														<FaWhatsapp size={16} /> 085135453902 (Wisnu)
+													</a>
+												</div>
+											</div>
+										)}
+									</div>
+								)}
+							</div>
+						)}
 					</div>
-				</section>
-				{/* Removed generic error message below the form. Error is now shown only in the styled alert below the title. */}
+				)}
+
 				{showAlert && (
 					<div
 						className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 p-4"
@@ -757,8 +1083,11 @@ const DaftarEvent = () => {
 						</div>
 					</div>
 				)}
+					</div>
+				</main>
 			</div>
-		</EventRegistrationShell>
+			<Footer variant="neobrutal" />
+		</div>
 	);
 };
 
