@@ -199,12 +199,21 @@ const DaftarEvent = () => {
 					: null;
 
 				if (matched) {
-					setAlreadyRegistered(true);
-					setSubmitted(true);
-					if (matched.payment_verification === "accepted" && matched.event?.whatsapp_group_link) {
-						setLinkWhatsapp(matched.event.whatsapp_group_link);
+					const isMineTodayBootcamp = currentTarget.includes("bootcamp") && !effectiveIsIPB && effectiveIsMineToday;
+
+					if (isMineTodayBootcamp && matched.payment_verification !== "accepted" && !matched.has_payment_proof && !matched.payment_proof) {
+						// Registered in DB, but has not uploaded payment proof yet -> show Step 2 (payment upload view)
+						setIsMineTodayRegisteredStep(true);
+						setAlreadyRegistered(false);
+						setSubmitted(false);
 					} else {
-						setLinkWhatsapp("");
+						setAlreadyRegistered(true);
+						setSubmitted(true);
+						if (matched.payment_verification === "accepted" && matched.event?.whatsapp_group_link) {
+							setLinkWhatsapp(matched.event.whatsapp_group_link);
+						} else {
+							setLinkWhatsapp("");
+						}
 					}
 				}
 			} catch {
@@ -215,7 +224,7 @@ const DaftarEvent = () => {
 		};
 
 		checkExistingRegistration();
-	}, [target, workshopChoice]);
+	}, [target, workshopChoice, effectiveIsIPB, effectiveIsMineToday]);
 
 	// Fetch the current event configuration from Admin/database.
 	useEffect(() => {
@@ -754,6 +763,93 @@ const DaftarEvent = () => {
 										</a>
 									</div>
 								</div>
+							</div>
+						)}
+
+						{/* Khusus Bootcamp Peserta MineToday: Upload / Perbarui Bukti Pembayaran */}
+						{target === "bootcamp" && effectiveIsMineToday && !linkWhatsapp && (
+							<div className="border-[3px] border-black bg-white p-5 text-left text-black shadow-[4px_4px_0_#191b1a] space-y-4">
+								<div className="flex items-center gap-2 border-b-2 border-black pb-2">
+									<FaFileUpload className="text-xl text-[#1E3A8A]" />
+									<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#1E3A8A]">
+										Unggah / Perbarui Bukti Transfer (Rp 50.005):
+									</p>
+								</div>
+
+								{/* Box Informasi Rekening Panitia */}
+								<div className="border-2 border-black bg-[#1E3A8A] p-4 text-white shadow-[2px_2px_0_#000]">
+									<p className="text-xs font-bold uppercase tracking-wider text-[#ffd400] mb-1">
+										Informasi Rekening Panitia:
+									</p>
+									<div className="border-2 border-black bg-white p-3 font-mono text-xs text-black sm:text-sm shadow-[2px_2px_0_#000]">
+										<p className="font-bold text-gray-700">Bank SeaBank</p>
+										<div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+											<span className="text-base sm:text-lg font-black tracking-widest text-[#1E3A8A]">
+												901429379205
+											</span>
+											<button
+												type="button"
+												className="cursor-pointer border-2 border-black bg-[#ffd400] px-3 py-1 text-xs font-black uppercase text-black shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5"
+												onClick={() => handleCopyToClipboard("901429379205", "rekening")}
+											>
+												{hasCopied.rekening ? "Disalin!" : "Salin No. Rekening"}
+											</button>
+										</div>
+										<p className="mt-1 text-xs font-bold text-gray-600">
+											a/n Asty Athetha Loethan
+										</p>
+									</div>
+									<p className="mt-2 text-xs text-white/95">• Total Pembayaran: <b className="text-[#ffd400] font-black">Rp 50.005</b> (Biaya Rp 50.000 + Kode Unik 05)</p>
+								</div>
+
+								<div>
+									<label className="mb-2 block text-xs font-black uppercase tracking-wide">
+										Upload Bukti Pembayaran (JPG/PNG/PDF, Maks 2MB) *
+									</label>
+									<div
+										className="flex min-h-24 w-full cursor-pointer items-center justify-center border-[3px] border-dashed border-black bg-[#f4f4f2] p-4 text-center font-bold text-black transition-transform hover:-translate-y-0.5"
+										onDragOver={(e) => e.preventDefault()}
+										onDrop={handlePaymentFileDrop}
+										onClick={() =>
+											paymentFileInputRef.current &&
+											paymentFileInputRef.current.click()
+										}
+									>
+										<FaFileUpload className="mr-2 text-lg text-[#1E3A8A]" />
+										<div className="w-full overflow-hidden text-ellipsis">
+											<p className="truncate text-xs sm:text-sm">
+												{paymentFile
+													? paymentFile.name
+													: paymentFileName
+														? paymentFileName
+														: "Drop file di sini atau klik untuk pilih file"}
+											</p>
+										</div>
+										<input
+											type="file"
+											name="paymentProof"
+											accept=".jpg,.jpeg,.png,.pdf"
+											ref={paymentFileInputRef}
+											onChange={handlePaymentFileInputChange}
+											style={{ display: "none" }}
+										/>
+									</div>
+									{paymentFileName && (
+										<div className="mt-2 text-xs font-semibold text-gray-700">
+											File terpilih:{" "}
+											<span className="font-bold text-black">{paymentFileName}</span>
+										</div>
+									)}
+								</div>
+
+								<button
+									type="button"
+									onClick={handleUploadMineTodayPayment}
+									disabled={loading}
+									className="w-full cursor-pointer border-[3px] border-black bg-[#ffd400] px-6 py-3 text-xs sm:text-sm font-black uppercase text-black shadow-[3px_3px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b] active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50"
+								>
+									{loading ? "Mengirim Bukti Pembayaran..." : "Kirim Bukti Pembayaran"}
+								</button>
 							</div>
 						)}
 
