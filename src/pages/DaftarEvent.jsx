@@ -191,8 +191,10 @@ const DaftarEvent = () => {
 				if (matched) {
 					setAlreadyRegistered(true);
 					setSubmitted(true);
-					if (matched.event?.whatsapp_group_link) {
+					if (matched.payment_verification === "accepted" && matched.event?.whatsapp_group_link) {
 						setLinkWhatsapp(matched.event.whatsapp_group_link);
+					} else {
+						setLinkWhatsapp("");
 					}
 				}
 			} catch {
@@ -210,7 +212,6 @@ const DaftarEvent = () => {
 		const fetchEventConfiguration = async () => {
 			if (target === "workshop" && !workshopChoice) {
 				setExists(true);
-				setLinkWhatsapp("");
 				setCheckingActive(false);
 				return;
 			}
@@ -268,9 +269,6 @@ const DaftarEvent = () => {
 						if (event.is_active !== undefined) {
 							setIsActive(event.is_active);
 						}
-						if (event.whatsapp_group_link) {
-							setLinkWhatsapp(event.whatsapp_group_link);
-						}
 					} else {
 						setCurrentEvent(null);
 						setExists(false);
@@ -283,7 +281,6 @@ const DaftarEvent = () => {
 				console.error("Error fetching event configuration:", e);
 				setCurrentEvent(null);
 				setExists(false);
-				setLinkWhatsapp("");
 			}
 			setCheckingActive(false);
 		};
