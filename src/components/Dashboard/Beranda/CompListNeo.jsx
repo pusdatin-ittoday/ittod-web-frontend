@@ -275,7 +275,7 @@ const CompListNeo = () => {
                     <div className="flex items-center gap-2">
                         <BentoListIcon />
                         <h2 className="text-lg sm:text-xl font-black uppercase text-[#1A1C1C] tracking-tight">
-                            KOMPETISI SAYA
+                            KOMPETISI/EVENT SAYA
                         </h2>
                     </div>
 

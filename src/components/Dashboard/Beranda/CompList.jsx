@@ -374,7 +374,7 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
             </div>
 
             <h3 className="text-sm sm:text-base lg:text-lg font-bold mb-3 flex items-center gap-2 text-white">
-                <FaList className="text-sm sm:text-base lg:text-xl" /> Kompetisi Saya
+                <FaList className="text-sm sm:text-base lg:text-xl" /> Kompetisi/Event Saya
             </h3>
 
             <div className="overflow-y-auto flex-1 px-1 sm:px-2 py-2 custom-scrollbar">
