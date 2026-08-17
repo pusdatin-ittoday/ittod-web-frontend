@@ -6,7 +6,7 @@ import { FaWhatsapp, FaDiscord } from "react-icons/fa";
 
 import { getPublicEvents } from "../../../api/eventPublic";
 import { getJoinEvent } from "../../../utils/api/event";
-import { checkIpbOrMinetoday } from "../../../api/user";
+import { checkIpbOrMinetoday, getUserCompetitions } from "../../../api/user";
 import { requireCompleteProfile } from "../../../utils/profileCompletion";
 import { useAlert } from "../../../context/AlertContext";
 import PaginationControls from "../PaginationControls";
@@ -140,15 +140,16 @@ const IkutEvent = ({
             variant={isActive ? "yellow-solid" : "transparent"}
             fullWidth
             onClick={async (e) => {
+              e.preventDefault();
               if (isActive) {
-                e.preventDefault();
                 const isComplete = await requireCompleteProfile(navigate, showAlert);
                 if (isComplete) {
                   navigate(`/daftar-event/${eventSlug || eventId}`);
                 }
+              } else {
+                navigate(`/daftar-event/${eventSlug || eventId}`);
               }
             }}
-            disabled={!isActive}
             className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base cursor-pointer"
           >
             {isActive ? (
@@ -157,7 +158,7 @@ const IkutEvent = ({
                 Daftar Sekarang
               </>
             ) : (
-              <>Pendaftaran Ditutup/Belum Dibuka</>
+              <>Cek Status / Info Pendaftaran</>
             )}
           </Button>
         )}
@@ -177,9 +178,10 @@ const EventRegisCard = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [publicRes, userRes, ipbRes] = await Promise.allSettled([
+        const [publicRes, userRes, userCompRes, ipbRes] = await Promise.allSettled([
           getPublicEvents("non_competition"),
           getJoinEvent(),
+          getUserCompetitions(),
           checkIpbOrMinetoday(),
         ]);
 
@@ -192,14 +194,41 @@ const EventRegisCard = () => {
           setCurrentPage(0);
         }
 
+        const combinedUserEvents = [];
+
         if (userRes.status === "fulfilled") {
           const res = userRes.value;
           const events = res?.data || res;
           const list = events?.data || events?.events || events;
           if (Array.isArray(list)) {
-            setUserEvents(list);
+            combinedUserEvents.push(...list);
           }
         }
+
+        if (userCompRes.status === "fulfilled") {
+          const compData = userCompRes.value?.data || userCompRes.value;
+          const compList = Array.isArray(compData) ? compData : compData?.data || [];
+          if (Array.isArray(compList)) {
+            compList.forEach((team) => {
+              const compId = team?.competition_id || team?.competition?.id || "";
+              const compTitle = team?.competition?.title || team?.competition_name || team?.team_name || "";
+              combinedUserEvents.push({
+                event_id: compId,
+                payment_verification: team.is_verified === "approved" ? "accepted" : (team.is_verified || "pending"),
+                payment_proof: team.payment_proof?.url || team.paymentProof?.url || null,
+                has_payment_proof: Boolean(team.payment_proof || team.paymentProof || team.payment_proof_id),
+                event: {
+                  id: compId,
+                  slug: team?.competition?.slug || (compId.toLowerCase().includes("bootcamp") ? "bootcamp" : compId),
+                  title: compTitle,
+                  whatsapp_group_link: team?.competition?.whatsapp_group_link || null,
+                },
+              });
+            });
+          }
+        }
+
+        setUserEvents(combinedUserEvents);
 
         if (ipbRes.status === "fulfilled" && ipbRes.value?.data) {
           setIsIPB(Boolean(ipbRes.value.data.isIPB));
