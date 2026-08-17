@@ -960,6 +960,109 @@ const DaftarEvent = () => {
 									</button>
 								</div>
 							</div>
+						) : registeredParticipantData?.payment_verification === "rejected" ? (
+							<div className="space-y-4">
+								<div className="border-[3px] border-black bg-[#ff4d4f] p-5 text-left text-white shadow-[4px_4px_0_#191b1a] space-y-3">
+									<div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-white/40 pb-2">
+										<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-white flex items-center gap-1.5">
+											<span>🚫</span> Pembayaran Ditolak Panitia
+										</p>
+										<span className="inline-flex items-center gap-1 border-2 border-black bg-black px-2.5 py-0.5 text-[11px] font-black uppercase text-white shadow-[2px_2px_0_#fff]">
+											Rejected
+										</span>
+									</div>
+									{registeredParticipantData.verification_error && (
+										<div className="border-2 border-black bg-[#ffebee] p-3 text-black">
+											<p className="text-xs font-black uppercase text-[#d32f2f]">
+												Alasan Penolakan:
+											</p>
+											<p className="text-xs sm:text-sm font-bold mt-0.5 text-gray-900">
+												{registeredParticipantData.verification_error}
+											</p>
+										</div>
+									)}
+									<p className="text-xs sm:text-sm text-white font-medium leading-relaxed">
+										⚠️ Silakan unggah kembali bukti pembayaran yang valid di bawah ini.
+									</p>
+								</div>
+
+								{/* Step 2 upload form to re-upload proof */}
+								<div className="border-[3px] border-black bg-white p-5 shadow-[4px_4px_0_#191b1a] space-y-4">
+									<div className="border-[3px] border-black bg-[#1E3A8A] p-4 text-white shadow-[3px_3px_0_#191b1a]">
+										<p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white/80 mb-2">
+											Informasi Rekening Panitia:
+										</p>
+										<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-3 border-2 border-black text-black">
+											<div>
+												<p className="text-xs font-bold text-gray-600">Bank SeaBank</p>
+												<p className="text-base sm:text-lg font-black tracking-wider font-mono text-[#191b1a]">
+													901429379205
+												</p>
+												<p className="text-[11px] text-gray-500 font-medium">a/n Asty Athetha Loethan</p>
+											</div>
+											<button
+												type="button"
+												onClick={copyRekening}
+												className="cursor-pointer border-2 border-black bg-[#ffd400] px-3 py-1.5 text-xs font-black uppercase shadow-[2px_2px_0_#191b1a] transition-all hover:bg-[#ffe26b] active:translate-x-0.5 active:translate-y-0.5"
+											>
+												{copiedRekening ? "Tersalin!" : "Salin No. Rekening"}
+											</button>
+										</div>
+										<p className="mt-2 text-xs font-medium text-white/90">
+											• Total Pembayaran: <span className="font-bold text-[#ffd400]">Rp 50.005</span> (Biaya Rp 50.000 + Kode Unik 05)
+										</p>
+									</div>
+
+									<div>
+										<label className="mb-2 block text-xs font-black uppercase tracking-wide">
+											Upload Bukti Pembayaran Baru (JPG/PNG/PDF, Maks 2MB) *
+										</label>
+										<div
+											className="flex cursor-pointer items-center border-[3px] border-dashed border-black bg-white px-4 py-4 transition-colors hover:bg-neutral-50"
+											onDragOver={(e) => e.preventDefault()}
+											onDrop={handlePaymentFileDrop}
+											onClick={() =>
+												paymentFileInputRef.current &&
+												paymentFileInputRef.current.click()
+											}
+										>
+											<FaFileUpload className="mr-2 text-lg text-[#1E3A8A]" />
+											<div className="w-full overflow-hidden text-ellipsis">
+												<p className="truncate text-xs sm:text-sm">
+													{paymentFile
+														? paymentFile.name
+														: paymentFileName
+															? paymentFileName
+															: "Drop file di sini atau klik untuk pilih file"}
+												</p>
+											</div>
+											<input
+												type="file"
+												name="paymentProof"
+												accept=".jpg,.jpeg,.png,.pdf"
+												ref={paymentFileInputRef}
+												onChange={handlePaymentFileInputChange}
+												style={{ display: "none" }}
+											/>
+										</div>
+										{paymentFileName && (
+											<div className="mt-2 text-xs font-semibold text-gray-700">
+												File terpilih:{" "}
+												<span className="font-bold text-black">{paymentFileName}</span>
+											</div>
+										)}
+									</div>
+
+									<button
+										type="button"
+										onClick={handleUploadMineTodayPayment}
+										disabled={loading}
+										className="w-full cursor-pointer border-[3px] border-black bg-[#ffd400] px-6 py-3 text-xs sm:text-sm font-black uppercase text-black shadow-[3px_3px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b] active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50"
+									>
+										{loading ? "Mengirim Bukti Pembayaran..." : "Kirim Ulang Bukti Pembayaran"}
+									</button>
+								</div>
+							</div>
 						) : (
 							<div className="border-[3px] border-black bg-[#ffd400] p-5 text-left text-black shadow-[4px_4px_0_#191b1a] space-y-3">
 								<div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
