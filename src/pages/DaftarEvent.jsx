@@ -114,7 +114,7 @@ const DaftarEvent = () => {
 	const effectiveIsMineToday = !isCurrentIPB && isRegisteredToMinetoday;
 
 	const getPaymentProofUrl = (proofKey) => {
-		if (!proofKey) return "";
+		if (!proofKey || proofKey === "uploaded") return "";
 		if (proofKey.startsWith("http://") || proofKey.startsWith("https://")) {
 			return proofKey;
 		}
@@ -216,12 +216,13 @@ const DaftarEvent = () => {
 						const compId = team?.competitionId || team?.competition_id || team?.competition?.id || team?.teamID || "";
 						const compTitle = team?.competitionName || team?.competition?.title || team?.competition_name || team?.teamName || team?.team_name || "";
 						const isVerified = team.isVerified === "approved" || team.is_verified === "approved" || team.isVerified === true;
-						const hasProof = Boolean(team.paymentProofID || team.payment_proof_id || team.payment_proof || team.paymentProof);
+						const proofUrl = team.paymentProofUrl || team.payment_proof?.url || team.paymentProof?.url || null;
+						const hasProof = Boolean(proofUrl || team.paymentProofID || team.payment_proof_id || team.payment_proof || team.paymentProof);
 
 						list.push({
 							event_id: compId,
 							payment_verification: isVerified ? "accepted" : (team.isVerified || team.is_verified || "pending"),
-							payment_proof: team.payment_proof?.url || team.paymentProof?.url || (hasProof ? "uploaded" : null),
+							payment_proof: proofUrl,
 							has_payment_proof: hasProof,
 							event: {
 								id: compId,
