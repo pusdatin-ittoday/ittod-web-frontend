@@ -9,6 +9,7 @@ import {
 	checkIpbOrMinetoday,
 	getCurrentUser,
 	registerToBootcamp,
+	getUserCompetitions,
 } from "../api/user";
 import { uploadBootcampPayment } from "../api/user";
 import { getPublicEvents } from "../api/eventPublic";
@@ -185,34 +186,65 @@ const DaftarEvent = () => {
 	useEffect(() => {
 		const checkExistingRegistration = async () => {
 			try {
-				const res = await getJoinEvent();
-				const events = res?.data || res;
-				const list = events?.data || events?.events || events;
+				const [eventRes, compRes] = await Promise.allSettled([
+					getJoinEvent(),
+					getUserCompetitions(),
+				]);
+
+				const list = [];
+				if (eventRes.status === "fulfilled") {
+					const res = eventRes.value;
+					const events = res?.data || res;
+					const l = events?.data || events?.events || events;
+					if (Array.isArray(l)) list.push(...l);
+				}
+
+				if (compRes.status === "fulfilled") {
+					const compData = compRes.value?.data || compRes.value;
+					const compList = Array.isArray(compData) ? compData : compData?.data || [];
+					if (Array.isArray(compList)) {
+						compList.forEach((team) => {
+							const compId = team?.competition_id || team?.competition?.id || "";
+							const compTitle = team?.competition?.title || team?.competition_name || team?.team_name || "";
+							list.push({
+								event_id: compId,
+								payment_verification: team.is_verified === "approved" ? "accepted" : (team.is_verified || "pending"),
+								payment_proof: team.payment_proof?.url || team.paymentProof?.url || null,
+								has_payment_proof: Boolean(team.payment_proof || team.paymentProof || team.payment_proof_id),
+								event: {
+									id: compId,
+									slug: team?.competition?.slug || (compId.toLowerCase().includes("bootcamp") ? "bootcamp" : compId),
+									title: compTitle,
+									whatsapp_group_link: team?.competition?.whatsapp_group_link || null,
+								},
+							});
+						});
+					}
+				}
+
 				const currentTarget = (target === "workshop" && workshopChoice ? workshopChoice : target || "").toLowerCase();
 
-				const matched = Array.isArray(list)
-					? list.find((e) => {
-						const eId = (e?.event_id || e?.id || "").toString().toLowerCase();
-						const eSlug = (e?.event?.slug || e?.slug || "").toString().toLowerCase();
-						const eTitle = (e?.event?.title || e?.event_name || e?.name || e?.title || "").toString().toLowerCase();
+				const matched = list.find((e) => {
+					const eId = (e?.event_id || e?.id || "").toString().toLowerCase();
+					const eSlug = (e?.event?.slug || e?.slug || "").toString().toLowerCase();
+					const eTitle = (e?.event?.title || e?.event_name || e?.name || e?.title || "").toString().toLowerCase();
 
-						if (!currentTarget) return false;
+					if (!currentTarget) return false;
 
-						if (eId === currentTarget || eSlug === currentTarget) return true;
+					if (eId === currentTarget || eSlug === currentTarget) return true;
 
-						if (currentTarget.includes("bootcamp")) {
-							return eId.includes("bootcamp") || eSlug.includes("bootcamp") || eTitle.includes("bootcamp");
-						}
-						if (currentTarget.includes("seminar")) {
-							return eId.includes("seminar") || eSlug.includes("seminar") || eTitle.includes("seminar");
-						}
-						if (currentTarget.includes("workshop") || currentTarget.includes("cyber") || currentTarget.includes("ux") || currentTarget.includes("learning")) {
-							return eId.includes("workshop") || eSlug.includes("workshop") || eTitle.includes("workshop") ||
-								(workshopChoice && (eTitle.includes(workshopChoice.toLowerCase()) || eSlug.includes(workshopChoice.toLowerCase())));
-						}
-						return eId.includes(currentTarget) || eSlug.includes(currentTarget) || eTitle.includes(currentTarget);
-					})
-					: null;
+					if (currentTarget.includes("bootcamp")) {
+						return eId.includes("bootcamp") || eSlug.includes("bootcamp") || eTitle.includes("bootcamp");
+					}
+					if (currentTarget.includes("seminar")) {
+						return eId.includes("seminar") || eSlug.includes("seminar") || eTitle.includes("seminar");
+					}
+					if (currentTarget.includes("workshop") || currentTarget.includes("cyber") || currentTarget.includes("ux") || currentTarget.includes("learning")) {
+						return eId.includes("workshop") || eSlug.includes("workshop") || eTitle.includes("workshop") ||
+							(workshopChoice && (eTitle.includes(workshopChoice.toLowerCase()) || eSlug.includes(workshopChoice.toLowerCase())));
+					}
+					return eId.includes(currentTarget) || eSlug.includes(currentTarget) || eTitle.includes(currentTarget);
+				});
 
 				if (matched) {
 					setRegisteredParticipantData(matched);
@@ -224,6 +256,7 @@ const DaftarEvent = () => {
 						setIsMineTodayRegisteredStep(true);
 						setSubmitted(false);
 					} else {
+						setIsMineTodayRegisteredStep(false);
 						setSubmitted(true);
 						if (matched.payment_verification === "accepted" && matched.event?.whatsapp_group_link) {
 							setLinkWhatsapp(matched.event.whatsapp_group_link);
