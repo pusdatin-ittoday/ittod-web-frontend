@@ -42,6 +42,7 @@ const IkutEvent = ({
   eventId,
   eventSlug,
   isRegistered,
+  isPending,
   waGroupLink,
   colorIndex = 0,
   isIPB = false,
@@ -115,6 +116,20 @@ const IkutEvent = ({
               Grup WhatsApp
             </Button>
           )
+        ) : isPending ? (
+          <div className="flex flex-col gap-2.5">
+            <div className="flex items-center justify-center gap-2 border-[3px] border-black bg-[#ffd400] py-3 text-center text-xs font-black uppercase text-black shadow-[3px_3px_0_#191b1a] sm:text-sm">
+              <span>⌛</span> Menunggu Verifikasi Pembayaran
+            </div>
+            <Button
+              variant="transparent"
+              fullWidth
+              href={`/daftar-event/${eventSlug || eventId}`}
+              className="flex items-center justify-center py-2.5 text-xs uppercase tracking-wider"
+            >
+              Cek Status / Upload Ulang
+            </Button>
+          </div>
         ) : (
           <Button
             variant={isActive ? "yellow-solid" : "transparent"}
@@ -246,8 +261,11 @@ const EventRegisCard = () => {
                 return false;
               });
 
-              const isRegistered = !!userReg;
-              const waGroupLink = userReg?.event?.whatsapp_group_link || event.whatsapp_group_link;
+              const isBootcamp = (event.title || "").toLowerCase().includes("bootcamp");
+              const isFreeForUser = event.price === 0 || (isBootcamp && isIPB);
+              const isAccepted = userReg && (userReg.payment_verification === "accepted" || isFreeForUser);
+              const isPending = !!userReg && !isAccepted;
+              const waGroupLink = isAccepted ? (userReg?.event?.whatsapp_group_link || null) : null;
 
               return (
                 <div
@@ -265,7 +283,8 @@ const EventRegisCard = () => {
                     isActive={event.is_active}
                     eventId={event.id}
                     eventSlug={event.slug}
-                    isRegistered={isRegistered}
+                    isRegistered={isAccepted}
+                    isPending={isPending}
                     waGroupLink={waGroupLink}
                     colorIndex={absoluteIndex}
                     isIPB={isIPB}

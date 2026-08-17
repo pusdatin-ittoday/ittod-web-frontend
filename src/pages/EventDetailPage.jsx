@@ -10,6 +10,7 @@ import AgendaSidebar from '../components/ui/AgendaSidebar';
 import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
 import { getJoinEvent } from '../utils/api/event';
+import { checkIpbOrMinetoday } from '../api/user';
 import LoadingState from '../components/ui/LoadingState';
 import EventGallery from '../components/event/EventGallery';
 import { getEventGalleryImages, getEventGalleryLabel } from '../data/eventGalleryData';
@@ -39,6 +40,7 @@ const EventDetailPage = () => {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [isPendingVerification, setIsPendingVerification] = useState(false);
   const [userWaLink, setUserWaLink] = useState("");
 
   useEffect(() => {
@@ -60,29 +62,47 @@ const EventDetailPage = () => {
 
         // Check user registration status
         try {
-          const userRes = await getJoinEvent();
-          const userEventsData = userRes?.data || userRes;
-          const list = userEventsData?.data || userEventsData?.events || userEventsData;
-          if (Array.isArray(list)) {
-            const matched = list.find((ue) => {
-              const ueId = (ue?.event_id || ue?.id || "").toString().toLowerCase();
-              const ueSlug = (ue?.event?.slug || ue?.slug || "").toString().toLowerCase();
-              const ueTitle = (ue?.event?.title || ue?.title || "").toString().toLowerCase();
+          const [userRes, ipbRes] = await Promise.allSettled([
+            getJoinEvent(),
+            checkIpbOrMinetoday(),
+          ]);
 
-              const curId = (apiData.id || "").toString().toLowerCase();
-              const curSlug = (apiData.slug || slug || "").toString().toLowerCase();
-              const curTitle = (apiData.title || "").toString().toLowerCase();
+          let isIPB = false;
+          if (ipbRes.status === "fulfilled" && ipbRes.value?.data) {
+            isIPB = Boolean(ipbRes.value.data.isIPB);
+          }
 
-              if (ueId === curId || ueSlug === curId || (curSlug && (ueId === curSlug || ueSlug === curSlug))) return true;
-              if (curTitle.includes("seminar") && ueTitle.includes("seminar")) return true;
-              if (curTitle.includes("bootcamp") && ueTitle.includes("bootcamp")) return true;
-              if (curTitle.includes("workshop") && ueTitle.includes("workshop")) return true;
-              return false;
-            });
+          if (userRes.status === "fulfilled") {
+            const userEventsData = userRes.value?.data || userRes.value;
+            const list = userEventsData?.data || userEventsData?.events || userEventsData;
+            if (Array.isArray(list)) {
+              const matched = list.find((ue) => {
+                const ueId = (ue?.event_id || ue?.id || "").toString().toLowerCase();
+                const ueSlug = (ue?.event?.slug || ue?.slug || "").toString().toLowerCase();
+                const ueTitle = (ue?.event?.title || ue?.title || "").toString().toLowerCase();
 
-            if (matched) {
-              setIsRegistered(true);
-              setUserWaLink(matched.event?.whatsapp_group_link || apiData.whatsapp_group_link || "");
+                const curId = (apiData.id || "").toString().toLowerCase();
+                const curSlug = (apiData.slug || slug || "").toString().toLowerCase();
+                const curTitle = (apiData.title || "").toString().toLowerCase();
+
+                if (ueId === curId || ueSlug === curId || (curSlug && (ueId === curSlug || ueSlug === curSlug))) return true;
+                if (curTitle.includes("seminar") && ueTitle.includes("seminar")) return true;
+                if (curTitle.includes("bootcamp") && ueTitle.includes("bootcamp")) return true;
+                if (curTitle.includes("workshop") && ueTitle.includes("workshop")) return true;
+                return false;
+              });
+
+              const isBootcamp = (apiData.title || "").toLowerCase().includes("bootcamp");
+              const isFreeForUser = apiData.price === 0 || (isBootcamp && isIPB);
+              const isAccepted = matched && (matched.payment_verification === "accepted" || isFreeForUser);
+              const isPending = !!matched && !isAccepted;
+
+              if (isAccepted) {
+                setIsRegistered(true);
+                setUserWaLink(matched.event?.whatsapp_group_link || "");
+              } else if (isPending) {
+                setIsPendingVerification(true);
+              }
             }
           }
         } catch {
@@ -155,20 +175,20 @@ const EventDetailPage = () => {
                     {event.description}
                   </p>
 
-                  {/* CTA: WhatsApp Link if Registered / Daftar Sekarang if Not */}
+                  {/* CTA: WhatsApp Link if Registered / Pending State if Pending / Daftar Sekarang if Not */}
                   {isRegistered ? (
-                    effectiveWaLink ? (
+                    userWaLink ? (
                       <a
-                        href={effectiveWaLink}
+                        href={userWaLink}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`flex w-full items-center justify-center gap-2 border-[3px] border-black py-4 text-center font-inter text-sm font-black uppercase tracking-wider text-white shadow-[4px_4px_0_#111] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#111] md:text-base ${
-                          effectiveWaLink.toLowerCase().includes("discord")
+                          userWaLink.toLowerCase().includes("discord")
                             ? "bg-[#5865F2]"
                             : "bg-[#18c964]"
                         }`}
                       >
-                        {effectiveWaLink.toLowerCase().includes("discord") ? (
+                        {userWaLink.toLowerCase().includes("discord") ? (
                           <>
                             <FaDiscord size={20} /> Grup Discord
                           </>
@@ -189,6 +209,20 @@ const EventDetailPage = () => {
                         Grup WhatsApp
                       </Button>
                     )
+                  ) : isPendingVerification ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center justify-center gap-2 border-[3px] border-black bg-[#ffd400] py-3.5 text-center font-inter text-sm font-black uppercase tracking-wider text-black shadow-[4px_4px_0_#111]">
+                        <span>⌛</span> Menunggu Verifikasi Pembayaran
+                      </div>
+                      <Button
+                        variant="transparent"
+                        fullWidth
+                        href={`/daftar-event/${slug}`}
+                        className="flex items-center justify-center gap-2 py-3 text-xs uppercase tracking-wider md:text-sm"
+                      >
+                        Cek Status / Upload Bukti Pembayaran
+                      </Button>
+                    </div>
                   ) : (
                     <Button
                       variant={event.is_active ? "yellow-solid" : "transparent"}

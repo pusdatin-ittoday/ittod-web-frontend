@@ -152,8 +152,8 @@ const DaftarEvent = () => {
 				const list = events?.data || events?.events || events;
 				const currentTarget = (target === "workshop" && workshopChoice ? workshopChoice : target || "").toLowerCase();
 
-				const isRegistered = Array.isArray(list)
-					? list.some((e) => {
+				const matched = Array.isArray(list)
+					? list.find((e) => {
 						const eId = (e?.event_id || e?.id || "").toString().toLowerCase();
 						const eSlug = (e?.event?.slug || e?.slug || "").toString().toLowerCase();
 						const eTitle = (e?.event?.title || e?.event_name || e?.name || e?.title || "").toString().toLowerCase();
@@ -174,11 +174,14 @@ const DaftarEvent = () => {
 						}
 						return eId.includes(currentTarget) || eSlug.includes(currentTarget) || eTitle.includes(currentTarget);
 					})
-					: false;
+					: null;
 
-				if (isRegistered) {
+				if (matched) {
 					setAlreadyRegistered(true);
 					setSubmitted(true);
+					if (matched.event?.whatsapp_group_link) {
+						setLinkWhatsapp(matched.event.whatsapp_group_link);
+					}
 				}
 			} catch {
 				// ignore; user might have no events yet
@@ -251,11 +254,12 @@ const DaftarEvent = () => {
 						if (event.is_active !== undefined) {
 							setIsActive(event.is_active);
 						}
-						setLinkWhatsapp(event.whatsapp_group_link || "");
+						if (event.whatsapp_group_link) {
+							setLinkWhatsapp(event.whatsapp_group_link);
+						}
 					} else {
 						setCurrentEvent(null);
 						setExists(false);
-						setLinkWhatsapp("");
 					}
 				} else {
 					setCurrentEvent(null);
