@@ -118,14 +118,13 @@ const IkutEvent = ({
               href={`/daftar-event/${eventSlug || eventId}`}
               className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
             >
-              <FaWhatsapp size={20} />
-              Grup WhatsApp
+              Lihat Detail Pendaftaran
             </Button>
           )
         ) : isPending ? (
           <div className="flex flex-col gap-2.5">
             <div className="flex items-center justify-center gap-2 border-[3px] border-black bg-[#ffd400] py-3 text-center text-xs font-black uppercase text-black shadow-[3px_3px_0_#191b1a] sm:text-sm">
-              <span>⌛</span> Menunggu Verifikasi Pembayaran
+              <span>⌛</span> Menunggu Verifikasi Berkas
             </div>
             <Button
               variant="transparent"
@@ -133,7 +132,7 @@ const IkutEvent = ({
               href={`/daftar-event/${eventSlug || eventId}`}
               className="flex items-center justify-center py-2.5 text-xs uppercase tracking-wider"
             >
-              Cek Status / Upload Ulang
+              Cek Status Pendaftaran
             </Button>
           </div>
         ) : (
@@ -275,9 +274,7 @@ const EventRegisCard = () => {
                 return false;
               });
 
-              const isBootcamp = (event.title || "").toLowerCase().includes("bootcamp");
-              const isFreeForUser = event.price === 0 || (isBootcamp && isIPB);
-              const isAccepted = userReg && (userReg.payment_verification === "accepted" || isFreeForUser);
+              const isAccepted = userReg?.payment_verification === "accepted";
               const isPending = !!userReg && !isAccepted;
               const waGroupLink = isAccepted ? (userReg?.event?.whatsapp_group_link || null) : null;
 

@@ -96,9 +96,7 @@ const EventDetailPage = () => {
                 return false;
               });
 
-              const isBootcamp = (apiData.title || "").toLowerCase().includes("bootcamp");
-              const isFreeForUser = apiData.price === 0 || (isBootcamp && isIPB);
-              const isAccepted = matched && (matched.payment_verification === "accepted" || isFreeForUser);
+              const isAccepted = matched?.payment_verification === "accepted";
               const isPending = !!matched && !isAccepted;
 
               if (isAccepted) {
