@@ -97,6 +97,8 @@ const DaftarEvent = () => {
 	const [isCheckingProfile, setIsCheckingProfile] = useState(true);
 	const [currentUserProfile, setCurrentUserProfile] = useState(null);
 	const [showIntelligoModal, setShowIntelligoModal] = useState(false);
+	const [showMineTodayConfirmModal, setShowMineTodayConfirmModal] = useState(false);
+	const [isMineTodayRegisteredStep, setIsMineTodayRegisteredStep] = useState(false);
 	const [hasOpenedIntelligo, setHasOpenedIntelligo] = useState(() => {
 		return localStorage.getItem("hasOpenedIntelligo") === "true";
 	});
@@ -364,6 +366,92 @@ const DaftarEvent = () => {
 			setError(errorMsg);
 			await showGlobalAlert({
 				title: "Gagal Mendaftar",
+				message: errorMsg,
+				variant: "danger",
+			});
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const handleConfirmRegisterMineToday = async () => {
+		setShowMineTodayConfirmModal(false);
+		setLoading(true);
+		setError("");
+		try {
+			const eventId = currentEvent?.id || currentEvent?.slug || "Bootcamp";
+			await registerToBootcamp({
+				eventId,
+				institutionName: currentUserProfile?.nama_sekolah || institution,
+				phoneNumber: currentUserProfile?.phone_number || whatsapp,
+				bundling: "minetoday",
+			});
+			setIsMineTodayRegisteredStep(true);
+			await showGlobalAlert({
+				title: "Pendaftaran Dicatat!",
+				message: "Data pendaftaran Bootcamp Anda telah berhasil dicatat. Silakan lakukan pembayaran dan unggah bukti transfer di bawah.",
+				variant: "success",
+			});
+		} catch (err) {
+			const errorMsg =
+				err.response?.data?.message ||
+				err.response?.data?.error ||
+				err.message ||
+				"Gagal mencatat pendaftaran.";
+			setError(errorMsg);
+			await showGlobalAlert({
+				title: "Gagal Mendaftar",
+				message: errorMsg,
+				variant: "danger",
+			});
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const handleUploadMineTodayPayment = async () => {
+		const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
+		if (!isComplete) return;
+		if (!paymentFile) {
+			setIncompleteFields([{ label: "Bukti Pembayaran (Transfer Bank)" }]);
+			setShowAlert(true);
+			return;
+		}
+		setLoading(true);
+		setError("");
+		try {
+			const eventId = currentEvent?.id || currentEvent?.slug || "Bootcamp";
+			try {
+				await registerToBootcamp({
+					eventId,
+					institutionName: currentUserProfile?.nama_sekolah || institution,
+					phoneNumber: currentUserProfile?.phone_number || whatsapp,
+					bundling: "minetoday",
+				});
+			} catch (regErr) {
+				console.log("Registration note:", regErr);
+			}
+
+			const uploadRes = await uploadBootcampPayment(paymentFile);
+			if (uploadRes && uploadRes.success === false) {
+				throw new Error(uploadRes.error || "Gagal mengunggah bukti pembayaran.");
+			}
+
+			setSubmitted(true);
+			await showGlobalAlert({
+				title: "Berhasil!",
+				message: "Bukti pembayaran Bootcamp Anda berhasil dikirim dan sedang diverifikasi panitia.",
+				variant: "success",
+			});
+		} catch (err) {
+			const errorMsg =
+				err.response?.data?.message ||
+				err.response?.data?.error ||
+				err.message ||
+				"Gagal mengirim bukti pembayaran.";
+			setError(errorMsg);
+			await showGlobalAlert({
+				title: "Gagal Mengirim",
 				message: errorMsg,
 				variant: "danger",
 			});
@@ -864,158 +952,147 @@ const DaftarEvent = () => {
 
 								{/* Case 2: Peserta Lomba MineToday (1 Pintu Pembayaran ke Panitia) */}
 								{!effectiveIsIPB && effectiveIsMineToday && (
-									<div className="space-y-5">
-										<div className="border-[3px] border-black bg-[#FFF6BF] p-5 shadow-[4px_4px_0_#191b1a]">
-											<p className="text-sm font-bold text-amber-950 leading-relaxed">
-												Anda telah terdaftar pada kompetisi <b>MineToday</b>. Khusus peserta MineToday, Anda mendapatkan harga spesial untuk mengikuti <b>Bootcamp Offline Artificial Intelligence</b>:
-											</p>
+									<div className="space-y-6">
+										{!isMineTodayRegisteredStep && !alreadyRegistered ? (
+											/* Step 1: Informasi Penawaran & Tombol Daftar Bootcamp Rp 50.000 */
+											<div className="space-y-6">
+												<div className="border-[3px] border-black bg-[#FFF6BF] p-6 shadow-[5px_5px_0_#191b1a] text-center sm:p-8">
+													<h3 className="text-base font-black uppercase sm:text-lg text-black">
+														Pendaftaran Bootcamp Offline Artificial Intelligence
+													</h3>
+													<p className="mt-1.5 text-xs sm:text-sm font-bold text-gray-700">
+														Khusus Peserta Terverifikasi Kompetisi MineToday
+													</p>
 
-											{/* Pricing Highlight */}
-											<div className="mt-3 flex flex-wrap items-center gap-2">
-												<span className="text-sm sm:text-base font-bold text-gray-400 line-through">
-													Rp 499.000
-												</span>
-												<span className="text-2xl sm:text-3xl font-black text-[#1E3A8A]">
-													Rp 50.000
-												</span>
-												<span className="border-2 border-black bg-[#ffd400] px-2.5 py-0.5 text-[11px] sm:text-xs font-black uppercase text-black shadow-[2px_2px_0_#191b1a]">
-													Khusus Peserta MineToday
-												</span>
-											</div>
+													{/* Pricing Highlight */}
+													<div className="my-4 flex flex-wrap items-center justify-center gap-2">
+														<span className="text-base sm:text-lg font-bold text-gray-400 line-through">
+															Rp 499.000
+														</span>
+														<span className="text-3xl sm:text-4xl font-black text-[#1E3A8A]">
+															Rp 50.000
+														</span>
+														<span className="border-2 border-black bg-[#ffd400] px-2.5 py-0.5 text-[11px] sm:text-xs font-black uppercase text-black shadow-[2px_2px_0_#191b1a]">
+															Diskon Khusus MineToday
+														</span>
+													</div>
 
-											<p className="mt-3 text-xs text-amber-900 font-medium">
-												Pembayaran dilakukan secara 1 pintu langsung ditransfer ke rekening panitia IT Today.
-											</p>
-										</div>
-
-										{/* Box Informasi Rekening Panitia */}
-										<div className="border-[3px] border-black bg-[#1E3A8A] p-5 text-white shadow-[4px_4px_0_#191b1a]">
-											<p className="text-xs font-bold uppercase tracking-wider text-[#ffd400] mb-2">
-												Informasi Rekening Panitia:
-											</p>
-											<div className="border-2 border-black bg-white p-3 font-mono text-xs text-black sm:text-sm shadow-[2px_2px_0_#000]">
-												<p className="font-bold text-gray-700">Bank SeaBank</p>
-												<div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-													<span className="text-base sm:text-lg font-black tracking-widest text-[#1E3A8A]">
-														901429379205
-													</span>
-													<button
-														type="button"
-														className="cursor-pointer border-2 border-black bg-[#ffd400] px-3 py-1 text-xs font-black uppercase text-black shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5"
-														onClick={() => handleCopyToClipboard("901429379205", "rekening")}
-													>
-														{hasCopied.rekening ? "Disalin!" : "Salin No. Rekening"}
-													</button>
-												</div>
-												<p className="mt-1 text-xs font-bold text-gray-600">
-													a/n Asty Athetha Loethan
-												</p>
-											</div>
-											<div className="mt-3 text-xs sm:text-sm text-white/95 space-y-1">
-												<p>• Total Pembayaran: <b className="text-[#ffd400] font-black">Rp 50.005</b> (Biaya Rp 50.000 + Kode Unik 05)</p>
-											</div>
-										</div>
-
-										{/* Upload Bukti Pembayaran */}
-										<div>
-											<label className="mb-2 block text-xs font-black uppercase tracking-wide">
-												Upload Bukti Pembayaran (JPG/PNG/PDF, Maks 2MB) <span className="text-red-500">*</span>
-											</label>
-											<div
-												className="flex min-h-24 w-full cursor-pointer items-center justify-center border-[3px] border-dashed border-black bg-[#f4f4f2] p-6 text-center font-bold text-black transition-transform hover:-translate-y-0.5"
-												onDragOver={(e) => e.preventDefault()}
-												onDrop={handlePaymentFileDrop}
-												onClick={() =>
-													paymentFileInputRef.current &&
-													paymentFileInputRef.current.click()
-												}
-											>
-												<FaFileUpload className="mr-2 text-xl text-[#1E3A8A]" />
-												<div className="w-full overflow-hidden text-ellipsis">
-													<p className="truncate text-xs sm:text-sm">
-														{paymentFile
-															? paymentFile.name
-															: paymentFileName
-																? paymentFileName
-																: "Drop file di sini atau klik untuk pilih file"}
+													<p className="mx-auto max-w-lg text-xs sm:text-sm font-medium text-gray-700 leading-relaxed">
+														Sebagai peserta kompetisi <b>MineToday</b> yang telah diverifikasi pembayarannya, Anda berhak mengikuti Bootcamp dengan tarif spesial <b>Rp 50.000</b> (1 pintu ditransfer langsung ke rekening panitia IT Today IPB).
 													</p>
 												</div>
-												<input
-													type="file"
-													name="paymentProof"
-													accept=".jpg,.jpeg,.png,.pdf"
-													ref={paymentFileInputRef}
-													onChange={handlePaymentFileInputChange}
-													style={{ display: "none" }}
-												/>
-											</div>
-											{paymentFileName && (
-												<div className="mt-2 text-xs font-semibold text-gray-700">
-													File terpilih:{" "}
-													<span className="font-bold text-black">{paymentFileName}</span>
+
+												<div>
+													<button
+														type="button"
+														onClick={async () => {
+															const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
+															if (!isComplete) return;
+															setShowMineTodayConfirmModal(true);
+														}}
+														disabled={loading}
+														className="w-full cursor-pointer border-[3px] border-black bg-[#ffd400] px-7 py-4 text-sm sm:text-base font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b] active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50"
+													>
+														Daftar Bootcamp (Rp 50.000)
+													</button>
 												</div>
-											)}
-										</div>
+											</div>
+										) : (
+											/* Step 2: Rincian Rekening Transfer & Upload Bukti Pembayaran */
+											<div className="space-y-5">
+												<div className="border-[3px] border-black bg-[#e8fbef] p-4 text-black shadow-[3px_3px_0_#191b1a]">
+													<div className="flex items-center gap-2">
+														<FaCheckCircle className="text-[#18c964] text-lg shrink-0" />
+														<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-black">
+															Data Pendaftaran Berhasil Dicatat!
+														</p>
+													</div>
+													<p className="mt-1 text-xs text-gray-700 font-medium">
+														Silakan lakukan transfer sebesar <b>Rp 50.005</b> ke rekening Bank SeaBank panitia di bawah, lalu unggah bukti transfer untuk diverifikasi oleh panitia.
+													</p>
+												</div>
 
-										<div>
-											<button
-												type="button"
-												onClick={async () => {
-													const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
-													if (!isComplete) return;
-													if (!paymentFile) {
-														setIncompleteFields([{ label: "Bukti Pembayaran (Transfer Bank)" }]);
-														setShowAlert(true);
-														return;
-													}
-													setLoading(true);
-													setError("");
-													try {
-														const eventId = currentEvent?.id || currentEvent?.slug || "Bootcamp";
-														try {
-															await registerToBootcamp({
-																eventId,
-																institutionName: currentUserProfile?.nama_sekolah || institution,
-																phoneNumber: currentUserProfile?.phone_number || whatsapp,
-																bundling: "",
-															});
-														} catch (regErr) {
-															console.log("Registration note:", regErr);
+												{/* Box Informasi Rekening Panitia */}
+												<div className="border-[3px] border-black bg-[#1E3A8A] p-5 text-white shadow-[4px_4px_0_#191b1a]">
+													<p className="text-xs font-bold uppercase tracking-wider text-[#ffd400] mb-2">
+														Informasi Rekening Panitia:
+													</p>
+													<div className="border-2 border-black bg-white p-3 font-mono text-xs text-black sm:text-sm shadow-[2px_2px_0_#000]">
+														<p className="font-bold text-gray-700">Bank SeaBank</p>
+														<div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+															<span className="text-base sm:text-lg font-black tracking-widest text-[#1E3A8A]">
+																901429379205
+															</span>
+															<button
+																type="button"
+																className="cursor-pointer border-2 border-black bg-[#ffd400] px-3 py-1 text-xs font-black uppercase text-black shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5"
+																onClick={() => handleCopyToClipboard("901429379205", "rekening")}
+															>
+																{hasCopied.rekening ? "Disalin!" : "Salin No. Rekening"}
+															</button>
+														</div>
+														<p className="mt-1 text-xs font-bold text-gray-600">
+															a/n Asty Athetha Loethan
+														</p>
+													</div>
+													<div className="mt-3 text-xs sm:text-sm text-white/95 space-y-1">
+														<p>• Total Pembayaran: <b className="text-[#ffd400] font-black">Rp 50.005</b> (Biaya Rp 50.000 + Kode Unik 05)</p>
+													</div>
+												</div>
+
+												{/* Upload Bukti Pembayaran */}
+												<div>
+													<label className="mb-2 block text-xs font-black uppercase tracking-wide">
+														Upload Bukti Pembayaran (JPG/PNG/PDF, Maks 2MB) <span className="text-red-500">*</span>
+													</label>
+													<div
+														className="flex min-h-24 w-full cursor-pointer items-center justify-center border-[3px] border-dashed border-black bg-[#f4f4f2] p-6 text-center font-bold text-black transition-transform hover:-translate-y-0.5"
+														onDragOver={(e) => e.preventDefault()}
+														onDrop={handlePaymentFileDrop}
+														onClick={() =>
+															paymentFileInputRef.current &&
+															paymentFileInputRef.current.click()
 														}
+													>
+														<FaFileUpload className="mr-2 text-xl text-[#1E3A8A]" />
+														<div className="w-full overflow-hidden text-ellipsis">
+															<p className="truncate text-xs sm:text-sm">
+																{paymentFile
+																	? paymentFile.name
+																	: paymentFileName
+																		? paymentFileName
+																		: "Drop file di sini atau klik untuk pilih file"}
+															</p>
+														</div>
+														<input
+															type="file"
+															name="paymentProof"
+															accept=".jpg,.jpeg,.png,.pdf"
+															ref={paymentFileInputRef}
+															onChange={handlePaymentFileInputChange}
+															style={{ display: "none" }}
+														/>
+													</div>
+													{paymentFileName && (
+														<div className="mt-2 text-xs font-semibold text-gray-700">
+															File terpilih:{" "}
+															<span className="font-bold text-black">{paymentFileName}</span>
+														</div>
+													)}
+												</div>
 
-														const uploadRes = await uploadBootcampPayment(paymentFile);
-														if (uploadRes && uploadRes.success === false) {
-															throw new Error(uploadRes.error || "Gagal mengunggah bukti pembayaran.");
-														}
-
-														setSubmitted(true);
-														await showGlobalAlert({
-															title: "Berhasil!",
-															message: "Bukti pembayaran Bootcamp Anda berhasil dikirim dan sedang diverifikasi panitia.",
-															variant: "success",
-														});
-													} catch (err) {
-														const errorMsg =
-															err.response?.data?.message ||
-															err.response?.data?.error ||
-															err.message ||
-															"Gagal mengirim bukti pembayaran.";
-														setError(errorMsg);
-														await showGlobalAlert({
-															title: "Gagal Mengirim",
-															message: errorMsg,
-															variant: "danger",
-														});
-													} finally {
-														setLoading(false);
-													}
-												}}
-												disabled={loading}
-												className="w-full sm:w-auto cursor-pointer border-[3px] border-black bg-[#ffd400] px-7 py-3.5 text-sm font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b] active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50"
-											>
-												{loading ? "Mengirim Bukti Pembayaran..." : "Kirim Bukti Pembayaran"}
-											</button>
-										</div>
+												<div>
+													<button
+														type="button"
+														onClick={handleUploadMineTodayPayment}
+														disabled={loading}
+														className="w-full sm:w-auto cursor-pointer border-[3px] border-black bg-[#ffd400] px-7 py-3.5 text-sm font-black uppercase text-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b] active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50"
+													>
+														{loading ? "Mengirim Bukti Pembayaran..." : "Kirim Bukti Pembayaran"}
+													</button>
+												</div>
+											</div>
+										)}
 									</div>
 								)}
 
@@ -1127,6 +1204,60 @@ const DaftarEvent = () => {
 								)}
 							</div>
 						)}
+					</div>
+				)}
+
+				{showMineTodayConfirmModal && (
+					<div
+						className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
+						onMouseDown={(e) => e.stopPropagation()}
+						onTouchStart={(e) => e.stopPropagation()}
+					>
+						<div className="w-full max-w-lg border-[4px] border-black bg-white p-6 shadow-[8px_8px_0_#191b1a] sm:p-7">
+							<div className="flex items-center gap-2 border-b-2 border-black pb-3">
+								<FaInfoCircle className="text-2xl text-[#1E3A8A] shrink-0" />
+								<h3 className="text-base font-black uppercase tracking-tight text-black sm:text-lg">
+									Konfirmasi Pendaftaran Bootcamp MineToday
+								</h3>
+							</div>
+
+							<div className="py-4 space-y-3 text-xs sm:text-sm leading-relaxed text-gray-800">
+								<p className="font-bold text-black">
+									Anda akan mendaftar kegiatan <b>Bootcamp Offline Artificial Intelligence</b> dengan tarif bundling khusus peserta MineToday seharga:
+								</p>
+
+								<div className="flex items-center justify-between border-2 border-black bg-[#f4f4f2] px-4 py-2.5 font-bold">
+									<span>Biaya Pendaftaran (Khusus MineToday)</span>
+									<span className="text-lg font-black text-[#1E3A8A]">Rp 50.000</span>
+								</div>
+
+								<div className="border-2 border-black bg-[#FFF6BF] p-3 text-amber-950 text-xs leading-relaxed">
+									💡 <b>Alur Pendaftaran</b>:
+									<ol className="mt-1 list-decimal list-inside space-y-1">
+										<li>Data pendaftaran Anda akan langsung dicatat ke sistem.</li>
+										<li>Lakukan transfer sebesar <b>Rp 50.005</b> (termasuk kode unik 05) ke rekening Bank SeaBank panitia.</li>
+										<li>Unggah foto/file bukti transfer di halaman ini untuk diverifikasi oleh panitia.</li>
+									</ol>
+								</div>
+							</div>
+
+							<div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
+								<button
+									type="button"
+									onClick={() => setShowMineTodayConfirmModal(false)}
+									className="flex-1 cursor-pointer border-[3px] border-black bg-[#eeeeee] px-4 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#191b1a] transition-all hover:bg-white"
+								>
+									Batal
+								</button>
+								<button
+									type="button"
+									onClick={handleConfirmRegisterMineToday}
+									className="flex-1 cursor-pointer border-[3px] border-black bg-[#ffd400] px-4 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b]"
+								>
+									Ya, Konfirmasi Daftar
+								</button>
+							</div>
+						</div>
 					</div>
 				)}
 
