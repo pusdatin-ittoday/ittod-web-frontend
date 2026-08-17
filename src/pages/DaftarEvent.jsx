@@ -96,6 +96,7 @@ const DaftarEvent = () => {
 	const [currentEvent, setCurrentEvent] = useState(null);
 	const [isCheckingProfile, setIsCheckingProfile] = useState(true);
 	const [currentUserProfile, setCurrentUserProfile] = useState(null);
+	const [showIntelligoModal, setShowIntelligoModal] = useState(false);
 	const [hasOpenedIntelligo, setHasOpenedIntelligo] = useState(() => {
 		return localStorage.getItem("hasOpenedIntelligo") === "true";
 	});
@@ -335,22 +336,39 @@ const DaftarEvent = () => {
 	const handleOpenIntelligoLink = async () => {
 		const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
 		if (!isComplete) return;
+		setShowIntelligoModal(true);
+	};
 
-		setHasOpenedIntelligo(true);
-		localStorage.setItem("hasOpenedIntelligo", "true");
-		window.open("https://bit.ly/ai-bootcamp-ittoday", "_blank", "noopener,noreferrer");
-
-		// Auto record registration to bootcamp for account tracking
+	const handleConfirmIntelligo = async () => {
+		setShowIntelligoModal(false);
+		setLoading(true);
+		setError("");
 		try {
 			const eventId = currentEvent?.id || currentEvent?.slug || "Bootcamp";
-			registerToBootcamp({
+			await registerToBootcamp({
 				eventId,
 				institutionName: currentUserProfile?.nama_sekolah || institution,
 				phoneNumber: currentUserProfile?.phone_number || whatsapp,
-				bundling: "",
-			}).catch(() => {});
-		} catch (e) {
-			// ignore
+				bundling: "intelligo_gateway",
+			});
+			setSubmitted(true);
+			setHasOpenedIntelligo(true);
+			localStorage.setItem("hasOpenedIntelligo", "true");
+			window.open("https://bit.ly/ai-bootcamp-ittoday", "_blank", "noopener,noreferrer");
+		} catch (err) {
+			const errorMsg =
+				err.response?.data?.message ||
+				err.response?.data?.error ||
+				err.message ||
+				"Gagal mencatat pendaftaran.";
+			setError(errorMsg);
+			await showGlobalAlert({
+				title: "Gagal Mendaftar",
+				message: errorMsg,
+				variant: "danger",
+			});
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -1109,6 +1127,67 @@ const DaftarEvent = () => {
 								)}
 							</div>
 						)}
+					</div>
+				)}
+
+				{showIntelligoModal && (
+					<div
+						className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
+						onMouseDown={(e) => e.stopPropagation()}
+						onTouchStart={(e) => e.stopPropagation()}
+					>
+						<div className="w-full max-w-lg border-[4px] border-black bg-white p-6 shadow-[8px_8px_0_#191b1a] sm:p-7">
+							<div className="flex items-center gap-2 border-b-2 border-black pb-3">
+								<FaInfoCircle className="text-2xl text-[#1E3A8A] shrink-0" />
+								<h3 className="text-base font-black uppercase tracking-tight text-black sm:text-lg">
+									Konfirmasi Pendaftaran Intelligo ID
+								</h3>
+							</div>
+
+							<div className="py-4 space-y-3 text-xs sm:text-sm leading-relaxed text-gray-800">
+								{isMineTodayPending ? (
+									<div className="border-2 border-black bg-[#FFF6BF] p-3 text-amber-950 font-medium">
+										⚠️ <b>Perhatian Khusus Peserta MineToday</b>:
+										<p className="mt-1">
+											Status pembayaran tim MineToday kamu saat ini masih <b>menunggu verifikasi panitia</b>. Jika menunggu sampai disetujui, kamu berhak mendapatkan <b>harga khusus Bootcamp Rp 50.000</b>.
+										</p>
+										<p className="mt-1.5 text-xs text-amber-900 font-bold">
+											Apakah kamu yakin ingin tetap melanjutkan pendaftaran sekarang dengan tarif umum Rp 99.000 via Intelligo ID?
+										</p>
+									</div>
+								) : (
+									<p className="font-bold text-black">
+										Kamu akan dialihkan ke portal resmi <b>Intelligo ID</b> untuk pendaftaran dan pembayaran Bootcamp seharga:
+									</p>
+								)}
+
+								<div className="flex items-center justify-between border-2 border-black bg-[#f4f4f2] px-4 py-2.5 font-bold">
+									<span>Total Biaya Bootcamp (Tarif Umum)</span>
+									<span className="text-lg font-black text-[#1E3A8A]">Rp 99.000</span>
+								</div>
+
+								<p className="text-gray-600 text-[11px] sm:text-xs leading-relaxed">
+									• Data pendaftaran akan dicatat dan setelah menyelesaikan transaksi di Intelligo ID, silakan lakukan konfirmasi ke WhatsApp panitia. Tautan grup WhatsApp resmi akan aktif setelah diverifikasi oleh panitia.
+								</p>
+							</div>
+
+							<div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
+								<button
+									type="button"
+									onClick={() => setShowIntelligoModal(false)}
+									className="flex-1 cursor-pointer border-[3px] border-black bg-[#eeeeee] px-4 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#191b1a] transition-all hover:bg-white"
+								>
+									{isMineTodayPending ? "Batal (Tunggu MineToday)" : "Batal"}
+								</button>
+								<button
+									type="button"
+									onClick={handleConfirmIntelligo}
+									className="flex-1 cursor-pointer border-[3px] border-black bg-[#ffd400] px-4 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b]"
+								>
+									Ya, Lanjut ke Intelligo ID
+								</button>
+							</div>
+						</div>
 					</div>
 				)}
 
