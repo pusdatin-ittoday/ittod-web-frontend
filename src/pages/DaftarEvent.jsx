@@ -591,41 +591,62 @@ const DaftarEvent = () => {
 							<p className="mt-2 text-xs font-medium text-gray-800 sm:text-sm">
 								{target === "bootcamp" && effectiveIsMineToday
 									? "Bukti pembayaran Bootcamp Anda telah berhasil dikirim dan sedang dalam proses verifikasi oleh panitia IT Today 2026."
+									: target === "bootcamp" && !effectiveIsIPB && !effectiveIsMineToday
+									? "Data pendaftaran Bootcamp Anda telah tercatat. Silakan selesaikan transaksi melalui portal Intelligo ID di bawah, kemudian lakukan konfirmasi ke panitia."
 									: target === "bootcamp"
 									? "Data pendaftaran Bootcamp Anda telah berhasil dicatat pada sistem IT Today 2026."
 									: "Terima kasih telah mendaftar pada kegiatan IT Today 2026."}
 							</p>
 						</div>
 
-						{/* Khusus Bootcamp: Konfirmasi WhatsApp Panitia tampil setelah mendaftar */}
+						{/* Khusus Bootcamp Peserta Umum: Tombol Intelligo & Konfirmasi WhatsApp Panitia */}
 						{target === "bootcamp" && !effectiveIsIPB && !effectiveIsMineToday && (
-							<div className="border-[3px] border-black bg-[#FFF6BF] p-5 text-left text-black shadow-[4px_4px_0_#191b1a]">
-								<div className="flex items-center gap-2">
-									<FaWhatsapp className="text-[#087a3d]" size={18} />
-									<p className="text-xs font-black uppercase tracking-wider text-[#1E3A8A]">
-										Konfirmasi Pendaftaran ke WhatsApp Panitia:
+							<div className="space-y-4">
+								<div className="border-[3px] border-black bg-white p-5 shadow-[4px_4px_0_#191b1a] text-center">
+									<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#1E3A8A] mb-1.5">
+										Portal Pendaftaran & Pembayaran Intelligo ID:
 									</p>
+									<p className="text-xs font-medium text-gray-700 mb-3.5">
+										Jika Anda belum menyelesaikan transaksi atau ingin membuka kembali portal pembayaran Intelligo ID (Rp 99.000):
+									</p>
+									<a
+										href="https://bit.ly/ai-bootcamp-ittoday"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="inline-flex items-center justify-center gap-2 border-[3px] border-black bg-[#ffd400] px-6 py-3 text-xs sm:text-sm font-black uppercase text-black shadow-[3px_3px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b]"
+									>
+										Buka Portal Pembayaran Intelligo ID
+									</a>
 								</div>
-								<p className="mt-2 text-xs text-gray-800 font-medium">
-									Setelah mendaftar dan menyelesaikan pembayaran melalui Intelligo ID (Rp 99.000), silakan lakukan konfirmasi ke salah satu kontak panitia berikut:
-								</p>
-								<div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-									<a
-										href="https://wa.me/6281212258550?text=Halo%20kak%20Arafah,%20saya%20sudah%20mendaftar%20Bootcamp%20AI%20via%20Intelligo"
-										target="_blank"
-										rel="noopener noreferrer"
-										className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
-									>
-										<FaWhatsapp size={16} /> 081212258550 (Arafah)
-									</a>
-									<a
-										href="https://wa.me/6285135453902?text=Halo%20kak%20Wisnu,%20saya%20sudah%20mendaftar%20Bootcamp%20AI%20via%20Intelligo"
-										target="_blank"
-										rel="noopener noreferrer"
-										className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
-									>
-										<FaWhatsapp size={16} /> 085135453902 (Wisnu)
-									</a>
+
+								<div className="border-[3px] border-black bg-[#FFF6BF] p-5 text-left text-black shadow-[4px_4px_0_#191b1a]">
+									<div className="flex items-center gap-2">
+										<FaWhatsapp className="text-[#087a3d]" size={18} />
+										<p className="text-xs font-black uppercase tracking-wider text-[#1E3A8A]">
+											Konfirmasi Pembayaran ke WhatsApp Panitia:
+										</p>
+									</div>
+									<p className="mt-2 text-xs text-gray-800 font-medium">
+										Setelah menyelesaikan pembayaran melalui Intelligo ID (Rp 99.000), silakan lakukan konfirmasi dengan mengirimkan bukti transaksi ke salah satu kontak panitia berikut:
+									</p>
+									<div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+										<a
+											href="https://wa.me/6281212258550?text=Halo%20kak%20Arafah,%20saya%20sudah%20mendaftar%20dan%20membayar%20Bootcamp%20AI%20via%20Intelligo"
+											target="_blank"
+											rel="noopener noreferrer"
+											className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+										>
+											<FaWhatsapp size={16} /> 081212258550 (Arafah)
+										</a>
+										<a
+											href="https://wa.me/6285135453902?text=Halo%20kak%20Wisnu,%20saya%20sudah%20mendaftar%20dan%20membayar%20Bootcamp%20AI%20via%20Intelligo"
+											target="_blank"
+											rel="noopener noreferrer"
+											className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+										>
+											<FaWhatsapp size={16} /> 085135453902 (Wisnu)
+										</a>
+									</div>
 								</div>
 							</div>
 						)}
