@@ -267,9 +267,24 @@ const EventRegisCard = () => {
                   return true;
                 }
 
-                if (currentTitle.includes("seminar") && ueTitle.includes("seminar")) return true;
-                if (currentTitle.includes("bootcamp") && ueTitle.includes("bootcamp")) return true;
-                if (currentTitle.includes("workshop") && ueTitle.includes("workshop")) return true;
+                if (
+                  (currentTitle.includes("seminar") || currentSlug.includes("seminar") || currentId.includes("seminar")) &&
+                  (ueTitle.includes("seminar") || ueSlug.includes("seminar") || ueId.includes("seminar"))
+                ) {
+                  return true;
+                }
+                if (
+                  (currentTitle.includes("bootcamp") || currentSlug.includes("bootcamp") || currentId.includes("bootcamp")) &&
+                  (ueTitle.includes("bootcamp") || ueSlug.includes("bootcamp") || ueId.includes("bootcamp"))
+                ) {
+                  return true;
+                }
+                if (
+                  (currentTitle.includes("workshop") || currentSlug.includes("workshop") || currentId.includes("workshop")) &&
+                  (ueTitle.includes("workshop") || ueSlug.includes("workshop") || ueId.includes("workshop"))
+                ) {
+                  return true;
+                }
 
                 return false;
               });
@@ -277,6 +292,15 @@ const EventRegisCard = () => {
               const isAccepted = userReg?.payment_verification === "accepted";
               const isPending = !!userReg && !isAccepted;
               const waGroupLink = isAccepted ? (userReg?.event?.whatsapp_group_link || null) : null;
+              const resolvedSlug = event.slug || (
+                (event.title || "").toLowerCase().includes("bootcamp")
+                  ? "bootcamp"
+                  : (event.title || "").toLowerCase().includes("seminar")
+                  ? "seminar"
+                  : (event.title || "").toLowerCase().includes("workshop")
+                  ? "workshop"
+                  : event.id
+              );
 
               return (
                 <div
@@ -293,7 +317,7 @@ const EventRegisCard = () => {
                     image={event.logo_url}
                     isActive={event.is_active}
                     eventId={event.id}
-                    eventSlug={event.slug}
+                    eventSlug={resolvedSlug}
                     isRegistered={isAccepted}
                     isPending={isPending}
                     waGroupLink={waGroupLink}
