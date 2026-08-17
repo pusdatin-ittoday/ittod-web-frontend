@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { BiLogoWhatsapp } from "react-icons/bi";
-import { FaSchool, FaFileUpload, FaUserEdit, FaInfoCircle, FaCheckCircle } from "react-icons/fa";
+import { FaSchool, FaFileUpload, FaUserEdit, FaInfoCircle, FaCheckCircle, FaEye, FaTimes, FaExternalLinkAlt } from "react-icons/fa";
 import { MdCalendarMonth, MdErrorOutline } from "react-icons/md";
 import { FaWhatsapp, FaDiscord } from "react-icons/fa";
 import { registerEvent, getJoinEvent } from "../utils/api/event";
@@ -99,6 +99,8 @@ const DaftarEvent = () => {
 	const [showIntelligoModal, setShowIntelligoModal] = useState(false);
 	const [showMineTodayConfirmModal, setShowMineTodayConfirmModal] = useState(false);
 	const [isMineTodayRegisteredStep, setIsMineTodayRegisteredStep] = useState(false);
+	const [registeredParticipantData, setRegisteredParticipantData] = useState(null);
+	const [showPreviewModal, setShowPreviewModal] = useState(false);
 	const [hasOpenedIntelligo, setHasOpenedIntelligo] = useState(() => {
 		return localStorage.getItem("hasOpenedIntelligo") === "true";
 	});
@@ -109,6 +111,20 @@ const DaftarEvent = () => {
 	const isCurrentIPB = isIPB || /(ipb|institut pertanian bogor)/i.test(institution);
 	const effectiveIsIPB = isCurrentIPB;
 	const effectiveIsMineToday = !isCurrentIPB && isRegisteredToMinetoday;
+
+	const getPaymentProofUrl = (proofKey) => {
+		if (!proofKey) return "";
+		if (proofKey.startsWith("http://") || proofKey.startsWith("https://")) {
+			return proofKey;
+		}
+		const cdnBase = (import.meta.env.VITE_R2_PUBLIC_URL || "https://cdn.ittoday.web.id").replace(/\/+$/, "");
+		return `${cdnBase}/${proofKey.replace(/^\/+/, "")}`;
+	};
+
+	const hasUploadedPaymentProof = Boolean(
+		registeredParticipantData?.payment_proof || registeredParticipantData?.has_payment_proof
+	);
+	const resolvedPaymentProofUrl = getPaymentProofUrl(registeredParticipantData?.payment_proof);
 
 	// Guard profile completion on mount
 	useEffect(() => {
@@ -199,6 +215,7 @@ const DaftarEvent = () => {
 					: null;
 
 				if (matched) {
+					setRegisteredParticipantData(matched);
 					const isMineTodayBootcamp = currentTarget.includes("bootcamp") && !effectiveIsIPB && effectiveIsMineToday;
 
 					if (isMineTodayBootcamp && matched.payment_verification !== "accepted" && !matched.has_payment_proof && !matched.payment_proof) {
@@ -446,7 +463,30 @@ const DaftarEvent = () => {
 				throw new Error(uploadRes.error || "Gagal mengunggah bukti pembayaran.");
 			}
 
+			// Refresh registration info to get updated payment_proof URL immediately
+			try {
+				const res = await getJoinEvent();
+				const events = res?.data || res;
+				const list = events?.data || events?.events || events;
+				const found = Array.isArray(list)
+					? list.find((e) => {
+						const eId = (e?.event_id || e?.id || "").toString().toLowerCase();
+						const eSlug = (e?.event?.slug || e?.slug || "").toString().toLowerCase();
+						const eTitle = (e?.event?.title || "").toString().toLowerCase();
+						return eId.includes("bootcamp") || eSlug.includes("bootcamp") || eTitle.includes("bootcamp");
+					})
+					: null;
+				if (found) {
+					setRegisteredParticipantData(found);
+				}
+			} catch (fetchErr) {
+				console.error("Error refreshing participant data:", fetchErr);
+			}
+
 			setSubmitted(true);
+			setIsMineTodayRegisteredStep(false);
+			setPaymentFile(null);
+			setPaymentFileName("");
 			await showGlobalAlert({
 				title: "Berhasil!",
 				message: "Bukti pembayaran Bootcamp Anda berhasil dikirim dan sedang diverifikasi panitia.",
@@ -873,13 +913,38 @@ const DaftarEvent = () => {
 								</div>
 							</div>
 						) : (
-							<div className="border-[3px] border-black bg-[#ffd400] p-5 text-left text-black shadow-[4px_4px_0_#191b1a]">
-								<p className="text-xs font-black uppercase tracking-wider text-black">
-									⌛ Menunggu Verifikasi Panitia
+							<div className="border-[3px] border-black bg-[#ffd400] p-5 text-left text-black shadow-[4px_4px_0_#191b1a] space-y-3">
+								<div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
+									<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-black flex items-center gap-1.5">
+										<span>⌛</span> Menunggu Verifikasi Panitia
+									</p>
+									{hasUploadedPaymentProof && (
+										<span className="inline-flex items-center gap-1 border-2 border-black bg-[#18c964] px-2.5 py-0.5 text-[11px] font-black uppercase text-white shadow-[2px_2px_0_#000]">
+											<FaCheckCircle size={12} /> Bukti Terunggah
+										</span>
+									)}
+								</div>
+								<p className="text-xs sm:text-sm text-gray-900 font-medium leading-relaxed">
+									{target === "bootcamp" && effectiveIsMineToday && hasUploadedPaymentProof
+										? "Bukti pembayaran dan berkas identitas Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today. Tautan grup WhatsApp kegiatan akan otomatis muncul di halaman ini setelah pembayaran Anda disetujui panitia."
+										: "Data berkas identitas Anda sedang dalam antrean verifikasi oleh panitia IT Today. Tautan grup WhatsApp kegiatan akan otomatis muncul di halaman ini setelah berkas Anda disetujui panitia."}
 								</p>
-								<p className="mt-1.5 text-xs text-gray-900 font-medium">
-									Data berkas identitas Anda sedang dalam antrean verifikasi oleh panitia IT Today. Tautan grup WhatsApp kegiatan akan otomatis muncul di halaman ini setelah berkas Anda disetujui panitia.
-								</p>
+
+								{/* Tombol Preview Bukti Pembayaran jika sudah upload */}
+								{hasUploadedPaymentProof && resolvedPaymentProofUrl && (
+									<div className="pt-2 border-t-2 border-black/20 flex flex-wrap items-center justify-between gap-2">
+										<span className="text-xs font-bold text-gray-800">
+											📄 Berkas bukti pembayaran Anda telah tersimpan di sistem.
+										</span>
+										<button
+											type="button"
+											onClick={() => setShowPreviewModal(true)}
+											className="cursor-pointer border-2 border-black bg-white px-3.5 py-1.5 text-xs font-black uppercase text-black shadow-[2px_2px_0_#000] transition-all hover:-translate-y-0.5 hover:bg-neutral-100 flex items-center gap-1.5"
+										>
+											<FaEye size={13} /> Lihat Bukti Pembayaran
+										</button>
+									</div>
+								)}
 							</div>
 						)}
 
@@ -1300,6 +1365,66 @@ const DaftarEvent = () => {
 								)}
 							</div>
 						)}
+					</div>
+				)}
+
+				{showPreviewModal && resolvedPaymentProofUrl && (
+					<div
+						className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/70 p-4 backdrop-blur-xs"
+						onMouseDown={(e) => e.stopPropagation()}
+						onTouchStart={(e) => e.stopPropagation()}
+					>
+						<div className="relative w-full max-w-2xl border-[4px] border-black bg-white p-5 shadow-[8px_8px_0_#191b1a] sm:p-6">
+							<div className="flex items-center justify-between border-b-2 border-black pb-3">
+								<div className="flex items-center gap-2">
+									<FaEye className="text-xl text-[#1E3A8A]" />
+									<h3 className="text-sm font-black uppercase tracking-tight text-black sm:text-base">
+										Preview Bukti Pembayaran Bootcamp
+									</h3>
+								</div>
+								<button
+									type="button"
+									onClick={() => setShowPreviewModal(false)}
+									className="cursor-pointer border-2 border-black bg-[#ff8c75] p-1.5 text-black shadow-[2px_2px_0_#000] transition-all hover:bg-red-400"
+								>
+									<FaTimes size={16} />
+								</button>
+							</div>
+
+							<div className="my-4 flex max-h-[65vh] items-center justify-center overflow-auto border-2 border-black bg-[#f4f4f2] p-2">
+								{resolvedPaymentProofUrl.toLowerCase().endsWith(".pdf") ? (
+									<iframe
+										src={resolvedPaymentProofUrl}
+										title="Bukti Pembayaran PDF"
+										className="h-[60vh] w-full border-0"
+									/>
+								) : (
+									<img
+										src={resolvedPaymentProofUrl}
+										alt="Bukti Pembayaran"
+										className="max-h-[60vh] max-w-full object-contain"
+									/>
+								)}
+							</div>
+
+							<div className="flex flex-wrap items-center justify-between gap-2 border-t-2 border-black pt-3">
+								<a
+									href={resolvedPaymentProofUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="inline-flex items-center gap-1.5 border-2 border-black bg-[#ffd400] px-4 py-2 text-xs font-black uppercase text-black shadow-[2px_2px_0_#000] transition-all hover:-translate-y-0.5"
+								>
+									<FaExternalLinkAlt size={12} /> Buka di Tab Baru
+								</a>
+								<button
+									type="button"
+									onClick={() => setShowPreviewModal(false)}
+									className="cursor-pointer border-2 border-black bg-[#eeeeee] px-4 py-2 text-xs font-black uppercase text-black shadow-[2px_2px_0_#000] transition-all hover:bg-white"
+								>
+									Tutup
+								</button>
+							</div>
+						</div>
 					</div>
 				)}
 
