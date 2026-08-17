@@ -88,9 +88,9 @@ const DaftarEvent = () => {
 	const [incompleteFields, setIncompleteFields] = useState([]);
 	const [error, setError] = useState("");
 	const [hasCopied, setHasCopied] = useState({});
-	const [bootcampBundling, setBootcampBundling] = useState("");
 	const [isActive, setIsActive] = useState(true);
 	const [checkingActive, setCheckingActive] = useState(true);
+	const [isCheckingRegistration, setIsCheckingRegistration] = useState(true);
 	const [exists, setExists] = useState(true);
 	const [currentEvent, setCurrentEvent] = useState(null);
 	const [isCheckingProfile, setIsCheckingProfile] = useState(true);
@@ -197,6 +197,8 @@ const DaftarEvent = () => {
 				}
 			} catch {
 				// ignore; user might have no events yet
+			} finally {
+				setIsCheckingRegistration(false);
 			}
 		};
 
@@ -502,7 +504,7 @@ const DaftarEvent = () => {
 		setShowAlert(false);
 	};
 
-	if (checkingActive || isCheckingProfile) {
+	if (checkingActive || isCheckingProfile || isCheckingRegistration) {
 		return <LoadingState />;
 	}
 
@@ -510,7 +512,7 @@ const DaftarEvent = () => {
 		return <FallbackNotFound title="EVENT NOT FOUND" message="Event tidak ditemukan." />;
 	}
 
-	if (!isActive) {
+	if (!isActive && !alreadyRegistered && !submitted) {
 		return <FallbackEventCloseRegist eventName={target} />;
 	}
 
@@ -643,7 +645,16 @@ const DaftarEvent = () => {
 									</button>
 								</div>
 							</div>
-						) : null}
+						) : (
+							<div className="border-[3px] border-black bg-[#ffd400] p-5 text-left text-black shadow-[4px_4px_0_#191b1a]">
+								<p className="text-xs font-black uppercase tracking-wider text-black">
+									⌛ Menunggu Verifikasi Panitia
+								</p>
+								<p className="mt-1.5 text-xs text-gray-900 font-medium">
+									Data berkas identitas Anda sedang dalam antrean verifikasi oleh panitia IT Today. Tautan grup WhatsApp kegiatan akan otomatis muncul di halaman ini setelah berkas Anda disetujui panitia.
+								</p>
+							</div>
+						)}
 
 						<div className="flex flex-row justify-center pt-2">
 							<button
