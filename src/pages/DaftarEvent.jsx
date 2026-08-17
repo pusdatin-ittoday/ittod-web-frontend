@@ -216,15 +216,14 @@ const DaftarEvent = () => {
 
 				if (matched) {
 					setRegisteredParticipantData(matched);
+					setAlreadyRegistered(true);
 					const isMineTodayBootcamp = currentTarget.includes("bootcamp") && !effectiveIsIPB && effectiveIsMineToday;
 
 					if (isMineTodayBootcamp && matched.payment_verification !== "accepted" && !matched.has_payment_proof && !matched.payment_proof) {
 						// Registered in DB, but has not uploaded payment proof yet -> show Step 2 (payment upload view)
 						setIsMineTodayRegisteredStep(true);
-						setAlreadyRegistered(false);
 						setSubmitted(false);
 					} else {
-						setAlreadyRegistered(true);
 						setSubmitted(true);
 						if (matched.payment_verification === "accepted" && matched.event?.whatsapp_group_link) {
 							setLinkWhatsapp(matched.event.whatsapp_group_link);
@@ -667,11 +666,15 @@ const DaftarEvent = () => {
 		return <LoadingState />;
 	}
 
-	if (!exists) {
+	const isUserRegisteredOrSubmitted = Boolean(
+		alreadyRegistered || submitted || isMineTodayRegisteredStep || registeredParticipantData
+	);
+
+	if (!exists && !isUserRegisteredOrSubmitted) {
 		return <FallbackNotFound title="EVENT NOT FOUND" message="Event tidak ditemukan." />;
 	}
 
-	if (!isActive && !alreadyRegistered && !submitted) {
+	if (!isActive && !isUserRegisteredOrSubmitted) {
 		return <FallbackEventCloseRegist eventName={target} />;
 	}
 
