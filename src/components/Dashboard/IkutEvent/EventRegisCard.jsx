@@ -140,16 +140,15 @@ const IkutEvent = ({
             variant={isActive ? "yellow-solid" : "transparent"}
             fullWidth
             onClick={async (e) => {
-              e.preventDefault();
               if (isActive) {
+                e.preventDefault();
                 const isComplete = await requireCompleteProfile(navigate, showAlert);
                 if (isComplete) {
                   navigate(`/daftar-event/${eventSlug || eventId}`);
                 }
-              } else {
-                navigate(`/daftar-event/${eventSlug || eventId}`);
               }
             }}
+            disabled={!isActive}
             className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base cursor-pointer"
           >
             {isActive ? (
@@ -158,7 +157,7 @@ const IkutEvent = ({
                 Daftar Sekarang
               </>
             ) : (
-              <>Cek Status / Info Pendaftaran</>
+              <>Pendaftaran Ditutup/Belum Dibuka</>
             )}
           </Button>
         )}
