@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FiUserPlus } from 'react-icons/fi';
 import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
 import NavbarNeo from '../components/layout/Navbar';
@@ -11,6 +11,8 @@ import GetInTouchSection from '../components/home/GetInTouchSection';
 import { getEventBySlug } from '../services/eventService';
 import { getJoinEvent } from '../utils/api/event';
 import { checkIpbOrMinetoday } from '../api/user';
+import { requireCompleteProfile } from '../utils/profileCompletion';
+import { useAlert } from '../context/AlertContext';
 import LoadingState from '../components/ui/LoadingState';
 import EventGallery from '../components/event/EventGallery';
 import { getEventGalleryImages, getEventGalleryLabel } from '../data/eventGalleryData';
@@ -37,6 +39,8 @@ const cleanDisplayNumber = (num) => {
  */
 const EventDetailPage = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
+  const { showAlert } = useAlert();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -227,9 +231,17 @@ const EventDetailPage = () => {
                     <Button
                       variant={event.is_active ? "yellow-solid" : "transparent"}
                       fullWidth
-                      href={event.is_active ? `/daftar-event/${slug}` : undefined}
+                      onClick={async (e) => {
+                        if (event.is_active) {
+                          e.preventDefault();
+                          const isComplete = await requireCompleteProfile(navigate, showAlert);
+                          if (isComplete) {
+                            navigate(`/daftar-event/${slug}`);
+                          }
+                        }
+                      }}
                       disabled={!event.is_active}
-                      className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
+                      className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base cursor-pointer"
                     >
                       {event.is_active ? (
                         <>

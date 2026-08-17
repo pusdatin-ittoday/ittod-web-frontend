@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
 import { FiUserPlus } from "react-icons/fi";
 import { FaWhatsapp, FaDiscord } from "react-icons/fa";
@@ -6,6 +7,8 @@ import { FaWhatsapp, FaDiscord } from "react-icons/fa";
 import { getPublicEvents } from "../../../api/eventPublic";
 import { getJoinEvent } from "../../../utils/api/event";
 import { checkIpbOrMinetoday } from "../../../api/user";
+import { requireCompleteProfile } from "../../../utils/profileCompletion";
+import { useAlert } from "../../../context/AlertContext";
 import PaginationControls from "../PaginationControls";
 
 const NEO_CARD_COLORS = ["bg-[#e8fbef]", "bg-[#ffe26b]", "bg-[#565bc5] text-white"];
@@ -50,6 +53,9 @@ const IkutEvent = ({
   const logoSrc = getLogoFallback(title, image);
   const shortDesc = getShortDescription(description);
   const isBootcamp = (title || "").toLowerCase().includes("bootcamp");
+
+  const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
   return (
     <article
@@ -134,9 +140,17 @@ const IkutEvent = ({
           <Button
             variant={isActive ? "yellow-solid" : "transparent"}
             fullWidth
-            href={isActive ? `/daftar-event/${eventSlug || eventId}` : undefined}
+            onClick={async (e) => {
+              if (isActive) {
+                e.preventDefault();
+                const isComplete = await requireCompleteProfile(navigate, showAlert);
+                if (isComplete) {
+                  navigate(`/daftar-event/${eventSlug || eventId}`);
+                }
+              }
+            }}
             disabled={!isActive}
-            className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
+            className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base cursor-pointer"
           >
             {isActive ? (
               <>

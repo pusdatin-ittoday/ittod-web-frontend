@@ -93,6 +93,7 @@ const DaftarEvent = () => {
 	const [checkingActive, setCheckingActive] = useState(true);
 	const [exists, setExists] = useState(true);
 	const [currentEvent, setCurrentEvent] = useState(null);
+	const [isCheckingProfile, setIsCheckingProfile] = useState(true);
 	const [currentUserProfile, setCurrentUserProfile] = useState(null);
 	const [hasOpenedIntelligo, setHasOpenedIntelligo] = useState(() => {
 		return localStorage.getItem("hasOpenedIntelligo") === "true";
@@ -104,6 +105,17 @@ const DaftarEvent = () => {
 	const isCurrentIPB = isIPB || /(ipb|institut pertanian bogor)/i.test(institution);
 	const effectiveIsIPB = isCurrentIPB;
 	const effectiveIsMineToday = !isCurrentIPB && isRegisteredToMinetoday;
+
+	// Guard profile completion on mount
+	useEffect(() => {
+		const guardRegistration = async () => {
+			const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
+			if (isComplete) {
+				setIsCheckingProfile(false);
+			}
+		};
+		guardRegistration();
+	}, [navigate, showGlobalAlert]);
 
 	// Fetch user data to pre-fill institution and whatsapp fields
 	useEffect(() => {
@@ -490,7 +502,7 @@ const DaftarEvent = () => {
 		setShowAlert(false);
 	};
 
-	if (checkingActive) {
+	if (checkingActive || isCheckingProfile) {
 		return <LoadingState />;
 	}
 
