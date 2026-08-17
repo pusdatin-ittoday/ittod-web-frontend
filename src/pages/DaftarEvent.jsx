@@ -74,6 +74,7 @@ const DaftarEvent = () => {
 	const [needsToPay, setNeedsToPay] = useState(false);
 	const [isIPB, setIsIPB] = useState(false);
 	const [isRegisteredToMinetoday, setIsRegisteredToMinetoday] = useState(false);
+	const [isMineTodayPending, setIsMineTodayPending] = useState(false);
 	const [institution, setInstitution] = useState("");
 	const [dateOfBirth, setDateOfBirth] = useState("");
 	const [whatsapp, setWhatsapp] = useState("");
@@ -138,14 +139,20 @@ const DaftarEvent = () => {
 
 				// Check IPB or MineToday status
 				const ipbResponse = await checkIpbOrMinetoday();
+				const ipbData = ipbResponse.data || {};
 				const detectedIPB = Boolean(
-					ipbResponse.data?.isIPB ||
+					ipbData.isIPB ||
 					/(ipb|institut pertanian bogor)/i.test(userInst)
 				);
-				const detectedMinetoday = Boolean(ipbResponse.data?.isRegisteredToMinetoday);
+				const detectedMinetodayVerified = Boolean(
+					ipbData.isMineTodayPaymentVerified ||
+					ipbData.paymentStatus
+				);
+				const detectedMinetodayPending = Boolean(ipbData.isRegisteredToMinetoday) && !detectedMinetodayVerified;
 
 				setIsIPB(detectedIPB);
-				setIsRegisteredToMinetoday(detectedMinetoday);
+				setIsRegisteredToMinetoday(detectedMinetodayVerified);
+				setIsMineTodayPending(detectedMinetodayPending);
 				setNeedsToPay(!detectedIPB);
 			} catch (error) {
 				console.error("Error initializing user data:", error);
@@ -976,6 +983,24 @@ const DaftarEvent = () => {
 								{/* Case 3: Peserta Umum Non-IPB & Non-MineToday (Intelligo ID Gateway) */}
 								{!effectiveIsIPB && !effectiveIsMineToday && (
 									<div className="space-y-6">
+										{/* MineToday pending notice if user is registered in MineToday but payment not yet approved */}
+										{isMineTodayPending && (
+											<div className="border-[3px] border-black bg-[#FFF6BF] p-5 text-black shadow-[4px_4px_0_#191b1a]">
+												<div className="flex items-center gap-2">
+													<FaInfoCircle className="text-[#1E3A8A] text-lg shrink-0" />
+													<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#1E3A8A]">
+														Informasi Khusus Peserta MineToday:
+													</p>
+												</div>
+												<p className="mt-2 text-xs sm:text-sm text-gray-900 font-medium leading-relaxed">
+													Kamu terdaftar di kompetisi <b>MineToday</b>. Setelah pembayaran tim MineToday kamu <b>diverifikasi & disetujui oleh panitia</b>, kamu otomatis berhak mendapatkan <b>harga khusus Bootcamp Rp 50.000</b> (diskon dari Rp 99.000).
+												</p>
+												<p className="mt-1.5 text-xs text-gray-800 font-medium">
+													Jika kamu ingin langsung mendaftar Bootcamp sekarang sebelum verifikasi pembayaran MineToday disetujui, pendaftaran dapat dilakukan dengan tarif umum (Rp 99.000) melalui portal Intelligo ID di bawah.
+												</p>
+											</div>
+										)}
+
 										{/* Big Dedicated Registration Card */}
 										<div className="border-[3px] border-black bg-white p-6 shadow-[5px_5px_0_#191b1a] text-center sm:p-8">
 											{/* Big Intelligo Logo Container */}
