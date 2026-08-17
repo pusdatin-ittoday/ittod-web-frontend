@@ -201,25 +201,36 @@ const DaftarEvent = () => {
 
 				if (compRes.status === "fulfilled") {
 					const compData = compRes.value?.data || compRes.value;
-					const compList = Array.isArray(compData) ? compData : compData?.data || [];
-					if (Array.isArray(compList)) {
-						compList.forEach((team) => {
-							const compId = team?.competition_id || team?.competition?.id || "";
-							const compTitle = team?.competition?.title || team?.competition_name || team?.team_name || "";
-							list.push({
-								event_id: compId,
-								payment_verification: team.is_verified === "approved" ? "accepted" : (team.is_verified || "pending"),
-								payment_proof: team.payment_proof?.url || team.paymentProof?.url || null,
-								has_payment_proof: Boolean(team.payment_proof || team.paymentProof || team.payment_proof_id),
-								event: {
-									id: compId,
-									slug: team?.competition?.slug || (compId.toLowerCase().includes("bootcamp") ? "bootcamp" : compId),
-									title: compTitle,
-									whatsapp_group_link: team?.competition?.whatsapp_group_link || null,
-								},
-							});
-						});
+					let compList = [];
+					if (Array.isArray(compData)) {
+						compList = compData;
+					} else if (compData && typeof compData === "object") {
+						if (Array.isArray(compData.data)) {
+							compList = compData.data;
+						} else {
+							compList = Object.values(compData);
+						}
 					}
+
+					compList.forEach((team) => {
+						const compId = team?.competitionId || team?.competition_id || team?.competition?.id || team?.teamID || "";
+						const compTitle = team?.competitionName || team?.competition?.title || team?.competition_name || team?.teamName || team?.team_name || "";
+						const isVerified = team.isVerified === "approved" || team.is_verified === "approved" || team.isVerified === true;
+						const hasProof = Boolean(team.paymentProofID || team.payment_proof_id || team.payment_proof || team.paymentProof);
+
+						list.push({
+							event_id: compId,
+							payment_verification: isVerified ? "accepted" : (team.isVerified || team.is_verified || "pending"),
+							payment_proof: team.payment_proof?.url || team.paymentProof?.url || (hasProof ? "uploaded" : null),
+							has_payment_proof: hasProof,
+							event: {
+								id: compId,
+								slug: team?.competition?.slug || (compId.toLowerCase().includes("bootcamp") || compTitle.toLowerCase().includes("bootcamp") ? "bootcamp" : compId),
+								title: compTitle,
+								whatsapp_group_link: team?.whatsappGroupLink || team?.competition?.whatsapp_group_link || null,
+							},
+						});
+					});
 				}
 
 				const currentTarget = (target === "workshop" && workshopChoice ? workshopChoice : target || "").toLowerCase();
