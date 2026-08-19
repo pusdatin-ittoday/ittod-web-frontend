@@ -25,6 +25,22 @@ import { requireCompleteProfile } from "../utils/profileCompletion";
 
 const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
 
+const formatWaLink = (num) => {
+	if (!num) return '#';
+	let clean = num.toString().replace(/[^0-9]/g, "");
+	if (clean.startsWith("0")) {
+		clean = "62" + clean.slice(1);
+	}
+	return `https://wa.me/${clean}`;
+};
+
+const cleanDisplayNumber = (num) => {
+	if (!num) return '';
+	return num.toString()
+		.replace(/^(https?:\/\/)?(www\.)?wa\.me\//i, "")
+		.trim();
+};
+
 // Map route target names to display names
 const targetDisplayName = {
 	bootcamp: "Bootcamp",
@@ -833,22 +849,26 @@ const DaftarEvent = () => {
 										Setelah menyelesaikan pembayaran melalui Intelligo ID (Rp 99.000), silakan lakukan konfirmasi dengan mengirimkan bukti transaksi ke salah satu kontak panitia berikut:
 									</p>
 									<div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-										<a
-											href="https://wa.me/6281212258550?text=Halo%20kak%20Arafah,%20saya%20sudah%20mendaftar%20dan%20membayar%20Bootcamp%20AI%20via%20Intelligo"
-											target="_blank"
-											rel="noopener noreferrer"
-											className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
-										>
-											<FaWhatsapp size={16} /> 081212258550 (Arafah)
-										</a>
-										<a
-											href="https://wa.me/6285135453902?text=Halo%20kak%20Wisnu,%20saya%20sudah%20mendaftar%20dan%20membayar%20Bootcamp%20AI%20via%20Intelligo"
-											target="_blank"
-											rel="noopener noreferrer"
-											className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
-										>
-											<FaWhatsapp size={16} /> 085135453902 (Wisnu)
-										</a>
+										{currentEvent?.contact_person1 && (
+											<a
+												href={`${formatWaLink(currentEvent.contact_person1)}?text=Halo,%20saya%20sudah%20mendaftar%20dan%20membayar%20Bootcamp%20AI%20via%20Intelligo`}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+											>
+												<FaWhatsapp size={16} /> {cleanDisplayNumber(currentEvent.contact_person1)}
+											</a>
+										)}
+										{currentEvent?.contact_person2 && (
+											<a
+												href={`${formatWaLink(currentEvent.contact_person2)}?text=Halo,%20saya%20sudah%20mendaftar%20dan%20membayar%20Bootcamp%20AI%20via%20Intelligo`}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+											>
+												<FaWhatsapp size={16} /> {cleanDisplayNumber(currentEvent.contact_person2)}
+											</a>
+										)}
 									</div>
 								</div>
 							</div>
@@ -1493,22 +1513,26 @@ const DaftarEvent = () => {
 													Setelah menyelesaikan pendaftaran dan pembayaran di Intelligo ID, silakan konfirmasi ke salah satu kontak panitia:
 												</p>
 												<div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-													<a
-														href="https://wa.me/6281212258550?text=Halo%20kak%20Arafah,%20saya%20sudah%20mendaftar%20Bootcamp%20AI%20via%20Intelligo"
-														target="_blank"
-														rel="noopener noreferrer"
-														className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
-													>
-														<FaWhatsapp size={16} /> 081212258550 (Arafah)
-													</a>
-													<a
-														href="https://wa.me/6285135453902?text=Halo%20kak%20Wisnu,%20saya%20sudah%20mendaftar%20Bootcamp%20AI%20via%20Intelligo"
-														target="_blank"
-														rel="noopener noreferrer"
-														className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
-													>
-														<FaWhatsapp size={16} /> 085135453902 (Wisnu)
-													</a>
+													{currentEvent?.contact_person1 && (
+														<a
+															href={`${formatWaLink(currentEvent.contact_person1)}?text=Halo,%20saya%20sudah%20mendaftar%20Bootcamp%20AI%20via%20Intelligo`}
+															target="_blank"
+															rel="noopener noreferrer"
+															className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+														>
+															<FaWhatsapp size={16} /> {cleanDisplayNumber(currentEvent.contact_person1)}
+														</a>
+													)}
+													{currentEvent?.contact_person2 && (
+														<a
+															href={`${formatWaLink(currentEvent.contact_person2)}?text=Halo,%20saya%20sudah%20mendaftar%20Bootcamp%20AI%20via%20Intelligo`}
+															target="_blank"
+															rel="noopener noreferrer"
+															className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+														>
+															<FaWhatsapp size={16} /> {cleanDisplayNumber(currentEvent.contact_person2)}
+														</a>
+													)}
 												</div>
 											</div>
 										)}
