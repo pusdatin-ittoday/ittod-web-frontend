@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MdErrorOutline, MdCheckCircleOutline } from "react-icons/md";
+import { MdErrorOutline, MdCheckCircleOutline, MdCloudUpload, MdInsertDriveFile, MdDelete, MdOpenInNew } from "react-icons/md";
 import { IoArrowUndoCircle } from "react-icons/io5";
-import { upsertCompetitionFile } from "../../api/compeFile";
+import { upsertCompetitionFile, uploadSubmissionFile } from "../../api/compeFile";
 import { getUserCompetitions } from "../../api/user";
 import { getPublicEventById } from "../../api/eventPublic";
 import { SUBMISSION_FIELDS } from "./SubmissionConfig";
@@ -28,6 +28,9 @@ const SubmitCompetition = () => {
   const [loading, setLoading] = useState(true);
   const [competitionExists, setCompetitionExists] = useState(true);
 
+  // Uploading state per field
+  const [uploadingFields, setUploadingFields] = useState({});
+
   // Get fields configuration based on competitionId
   const [fieldsConfig, setFieldsConfig] = useState(SUBMISSION_FIELDS[competitionId?.toLowerCase()] || []);
 
@@ -39,6 +42,56 @@ const SubmitCompetition = () => {
     }));
   };
 
+  const handleFileChange = async (fieldName, file) => {
+    if (!file) return;
+
+    const allowedExts = ["pdf", "jpg", "jpeg", "png"];
+    const ext = file.name.split(".").pop().toLowerCase();
+    if (!allowedExts.includes(ext)) {
+      setIncompleteFields([]);
+      setAlertType("error");
+      setAlertMessage(`Format file ".${ext}" tidak didukung! Format yang diterima: PDF, JPG, PNG.`);
+      setShowAlert(true);
+      return;
+    }
+
+    if (file.size > 20 * 1024 * 1024) {
+      setIncompleteFields([]);
+      setAlertType("error");
+      setAlertMessage("Ukuran file melebihi batas maksimum 20MB!");
+      setShowAlert(true);
+      return;
+    }
+
+    setUploadingFields((prev) => ({ ...prev, [fieldName]: true }));
+    try {
+      const result = await uploadSubmissionFile(file);
+      if (!result.success) {
+        throw new Error(result.error || "Gagal mengunggah file.");
+      }
+      setFormData((prev) => ({
+        ...prev,
+        [fieldName]: result.url,
+      }));
+    } catch (err) {
+      console.error("Upload file error:", err);
+      setIncompleteFields([]);
+      setAlertType("error");
+      setAlertMessage(`Gagal mengunggah file: ${err.message}`);
+      setShowAlert(true);
+    } finally {
+      setUploadingFields((prev) => ({ ...prev, [fieldName]: false }));
+    }
+  };
+
+  const handleRemoveFile = (fieldName) => {
+    setFormData((prev) => {
+      const updated = { ...prev };
+      delete updated[fieldName];
+      return updated;
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -46,7 +99,7 @@ const SubmitCompetition = () => {
 
     const emptyFields = [];
     fieldsConfig.forEach((field) => {
-      if (!formData[field.name] || formData[field.name].trim() === "") {
+      if (!formData[field.name] || (typeof formData[field.name] === "string" && formData[field.name].trim() === "")) {
         emptyFields.push(field.label);
       }
     });
@@ -72,10 +125,7 @@ const SubmitCompetition = () => {
 
       console.log("Submission sent successfully");
 
-      // Save to sessionStorage
       sessionStorage.setItem("SubmissionData", JSON.stringify(formData));
-
-      // Store active tab in localStorage
       localStorage.setItem("activeTab", "submit-lomba");
 
       setAlertType("success");
@@ -87,6 +137,7 @@ const SubmitCompetition = () => {
       }, 2000);
     } catch (error) {
       console.error("Submission error:", error);
+      setIncompleteFields([]);
       setAlertType("error");
       setAlertMessage(`Gagal mengirim submission: ${error.message}`);
       setShowAlert(true);
@@ -116,18 +167,25 @@ const SubmitCompetition = () => {
         setEventDescription(eventResult.data.description || "");
 
         // Populate dynamic fields from DB if present
-        if (eventResult.data.submission_fields && Array.isArray(eventResult.data.submission_fields) && eventResult.data.submission_fields.length > 0) {
-          const mapped = eventResult.data.submission_fields.map(f => ({
+        let rawFields = eventResult.data.submission_fields;
+        if (typeof rawFields === "string") {
+          try {
+            rawFields = JSON.parse(rawFields);
+          } catch (e) {
+            console.error("Failed to parse submission_fields JSON", e);
+          }
+        }
+        if (rawFields && Array.isArray(rawFields) && rawFields.length > 0) {
+          const mapped = rawFields.map(f => ({
             label: f.label,
             type: f.type || 'url',
-            name: f.label, // Use label directly as name to prevent duplicates in Admin view
-            placeholder: `Masukkan ${f.label}`
+            name: f.label,
+            placeholder: f.type === 'file' ? `Upload ${f.label} (PDF, JPG, PNG max 20MB)` : `Masukkan ${f.label}`
           }));
           setFieldsConfig(mapped);
         }
 
         if (teamResult.success && teamResult.data) {
-          // Find the specific competition team data
           const team = teamResult.data.find(
             (comp) => comp.competitionId === competitionId
           );
@@ -153,7 +211,6 @@ const SubmitCompetition = () => {
             setTeamId(team.teamID);
             setCompetitionName(team.competitionName || competitionId);
 
-            // Populate existing submission data if available
             if (team.submissionData && typeof team.submissionData.submission_object === 'string') {
               try {
                 const parsedData = JSON.parse(team.submissionData.submission_object);
@@ -247,26 +304,85 @@ const SubmitCompetition = () => {
                 Submit Karyamu
               </h1>
               <p className="mt-2 text-sm font-semibold text-[#806400] sm:text-base">
-                {eventDescription || "Silakan masukkan link karya terbaik Anda untuk kompetisi ini."}
+                {eventDescription || "Silakan masukkan link/berkas karya terbaik Anda untuk kompetisi ini."}
               </p>
 
               <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-6">
-                {fieldsConfig.map((field, idx) => (
-                  <div key={idx} className="flex flex-col gap-2">
-                    <label htmlFor={field.name} className="text-sm font-black uppercase tracking-wider text-gray-700">
-                      {field.label}
-                    </label>
-                    <input
-                      id={field.name}
-                      name={field.name}
-                      value={formData[field.name] || ""}
-                      onChange={handleChange}
-                      type="text"
-                      placeholder={field.placeholder || "Masukkan Link"}
-                      className="w-full border-[3px] border-black bg-[#F9F9F9] px-5 py-4 text-base font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400 focus:bg-[#fff6bf]"
-                    />
-                  </div>
-                ))}
+                {fieldsConfig.map((field, idx) => {
+                  const isFileType = field.type === "file";
+                  const fileUrl = formData[field.name];
+                  const isUploading = uploadingFields[field.name];
+
+                  return (
+                    <div key={idx} className="flex flex-col gap-2">
+                      <label htmlFor={field.name} className="text-sm font-black uppercase tracking-wider text-gray-700 flex items-center gap-2">
+                        <span>{field.label}</span>
+                        {isFileType && <span className="text-xs font-semibold text-[#3f46b8] normal-case">(Upload File PDF, JPG, PNG - Maks 20MB)</span>}
+                      </label>
+
+                      {isFileType ? (
+                        fileUrl ? (
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-[3px] border-black bg-[#eef2ff] p-4 shadow-[4px_4px_0_#191b1a]">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <MdInsertDriveFile className="text-3xl text-[#3f46b8] shrink-0" />
+                              <div className="min-w-0 flex-1">
+                                <p className="font-bold text-sm text-black truncate">{field.label} (Telah Diunggah)</p>
+                                <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[#3f46b8] font-bold hover:underline inline-flex items-center gap-1">
+                                  Buka File <MdOpenInNew className="text-xs" />
+                                </a>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveFile(field.name)}
+                              className="flex items-center gap-1 border-2 border-black bg-[#ff8c75] px-3 py-1.5 text-xs font-bold uppercase text-black shadow-[2px_2px_0_#191b1a] transition-all hover:bg-red-400 cursor-pointer"
+                            >
+                              <MdDelete className="text-base" /> Hapus / Ganti
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="relative border-[3px] border-dashed border-black bg-[#F9F9F9] p-6 text-center hover:bg-[#fff6bf] transition-colors cursor-pointer flex flex-col items-center justify-center gap-2">
+                            <input
+                              id={field.name}
+                              name={field.name}
+                              type="file"
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              disabled={isUploading}
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  handleFileChange(field.name, e.target.files[0]);
+                                }
+                              }}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                            />
+                            {isUploading ? (
+                              <div className="flex flex-col items-center gap-2">
+                                <div className="w-8 h-8 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+                                <p className="font-bold text-sm text-black">Mengunggah file (Maks 20MB)...</p>
+                              </div>
+                            ) : (
+                              <>
+                                <MdCloudUpload className="text-4xl text-[#3f46b8]" />
+                                <p className="font-black text-sm text-black uppercase">Klik atau Drag File ke Sini</p>
+                                <p className="font-semibold text-xs text-gray-500">PDF, JPG, atau PNG (Maksimal 20MB)</p>
+                              </>
+                            )}
+                          </div>
+                        )
+                      ) : (
+                        <input
+                          id={field.name}
+                          name={field.name}
+                          value={formData[field.name] || ""}
+                          onChange={handleChange}
+                          type="text"
+                          placeholder={field.placeholder || `Masukkan ${field.label}`}
+                          className="w-full border-[3px] border-black bg-[#F9F9F9] px-5 py-4 text-base font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400 focus:bg-[#fff6bf]"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
 
                 <div className="flex flex-col gap-3 sm:flex-row mt-4">
                   <button

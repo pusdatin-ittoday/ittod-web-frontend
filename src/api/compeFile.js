@@ -55,3 +55,38 @@ export const postCompePayment = async (formData) => {
     };
   }
 };
+
+/**
+ * Upload a submission attachment file (PDF, JPG, PNG) up to 20MB
+ * @param {File} file - The file to upload
+ * @returns {Promise<Object>} Object with success flag and file URL
+ */
+export const uploadSubmissionFile = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await instance.post("/api/images/", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    const fileKey = response.data.key;
+    const baseURL = instance.defaults.baseURL || import.meta.env.VITE_API_BASE_URL || window.location.origin;
+    const cleanBaseURL = baseURL.replace(/\/+$/, "");
+    const fileUrl = `${cleanBaseURL}/api/images/${fileKey}`;
+
+    return {
+      success: true,
+      url: fileUrl,
+      key: fileKey,
+    };
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    return {
+      success: false,
+      error: error.response?.data?.message || "Gagal mengunggah file. Silakan coba lagi.",
+    };
+  }
+};
