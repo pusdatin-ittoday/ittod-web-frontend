@@ -27,6 +27,8 @@ const SubmitCompetition = () => {
   const [eventDescription, setEventDescription] = useState("");
   const [loading, setLoading] = useState(true);
   const [competitionExists, setCompetitionExists] = useState(true);
+  const [submissionOpen, setSubmissionOpen] = useState(false);
+  const [submissionMessage, setSubmissionMessage] = useState("Memeriksa jadwal submisi...");
 
   // Uploading state per field
   const [uploadingFields, setUploadingFields] = useState({});
@@ -165,6 +167,32 @@ const SubmitCompetition = () => {
 
         setCompetitionExists(true);
         setEventDescription(eventResult.data.description || "");
+
+        // Find submission timeline
+        const submissionTimeline = eventResult.data.timelines?.find(t => t.is_submission);
+        let isOpen = false;
+        let timelineMessage = "Batas waktu pengumpulan belum diatur oleh panitia, sehingga submisi saat ini ditutup.";
+        
+        if (submissionTimeline) {
+          // Prisma sends the date with a 'Z' (UTC) because it misinterprets MySQL DATETIME.
+          // By removing the 'Z', the browser will parse it as local time (Jakarta).
+          const startStr = submissionTimeline.date.endsWith('Z') ? submissionTimeline.date.slice(0, -1) : submissionTimeline.date;
+          const endStr = submissionTimeline.end_date ? (submissionTimeline.end_date.endsWith('Z') ? submissionTimeline.end_date.slice(0, -1) : submissionTimeline.end_date) : null;
+          
+          const now = new Date();
+          const start = new Date(startStr);
+          const end = endStr ? new Date(endStr) : null;
+          
+          if (now >= start && (!end || now <= end)) {
+            isOpen = true;
+            timelineMessage = `Submisi dibuka hingga ${end ? end.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : 'batas waktu yang ditentukan'}.`;
+          } else {
+            timelineMessage = "Batas waktu pengumpulan atau revisi submisi telah ditutup atau belum dimulai.";
+          }
+        }
+        
+        setSubmissionOpen(isOpen);
+        setSubmissionMessage(timelineMessage);
 
         // Populate dynamic fields from DB if present
         let rawFields = eventResult.data.submission_fields;
@@ -307,6 +335,10 @@ const SubmitCompetition = () => {
                 {eventDescription || "Silakan masukkan link/berkas karya terbaik Anda untuk kompetisi ini."}
               </p>
 
+              <div className={`mt-5 border-l-4 p-4 ${submissionOpen ? 'border-emerald-500 bg-emerald-50 text-emerald-800' : 'border-red-500 bg-red-50 text-red-800'}`}>
+                <p className="text-sm font-bold">{submissionMessage}</p>
+              </div>
+
               <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-6">
                 {fieldsConfig.map((field, idx) => {
                   const isFileType = field.type === "file";
@@ -347,7 +379,7 @@ const SubmitCompetition = () => {
                               name={field.name}
                               type="file"
                               accept=".pdf,.jpg,.jpeg,.png"
-                              disabled={isUploading}
+                              disabled={isUploading || !submissionOpen}
                               onChange={(e) => {
                                 if (e.target.files && e.target.files[0]) {
                                   handleFileChange(field.name, e.target.files[0]);
@@ -376,8 +408,9 @@ const SubmitCompetition = () => {
                           value={formData[field.name] || ""}
                           onChange={handleChange}
                           type="text"
+                          disabled={!submissionOpen}
                           placeholder={field.placeholder || `Masukkan ${field.label}`}
-                          className="w-full border-[3px] border-black bg-[#F9F9F9] px-5 py-4 text-base font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400 focus:bg-[#fff6bf]"
+                          className="w-full border-[3px] border-black bg-[#F9F9F9] px-5 py-4 text-base font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400 focus:bg-[#fff6bf] disabled:cursor-not-allowed disabled:bg-gray-200"
                         />
                       )}
                     </div>
@@ -387,8 +420,8 @@ const SubmitCompetition = () => {
                 <div className="flex flex-col gap-3 sm:flex-row mt-4">
                   <button
                     type="submit"
-                    disabled={isSubmitting}
-                    className="order-1 border-[3px] border-black bg-[#ffd400] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 sm:order-none"
+                    disabled={isSubmitting || !submissionOpen}
+                    className="order-1 border-[3px] border-black bg-[#ffd400] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[5px_5px_0_#191b1a] sm:order-none"
                   >
                     {isSubmitting ? "Mengirim..." : "Submit"}
                   </button>
