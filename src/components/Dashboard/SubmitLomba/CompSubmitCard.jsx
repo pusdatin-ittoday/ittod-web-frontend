@@ -8,7 +8,7 @@ import { useAlert } from "../../../context/AlertContext";
 
 // Removed hardcoded eventsData
 
-const CardSubmitNeo = ({ title, submitLink, isSubmitted }) => {
+const CardSubmitNeo = ({ title, submitLink, isSubmitted, isOpen = true }) => {
   const navigate = useNavigate();
 
   return (
@@ -31,12 +31,19 @@ const CardSubmitNeo = ({ title, submitLink, isSubmitted }) => {
         </h3>
       </div>
 
-      {isSubmitted ? (
+      {!isOpen ? (
+        <button
+          disabled
+          className="w-full flex items-center justify-center gap-3 border-[4px] border-[#1A1C1C] bg-[#34399F] py-4 text-base sm:text-lg font-anybody font-extrabold text-white shadow-[6px_6px_0_0_#000] cursor-not-allowed opacity-60"
+        >
+          {isSubmitted ? "✓ SUBMITTED (DITUTUP)" : "Submisi ditutup/belum dibuka"}
+        </button>
+      ) : isSubmitted ? (
         <button
           onClick={() => navigate("/" + submitLink)}
           className="w-full flex items-center justify-center gap-2 border-[4px] border-[#1A1C1C] bg-[#BBF7D0] py-4 text-base sm:text-lg font-anybody font-extrabold text-[#166534] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
         >
-          ✓ SUBMITTED
+          ✎ EDIT SUBMISI
         </button>
       ) : (
         <button
@@ -91,7 +98,7 @@ const CardExternalLinkNeo = ({ title, externalLink }) => {
   );
 };
 
-const CardSubmit = ({ title, image, submitLink }) => {
+const CardSubmit = ({ title, image, submitLink, isSubmitted, isOpen = true }) => {
   const navigate = useNavigate();
 
   return (
@@ -111,12 +118,28 @@ const CardSubmit = ({ title, image, submitLink }) => {
       </div>
       {submitLink && (
         <div className="flex gap-5">
-          <button
-            onClick={() => navigate("/" + submitLink)}
-            className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer"
-          >
-            Submit
-          </button>
+          {!isOpen ? (
+            <button
+              disabled
+              className="mt-4 custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium text-sm cursor-not-allowed opacity-60"
+            >
+              {isSubmitted ? "✓ Submitted (Ditutup)" : "Submisi ditutup/belum dibuka"}
+            </button>
+          ) : isSubmitted ? (
+            <button
+              onClick={() => navigate("/" + submitLink)}
+              className="mt-4 bg-green-500 text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer"
+            >
+              ✎ Edit Submisi
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/" + submitLink)}
+              className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer"
+            >
+              Submit
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -203,14 +226,31 @@ const CompSubmitCard = ({ variant = "default" }) => {
             .filter(comp => comp.requiresSubmission === true && 
               (comp.isVerified === true || comp.isVerified === 1 || comp.isVerified === 'approved') &&
               (comp.isDocumentVerified === true || comp.isDocumentVerified === 1 || comp.isDocumentVerified === 'approved'))
-            .map(comp => ({
-              id: comp.competitionId,
-              title: comp.competitionName,
-              image: comp.logo_url,
-              submitLink: `dashboard/lomba/${comp.competitionId}/submit`,
-              isSubmitted: !!comp.submissionData,
-              type: 'submission'
-            }));
+            .map(comp => {
+              const submissionTimeline = comp.timelines?.find(t => t.is_submission === true || t.is_submission === 1);
+              let isOpen = false;
+              if (submissionTimeline) {
+                // Prisma sends the date with a 'Z' (UTC) because it misinterprets MySQL DATETIME.
+                // By removing the 'Z', the browser will parse it as local time (Jakarta).
+                const startStr = submissionTimeline.date.endsWith('Z') ? submissionTimeline.date.slice(0, -1) : submissionTimeline.date;
+                const endStr = submissionTimeline.end_date ? (submissionTimeline.end_date.endsWith('Z') ? submissionTimeline.end_date.slice(0, -1) : submissionTimeline.end_date) : null;
+                
+                const now = new Date();
+                const start = new Date(startStr);
+                const end = endStr ? new Date(endStr) : null;
+                isOpen = now >= start && (!end || now <= end);
+              }
+
+              return {
+                id: comp.competitionId,
+                title: comp.competitionName,
+                image: comp.logo_url,
+                submitLink: `dashboard/lomba/${comp.competitionId}/submit`,
+                isSubmitted: !!comp.submissionData,
+                isOpen: isOpen,
+                type: 'submission'
+              };
+            });
 
           // 2. Competitions with external platform link (non-submission internal)
           const externalComps = userCompetitions
@@ -313,6 +353,7 @@ const CompSubmitCard = ({ variant = "default" }) => {
                   title={event.title}
                   submitLink={event.submitLink}
                   isSubmitted={event.isSubmitted}
+                  isOpen={event.isOpen}
                 />
               )
             )}
@@ -380,6 +421,8 @@ const CompSubmitCard = ({ variant = "default" }) => {
                   title={event.title}
                   image={event.image}
                   submitLink={event.submitLink}
+                  isSubmitted={event.isSubmitted}
+                  isOpen={event.isOpen}
                 />
               )
             )}
