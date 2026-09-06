@@ -11,9 +11,9 @@ export const registerTeam = async (data) => {
     console.error("Error registering team:", error);
     return {
       success: false,
-      error: error.response?.data?.message || 
-             error.response?.data?.error || 
-             "Failed to register team. Please try again."
+      error: error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Failed to register team. Please try again."
     };
   }
 };
@@ -32,9 +32,9 @@ export const updateTeamName = async ({ team_id, team_name }) => {
     console.error("Error updating team name:", error);
     return {
       success: false,
-      error: error.response?.data?.error || 
-             error.response?.data?.message || 
-             "Gagal mengupdate nama tim.",
+      error: error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Gagal mengupdate nama tim.",
     };
   }
-};
+};

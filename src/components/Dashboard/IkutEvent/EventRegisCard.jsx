@@ -1,10 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
 import { FiUserPlus } from "react-icons/fi";
 import { FaWhatsapp, FaDiscord } from "react-icons/fa";
 
 import { getPublicEvents } from "../../../api/eventPublic";
 import { getJoinEvent } from "../../../utils/api/event";
+import { checkIpbOrMinetoday, getUserCompetitions } from "../../../api/user";
+import { requireCompleteProfile } from "../../../utils/profileCompletion";
+import { useAlert } from "../../../context/AlertContext";
 import PaginationControls from "../PaginationControls";
 
 const NEO_CARD_COLORS = ["bg-[#e8fbef]", "bg-[#ffe26b]", "bg-[#565bc5] text-white"];
@@ -41,11 +45,17 @@ const IkutEvent = ({
   eventId,
   eventSlug,
   isRegistered,
+  isPending,
   waGroupLink,
   colorIndex = 0,
+  isIPB = false,
 }) => {
   const logoSrc = getLogoFallback(title, image);
   const shortDesc = getShortDescription(description);
+  const isBootcamp = (title || "").toLowerCase().includes("bootcamp");
+
+  const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
   return (
     <article
@@ -66,7 +76,14 @@ const IkutEvent = ({
             />
           </div>
         )}
-        <h3 className="text-xl font-black uppercase leading-tight">{title}</h3>
+        <div>
+          <h3 className="text-xl font-black uppercase leading-tight">{title}</h3>
+          {isBootcamp && isIPB && (
+            <div className="mt-1.5 inline-flex items-center gap-1 border-2 border-black bg-[#18c964] px-2 py-0.5 text-[10px] sm:text-[11px] font-black uppercase text-white shadow-[2px_2px_0_#191b1a]">
+              <span>GRATIS UNTUK MAHASISWA IPB</span>
+            </div>
+          )}
+        </div>
       </div>
       <p className="mt-4 text-sm font-medium leading-relaxed opacity-80">
         {shortDesc}
@@ -101,17 +118,38 @@ const IkutEvent = ({
               href={`/daftar-event/${eventSlug || eventId}`}
               className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
             >
-              <FaWhatsapp size={20} />
-              Grup WhatsApp
+              Lihat Detail Pendaftaran
             </Button>
           )
+        ) : isPending ? (
+          <div className="flex flex-col gap-2.5">
+            <div className="flex items-center justify-center gap-2 border-[3px] border-black bg-[#ffd400] py-3 text-center text-xs font-black uppercase text-black shadow-[3px_3px_0_#191b1a] sm:text-sm">
+              <span>⌛</span> Menunggu Verifikasi Berkas
+            </div>
+            <Button
+              variant="transparent"
+              fullWidth
+              href={`/daftar-event/${eventSlug || eventId}`}
+              className="flex items-center justify-center py-2.5 text-xs uppercase tracking-wider"
+            >
+              Cek Status Pendaftaran
+            </Button>
+          </div>
         ) : (
           <Button
             variant={isActive ? "yellow-solid" : "transparent"}
             fullWidth
-            href={isActive ? `/daftar-event/${eventSlug || eventId}` : undefined}
+            onClick={async (e) => {
+              if (isActive) {
+                e.preventDefault();
+                const isComplete = await requireCompleteProfile(navigate, showAlert);
+                if (isComplete) {
+                  navigate(`/daftar-event/${eventSlug || eventId}`);
+                }
+              }
+            }}
             disabled={!isActive}
-            className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
+            className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base cursor-pointer"
           >
             {isActive ? (
               <>
@@ -133,14 +171,17 @@ const EventRegisCard = () => {
   const [userEvents, setUserEvents] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [currentPage, setCurrentPage] = React.useState(0);
+  const [isIPB, setIsIPB] = React.useState(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [publicRes, userRes] = await Promise.allSettled([
+        const [publicRes, userRes, userCompRes, ipbRes] = await Promise.allSettled([
           getPublicEvents("non_competition"),
           getJoinEvent(),
+          getUserCompetitions(),
+          checkIpbOrMinetoday(),
         ]);
 
         if (
@@ -152,13 +193,55 @@ const EventRegisCard = () => {
           setCurrentPage(0);
         }
 
+        const combinedUserEvents = [];
+
         if (userRes.status === "fulfilled") {
           const res = userRes.value;
           const events = res?.data || res;
           const list = events?.data || events?.events || events;
           if (Array.isArray(list)) {
-            setUserEvents(list);
+            combinedUserEvents.push(...list);
           }
+        }
+
+        if (userCompRes.status === "fulfilled") {
+          const compData = userCompRes.value?.data || userCompRes.value;
+          let compList = [];
+          if (Array.isArray(compData)) {
+            compList = compData;
+          } else if (compData && typeof compData === "object") {
+            if (Array.isArray(compData.data)) {
+              compList = compData.data;
+            } else {
+              compList = Object.values(compData);
+            }
+          }
+
+          compList.forEach((team) => {
+            const compId = team?.competitionId || team?.competition_id || team?.competition?.id || team?.teamID || "";
+            const compTitle = team?.competitionName || team?.competition?.title || team?.competition_name || team?.teamName || team?.team_name || "";
+            const isVerified = team.isVerified === "approved" || team.is_verified === "approved" || team.isVerified === true;
+            const hasProof = Boolean(team.paymentProofID || team.payment_proof_id || team.payment_proof || team.paymentProof);
+
+            combinedUserEvents.push({
+              event_id: compId,
+              payment_verification: isVerified ? "accepted" : (team.isVerified || team.is_verified || "pending"),
+              payment_proof: team.payment_proof?.url || team.paymentProof?.url || (hasProof ? "uploaded" : null),
+              has_payment_proof: hasProof,
+              event: {
+                id: compId,
+                slug: team?.competition?.slug || (compId.toLowerCase().includes("bootcamp") || compTitle.toLowerCase().includes("bootcamp") ? "bootcamp" : compId),
+                title: compTitle,
+                whatsapp_group_link: team?.whatsappGroupLink || team?.competition?.whatsapp_group_link || null,
+              },
+            });
+          });
+        }
+
+        setUserEvents(combinedUserEvents);
+
+        if (ipbRes.status === "fulfilled" && ipbRes.value?.data) {
+          setIsIPB(Boolean(ipbRes.value.data.isIPB));
         }
       } catch (err) {
         console.error("Error fetching event registration data:", err);
@@ -223,15 +306,40 @@ const EventRegisCard = () => {
                   return true;
                 }
 
-                if (currentTitle.includes("seminar") && ueTitle.includes("seminar")) return true;
-                if (currentTitle.includes("bootcamp") && ueTitle.includes("bootcamp")) return true;
-                if (currentTitle.includes("workshop") && ueTitle.includes("workshop")) return true;
+                if (
+                  (currentTitle.includes("seminar") || currentSlug.includes("seminar") || currentId.includes("seminar")) &&
+                  (ueTitle.includes("seminar") || ueSlug.includes("seminar") || ueId.includes("seminar"))
+                ) {
+                  return true;
+                }
+                if (
+                  (currentTitle.includes("bootcamp") || currentSlug.includes("bootcamp") || currentId.includes("bootcamp")) &&
+                  (ueTitle.includes("bootcamp") || ueSlug.includes("bootcamp") || ueId.includes("bootcamp"))
+                ) {
+                  return true;
+                }
+                if (
+                  (currentTitle.includes("workshop") || currentSlug.includes("workshop") || currentId.includes("workshop")) &&
+                  (ueTitle.includes("workshop") || ueSlug.includes("workshop") || ueId.includes("workshop"))
+                ) {
+                  return true;
+                }
 
                 return false;
               });
 
-              const isRegistered = !!userReg;
-              const waGroupLink = userReg?.event?.whatsapp_group_link || event.whatsapp_group_link;
+              const isAccepted = userReg?.payment_verification === "accepted";
+              const isPending = !!userReg && !isAccepted;
+              const waGroupLink = isAccepted ? (userReg?.event?.whatsapp_group_link || null) : null;
+              const resolvedSlug = event.slug || (
+                (event.title || "").toLowerCase().includes("bootcamp")
+                  ? "bootcamp"
+                  : (event.title || "").toLowerCase().includes("seminar")
+                  ? "seminar"
+                  : (event.title || "").toLowerCase().includes("workshop")
+                  ? "workshop"
+                  : event.id
+              );
 
               return (
                 <div
@@ -248,10 +356,12 @@ const EventRegisCard = () => {
                     image={event.logo_url}
                     isActive={event.is_active}
                     eventId={event.id}
-                    eventSlug={event.slug}
-                    isRegistered={isRegistered}
+                    eventSlug={resolvedSlug}
+                    isRegistered={isAccepted}
+                    isPending={isPending}
                     waGroupLink={waGroupLink}
                     colorIndex={absoluteIndex}
+                    isIPB={isIPB}
                   />
                 </div>
               );
