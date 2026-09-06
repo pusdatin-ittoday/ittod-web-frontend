@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { AlertProvider } from "./context/AlertContext";
 import MotionProvider from "./components/motion/MotionProvider";
 import LoadingState from "./components/ui/LoadingState";
+import StagingIndicator, { isStagingEnvironment } from "./components/ui/StagingIndicator";
 
 const routeTitleMap = {
   "/": "IT TODAY 2026 - The Biggest IT Event | IPB University",
@@ -42,9 +43,11 @@ const PageTitleUpdater = () => {
 
   useEffect(() => {
     const pathname = location.pathname;
+    const isStaging = isStagingEnvironment();
+    const prefix = isStaging ? "[STAGING] " : "";
 
     if (routeTitleMap[pathname]) {
-      document.title = routeTitleMap[pathname];
+      document.title = `${prefix}${routeTitleMap[pathname]}`;
       return;
     }
 
@@ -54,20 +57,24 @@ const PageTitleUpdater = () => {
         .split("-")
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
         .join(" ");
-      document.title = `Pendaftaran ${formatted} - IT TODAY 2026`;
+      document.title = `${prefix}Pendaftaran ${formatted} - IT TODAY 2026`;
       return;
     }
 
     if (pathname.startsWith("/register-competition/")) {
       const target = pathname.replace("/register-competition/", "");
       const formatted = target.toUpperCase();
-      document.title = `Pendaftaran ${formatted} - IT TODAY 2026`;
+      document.title = `${prefix}Pendaftaran ${formatted} - IT TODAY 2026`;
       return;
     }
 
     if (pathname.startsWith("/dashboard/lomba/")) {
-      document.title = `Pendaftaran Lomba - IT TODAY 2026`;
+      document.title = `${prefix}Pendaftaran Lomba - IT TODAY 2026`;
       return;
+    }
+
+    if (isStaging && !document.title.startsWith("[STAGING]")) {
+      document.title = `[STAGING] ${document.title}`;
     }
   }, [location]);
 
@@ -112,6 +119,7 @@ const ProtectedDashboard = ({ children }) => (
 const AppRoutes = () => {
   return (
     <div className="min-h-screen bg-[#f7f7f4]">
+      <StagingIndicator />
       <ScrollToTop />
       <PageTitleUpdater />
       <Suspense fallback={<LoadingState />}>
