@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { FiLoader } from 'react-icons/fi';
 import { motion } from 'motion/react';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const rawApiBase = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE = rawApiBase.endsWith('/') ? rawApiBase.slice(0, -1) : rawApiBase;
 
 async function fetchResults(eventIdOrSlug) {
   try {
