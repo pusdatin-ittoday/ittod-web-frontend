@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { BiLogoWhatsapp } from "react-icons/bi";
 import { FaSchool, FaFileUpload, FaUserEdit, FaInfoCircle, FaCheckCircle, FaEye, FaTimes, FaExternalLinkAlt } from "react-icons/fa";
@@ -118,6 +118,7 @@ const DaftarEvent = () => {
 	const [isMineTodayRegisteredStep, setIsMineTodayRegisteredStep] = useState(false);
 	const [registeredParticipantData, setRegisteredParticipantData] = useState(null);
 	const [showPreviewModal, setShowPreviewModal] = useState(false);
+	const [isUserAlreadyVerified, setIsUserAlreadyVerified] = useState(false);
 	const [hasOpenedIntelligo, setHasOpenedIntelligo] = useState(() => {
 		return localStorage.getItem("hasOpenedIntelligo") === "true";
 	});
@@ -128,6 +129,13 @@ const DaftarEvent = () => {
 	const isCurrentIPB = isIPB || /(ipb|institut pertanian bogor)/i.test(institution);
 	const effectiveIsIPB = isCurrentIPB;
 	const effectiveIsMineToday = !isCurrentIPB && isRegisteredToMinetoday;
+
+	const isVerifiedStatus = Boolean(
+		isUserAlreadyVerified ||
+		registeredParticipantData?.payment_verification === "accepted" ||
+		registeredParticipantData?.is_document_verified === "approved" ||
+		(currentEvent?.price === 0 && (isUserAlreadyVerified || registeredParticipantData))
+	);
 
 	const getPaymentProofUrl = (proofKey) => {
 		if (!proofKey || proofKey === "uploaded") return "";
@@ -199,109 +207,139 @@ const DaftarEvent = () => {
 	}, []);
 
 	// Check if user already registered for event on load
-	useEffect(() => {
-		const checkExistingRegistration = async () => {
-			try {
-				const [eventRes, compRes] = await Promise.allSettled([
-					getJoinEvent(),
-					getUserCompetitions(),
-				]);
+	const checkExistingRegistration = useCallback(async () => {
+		try {
+			const [eventRes, compRes] = await Promise.allSettled([
+				getJoinEvent(),
+				getUserCompetitions(),
+			]);
 
-				const list = [];
-				if (eventRes.status === "fulfilled") {
-					const res = eventRes.value;
-					const events = res?.data || res;
-					const l = events?.data || events?.events || events;
-					if (Array.isArray(l)) list.push(...l);
-				}
+			const list = [];
+			let userHasApprovedDocs = false;
 
-				if (compRes.status === "fulfilled") {
-					const compData = compRes.value?.data || compRes.value;
-					let compList = [];
-					if (Array.isArray(compData)) {
-						compList = compData;
-					} else if (compData && typeof compData === "object") {
-						if (Array.isArray(compData.data)) {
-							compList = compData.data;
-						} else {
-							compList = Object.values(compData);
-						}
-					}
-
-					compList.forEach((team) => {
-						const compId = team?.competitionId || team?.competition_id || team?.competition?.id || team?.teamID || "";
-						const compTitle = team?.competitionName || team?.competition?.title || team?.competition_name || team?.teamName || team?.team_name || "";
-						const isVerified = team.isVerified === "approved" || team.is_verified === "approved" || team.isVerified === true;
-						const proofUrl = team.paymentProofUrl || team.payment_proof?.url || team.paymentProof?.url || null;
-						const hasProof = Boolean(proofUrl || team.paymentProofID || team.payment_proof_id || team.payment_proof || team.paymentProof);
-
-						list.push({
-							event_id: compId,
-							payment_verification: isVerified ? "accepted" : (team.isVerified || team.is_verified || "pending"),
-							payment_proof: proofUrl,
-							has_payment_proof: hasProof,
-							event: {
-								id: compId,
-								slug: team?.competition?.slug || (compId.toLowerCase().includes("bootcamp") || compTitle.toLowerCase().includes("bootcamp") ? "bootcamp" : compId),
-								title: compTitle,
-								whatsapp_group_link: team?.whatsappGroupLink || team?.competition?.whatsapp_group_link || null,
-							},
-						});
-					});
-				}
-
-				const currentTarget = (target === "workshop" && workshopChoice ? workshopChoice : target || "").toLowerCase();
-
-				const matched = list.find((e) => {
-					const eId = (e?.event_id || e?.id || "").toString().toLowerCase();
-					const eSlug = (e?.event?.slug || e?.slug || "").toString().toLowerCase();
-					const eTitle = (e?.event?.title || e?.event_name || e?.name || e?.title || "").toString().toLowerCase();
-
-					if (!currentTarget) return false;
-
-					if (eId === currentTarget || eSlug === currentTarget) return true;
-
-					if (currentTarget.includes("bootcamp")) {
-						return eId.includes("bootcamp") || eSlug.includes("bootcamp") || eTitle.includes("bootcamp");
-					}
-					if (currentTarget.includes("seminar")) {
-						return eId.includes("seminar") || eSlug.includes("seminar") || eTitle.includes("seminar");
-					}
-					if (currentTarget.includes("workshop") || currentTarget.includes("cyber") || currentTarget.includes("ux") || currentTarget.includes("learning")) {
-						return eId.includes("workshop") || eSlug.includes("workshop") || eTitle.includes("workshop") ||
-							(workshopChoice && (eTitle.includes(workshopChoice.toLowerCase()) || eSlug.includes(workshopChoice.toLowerCase())));
-					}
-					return eId.includes(currentTarget) || eSlug.includes(currentTarget) || eTitle.includes(currentTarget);
-				});
-
-				if (matched) {
-					setRegisteredParticipantData(matched);
-					setAlreadyRegistered(true);
-					const isMineTodayBootcamp = currentTarget.includes("bootcamp") && !effectiveIsIPB && effectiveIsMineToday;
-
-					if (isMineTodayBootcamp && matched.payment_verification !== "accepted" && !matched.has_payment_proof && !matched.payment_proof) {
-						// Registered in DB, but has not uploaded payment proof yet -> show Step 2 (payment upload view)
-						setIsMineTodayRegisteredStep(true);
-						setSubmitted(false);
-					} else {
-						setIsMineTodayRegisteredStep(false);
-						setSubmitted(true);
-						if (matched.payment_verification === "accepted" && matched.event?.whatsapp_group_link) {
-							setLinkWhatsapp(matched.event.whatsapp_group_link);
-						} else {
-							setLinkWhatsapp("");
-						}
+			if (eventRes.status === "fulfilled") {
+				const res = eventRes.value;
+				const events = res?.data || res;
+				const l = events?.data || events?.events || events;
+				if (Array.isArray(l)) {
+					list.push(...l);
+					if (l.some((e) => e?.payment_verification === "accepted" || e?.is_document_verified === "approved" || e?.is_user_verified)) {
+						userHasApprovedDocs = true;
 					}
 				}
-			} catch {
-				// ignore; user might have no events yet
-			} finally {
-				setIsCheckingRegistration(false);
 			}
-		};
 
+			if (compRes.status === "fulfilled") {
+				const compData = compRes.value?.data || compRes.value;
+				let compList = [];
+				if (Array.isArray(compData)) {
+					compList = compData;
+				} else if (compData && typeof compData === "object") {
+					if (Array.isArray(compData.data)) {
+						compList = compData.data;
+					} else {
+						compList = Object.values(compData);
+					}
+				}
+
+				if (
+					compList.some(
+						(team) =>
+							team.isVerified === "approved" ||
+							team.is_verified === "approved" ||
+							team.isVerified === true ||
+							team.is_verified === true ||
+							team.isDocumentVerified === "approved" ||
+							team.is_document_verified === "approved" ||
+							team.members?.some((m) => m?.is_verified || m?.isVerified)
+					)
+				) {
+					userHasApprovedDocs = true;
+				}
+
+				compList.forEach((team) => {
+					const compId = team?.competitionId || team?.competition_id || team?.competition?.id || team?.teamID || "";
+					const compTitle = team?.competitionName || team?.competition?.title || team?.competition_name || team?.teamName || team?.team_name || "";
+					const isVerified = team.isVerified === "approved" || team.is_verified === "approved" || team.isVerified === true;
+					const isDocApproved = team.isDocumentVerified === "approved" || team.is_document_verified === "approved" || isVerified;
+					const proofUrl = team.paymentProofUrl || team.payment_proof?.url || team.paymentProof?.url || null;
+					const hasProof = Boolean(proofUrl || team.paymentProofID || team.payment_proof_id || team.payment_proof || team.paymentProof);
+
+					list.push({
+						event_id: compId,
+						payment_verification: isVerified ? "accepted" : (team.isVerified || team.is_verified || "pending"),
+						is_document_verified: isDocApproved ? "approved" : "pending",
+						payment_proof: proofUrl,
+						has_payment_proof: hasProof,
+						event: {
+							id: compId,
+							slug: team?.competition?.slug || (compId.toLowerCase().includes("bootcamp") || compTitle.toLowerCase().includes("bootcamp") ? "bootcamp" : compId),
+							title: compTitle,
+							whatsapp_group_link: team?.whatsappGroupLink || team?.competition?.whatsapp_group_link || null,
+						},
+					});
+				});
+			}
+
+			if (userHasApprovedDocs) {
+				setIsUserAlreadyVerified(true);
+			}
+
+			const currentTarget = (target === "workshop" && workshopChoice ? workshopChoice : target || "").toLowerCase();
+
+			const matched = list.find((e) => {
+				const eId = (e?.event_id || e?.id || "").toString().toLowerCase();
+				const eSlug = (e?.event?.slug || e?.slug || "").toString().toLowerCase();
+				const eTitle = (e?.event?.title || e?.event_name || e?.name || e?.title || "").toString().toLowerCase();
+
+				if (!currentTarget) return false;
+
+				if (eId === currentTarget || eSlug === currentTarget) return true;
+
+				if (currentTarget.includes("bootcamp")) {
+					return eId.includes("bootcamp") || eSlug.includes("bootcamp") || eTitle.includes("bootcamp");
+				}
+				if (currentTarget.includes("seminar")) {
+					return eId.includes("seminar") || eSlug.includes("seminar") || eTitle.includes("seminar");
+				}
+				if (currentTarget.includes("workshop") || currentTarget.includes("cyber") || currentTarget.includes("ux") || currentTarget.includes("learning")) {
+					return eId.includes("workshop") || eSlug.includes("workshop") || eTitle.includes("workshop") ||
+						(workshopChoice && (eTitle.includes(workshopChoice.toLowerCase()) || eSlug.includes(workshopChoice.toLowerCase())));
+				}
+				return eId.includes(currentTarget) || eSlug.includes(currentTarget) || eTitle.includes(currentTarget);
+			});
+
+			if (matched) {
+				setRegisteredParticipantData(matched);
+				setAlreadyRegistered(true);
+				const isMineTodayBootcamp = currentTarget.includes("bootcamp") && !effectiveIsIPB && effectiveIsMineToday;
+
+				if (isMineTodayBootcamp && matched.payment_verification !== "accepted" && !matched.has_payment_proof && !matched.payment_proof) {
+					// Registered in DB, but has not uploaded payment proof yet -> show Step 2 (payment upload view)
+					setIsMineTodayRegisteredStep(true);
+					setSubmitted(false);
+				} else {
+					setIsMineTodayRegisteredStep(false);
+					setSubmitted(true);
+					const isEventAutoApproved = userHasApprovedDocs || currentEvent?.price === 0;
+					const isVerified = matched.payment_verification === "accepted" || isEventAutoApproved;
+					if (isVerified && matched.event?.whatsapp_group_link) {
+						setLinkWhatsapp(matched.event.whatsapp_group_link);
+					} else {
+						setLinkWhatsapp("");
+					}
+				}
+			}
+		} catch {
+			// ignore; user might have no events yet
+		} finally {
+			setIsCheckingRegistration(false);
+		}
+	}, [target, workshopChoice, effectiveIsIPB, effectiveIsMineToday, currentEvent?.price]);
+
+	useEffect(() => {
 		checkExistingRegistration();
-	}, [target, workshopChoice, effectiveIsIPB, effectiveIsMineToday]);
+	}, [checkExistingRegistration]);
 
 	// Fetch the current event configuration from Admin/database.
 	useEffect(() => {
@@ -639,8 +677,14 @@ const DaftarEvent = () => {
 				.then(() => {
 					return uploadBootcampPayment(paymentFile);
 				})
-				.then(() => {
+				.then(async () => {
 					setSubmitted(true);
+					await checkExistingRegistration();
+					await showGlobalAlert({
+						title: "Pendaftaran Berhasil!",
+						message: "Terima kasih sudah mendaftar.",
+						variant: "success",
+					});
 				})
 				.catch((error) => {
 					setError(
@@ -662,8 +706,14 @@ const DaftarEvent = () => {
 				phoneNumber: normalizedWhatsapp,
 				bundling: bootcampBundling || "",
 			})
-				.then(() => {
+				.then(async () => {
 					setSubmitted(true);
+					await checkExistingRegistration();
+					await showGlobalAlert({
+						title: "Pendaftaran Berhasil!",
+						message: "Terima kasih sudah mendaftar.",
+						variant: "success",
+					});
 				})
 				.catch((error) => {
 					// Fallback to registerEvent
@@ -675,8 +725,14 @@ const DaftarEvent = () => {
 							? new Date(dateOfBirth).toISOString().split("T")[0]
 							: null,
 					})
-						.then(() => {
+						.then(async () => {
 							setSubmitted(true);
+							await checkExistingRegistration();
+							await showGlobalAlert({
+								title: "Pendaftaran Berhasil!",
+								message: "Terima kasih sudah mendaftar.",
+								variant: "success",
+							});
 						})
 						.catch((err) => {
 							setError(
@@ -701,8 +757,14 @@ const DaftarEvent = () => {
 					? new Date(dateOfBirth).toISOString().split("T")[0]
 					: null,
 			})
-				.then(() => {
+				.then(async () => {
 					setSubmitted(true);
+					await checkExistingRegistration();
+					await showGlobalAlert({
+						title: "Pendaftaran Berhasil!",
+						message: "Terima kasih sudah mendaftar.",
+						variant: "success",
+					});
 				})
 				.catch((error) => {
 					setError(
@@ -961,24 +1023,42 @@ const DaftarEvent = () => {
 							</div>
 						)}
 
-						{/* Grup WhatsApp / Discord Event */}
-						{linkWhatsapp ? (
-							<div className="border-[3px] border-black bg-white p-5 shadow-[4px_4px_0_#191b1a]">
-								<p className="text-xs font-black uppercase tracking-wider text-black mb-3">
-									Grup Resmi Kegiatan:
-								</p>
-								<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl mx-auto justify-center items-center">
-									<button
-										onClick={() => window.open(linkWhatsapp, "_blank", "noopener,noreferrer")}
-										className={`w-full min-w-[180px] max-w-[320px] flex-1 cursor-pointer border-[3px] border-black px-4 py-3 text-xs font-black uppercase text-white shadow-[3px_3px_0_#191b1a] transition-all hover:-translate-y-0.5 sm:text-sm ${linkWhatsapp?.toLowerCase().includes("discord") ? "bg-[#5865F2]" : "bg-[#18c964]"}`}
-									>
-										{linkWhatsapp?.toLowerCase().includes("discord") ? (
-											<><FaDiscord className="inline mr-1" /> Gabung Discord</>
-										) : (
-											<><FaWhatsapp className="inline mr-1" /> Gabung Grup WhatsApp</>
-										)}
-									</button>
+						{/* Jika berkas sudah terverifikasi: Langsung tampilkan notifikasi Terima Kasih Sudah Mendaftar */}
+						{isVerifiedStatus ? (
+							<div className="space-y-4">
+								<div className="border-[3px] border-black bg-[#e8fbef] p-5 text-left text-black shadow-[4px_4px_0_#191b1a] space-y-3">
+									<div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
+										<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-black flex items-center gap-1.5">
+											<FaCheckCircle className="text-[#18c964]" size={16} /> Berkas Terverifikasi
+										</p>
+										<span className="inline-flex items-center gap-1 border-2 border-black bg-[#18c964] px-2.5 py-0.5 text-[11px] font-black uppercase text-white shadow-[2px_2px_0_#000]">
+											Verified
+										</span>
+									</div>
+									<p className="text-xs sm:text-sm text-gray-900 font-bold leading-relaxed">
+										Terima kasih sudah mendaftar! Berkas identitas Anda telah terverifikasi oleh panitia.
+									</p>
 								</div>
+
+								{linkWhatsapp && (
+									<div className="border-[3px] border-black bg-white p-5 shadow-[4px_4px_0_#191b1a]">
+										<p className="text-xs font-black uppercase tracking-wider text-black mb-3">
+											Grup Resmi Kegiatan:
+										</p>
+										<div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl mx-auto justify-center items-center">
+											<button
+												onClick={() => window.open(linkWhatsapp, "_blank", "noopener,noreferrer")}
+												className={`w-full min-w-[180px] max-w-[320px] flex-1 cursor-pointer border-[3px] border-black px-4 py-3 text-xs font-black uppercase text-white shadow-[3px_3px_0_#191b1a] transition-all hover:-translate-y-0.5 sm:text-sm ${linkWhatsapp?.toLowerCase().includes("discord") ? "bg-[#5865F2]" : "bg-[#18c964]"}`}
+											>
+												{linkWhatsapp?.toLowerCase().includes("discord") ? (
+													<><FaDiscord className="inline mr-1" /> Gabung Discord</>
+												) : (
+													<><FaWhatsapp className="inline mr-1" /> Gabung Grup WhatsApp</>
+												)}
+											</button>
+										</div>
+									</div>
+								)}
 							</div>
 						) : registeredParticipantData?.payment_verification === "rejected" ? (
 							<div className="space-y-4">
@@ -1267,7 +1347,15 @@ const DaftarEvent = () => {
 														phoneNumber: currentUserProfile?.phone_number || whatsapp,
 														bundling: "",
 													})
-														.then(() => setSubmitted(true))
+														.then(async () => {
+															setSubmitted(true);
+															await checkExistingRegistration();
+															await showGlobalAlert({
+																title: "Pendaftaran Berhasil!",
+																message: "Terima kasih sudah mendaftar.",
+																variant: "success",
+															});
+														})
 														.catch((err) => {
 															setError(err.response?.data?.message || err.message || "Gagal mendaftar");
 														})

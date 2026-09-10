@@ -348,24 +348,27 @@ const CompList = ({ name, currentUser, competitions = {}, onVerify, onEditUser }
     return (
         <div className="max-w-full lg:w-[650px] font-dm-sans p-4 sm:p-6 bg-[#7b446c] rounded-lg shadow-md h-[400px] sm:h-[500px] flex flex-col">
             {/* Bagian Header */}
-            <div className="border-b border-[#dfb4d7]/60 mb-4">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-2">
-                    <div className="flex items-center gap-3 sm:gap-5">
-                        <FaUser className="text-lg sm:text-xl lg:text-2xl input-text-glow text-white drop-shadow-[0_1px_6px_#FFE6FC]" />
-                        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold input-text-glow tracking-wide transform transition duration-500 hover:scale-102">
-                            <span className="text-white drop-shadow-[0_1px_1px_#FFB6C1] input-text-glow">Halo, </span><span className="text-pink-300 drop-shadow-[0_1px_5px_#FF69B4]">{name}!</span>
+            <div className="border-b border-[#dfb4d7]/40 pb-3 mb-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white shrink-0">
+                            <FaUser className="text-xs text-white drop-shadow-[0_1px_4px_#FFE6FC]" />
+                        </div>
+                        <h2 className="text-xs sm:text-sm font-medium tracking-wide truncate">
+                            <span className="text-white/80">Halo, </span>
+                            <span className="font-bold text-pink-200 drop-shadow-[0_1px_3px_#FF69B4]">{name}!</span>
                         </h2>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 shrink-0">
                         <button
                             onClick={handleTwibbonClick}
-                            className="custom-button-bg px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded button-hover transition duration-300 hover:scale-105 font-semibold cursor-pointer w-full sm:w-auto"
+                            className="custom-button-bg px-3 py-1.5 text-xs rounded button-hover transition duration-300 hover:scale-105 font-semibold cursor-pointer"
                         >
                             Twibbon
                         </button>
                         <button
                             onClick={handleEditUserClick}
-                            className="custom-button-bg px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded button-hover transition duration-300 hover:scale-105 font-semibold cursor-pointer w-full sm:w-auto"
+                            className="custom-button-bg px-3 py-1.5 text-xs rounded button-hover transition duration-300 hover:scale-105 font-semibold cursor-pointer"
                         >
                             Edit Data
                         </button>

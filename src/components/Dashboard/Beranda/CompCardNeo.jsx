@@ -185,6 +185,14 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                 <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center border-[2px] border-[#1A1C1C] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0_0_#1A1C1C] ${
+                            data.isEvent ? "bg-[#D8B4FE] text-[#3B0764]" : "bg-[#FDE047] text-[#713F12]"
+                        }`}>
+                            {data.isEvent ? "EVENT" : "KOMPETISI"}
+                        </span>
+                    </div>
+
                     <h3 className="break-words text-xl font-bold uppercase text-[#34399F] tracking-tight sm:text-3xl">
                         {data.competitionName}
                     </h3>
