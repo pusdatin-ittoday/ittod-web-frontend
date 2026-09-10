@@ -40,14 +40,14 @@ const CardSubmitNeo = ({ title, submitLink, isSubmitted, isOpen = true }) => {
         </button>
       ) : isSubmitted ? (
         <button
-          onClick={() => navigate("/" + submitLink)}
+          onClick={() => navigate(submitLink.startsWith('/') ? submitLink : `/${submitLink}`)}
           className="w-full flex items-center justify-center gap-2 border-[4px] border-[#1A1C1C] bg-[#BBF7D0] py-4 text-base sm:text-lg font-anybody font-extrabold text-[#166534] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
         >
           ✎ EDIT SUBMISI
         </button>
       ) : (
         <button
-          onClick={() => navigate("/" + submitLink)}
+          onClick={() => navigate(submitLink.startsWith('/') ? submitLink : `/${submitLink}`)}
           className="w-full flex items-center justify-center gap-3 border-[4px] border-[#1A1C1C] bg-[#34399F] py-4 text-base sm:text-lg font-anybody font-extrabold text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
         >
           SUBMIT
@@ -127,14 +127,14 @@ const CardSubmit = ({ title, image, submitLink, isSubmitted, isOpen = true }) =>
             </button>
           ) : isSubmitted ? (
             <button
-              onClick={() => navigate("/" + submitLink)}
+              onClick={() => navigate(submitLink.startsWith('/') ? submitLink : `/${submitLink}`)}
               className="mt-4 bg-green-500 text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer"
             >
               ✎ Edit Submisi
             </button>
           ) : (
             <button
-              onClick={() => navigate("/" + submitLink)}
+              onClick={() => navigate(submitLink.startsWith('/') ? submitLink : `/${submitLink}`)}
               className="mt-4 button-hover custom-button-bg text-white px-3 py-1.5 rounded-lg shadow-lg font-medium hover:scale-105 transition-all duration-300 text-sm cursor-pointer"
             >
               Submit
@@ -230,14 +230,19 @@ const CompSubmitCard = ({ variant = "default" }) => {
               const submissionTimeline = comp.timelines?.find(t => t.is_submission === true || t.is_submission === 1);
               let isOpen = false;
               if (submissionTimeline) {
-                // Prisma sends the date with a 'Z' (UTC) because it misinterprets MySQL DATETIME.
-                // By removing the 'Z', the browser will parse it as local time (Jakarta).
-                const startStr = submissionTimeline.date.endsWith('Z') ? submissionTimeline.date.slice(0, -1) : submissionTimeline.date;
-                const endStr = submissionTimeline.end_date ? (submissionTimeline.end_date.endsWith('Z') ? submissionTimeline.end_date.slice(0, -1) : submissionTimeline.end_date) : null;
-                
+                const parseLocalDate = (dateStr) => {
+                  if (!dateStr) return null;
+                  let cleaned = typeof dateStr === 'string' ? dateStr.replace(' ', 'T') : dateStr.toISOString().replace(' ', 'T');
+                  if (cleaned.endsWith('Z')) cleaned = cleaned.slice(0, -1);
+                  if (!cleaned.includes('+') && !cleaned.match(/-\d{2}:\d{2}$/)) {
+                    cleaned += '+07:00';
+                  }
+                  return new Date(cleaned);
+                };
+
                 const now = new Date();
-                const start = new Date(startStr);
-                const end = endStr ? new Date(endStr) : null;
+                const start = parseLocalDate(submissionTimeline.date);
+                const end = parseLocalDate(submissionTimeline.end_date);
                 isOpen = now >= start && (!end || now <= end);
               }
 
@@ -245,7 +250,7 @@ const CompSubmitCard = ({ variant = "default" }) => {
                 id: comp.competitionId,
                 title: comp.competitionName,
                 image: comp.logo_url,
-                submitLink: `dashboard/lomba/${comp.competitionId}/submit`,
+                submitLink: `/dashboard/lomba/${comp.competitionId}/submit`,
                 isSubmitted: !!comp.submissionData,
                 isOpen: isOpen,
                 type: 'submission'

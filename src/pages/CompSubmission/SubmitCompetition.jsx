@@ -172,16 +172,20 @@ const SubmitCompetition = () => {
         const submissionTimeline = eventResult.data.timelines?.find(t => t.is_submission);
         let isOpen = false;
         let timelineMessage = "Batas waktu pengumpulan belum diatur oleh panitia, sehingga submisi saat ini ditutup.";
-        
         if (submissionTimeline) {
-          // Prisma sends the date with a 'Z' (UTC) because it misinterprets MySQL DATETIME.
-          // By removing the 'Z', the browser will parse it as local time (Jakarta).
-          const startStr = submissionTimeline.date.endsWith('Z') ? submissionTimeline.date.slice(0, -1) : submissionTimeline.date;
-          const endStr = submissionTimeline.end_date ? (submissionTimeline.end_date.endsWith('Z') ? submissionTimeline.end_date.slice(0, -1) : submissionTimeline.end_date) : null;
-          
+          const parseLocalDate = (dateStr) => {
+            if (!dateStr) return null;
+            let cleaned = typeof dateStr === 'string' ? dateStr.replace(' ', 'T') : dateStr.toISOString().replace(' ', 'T');
+            if (cleaned.endsWith('Z')) cleaned = cleaned.slice(0, -1);
+            if (!cleaned.includes('+') && !cleaned.match(/-\d{2}:\d{2}$/)) {
+              cleaned += '+07:00';
+            }
+            return new Date(cleaned);
+          };
+
           const now = new Date();
-          const start = new Date(startStr);
-          const end = endStr ? new Date(endStr) : null;
+          const start = parseLocalDate(submissionTimeline.date);
+          const end = parseLocalDate(submissionTimeline.end_date);
           
           if (now >= start && (!end || now <= end)) {
             isOpen = true;
