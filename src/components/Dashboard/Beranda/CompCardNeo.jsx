@@ -89,11 +89,32 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
     const needsVerification = isTeamLeader && isDocumentVerified && !isTeamVerified && !isParagraphVerified && !hasTransactionError && !hasDocumentError;
 
-    const [whatsappLink, setWhatsappLink] = useState("");
+    const initialWhatsappLink = (
+        data.whatsappGroupLink || 
+        data.whatsapp_group_link || 
+        data.competition?.whatsapp_group_link || 
+        data.event?.whatsapp_group_link || 
+        ""
+    ).trim();
+
+    const [whatsappLink, setWhatsappLink] = useState(initialWhatsappLink);
+
+    useEffect(() => {
+        const link = (
+            data.whatsappGroupLink || 
+            data.whatsapp_group_link || 
+            data.competition?.whatsapp_group_link || 
+            data.event?.whatsapp_group_link || 
+            ""
+        ).trim();
+        if (link) {
+            setWhatsappLink(link);
+        }
+    }, [data.whatsappGroupLink, data.whatsapp_group_link, data.competition, data.event]);
 
     useEffect(() => {
         const fetchWhatsappLink = async () => {
-            if (data.competitionId) {
+            if (data.competitionId && !whatsappLink) {
                 const res = await getPublicEventById(data.competitionId);
                 if (res.success && res.data && res.data.whatsapp_group_link) {
                     setWhatsappLink(res.data.whatsapp_group_link.trim());
@@ -101,14 +122,17 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
             }
         };
         fetchWhatsappLink();
-    }, [data.competitionId]);
+    }, [data.competitionId, whatsappLink]);
+
+    const effectiveWhatsappLink = whatsappLink || (data.isEvent ? "https://discord.gg/S4U2UA49uc" : "");
 
     const handleWhatsappClick = () => {
-        if (!whatsappLink) {
-            alert("Grup tidak ditemukan untuk kompetisi ini.");
+        const linkToOpen = effectiveWhatsappLink || whatsappLink;
+        if (!linkToOpen) {
+            alert("Grup tidak ditemukan untuk kegiatan ini.");
             return;
         }
-        window.open(whatsappLink, "_blank");
+        window.open(linkToOpen, "_blank");
     };
 
     const handleEditTeamNameSubmit = async () => {
@@ -185,6 +209,14 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
 
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                 <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center border-[2px] border-[#1A1C1C] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0_0_#1A1C1C] ${
+                            data.isEvent ? "bg-[#D8B4FE] text-[#3B0764]" : "bg-[#FDE047] text-[#713F12]"
+                        }`}>
+                            {data.isEvent ? "EVENT" : "KOMPETISI"}
+                        </span>
+                    </div>
+
                     <h3 className="break-words text-xl font-bold uppercase text-[#34399F] tracking-tight sm:text-3xl">
                         {data.competitionName}
                     </h3>
@@ -236,12 +268,12 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                 <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:items-end lg:flex-row lg:items-center">
                     {isTeamVerified && (
                         <>
-                            {whatsappLink && (
+                            {effectiveWhatsappLink && (
                                 <button
                                     onClick={handleWhatsappClick}
-                                    className={`flex w-full items-center justify-center gap-2 border-2 border-[#1A1C1C] px-4 py-2 text-sm font-space-grotesk text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto ${whatsappLink.toLowerCase().includes("discord") ? "bg-[#5865F2]" : "bg-[#25D366]"}`}
+                                    className={`flex w-full items-center justify-center gap-2 border-2 border-[#1A1C1C] px-4 py-2 text-sm font-space-grotesk text-white shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none sm:w-auto ${effectiveWhatsappLink.toLowerCase().includes("discord") ? "bg-[#5865F2]" : "bg-[#25D366]"}`}
                                 >
-                                    {whatsappLink.toLowerCase().includes("discord") ? (
+                                    {effectiveWhatsappLink.toLowerCase().includes("discord") ? (
                                         <><FaDiscord className="text-lg" /> Grup Discord</>
                                     ) : (
                                         <><WhatsappIcon /> Grup Whatsapp</>
@@ -390,6 +422,40 @@ const CompCardNeo = ({ compKey, data, currentUser, onVerify }) => {
                         <FaUpload className="inline mr-2 text-xs" />
                         {isRejected ? "Upload Ulang Bukti Pembayaran" : "Upload Bukti Pembayaran"}
                     </button>
+                )}
+
+                {/* Official Group Banner for Verified Participants */}
+                {isTeamVerified && effectiveWhatsappLink && (
+                    <div className="mt-3 border-[3px] border-[#1A1C1C] bg-[#25D366]/15 p-3.5 shadow-[4px_4px_0_0_#1A1C1C] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                            <div className={`w-8 h-8 rounded border-2 border-[#1A1C1C] flex items-center justify-center text-white shrink-0 shadow-[2px_2px_0_#1A1C1C] ${effectiveWhatsappLink.toLowerCase().includes("discord") ? "bg-[#5865F2]" : "bg-[#25D366]"}`}>
+                                {effectiveWhatsappLink.toLowerCase().includes("discord") ? (
+                                    <FaDiscord className="text-lg text-white" />
+                                ) : (
+                                    <WhatsappIcon className="w-5 h-5" />
+                                )}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="font-space-grotesk text-xs font-black uppercase text-[#1A1C1C]">
+                                    {effectiveWhatsappLink.toLowerCase().includes("discord") ? "Grup Discord Resmi Kegiatan" : "Grup WhatsApp Resmi Kegiatan"}
+                                </span>
+                                <span className="text-[11px] font-semibold text-gray-700">
+                                    Pendaftaran telah terverifikasi! Silakan bergabung ke grup peserta untuk informasi dan koordinasi kegiatan.
+                                </span>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleWhatsappClick}
+                            className={`w-full sm:w-auto border-[2px] border-[#1A1C1C] px-3.5 py-2 text-xs font-black uppercase text-white shadow-[3px_3px_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center justify-center gap-1.5 shrink-0 ${effectiveWhatsappLink.toLowerCase().includes("discord") ? "bg-[#5865F2]" : "bg-[#25D366]"}`}
+                        >
+                            {effectiveWhatsappLink.toLowerCase().includes("discord") ? (
+                                <><FaDiscord className="text-sm text-white" /><span>Join Discord</span></>
+                            ) : (
+                                <><WhatsappIcon /><span>Join WhatsApp</span></>
+                            )}
+                        </button>
+                    </div>
                 )}
 
                 {/* Join Discord CTA Banner */}

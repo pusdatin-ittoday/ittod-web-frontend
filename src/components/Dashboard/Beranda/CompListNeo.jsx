@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaDiscord } from "react-icons/fa";
-import { getCurrentUser, getUserCompetitions } from "../../../api/user";
+import { getCurrentUser, getUserCompetitions, getUserEvents } from "../../../api/user";
 import { postCompePayment } from "../../../api/compeFile";
 import CompCardNeo from "./CompCardNeo";
 import { requireCompleteProfile } from "../../../utils/profileCompletion";
@@ -23,6 +23,7 @@ const CompListNeo = () => {
     const [userData, setUserData] = useState({ name: "Crew" });
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState("Crew");
+    const [activeTab, setActiveTab] = useState("lomba"); // "lomba" | "event"
 
     const [globalCompTimelines, setGlobalCompTimelines] = useState([]);
     const navigate = useNavigate();
@@ -34,12 +35,12 @@ const CompListNeo = () => {
         }
     };
 
-    const processCompetitionsData = (data, currentUserName = null, isCurrentUserDataComplete = false) => {
+    const processCompetitionsData = (data, currentUserName = null, isCurrentUserDataComplete = false, userEventsData = []) => {
         const processedCompetitions = {};
         const isApproved = (v) => v === 1 || v === true || v === 'approved';
         const isRejectedStatus = (v) => v === 0 || v === false || v === 'rejected';
 
-        Object.entries(data).forEach(([key, comp]) => {
+        Object.entries(data || {}).forEach(([key, comp]) => {
             const isVerified = isApproved(comp.is_verified) || isApproved(comp.isVerified);
             const hasPaymentProof = Boolean(comp.paymentProofID);
             const hasVerificationError = comp.verification_error && comp.verification_error.trim() !== "";
@@ -76,26 +77,101 @@ const CompListNeo = () => {
                 });
             }
 
+            const cId = (comp.competitionId || comp.id || "").toLowerCase();
+            const cName = (comp.competitionName || comp.title || comp.teamName || "").toLowerCase();
+            const isNonComp = comp.competitionType === "non_competition" || 
+                              comp.type === "non_competition" || 
+                              comp.type === "event" ||
+                              ["bootcamp", "seminar", "workshop", "exhibition", "talkshow", "webinar"].some(
+                                  kw => cId.includes(kw) || cName.includes(kw)
+                              );
+
             processedCompetitions[key] = {
                 ...comp,
                 isDocumentVerified: isApproved(comp.isDocumentVerified) ? 'approved' : comp.isDocumentVerified,
                 members: updatedMembers,
                 isVerified: isVerified,
-                pendingVerification: isPendingVerification
+                pendingVerification: isPendingVerification,
+                isEvent: isNonComp,
+                competitionType: isNonComp ? "non_competition" : "competition"
             };
         });
+
+        // Merge non-competition events joined via event_participant if not already in team data
+        if (Array.isArray(userEventsData)) {
+            userEventsData.forEach((ue, idx) => {
+                const eventId = ue.event_id || ue.event?.id || "";
+                if (!eventId) return;
+
+                const eventSlug = (ue.event?.slug || "").toLowerCase();
+                const eventTitle = (ue.event?.title || "").toLowerCase();
+                const ueWaLink = ue.event?.whatsapp_group_link || ue.whatsapp_group_link || null;
+                const isUeVerified = ue.payment_verification === "accepted";
+
+                // Check if this event already exists in processedCompetitions (e.g. from team table)
+                const existingComp = Object.values(processedCompetitions).find(c => {
+                    const cId = (c.competitionId || "").toLowerCase();
+                    const cName = (c.competitionName || "").toLowerCase();
+                    return (
+                        cId === eventId.toLowerCase() ||
+                        (eventSlug && cId === eventSlug) ||
+                        (eventTitle && cName === eventTitle)
+                    );
+                });
+
+                if (existingComp) {
+                    if (ueWaLink && !existingComp.whatsappGroupLink) {
+                        existingComp.whatsappGroupLink = ueWaLink;
+                    }
+                    if (isUeVerified) {
+                        existingComp.isVerified = true;
+                        existingComp.pendingVerification = false;
+                    }
+                    return;
+                }
+
+                const isVerified = ue.payment_verification === "accepted";
+                const hasPaymentProof = Boolean(ue.has_payment_proof || ue.payment_proof);
+                const isRejected = ue.payment_verification === "rejected";
+                const isPending = !isVerified && hasPaymentProof && !isRejected;
+
+                const eventKey = `event_${eventId}_${idx}`;
+                processedCompetitions[eventKey] = {
+                    teamID: `event-${eventId}`,
+                    competitionId: eventId,
+                    competitionName: ue.event?.title || eventId,
+                    competitionType: "non_competition",
+                    participationType: "individual",
+                    isVerified: isVerified,
+                    isDocumentVerified: "approved",
+                    pendingVerification: isPending,
+                    verificationError: isRejected ? "Pembayaran ditolak" : null,
+                    whatsappGroupLink: ue.event?.whatsapp_group_link || null,
+                    members: [{
+                        fullName: currentUserName || "Crew",
+                        isRegistrationComplete: isCurrentUserDataComplete
+                    }],
+                    isEvent: true,
+                    timelines: []
+                };
+            });
+        }
 
         return processedCompetitions;
     };
 
     const refreshCompetitionData = async () => {
         try {
-            const competitionsResponse = await getUserCompetitions();
+            const [competitionsResponse, eventsResponse] = await Promise.all([
+                getUserCompetitions(),
+                getUserEvents()
+            ]);
             if (competitionsResponse.success && competitionsResponse.data) {
                 setCompetitions(processCompetitionsData(
                     competitionsResponse.data,
                     currentUser,
-                    userData.isRegistrationComplete
+                    userData.isRegistrationComplete,
+                    eventsResponse.success ? eventsResponse.data : []
                 ));
             }
         } catch (error) {
@@ -186,10 +262,11 @@ const CompListNeo = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const [userResponse, competitionsResponse, compTimelineResponse] = await Promise.all([
+                const [userResponse, competitionsResponse, compTimelineResponse, eventsResponse] = await Promise.all([
                     getCurrentUser(),
                     getUserCompetitions(),
-                    getCompetitionTimelines()
+                    getCompetitionTimelines(),
+                    getUserEvents()
                 ]);
 
                 if (compTimelineResponse.success) {
@@ -213,7 +290,8 @@ const CompListNeo = () => {
                     setCompetitions(processCompetitionsData(
                         competitionsResponse.data,
                         name,
-                        isUserDataComplete
+                        isUserDataComplete,
+                        eventsResponse.success ? eventsResponse.data : []
                     ));
                 }
 
@@ -236,34 +314,42 @@ const CompListNeo = () => {
         return () => clearInterval(interval);
     }, []);
 
-    const filteredCompetitions = Object.entries(competitions || {}).filter(([, data]) => {
+    const allCompetitions = Object.entries(competitions || {}).filter(([, data]) => {
         return data && data.members;
     });
+
+    const lombaCompetitions = allCompetitions.filter(([, data]) => !data.isEvent);
+    const eventCompetitions = allCompetitions.filter(([, data]) => data.isEvent);
+
+    const filteredCompetitions = 
+        activeTab === "event" 
+            ? eventCompetitions 
+            : lombaCompetitions;
 
     return (
         <div className="flex flex-col xl:flex-row gap-6 justify-center items-start w-full">
             <div className="flex-1 w-full flex flex-col gap-6">
-                <div className="border-[4px] border-[#1A1C1C] bg-white p-5 sm:p-7 lg:p-8 shadow-[6px_6px_0_0_#1A1C1C] relative overflow-hidden flex flex-col gap-4">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div className="space-y-1">
-                            <p className="font-space-grotesk text-[10px] sm:text-xs tracking-[0.15em] text-[#34399F] font-bold uppercase">
+                <div className="border-[4px] border-[#1A1C1C] bg-white p-4 sm:p-5 shadow-[6px_6px_0_0_#1A1C1C] relative overflow-hidden flex flex-col gap-3">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div className="space-y-0.5">
+                            <p className="font-space-grotesk text-[10px] sm:text-[11px] tracking-[0.12em] text-[#34399F] font-bold uppercase">
                                 WELCOME BACK, CREW
                             </p>
-                            <h1 className="break-words text-2xl font-extrabold uppercase text-[#1A1C1C] leading-tight tracking-tight sm:text-4xl">
+                            <h1 className="break-words text-lg font-black uppercase text-[#1A1C1C] leading-snug tracking-tight sm:text-xl">
                                 Halo, <span className="text-[#34399F]">{userData.name}!</span>
                             </h1>
                         </div>
 
-                        <div className="flex gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+                        <div className="flex gap-2.5 w-full sm:w-auto mt-1 sm:mt-0">
                             <button
                                 onClick={handleTwibbonClick}
-                                className="flex-1 sm:flex-initial border-[3px] border-[#1A1C1C] bg-[#34399F] px-4 py-2.5 text-xs font-bold uppercase text-white shadow-[4px_4px_0_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#1A1C1C] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                className="flex-1 sm:flex-initial border-[2.5px] border-[#1A1C1C] bg-[#34399F] px-3.5 py-2 text-xs font-bold uppercase text-white shadow-[3px_3px_0_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer"
                             >
                                 Twibbon
                             </button>
                             <button
                                 onClick={handleEditUser}
-                                className="flex-1 sm:flex-initial border-[3px] border-[#1A1C1C] bg-[#E8E8E8] px-4 py-2.5 text-xs font-bold uppercase text-black shadow-[4px_4px_0_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#1A1C1C] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                className="flex-1 sm:flex-initial border-[2.5px] border-[#1A1C1C] bg-[#E8E8E8] px-3.5 py-2 text-xs font-bold uppercase text-black shadow-[3px_3px_0_0_#1A1C1C] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer"
                             >
                                 Edit Data
                             </button>
@@ -272,11 +358,39 @@ const CompListNeo = () => {
                 </div>
 
                 <div className="border-[3px] border-[#1A1C1C] bg-[#F3F3F3] p-2.5 flex flex-col gap-5 sm:border-[4px] sm:p-6">
-                    <div className="flex items-center gap-2">
-                        <BentoListIcon />
-                        <h2 className="text-lg sm:text-xl font-black uppercase text-[#1A1C1C] tracking-tight">
-                            KOMPETISI/EVENT SAYA
-                        </h2>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-dashed border-[#1A1C1C]/20">
+                        <div className="flex items-center gap-2">
+                            <BentoListIcon />
+                            <h2 className="text-lg sm:text-xl font-black uppercase text-[#1A1C1C] tracking-tight">
+                                {activeTab === "event" ? "EVENT SAYA" : "LOMBA SAYA"}
+                            </h2>
+                        </div>
+
+                        {/* Filter Tabs */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab("lomba")}
+                                className={`border-[2.5px] border-[#1A1C1C] px-3.5 py-1.5 text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+                                    activeTab === "lomba"
+                                        ? "bg-[#34399F] text-white shadow-[3px_3px_0_0_#1A1C1C] -translate-y-0.5"
+                                        : "bg-white text-[#1A1C1C] shadow-[2px_2px_0_0_#1A1C1C] hover:bg-[#E8E8E8] hover:shadow-[3px_3px_0_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                                }`}
+                            >
+                                Lomba ({lombaCompetitions.length})
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab("event")}
+                                className={`border-[2.5px] border-[#1A1C1C] px-3.5 py-1.5 text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+                                    activeTab === "event"
+                                        ? "bg-[#34399F] text-white shadow-[3px_3px_0_0_#1A1C1C] -translate-y-0.5"
+                                        : "bg-white text-[#1A1C1C] shadow-[2px_2px_0_0_#1A1C1C] hover:bg-[#E8E8E8] hover:shadow-[3px_3px_0_0_#1A1C1C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                                }`}
+                            >
+                                Event ({eventCompetitions.length})
+                            </button>
+                        </div>
                     </div>
 
                     <div className="space-y-5">
@@ -293,7 +407,7 @@ const CompListNeo = () => {
                                     compKey={key}
                                     data={{
                                         ...comp,
-                                        timelines: globalCompTimelines.length > 0 ? globalCompTimelines : comp.timelines
+                                        timelines: comp.isEvent ? (comp.timelines || []) : (globalCompTimelines.length > 0 ? globalCompTimelines : comp.timelines)
                                     }}
                                     currentUser={currentUser}
                                     onVerify={handleVerify}
@@ -303,29 +417,51 @@ const CompListNeo = () => {
                             <div className="w-full border-[2.4px] border-dashed border-[#34399F] bg-white p-8 sm:p-12 flex flex-col justify-center items-center gap-6 text-center">
                                 <div className="flex flex-col items-center gap-4">
                                     <h3 className="font-anybody text-2xl sm:text-3xl font-bold uppercase tracking-tight text-[#1A1C1C]">
-                                        BELUM ADA LOMBA
+                                        {activeTab === "lomba"
+                                            ? "BELUM ADA LOMBA"
+                                            : activeTab === "event"
+                                                ? "BELUM ADA EVENT"
+                                                : "BELUM ADA KEGIATAN"}
                                     </h3>
                                     <p className="font-space-grotesk text-sm sm:text-base text-gray-500 max-w-md">
-                                        Kamu belum mendaftar ke lomba apapun. Yuk cari lomba dan mulai berkompetisi!
+                                        {activeTab === "lomba"
+                                            ? "Kamu belum mendaftar ke lomba apapun. Yuk cari lomba dan mulai berkompetisi!"
+                                            : activeTab === "event"
+                                                ? "Kamu belum mendaftar ke event apapun. Yuk ikuti seminar, bootcamp, atau workshop menarik di IT Today!"
+                                                : "Kamu belum mendaftar ke lomba atau event apapun. Yuk mulai eksplorasi kegiatan IT Today!"}
                                     </p>
                                 </div>
-                                <p className="font-space-grotesk text-xs sm:text-sm text-gray-400">
-                                    Sudah punya join code? Masukkan dari halaman Daftar Lomba.
-                                </p>
+                                {activeTab === "lomba" && (
+                                    <p className="font-space-grotesk text-xs sm:text-sm text-gray-400">
+                                        Sudah punya join code? Masukkan dari halaman Daftar Lomba.
+                                    </p>
+                                )}
 
                                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                                    <button
-                                        onClick={() => navigate("/dashboard/ikut-lomba")}
-                                        className="w-full sm:w-[240px] border-[2.4px] border-black bg-[#34399F] py-3 text-sm font-space-grotesk font-bold uppercase text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
-                                    >
-                                        LIHAT DAFTAR LOMBA
-                                    </button>
-                                    <button
-                                        onClick={handleJoinTeam}
-                                        className="w-full sm:w-[257px] border-[2.4px] border-black bg-[#FCD400] py-3 text-sm font-space-grotesk font-bold uppercase text-[#6E5C00] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
-                                    >
-                                        BERGABUNG TIM
-                                    </button>
+                                    {activeTab === "lomba" && (
+                                        <>
+                                            <button
+                                                onClick={() => navigate("/dashboard/ikut-lomba")}
+                                                className="w-full sm:w-[240px] border-[2.4px] border-black bg-[#34399F] py-3 text-sm font-space-grotesk font-bold uppercase text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                                            >
+                                                LIHAT DAFTAR LOMBA
+                                            </button>
+                                            <button
+                                                onClick={handleJoinTeam}
+                                                className="w-full sm:w-[257px] border-[2.4px] border-black bg-[#FCD400] py-3 text-sm font-space-grotesk font-bold uppercase text-[#6E5C00] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                                            >
+                                                BERGABUNG TIM
+                                            </button>
+                                        </>
+                                    )}
+                                    {activeTab === "event" && (
+                                        <button
+                                            onClick={() => navigate("/dashboard/ikut-event")}
+                                            className="w-full sm:w-[240px] border-[2.4px] border-black bg-[#34399F] py-3 text-sm font-space-grotesk font-bold uppercase text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                                        >
+                                            LIHAT DAFTAR EVENT
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         )}

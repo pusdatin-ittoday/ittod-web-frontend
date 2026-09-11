@@ -122,19 +122,14 @@ const IkutEvent = ({
             </Button>
           )
         ) : isPending ? (
-          <div className="flex flex-col gap-2.5">
-            <div className="flex items-center justify-center gap-2 border-[3px] border-black bg-[#ffd400] py-3 text-center text-xs font-black uppercase text-black shadow-[3px_3px_0_#191b1a] sm:text-sm">
-              <span>⌛</span> Menunggu Verifikasi Berkas
-            </div>
-            <Button
-              variant="transparent"
-              fullWidth
-              href={`/daftar-event/${eventSlug || eventId}`}
-              className="flex items-center justify-center py-2.5 text-xs uppercase tracking-wider"
-            >
-              Cek Status Pendaftaran
-            </Button>
-          </div>
+          <Button
+            variant="yellow-solid"
+            fullWidth
+            href={`/daftar-event/${eventSlug || eventId}`}
+            className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
+          >
+            Cek Status Pendaftaran
+          </Button>
         ) : (
           <Button
             variant={isActive ? "yellow-solid" : "transparent"}
