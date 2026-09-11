@@ -212,19 +212,14 @@ const EventDetailPage = () => {
                       </Button>
                     )
                   ) : isPendingVerification ? (
-                    <div className="flex flex-col gap-3">
-                      <div className="flex items-center justify-center gap-2 border-[3px] border-black bg-[#ffd400] py-3.5 text-center font-inter text-sm font-black uppercase tracking-wider text-black shadow-[4px_4px_0_#111]">
-                        <span>⌛</span> Menunggu Verifikasi Pembayaran
-                      </div>
-                      <Button
-                        variant="transparent"
-                        fullWidth
-                        href={`/daftar-event/${slug}`}
-                        className="flex items-center justify-center gap-2 py-3 text-xs uppercase tracking-wider md:text-sm"
-                      >
-                        Cek Status / Upload Bukti Pembayaran
-                      </Button>
-                    </div>
+                    <Button
+                      variant="yellow-solid"
+                      fullWidth
+                      href={`/daftar-event/${slug}`}
+                      className="flex items-center justify-center gap-2 py-4 text-sm uppercase tracking-wider md:text-base"
+                    >
+                      Cek Status Pendaftaran
+                    </Button>
                   ) : (
                     <Button
                       variant={event.is_active ? "yellow-solid" : "transparent"}

@@ -229,9 +229,6 @@ const DaftarEvent = () => {
 				const l = events?.data || events?.events || events;
 				if (Array.isArray(l)) {
 					list.push(...l);
-					if (l.some((e) => e?.payment_verification === "accepted" || e?.is_document_verified === "approved" || e?.is_user_verified)) {
-						userHasApprovedDocs = true;
-					}
 				}
 			}
 
@@ -251,13 +248,10 @@ const DaftarEvent = () => {
 				if (
 					compList.some(
 						(team) =>
-							team.isVerified === "approved" ||
-							team.is_verified === "approved" ||
-							team.isVerified === true ||
-							team.is_verified === true ||
-							team.isDocumentVerified === "approved" ||
+							(team.isDocumentVerified === "approved" ||
 							team.is_document_verified === "approved" ||
-							team.members?.some((m) => m?.is_verified || m?.isVerified)
+							team.members?.some((m) => (m?.is_verified || m?.isVerified) && (m?.kartu_id || m?.kartuId))) &&
+							(team.competition?.type === "competition" || (!team.competition?.type && !team.competitionId?.toLowerCase().includes("workshop")))
 					)
 				) {
 					userHasApprovedDocs = true;
@@ -267,7 +261,7 @@ const DaftarEvent = () => {
 					const compId = team?.competitionId || team?.competition_id || team?.competition?.id || team?.teamID || "";
 					const compTitle = team?.competitionName || team?.competition?.title || team?.competition_name || team?.teamName || team?.team_name || "";
 					const isVerified = team.isVerified === "approved" || team.is_verified === "approved" || team.isVerified === true;
-					const isDocApproved = team.isDocumentVerified === "approved" || team.is_document_verified === "approved" || isVerified;
+					const isDocApproved = team.isDocumentVerified === "approved" || team.is_document_verified === "approved";
 					const proofUrl = team.paymentProofUrl || team.payment_proof?.url || team.paymentProof?.url || null;
 					const hasProof = Boolean(proofUrl || team.paymentProofID || team.payment_proof_id || team.payment_proof || team.paymentProof);
 
@@ -292,26 +286,31 @@ const DaftarEvent = () => {
 			}
 
 			const currentTarget = (target || "").toLowerCase();
+			const activeEventId = (currentEvent?.id || "").toLowerCase();
+			const activeEventSlug = (currentEvent?.slug || "").toLowerCase();
+			const activeEventTitle = (currentEvent?.title || "").toLowerCase();
 
 			const matched = list.find((e) => {
 				const eId = (e?.event_id || e?.id || "").toString().toLowerCase();
 				const eSlug = (e?.event?.slug || e?.slug || "").toString().toLowerCase();
 				const eTitle = (e?.event?.title || e?.event_name || e?.name || e?.title || "").toString().toLowerCase();
 
-				if (!currentTarget) return false;
+				if (!currentTarget && !activeEventId && !activeEventSlug) return false;
 
-				if (eId === currentTarget || eSlug === currentTarget) return true;
+				if (activeEventId && (eId === activeEventId || eSlug === activeEventId)) return true;
+				if (activeEventSlug && (eId === activeEventSlug || eSlug === activeEventSlug)) return true;
+				if (currentTarget && (eId === currentTarget || eSlug === currentTarget)) return true;
 
-				if (currentTarget.includes("bootcamp")) {
+				if (currentTarget.includes("bootcamp") || activeEventSlug.includes("bootcamp")) {
 					return eId.includes("bootcamp") || eSlug.includes("bootcamp") || eTitle.includes("bootcamp");
 				}
-				if (currentTarget.includes("seminar")) {
+				if (currentTarget.includes("seminar") || activeEventSlug.includes("seminar")) {
 					return eId.includes("seminar") || eSlug.includes("seminar") || eTitle.includes("seminar");
 				}
-				if (currentTarget.includes("workshop") || currentTarget.includes("cyber") || currentTarget.includes("ux") || currentTarget.includes("learning")) {
-					return eId.includes("workshop") || eSlug.includes("workshop") || eTitle.includes("workshop");
+				if (activeEventTitle && eTitle === activeEventTitle) {
+					return true;
 				}
-				return eId.includes(currentTarget) || eSlug.includes(currentTarget) || eTitle.includes(currentTarget);
+				return false;
 			});
 
 			if (matched) {
@@ -326,10 +325,11 @@ const DaftarEvent = () => {
 				} else {
 					setIsMineTodayRegisteredStep(false);
 					setSubmitted(true);
-					const isEventActuallyVerified =
+					const isEventActuallyVerified = Boolean(
 						isEventFree ||
 						(target === "bootcamp" && effectiveIsIPB) ||
-						matched.payment_verification === "accepted";
+						matched.payment_verification === "accepted"
+					);
 					if (isEventActuallyVerified && matched.event?.whatsapp_group_link) {
 						setLinkWhatsapp(matched.event.whatsapp_group_link);
 					} else {
@@ -1153,20 +1153,24 @@ const DaftarEvent = () => {
 							</div>
 						)}
 
-						{/* Jika berkas sudah terverifikasi: Langsung tampilkan notifikasi Terima Kasih Sudah Mendaftar */}
+						{/* Jika pembayaran / pendaftaran sudah terverifikasi */}
 						{isVerifiedStatus ? (
 							<div className="space-y-4">
 								<div className="border-[3px] border-black bg-[#e8fbef] p-5 text-left text-black shadow-[4px_4px_0_#191b1a] space-y-3">
 									<div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
 										<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-black flex items-center gap-1.5">
-											<FaCheckCircle className="text-[#18c964]" size={16} /> Berkas Terverifikasi
+											<FaCheckCircle className="text-[#18c964]" size={16} /> {target === "bootcamp" ? "Berkas Terverifikasi" : "Pendaftaran Terverifikasi"}
 										</p>
 										<span className="inline-flex items-center gap-1 border-2 border-black bg-[#18c964] px-2.5 py-0.5 text-[11px] font-black uppercase text-white shadow-[2px_2px_0_#000]">
 											Verified
 										</span>
 									</div>
 									<p className="text-xs sm:text-sm text-gray-900 font-bold leading-relaxed">
-										Terima kasih sudah mendaftar! Berkas identitas Anda telah terverifikasi oleh panitia.
+										{target === "bootcamp"
+											? "Terima kasih sudah mendaftar! Berkas identitas Anda telah terverifikasi oleh panitia."
+											: isEventFree
+											? `Terima kasih sudah mendaftar! Pendaftaran Anda pada kegiatan ${currentEvent?.title || displayName} telah berhasil dikonfirmasi.`
+											: `Terima kasih sudah mendaftar! Bukti pembayaran ${currentEvent?.title || displayName} Anda telah diverifikasi dan disetujui oleh panitia.`}
 									</p>
 								</div>
 
@@ -1295,7 +1299,7 @@ const DaftarEvent = () => {
 							<div className="border-[3px] border-black bg-[#ffd400] p-5 text-left text-black shadow-[4px_4px_0_#191b1a] space-y-3">
 								<div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
 									<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-black flex items-center gap-1.5">
-										<span>⌛</span> Menunggu Verifikasi Panitia
+										<span>⌛</span> {hasUploadedPaymentProof ? "Menunggu Verifikasi Pembayaran" : "Menunggu Verifikasi Panitia"}
 									</p>
 									{hasUploadedPaymentProof && (
 										<span className="inline-flex items-center gap-1 border-2 border-black bg-[#18c964] px-2.5 py-0.5 text-[11px] font-black uppercase text-white shadow-[2px_2px_0_#000]">
@@ -1306,14 +1310,14 @@ const DaftarEvent = () => {
 								<p className="text-xs sm:text-sm text-gray-900 font-medium leading-relaxed">
 									{hasUploadedPaymentProof
 										? "Bukti pembayaran Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today. Tautan grup WhatsApp kegiatan akan otomatis muncul di halaman ini setelah pembayaran Anda disetujui panitia."
-										: "Data berkas pendaftaran Anda sedang dalam antrean verifikasi oleh panitia IT Today. Tautan grup WhatsApp kegiatan akan otomatis muncul di halaman ini setelah disetujui panitia."}
+										: "Data pendaftaran Anda sedang dalam antrean verifikasi oleh panitia IT Today. Tautan grup WhatsApp kegiatan akan otomatis muncul di halaman ini setelah disetujui panitia."}
 								</p>
 
 								{/* Tombol Preview Bukti Pembayaran jika sudah upload */}
 								{hasUploadedPaymentProof && resolvedPaymentProofUrl && (
 									<div className="pt-2 border-t-2 border-black/20 flex flex-wrap items-center justify-between gap-2">
 										<span className="text-xs font-bold text-gray-800">
-											📄 Berkas bukti pembayaran Anda telah tersimpan di sistem.
+											📄 Bukti pembayaran Anda telah tersimpan di sistem.
 										</span>
 										<button
 											type="button"
