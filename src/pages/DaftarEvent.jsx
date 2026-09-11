@@ -10,8 +10,9 @@ import {
 	getCurrentUser,
 	registerToBootcamp,
 	getUserCompetitions,
+	uploadBootcampPayment,
+	uploadWorkshopPayment,
 } from "../api/user";
-import { uploadBootcampPayment } from "../api/user";
 import { getPublicEvents } from "../api/eventPublic";
 import FallbackEventCloseRegist from "./Fallback/FallbackCloseRegis";
 import DashboardNeoHeader from "../components/Dashboard/DashboardNeoHeader";
@@ -22,8 +23,6 @@ import { normalizeIndonesianPhoneNumber } from "../utils/phoneNumber";
 import LoadingState from "../components/ui/LoadingState";
 import { useAlert } from "../context/AlertContext";
 import { requireCompleteProfile } from "../utils/profileCompletion";
-
-const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
 
 const formatWaLink = (num) => {
 	if (!num) return '#';
@@ -58,6 +57,7 @@ const eventIdMapping = {
 	// Other event types
 	bootcamp: "Bootcamp", // Change to your production ID
 	seminar: "Seminar", // Change to your production ID
+	workshop: "Workshop",
 };
 
 const bootcampBundlingMapping = {
@@ -99,7 +99,6 @@ const DaftarEvent = () => {
 	const [paymentFile, setPaymentFile] = useState(null);
 	const [submitted, setSubmitted] = useState(false);
 	const [alreadyRegistered, setAlreadyRegistered] = useState(false);
-	const [workshopChoice, setWorkshopChoice] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [linkWhatsapp, setLinkWhatsapp] = useState("");
 	const [showAlert, setShowAlert] = useState(false);
@@ -123,6 +122,12 @@ const DaftarEvent = () => {
 		return localStorage.getItem("hasOpenedIntelligo") === "true";
 	});
 	const displayName = targetDisplayName[target] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : "Event");
+	const isEventFree = currentEvent ? Number(currentEvent.price || 0) === 0 : false;
+	const eventPriceDisplay =
+		currentEvent?.price !== undefined && currentEvent?.price !== null
+			? `Rp ${Number(currentEvent.price).toLocaleString("id-ID")}`
+			: "Rp 0";
+	const workshopPriceDisplay = eventPriceDisplay;
 
 	const paymentFileInputRef = useRef(null);
 
@@ -131,10 +136,11 @@ const DaftarEvent = () => {
 	const effectiveIsMineToday = !isCurrentIPB && isRegisteredToMinetoday;
 
 	const isVerifiedStatus = Boolean(
-		isUserAlreadyVerified ||
-		registeredParticipantData?.payment_verification === "accepted" ||
-		registeredParticipantData?.is_document_verified === "approved" ||
-		(currentEvent?.price === 0 && (isUserAlreadyVerified || registeredParticipantData))
+		isEventFree
+			? registeredParticipantData
+			: target === "bootcamp" && effectiveIsIPB
+			? registeredParticipantData
+			: registeredParticipantData?.payment_verification === "accepted"
 	);
 
 	const getPaymentProofUrl = (proofKey) => {
@@ -285,7 +291,7 @@ const DaftarEvent = () => {
 				setIsUserAlreadyVerified(true);
 			}
 
-			const currentTarget = (target === "workshop" && workshopChoice ? workshopChoice : target || "").toLowerCase();
+			const currentTarget = (target || "").toLowerCase();
 
 			const matched = list.find((e) => {
 				const eId = (e?.event_id || e?.id || "").toString().toLowerCase();
@@ -303,8 +309,7 @@ const DaftarEvent = () => {
 					return eId.includes("seminar") || eSlug.includes("seminar") || eTitle.includes("seminar");
 				}
 				if (currentTarget.includes("workshop") || currentTarget.includes("cyber") || currentTarget.includes("ux") || currentTarget.includes("learning")) {
-					return eId.includes("workshop") || eSlug.includes("workshop") || eTitle.includes("workshop") ||
-						(workshopChoice && (eTitle.includes(workshopChoice.toLowerCase()) || eSlug.includes(workshopChoice.toLowerCase())));
+					return eId.includes("workshop") || eSlug.includes("workshop") || eTitle.includes("workshop");
 				}
 				return eId.includes(currentTarget) || eSlug.includes(currentTarget) || eTitle.includes(currentTarget);
 			});
@@ -321,9 +326,11 @@ const DaftarEvent = () => {
 				} else {
 					setIsMineTodayRegisteredStep(false);
 					setSubmitted(true);
-					const isEventAutoApproved = userHasApprovedDocs || currentEvent?.price === 0;
-					const isVerified = matched.payment_verification === "accepted" || isEventAutoApproved;
-					if (isVerified && matched.event?.whatsapp_group_link) {
+					const isEventActuallyVerified =
+						isEventFree ||
+						(target === "bootcamp" && effectiveIsIPB) ||
+						matched.payment_verification === "accepted";
+					if (isEventActuallyVerified && matched.event?.whatsapp_group_link) {
 						setLinkWhatsapp(matched.event.whatsapp_group_link);
 					} else {
 						setLinkWhatsapp("");
@@ -335,7 +342,7 @@ const DaftarEvent = () => {
 		} finally {
 			setIsCheckingRegistration(false);
 		}
-	}, [target, workshopChoice, effectiveIsIPB, effectiveIsMineToday, currentEvent?.price]);
+	}, [target, effectiveIsIPB, effectiveIsMineToday, currentEvent?.price]);
 
 	useEffect(() => {
 		checkExistingRegistration();
@@ -344,17 +351,11 @@ const DaftarEvent = () => {
 	// Fetch the current event configuration from Admin/database.
 	useEffect(() => {
 		const fetchEventConfiguration = async () => {
-			if (target === "workshop" && !workshopChoice) {
-				setExists(true);
-				setCheckingActive(false);
-				return;
-			}
-
 			setCheckingActive(true);
 			try {
 				const res = await getPublicEvents("non_competition");
 				if (res.success && res.data) {
-					const rawTarget = (target === "workshop" ? workshopChoice : target || "").toLowerCase().trim();
+					const rawTarget = (target || "").toLowerCase().trim();
 
 					// 1. Direct match by id or slug
 					let event = res.data.find(e =>
@@ -365,11 +366,9 @@ const DaftarEvent = () => {
 					// 2. Mapped query match
 					if (!event) {
 						const routeEventId =
-							target === "workshop"
-								? workshopChoice
-								: (target === "national-seminar" || target === "seminar" || target === "seminar-nasional")
-									? "seminar"
-									: target;
+							(target === "national-seminar" || target === "seminar" || target === "seminar-nasional")
+								? "seminar"
+								: target;
 						const mappedId = eventIdMapping[routeEventId] || routeEventId;
 						event = res.data.find(e =>
 							(e.id && e.id.toLowerCase() === mappedId.toLowerCase()) ||
@@ -397,6 +396,17 @@ const DaftarEvent = () => {
 						});
 					}
 
+					// Fallback for Workshop if not seeded yet
+					if (!event && target === "workshop") {
+						event = {
+							id: "Workshop",
+							slug: "workshop",
+							title: "Workshop IT Today 2026",
+							price: 15000,
+							is_active: true,
+						};
+					}
+
 					if (event) {
 						setCurrentEvent(event);
 						setExists(true);
@@ -407,20 +417,42 @@ const DaftarEvent = () => {
 						setCurrentEvent(null);
 						setExists(false);
 					}
+				} else if (target === "workshop") {
+					setCurrentEvent({
+						id: "Workshop",
+						slug: "workshop",
+						title: "Workshop IT Today 2026",
+						price: 15000,
+						is_active: true,
+					});
+					setExists(true);
+					setIsActive(true);
 				} else {
 					setCurrentEvent(null);
 					setExists(false);
 				}
 			} catch (e) {
 				console.error("Error fetching event configuration:", e);
-				setCurrentEvent(null);
-				setExists(false);
+				if (target === "workshop") {
+					setCurrentEvent({
+						id: "Workshop",
+						slug: "workshop",
+						title: "Workshop IT Today 2026",
+						price: 15000,
+						is_active: true,
+					});
+					setExists(true);
+					setIsActive(true);
+				} else {
+					setCurrentEvent(null);
+					setExists(false);
+				}
 			}
 			setCheckingActive(false);
 		};
 
 		fetchEventConfiguration();
-	}, [target, workshopChoice]);
+	}, [target]);
 
 	// File handling methods similar to EditProfil
 	const handlePaymentFileChange = async (file) => {
@@ -458,6 +490,97 @@ const DaftarEvent = () => {
 			);
 		});
 	};
+
+	const copyRekening = () => handleCopyToClipboard("901429379205", "rekening");
+	const copiedRekening = Boolean(hasCopied.rekening);
+
+	const handleUploadWorkshopPayment = async () => {
+		const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
+		if (!isComplete) return;
+		if (!paymentFile) {
+			setIncompleteFields([{ label: "Bukti Pembayaran (Transfer Bank)" }]);
+			setShowAlert(true);
+			return;
+		}
+		setLoading(true);
+		setError("");
+		try {
+			const eventId = currentEvent?.id || currentEvent?.slug || target || "Workshop";
+			const uploadRes = await uploadWorkshopPayment(paymentFile, eventId);
+			if (uploadRes && uploadRes.success === false) {
+				throw new Error(uploadRes.error || "Gagal mengunggah bukti pembayaran.");
+			}
+
+			// Refresh registration info to get updated payment_proof URL immediately
+			await checkExistingRegistration();
+
+			setSubmitted(true);
+			setPaymentFile(null);
+			setPaymentFileName("");
+			await showGlobalAlert({
+				title: "Berhasil!",
+				message: `Bukti pembayaran ${currentEvent?.title || displayName} Anda berhasil dikirim dan sedang diverifikasi panitia.`,
+				variant: "success",
+			});
+		} catch (err) {
+			const errorMsg =
+				err.response?.data?.message ||
+				err.response?.data?.error ||
+				err.message ||
+				"Gagal mengirim bukti pembayaran.";
+			setError(errorMsg);
+			await showGlobalAlert({
+				title: "Gagal Mengirim",
+				message: errorMsg,
+				variant: "danger",
+			});
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const handleRegisterFreeEvent = async () => {
+		const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
+		if (!isComplete) return;
+
+		setLoading(true);
+		setError("");
+		try {
+			const eventId = currentEvent?.id || currentEvent?.slug || target;
+			await registerEvent({
+				eventId,
+				institutionName: currentUserProfile?.nama_sekolah || institution || "",
+				phoneNumber: currentUserProfile?.phone_number || whatsapp || "",
+				date_of_birth: currentUserProfile?.birth_date
+					? new Date(currentUserProfile.birth_date).toISOString().split("T")[0]
+					: null,
+			});
+
+			await checkExistingRegistration();
+			setSubmitted(true);
+			await showGlobalAlert({
+				title: "Pendaftaran Berhasil!",
+				message: `Anda telah berhasil terdaftar pada kegiatan ${currentEvent?.title || displayName}.`,
+				variant: "success",
+			});
+		} catch (err) {
+			const errorMsg =
+				err.response?.data?.message ||
+				err.response?.data?.error ||
+				err.message ||
+				"Gagal mendaftar kegiatan.";
+			setError(errorMsg);
+			await showGlobalAlert({
+				title: "Gagal Mendaftar",
+				message: errorMsg,
+				variant: "danger",
+			});
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const handleUploadEventPayment = handleUploadWorkshopPayment;
 
 	const handleOpenIntelligoLink = async () => {
 		const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
@@ -621,8 +744,6 @@ const DaftarEvent = () => {
 		if (!currentInst) missingFields.push({ label: isBootcamp ? "Asal Institusi/Sekolah (Silakan lengkapi di Edit Profil)" : "Institusi" });
 		if (!currentBirth && !isBootcamp) missingFields.push({ label: "Tanggal Lahir" });
 		if (!currentPhone) missingFields.push({ label: isBootcamp ? "Nomor WhatsApp (Silakan lengkapi di Edit Profil)" : "Nomor WhatsApp" });
-		if (target === "workshop" && !workshopChoice)
-			missingFields.push({ label: "Bidang Workshop" });
 
 		const isMineTodayParticipant = isBootcamp && !isCurrentIPB && isRegisteredToMinetoday;
 
@@ -656,13 +777,9 @@ const DaftarEvent = () => {
 		// Determine the event ID using currentEvent if available, or mapping fallback
 		let eventId = currentEvent?.id || currentEvent?.slug;
 		if (!eventId) {
-			if (target === "workshop") {
-				eventId = eventIdMapping[workshopChoice] || workshopChoice;
-			} else {
-				eventId =
-					eventIdMapping[target === "national-seminar" || target === "seminar" ? "seminar" : target] ||
-					target;
-			}
+			eventId =
+				eventIdMapping[target === "national-seminar" || target === "seminar" ? "seminar" : target] ||
+				target;
 		}
 
 		// Handle file upload for bootcamp
@@ -820,8 +937,17 @@ const DaftarEvent = () => {
 				<div className="border-b-4 border-black pb-5">
 					<div className="flex flex-wrap items-center justify-between gap-2">
 						<span className="inline-block border-2 border-black bg-[#1E3A8A] px-3 py-1 text-xs font-black uppercase text-white shadow-[2px_2px_0_#191b1a]">
-							{displayName}
+							{currentEvent?.title || displayName}
 						</span>
+						{target !== "bootcamp" && (
+							isEventFree ? (
+								<span className="inline-block border-2 border-black bg-[#18c964] px-3 py-1 text-xs font-black uppercase text-white shadow-[2px_2px_0_#191b1a]">
+									100% Gratis
+								</span>
+							) : (
+								<></>
+							)
+						)}
 						{target === "bootcamp" && effectiveIsIPB && (
 							<span className="inline-block border-2 border-black bg-[#18c964] px-3 py-1 text-xs font-black uppercase text-white shadow-[2px_2px_0_#191b1a]">
 								Mahasiswa IPB • Gratis
@@ -845,12 +971,14 @@ const DaftarEvent = () => {
 					<h1 className="mt-3 text-2xl font-black uppercase tracking-tight text-black sm:text-3xl">
 						{target === "bootcamp"
 							? "Pendaftaran Bootcamp Offline Artificial Intelligence"
-							: `Form Pendaftaran ${displayName}`}
+							: `Pendaftaran ${currentEvent?.title || displayName} IT Today 2026`}
 					</h1>
 					<p className="mt-1.5 text-xs sm:text-sm font-bold text-gray-600">
 						{target === "bootcamp"
 							? "IT TODAY IPB × INTELLIGO ID"
-							: "Lengkapi data pendaftaran kegiatan di bawah ini."}
+							: isEventFree
+							? "Event ini tidak dipungut biaya (100% Gratis). Selesaikan pendaftaran Anda di bawah."
+							: "Lakukan transfer pembayaran ke rekening panitia dan unggah bukti transfer di bawah."}
 					</p>
 				</div>
 
@@ -876,7 +1004,9 @@ const DaftarEvent = () => {
 									? "Data pendaftaran Bootcamp Anda telah tercatat. Silakan selesaikan transaksi melalui portal Intelligo ID di bawah, kemudian lakukan konfirmasi ke panitia."
 									: target === "bootcamp"
 									? "Data pendaftaran Bootcamp Anda telah berhasil dicatat pada sistem IT Today 2026."
-									: "Terima kasih telah mendaftar pada kegiatan IT Today 2026."}
+									: isEventFree
+									? `Pendaftaran Anda pada kegiatan ${currentEvent?.title || displayName} telah berhasil dicatat pada sistem IT Today 2026.`
+									: `Bukti pembayaran ${currentEvent?.title || displayName} Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today 2026.`}
 							</p>
 						</div>
 
@@ -1108,14 +1238,12 @@ const DaftarEvent = () => {
 												{copiedRekening ? "Tersalin!" : "Salin No. Rekening"}
 											</button>
 										</div>
-										<p className="mt-2 text-xs font-medium text-white/90">
-											• Total Pembayaran: <span className="font-bold text-[#ffd400]">Rp 50.005</span> (Biaya Rp 50.000 + Kode Unik 05)
-										</p>
+
 									</div>
 
 									<div>
 										<label className="mb-2 block text-xs font-black uppercase tracking-wide">
-											Upload Bukti Pembayaran Baru (JPG/PNG/PDF, Maks 2MB) *
+											Upload Bukti Pembayaran Baru (JPG/PNG/PDF/WebP, Maks 2MB) *
 										</label>
 										<div
 											className="flex cursor-pointer items-center border-[3px] border-dashed border-black bg-white px-4 py-4 transition-colors hover:bg-neutral-50"
@@ -1139,7 +1267,7 @@ const DaftarEvent = () => {
 											<input
 												type="file"
 												name="paymentProof"
-												accept=".jpg,.jpeg,.png,.pdf"
+												accept=".jpg,.jpeg,.png,.pdf,.webp"
 												ref={paymentFileInputRef}
 												onChange={handlePaymentFileInputChange}
 												style={{ display: "none" }}
@@ -1155,7 +1283,7 @@ const DaftarEvent = () => {
 
 									<button
 										type="button"
-										onClick={handleUploadMineTodayPayment}
+										onClick={target === "bootcamp" ? handleUploadMineTodayPayment : handleUploadEventPayment}
 										disabled={loading}
 										className="w-full cursor-pointer border-[3px] border-black bg-[#ffd400] px-6 py-3 text-xs sm:text-sm font-black uppercase text-black shadow-[3px_3px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b] active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50"
 									>
@@ -1176,9 +1304,9 @@ const DaftarEvent = () => {
 									)}
 								</div>
 								<p className="text-xs sm:text-sm text-gray-900 font-medium leading-relaxed">
-									{target === "bootcamp" && effectiveIsMineToday && hasUploadedPaymentProof
-										? "Bukti pembayaran dan berkas identitas Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today. Tautan grup WhatsApp kegiatan akan otomatis muncul di halaman ini setelah pembayaran Anda disetujui panitia."
-										: "Data berkas identitas Anda sedang dalam antrean verifikasi oleh panitia IT Today. Tautan grup WhatsApp kegiatan akan otomatis muncul di halaman ini setelah berkas Anda disetujui panitia."}
+									{hasUploadedPaymentProof
+										? "Bukti pembayaran Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today. Tautan grup WhatsApp kegiatan akan otomatis muncul di halaman ini setelah pembayaran Anda disetujui panitia."
+										: "Data berkas pendaftaran Anda sedang dalam antrean verifikasi oleh panitia IT Today. Tautan grup WhatsApp kegiatan akan otomatis muncul di halaman ini setelah disetujui panitia."}
 								</p>
 
 								{/* Tombol Preview Bukti Pembayaran jika sudah upload */}
@@ -1210,91 +1338,154 @@ const DaftarEvent = () => {
 					</div>
 				) : (
 					<div className="mt-7 space-y-6">
-						{/* Regular form for non-bootcamp events */}
+						{/* Unified Non-Bootcamp Flow (Default for all events) */}
 						{target !== "bootcamp" && (
-							<form onSubmit={handleSubmit} className="space-y-5">
-								<div>
-									<label className="mb-2 block text-xs font-black uppercase tracking-wide">Institusi</label>
-									<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
-										<FaSchool className="mr-3 shrink-0 text-[#4f5261]" size={21} />
-										<input
-											type="text"
-											inputMode="text"
-											autoComplete="organization"
-											value={institution}
-											onChange={(e) => setInstitution(e.target.value)}
-											className="min-w-0 flex-1 bg-transparent font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400"
-											placeholder="Nama Sekolah/Institusi"
-										/>
-									</div>
-								</div>
-								<div>
-									<label className="mb-2 block text-xs font-black uppercase tracking-wide">Tanggal Lahir</label>
-									<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
-										<MdCalendarMonth className="mr-3 shrink-0 text-[#4f5261]" size={23} />
-										<input
-											type="date"
-											value={dateOfBirth}
-											onChange={(e) => setDateOfBirth(e.target.value)}
-											className="min-w-0 flex-1 bg-transparent font-bold text-black outline-none"
-											required
-										/>
-									</div>
-								</div>
-								<div>
-									<label className="mb-2 block text-xs font-black uppercase tracking-wide">Nomor WhatsApp</label>
-									<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
-										<BiLogoWhatsapp className="mr-3 shrink-0 text-[#4f5261]" size={22} />
-										<input
-											type="tel"
-											inputMode="tel"
-											autoComplete="tel"
-											value={whatsapp}
-											onChange={(e) => setWhatsapp(e.target.value)}
-											className="min-w-0 flex-1 bg-transparent font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400"
-											placeholder="Nomor WhatsApp"
-										/>
-									</div>
-								</div>
+							isEventFree ? (
+								<div className="space-y-6">
+									<div className="border-[3px] border-black bg-[#FFF6BF] p-6 shadow-[5px_5px_0_#191b1a] text-center sm:p-8">
+										<h3 className="text-base font-black uppercase sm:text-lg text-black">
+											Pendaftaran {currentEvent?.title || displayName} IT Today 2026
+										</h3>
+										<p className="mt-1.5 text-xs sm:text-sm font-bold text-gray-700">
+											Pendaftaran Terbuka & 100% Gratis
+										</p>
 
-								{target === "workshop" && (
+										{/* Pricing Highlight */}
+										<div className="my-4 flex flex-wrap items-center justify-center gap-2">
+											<span className="text-3xl sm:text-4xl font-black text-[#087a3d]">
+												Rp 0
+											</span>
+											<span className="border-2 border-black bg-[#18c964] px-2.5 py-0.5 text-[11px] sm:text-xs font-black uppercase text-white shadow-[2px_2px_0_#191b1a]">
+												100% GRATIS
+											</span>
+										</div>
+
+										<p className="mx-auto max-w-lg text-xs sm:text-sm font-medium text-gray-700 leading-relaxed">
+											Pendaftaran kegiatan ini tidak dipungut biaya (gratis). Silakan klik tombol di bawah untuk langsung terdaftar.
+										</p>
+									</div>
+
+									<div className="flex flex-col gap-3 pt-2 sm:flex-row">
+										<button
+											type="button"
+											onClick={() => navigate("/dashboard/ikut-event")}
+											className="border-[3px] border-black bg-[#eeeeee] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
+										>
+											Batal
+										</button>
+										<button
+											type="button"
+											onClick={handleRegisterFreeEvent}
+											disabled={loading}
+											className="order-first flex-1 border-[3px] border-black bg-[#18c964] px-7 py-3 text-sm font-black uppercase text-white shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#15b258] hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 sm:order-none"
+										>
+											{loading ? "Mendaftarkan..." : "Daftar Sekarang (Gratis)"}
+										</button>
+									</div>
+								</div>
+							) : (
+								<div className="space-y-6">
+									<div className="border-[3px] border-black bg-[#FFF6BF] p-6 shadow-[5px_5px_0_#191b1a] text-center sm:p-8">
+										<h3 className="text-base font-black uppercase sm:text-lg text-black">
+											Pendaftaran {currentEvent?.title || displayName} IT Today 2026
+										</h3>
+										<p className="mt-1.5 text-xs sm:text-sm font-bold text-gray-700">
+											Harga yang harus dibayarkan adalah sebesar
+										</p>
+
+										{/* Pricing Highlight */}
+										<div className="my-4 flex flex-wrap items-center justify-center gap-2">
+											<span className="text-3xl sm:text-4xl font-black text-[#1E3A8A]">
+												{eventPriceDisplay}
+											</span>
+										</div>
+									</div>
+
+									{/* Box Informasi Rekening Panitia */}
+									<div className="border-[3px] border-black bg-[#1E3A8A] p-5 text-white shadow-[4px_4px_0_#191b1a]">
+										<p className="text-xs font-bold uppercase tracking-wider text-[#ffd400] mb-2">
+											Informasi Rekening Pembayaran:
+										</p>
+										<div className="border-2 border-black bg-white p-3 font-mono text-xs text-black sm:text-sm shadow-[2px_2px_0_#000]">
+											<p className="font-bold text-gray-700">Bank SeaBank</p>
+											<div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+												<span className="text-base sm:text-lg font-black tracking-widest text-[#1E3A8A]">
+													901429379205
+												</span>
+												<button
+													type="button"
+													className="cursor-pointer border-2 border-black bg-[#ffd400] px-3 py-1 text-xs font-black uppercase text-black shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5"
+													onClick={copyRekening}
+												>
+													{copiedRekening ? "Disalin!" : "Salin No. Rekening"}
+												</button>
+											</div>
+											<p className="mt-1 text-xs font-bold text-gray-600">
+												a/n Asty Athetha Loethan
+											</p>
+										</div>
+									</div>
+
+									{/* Upload Bukti Pembayaran */}
 									<div>
 										<label className="mb-2 block text-xs font-black uppercase tracking-wide">
-											Pilih Bidang Workshop
+											Upload Bukti Pembayaran (JPG/PNG/PDF/WebP, Maks 2MB) <span className="text-red-500">*</span>
 										</label>
-										<select
-											value={workshopChoice}
-											onChange={(e) => setWorkshopChoice(e.target.value)}
-											className="w-full border-[3px] border-black bg-white px-4 py-3 font-bold text-black outline-none focus:bg-[#fff6bf]"
-											required
+										<div
+											className="flex min-h-28 w-full cursor-pointer items-center justify-center border-[3px] border-dashed border-black bg-[#f4f4f2] p-6 text-center font-bold text-black transition-transform hover:-translate-y-0.5"
+											onDragOver={(e) => e.preventDefault()}
+											onDrop={handlePaymentFileDrop}
+											onClick={() =>
+												paymentFileInputRef.current &&
+												paymentFileInputRef.current.click()
+											}
 										>
-											<option value="">-- Pilih Bidang --</option>
-											{workshopOptions.map((option) => (
-												<option key={option} value={option}>
-													{option}
-												</option>
-											))}
-										</select>
+											<FaFileUpload className="mr-2 text-xl text-[#1E3A8A]" />
+											<div className="w-full overflow-hidden text-ellipsis">
+												<p className="truncate text-xs sm:text-sm">
+													{paymentFile
+														? paymentFile.name
+														: paymentFileName
+															? paymentFileName
+															: "Drop file di sini atau klik untuk pilih file bukti pembayaran"}
+												</p>
+											</div>
+											<input
+												type="file"
+												name="paymentProof"
+												accept=".jpg,.jpeg,.png,.pdf,.webp"
+												ref={paymentFileInputRef}
+												onChange={handlePaymentFileInputChange}
+												style={{ display: "none" }}
+											/>
+										</div>
+										{paymentFileName && (
+											<div className="mt-2 text-xs font-semibold text-gray-700">
+												File terpilih:{" "}
+												<span className="font-bold text-black">{paymentFileName}</span>
+											</div>
+										)}
 									</div>
-								)}
 
-								<div className="flex flex-col gap-3 pt-2 sm:flex-row">
-									<button
-										type="button"
-										onClick={() => navigate("/dashboard/ikut-event")}
-										className="border-[3px] border-black bg-[#eeeeee] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
-									>
-										Batal
-									</button>
-									<button
-										type="submit"
-										disabled={loading}
-										className="order-first border-[3px] border-black bg-[#ffd400] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 sm:order-none"
-									>
-										Simpan
-									</button>
+									<div className="flex flex-col gap-3 pt-2 sm:flex-row">
+										<button
+											type="button"
+											onClick={() => navigate("/dashboard/ikut-event")}
+											className="border-[3px] border-black bg-[#eeeeee] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none"
+										>
+											Batal
+										</button>
+										<button
+											type="button"
+											onClick={handleUploadEventPayment}
+											disabled={loading || !paymentFile}
+											className="order-first flex-1 border-[3px] border-black bg-[#ffd400] px-7 py-3 text-sm font-black uppercase text-black shadow-[5px_5px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 sm:order-none"
+										>
+											{loading ? "Mengirim Bukti Pembayaran..." : `Kirim Bukti Pembayaran (${eventPriceDisplay})`}
+										</button>
+									</div>
 								</div>
-							</form>
+							)
 						)}
 
 						{/* Clean, Non-Nested Bootcamp Flow */}

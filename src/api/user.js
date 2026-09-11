@@ -482,6 +482,40 @@ export const uploadBootcampPayment = async (file) => {
 	}
 };
 
+export const uploadWorkshopPayment = async (file, eventId = "Workshop") => {
+	try {
+		const formData = new FormData();
+		formData.append("image", file);
+		if (eventId) {
+			formData.append("event_id", eventId);
+		}
+
+		const response = await instance.post(
+			"api/event/workshop/payment",
+			formData,
+			{
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			}
+		);
+
+		return {
+			success: true,
+			data: response.data,
+		};
+	} catch (error) {
+		console.error("Error uploading payment proof:", error);
+		return {
+			success: false,
+			error:
+				error.response?.data?.message ||
+				error.response?.data?.error ||
+				"Failed to upload payment proof.",
+		};
+	}
+};
+
 /**
  * Get image URL from R2 storage
  * @param {string} key - The key/name for the image in R2
