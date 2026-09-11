@@ -22,6 +22,7 @@ import { normalizeIndonesianPhoneNumber } from "../utils/phoneNumber";
 import LoadingState from "../components/ui/LoadingState";
 import { useAlert } from "../context/AlertContext";
 import { requireCompleteProfile } from "../utils/profileCompletion";
+import SemnasRegistrationForm from "./SemnasRegistrationForm";
 
 const workshopOptions = ["Cyber Security", "ui/ux", "Machine Learning"];
 
@@ -69,8 +70,8 @@ const bootcampBundlingMapping = {
 const EventRegistrationShell = ({ children }) => (
 	<div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
 		<DashboardNeoHeader />
-		<div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[650px] lg:flex-row">
-			<aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
+		<div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[650px] lg:flex-row items-start">
+			<aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
 				<Sidebar active="ikut-event" setActive={() => { }} variant="neobrutal" />
 			</aside>
 			<main className="flex min-w-0 flex-1 items-start justify-center px-4 py-8 sm:px-7 lg:px-10 lg:py-10">
@@ -123,6 +124,7 @@ const DaftarEvent = () => {
 		return localStorage.getItem("hasOpenedIntelligo") === "true";
 	});
 	const displayName = targetDisplayName[target] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : "Event");
+	const isSemnasTarget = ["seminar-nasional-it-today", "national-seminar", "seminar", "seminar-nasional"].includes(target?.toLowerCase());
 
 	const paymentFileInputRef = useRef(null);
 
@@ -1210,8 +1212,16 @@ const DaftarEvent = () => {
 					</div>
 				) : (
 					<div className="mt-7 space-y-6">
+						{/* Seminar Nasional Questionnaire Flow */}
+						{isSemnasTarget && (
+							<SemnasRegistrationForm 
+								eventId={currentEvent?.id || currentEvent?.slug || "seminar-nasional-it-today"} 
+								onSuccess={checkExistingRegistration} 
+							/>
+						)}
+
 						{/* Regular form for non-bootcamp events */}
-						{target !== "bootcamp" && (
+						{!isSemnasTarget && target !== "bootcamp" && (
 							<form onSubmit={handleSubmit} className="space-y-5">
 								<div>
 									<label className="mb-2 block text-xs font-black uppercase tracking-wide">Institusi</label>
