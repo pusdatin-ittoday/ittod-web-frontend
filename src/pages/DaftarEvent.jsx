@@ -138,7 +138,7 @@ const DaftarEvent = () => {
 	const effectiveIsMineToday = !isCurrentIPB && isRegisteredToMinetoday;
 
 	const isVerifiedStatus = Boolean(
-		isEventFree
+		(isEventFree && !isSemnasTarget)
 			? registeredParticipantData
 			: target === "bootcamp" && effectiveIsIPB
 			? registeredParticipantData
@@ -328,7 +328,7 @@ const DaftarEvent = () => {
 					setIsMineTodayRegisteredStep(false);
 					setSubmitted(true);
 					const isEventActuallyVerified = Boolean(
-						isEventFree ||
+						(isEventFree && !isSemnasTarget) ||
 						(target === "bootcamp" && effectiveIsIPB) ||
 						matched.payment_verification === "accepted"
 					);
