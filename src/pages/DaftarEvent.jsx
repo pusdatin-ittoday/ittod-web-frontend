@@ -138,7 +138,9 @@ const DaftarEvent = () => {
 	const effectiveIsMineToday = !isCurrentIPB && isRegisteredToMinetoday;
 
 	const isVerifiedStatus = Boolean(
-		(isEventFree && !isSemnasTarget)
+		isSemnasTarget
+			? registeredParticipantData?.payment_verification === "accepted"
+			: isEventFree
 			? registeredParticipantData
 			: target === "bootcamp" && effectiveIsIPB
 			? registeredParticipantData
@@ -330,9 +332,9 @@ const DaftarEvent = () => {
 					const isMatchedSemnas = currentTarget.includes("seminar") || activeEventSlug.includes("seminar") || activeEventTitle.includes("seminar") || (matched.event?.slug || "").toLowerCase().includes("seminar") || (matched.event?.title || "").toLowerCase().includes("seminar") || (matched.event_id || "").toLowerCase().includes("seminar");
 					const isSemnas = isSemnasTarget || isMatchedSemnas;
 					const isEventActuallyVerified = Boolean(
-						(isEventFree && !isSemnas) ||
-						(target === "bootcamp" && effectiveIsIPB) ||
-						matched.payment_verification === "accepted"
+						isSemnas
+							? matched.payment_verification === "accepted"
+							: (isEventFree || (target === "bootcamp" && effectiveIsIPB) || matched.payment_verification === "accepted")
 					);
 					if (isEventActuallyVerified && matched.event?.whatsapp_group_link) {
 						setLinkWhatsapp(matched.event.whatsapp_group_link);
