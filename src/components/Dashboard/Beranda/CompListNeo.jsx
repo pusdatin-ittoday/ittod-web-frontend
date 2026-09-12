@@ -99,13 +99,34 @@ const CompListNeo = () => {
 
         // Merge non-competition events joined via event_participant if not already in team data
         if (Array.isArray(userEventsData)) {
-            const existingIds = new Set(
-                Object.values(processedCompetitions).map(c => (c.competitionId || "").toLowerCase())
-            );
-
             userEventsData.forEach((ue, idx) => {
                 const eventId = ue.event_id || ue.event?.id || "";
-                if (!eventId || existingIds.has(eventId.toLowerCase())) {
+                if (!eventId) return;
+
+                const eventSlug = (ue.event?.slug || "").toLowerCase();
+                const eventTitle = (ue.event?.title || "").toLowerCase();
+                const ueWaLink = ue.event?.whatsapp_group_link || ue.whatsapp_group_link || null;
+                const isUeVerified = ue.payment_verification === "accepted";
+
+                // Check if this event already exists in processedCompetitions (e.g. from team table)
+                const existingComp = Object.values(processedCompetitions).find(c => {
+                    const cId = (c.competitionId || "").toLowerCase();
+                    const cName = (c.competitionName || "").toLowerCase();
+                    return (
+                        cId === eventId.toLowerCase() ||
+                        (eventSlug && cId === eventSlug) ||
+                        (eventTitle && cName === eventTitle)
+                    );
+                });
+
+                if (existingComp) {
+                    if (ueWaLink && !existingComp.whatsappGroupLink) {
+                        existingComp.whatsappGroupLink = ueWaLink;
+                    }
+                    if (isUeVerified) {
+                        existingComp.isVerified = true;
+                        existingComp.pendingVerification = false;
+                    }
                     return;
                 }
 

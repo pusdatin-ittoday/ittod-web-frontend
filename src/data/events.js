@@ -52,7 +52,7 @@ const events = [
       "Workshop IT Today 2026 merupakan sesi pelatihan praktis yang berfokus pada penerapan teknologi terkini dalam dunia nyata. Dipandu oleh instruktur profesional dari industri, workshop ini memberikan pengalaman belajar hands-on yang intensif. Peserta akan mengerjakan proyek langsung dan mendapatkan feedback real-time untuk meningkatkan keterampilan mereka dalam berbagai bidang teknologi.",
     date: "7 September 2026",
     time: "09:00 - 15:00 WIB",
-    registrationFee: "Rp 35.000",
+    registrationFee: "Rp 15.000",
     benefits: [
       "Sertifikat peserta",
       "Kit workshop",
