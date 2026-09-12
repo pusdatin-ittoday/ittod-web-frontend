@@ -24,6 +24,7 @@ import LoadingState from "../components/ui/LoadingState";
 import { useAlert } from "../context/AlertContext";
 import { requireCompleteProfile } from "../utils/profileCompletion";
 import SemnasRegistrationForm from "./SemnasRegistrationForm";
+import { resubmitSemnas } from "../api/semnas";
 
 const formatWaLink = (num) => {
 	if (!num) return '#';
@@ -119,11 +120,15 @@ const DaftarEvent = () => {
 	const [registeredParticipantData, setRegisteredParticipantData] = useState(null);
 	const [showPreviewModal, setShowPreviewModal] = useState(false);
 	const [isUserAlreadyVerified, setIsUserAlreadyVerified] = useState(false);
+	const [semnasResubmitFile, setSemnasResubmitFile] = useState(null);
+	const [semnasResubmitFileName, setSemnasResubmitFileName] = useState("");
+	const [semnasResubmitLoading, setSemnasResubmitLoading] = useState(false);
+	const [semnasResubmitError, setSemnasResubmitError] = useState("");
 	const [hasOpenedIntelligo, setHasOpenedIntelligo] = useState(() => {
 		return localStorage.getItem("hasOpenedIntelligo") === "true";
 	});
 	const displayName = targetDisplayName[target] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : "Event");
-	const isSemnasTarget = ["seminar-nasional-it-today", "national-seminar", "seminar", "seminar-nasional"].includes(target?.toLowerCase()) || (target || "").toLowerCase().includes("seminar") || (currentEvent?.slug || "").toLowerCase().includes("seminar") || (currentEvent?.title || "").toLowerCase().includes("seminar") || (registeredParticipantData?.event?.slug || "").toLowerCase().includes("seminar") || (registeredParticipantData?.event?.title || "").toLowerCase().includes("seminar") || (registeredParticipantData?.event_id || "").toLowerCase().includes("seminar");
+	const isSemnasTarget = ["seminar-nasional-it-today", "national-seminar", "seminar", "seminar-nasional"].includes(target?.toLowerCase());
 	const isEventFree = currentEvent ? Number(currentEvent.price || 0) === 0 : false;
 	const eventPriceDisplay =
 		currentEvent?.price !== undefined && currentEvent?.price !== null
@@ -132,15 +137,14 @@ const DaftarEvent = () => {
 	const workshopPriceDisplay = eventPriceDisplay;
 
 	const paymentFileInputRef = useRef(null);
+	const semnasResubmitInputRef = useRef(null);
 
 	const isCurrentIPB = isIPB || /(ipb|institut pertanian bogor)/i.test(institution);
 	const effectiveIsIPB = isCurrentIPB;
 	const effectiveIsMineToday = !isCurrentIPB && isRegisteredToMinetoday;
 
 	const isVerifiedStatus = Boolean(
-		isSemnasTarget
-			? registeredParticipantData?.payment_verification === "accepted"
-			: isEventFree
+		(isEventFree && !isSemnasTarget)
 			? registeredParticipantData
 			: target === "bootcamp" && effectiveIsIPB
 			? registeredParticipantData
@@ -329,12 +333,10 @@ const DaftarEvent = () => {
 				} else {
 					setIsMineTodayRegisteredStep(false);
 					setSubmitted(true);
-					const isMatchedSemnas = currentTarget.includes("seminar") || activeEventSlug.includes("seminar") || activeEventTitle.includes("seminar") || (matched.event?.slug || "").toLowerCase().includes("seminar") || (matched.event?.title || "").toLowerCase().includes("seminar") || (matched.event_id || "").toLowerCase().includes("seminar");
-					const isSemnas = isSemnasTarget || isMatchedSemnas;
 					const isEventActuallyVerified = Boolean(
-						isSemnas
-							? matched.payment_verification === "accepted"
-							: (isEventFree || (target === "bootcamp" && effectiveIsIPB) || matched.payment_verification === "accepted")
+						(isEventFree && !isSemnasTarget) ||
+						(target === "bootcamp" && effectiveIsIPB) ||
+						matched.payment_verification === "accepted"
 					);
 					if (isEventActuallyVerified && matched.event?.whatsapp_group_link) {
 						setLinkWhatsapp(matched.event.whatsapp_group_link);
@@ -908,6 +910,75 @@ const DaftarEvent = () => {
 		setShowAlert(false);
 	};
 
+	// Resubmit bukti follow IG untuk pendaftaran Semnas yang ditolak
+	const handleSemnasResubmitFile = (file) => {
+		if (!file) return;
+		const isValidType = file.type === "application/pdf" || file.type.startsWith("image/");
+		if (!isValidType) {
+			setSemnasResubmitError("File harus berupa PDF atau gambar.");
+			return;
+		}
+		if (file.size > 5 * 1024 * 1024) {
+			setSemnasResubmitError("Ukuran file maksimal 5MB.");
+			setSemnasResubmitFile(null);
+			setSemnasResubmitFileName("");
+			if (semnasResubmitInputRef.current) {
+				semnasResubmitInputRef.current.value = "";
+			}
+			return;
+		}
+		setSemnasResubmitError("");
+		setSemnasResubmitFile(file);
+		setSemnasResubmitFileName(file.name);
+	};
+
+	const handleResubmitSemnas = async () => {
+		if (!semnasResubmitFile) {
+			setSemnasResubmitError("Mohon upload bukti follow IG narasumber terlebih dahulu.");
+			return;
+		}
+
+		setSemnasResubmitLoading(true);
+		setSemnasResubmitError("");
+
+		try {
+			const formData = new FormData();
+			formData.append(
+				"event_id",
+				currentEvent?.id || currentEvent?.slug || target || "seminar-nasional-it-today"
+			);
+			formData.append("ig_follow_proof", semnasResubmitFile);
+
+			const res = await resubmitSemnas(formData);
+			if (res?.success) {
+				await checkExistingRegistration();
+				setSemnasResubmitFile(null);
+				setSemnasResubmitFileName("");
+				if (semnasResubmitInputRef.current) {
+					semnasResubmitInputRef.current.value = "";
+				}
+				await showGlobalAlert({
+					title: "Berhasil Dikirim Ulang!",
+					message:
+						res?.message ||
+						"Bukti follow Instagram Anda telah dikirim ulang dan sedang menunggu verifikasi panitia.",
+					variant: "success",
+				});
+			} else {
+				setSemnasResubmitError(res?.message || "Gagal mengirim ulang bukti follow Instagram.");
+			}
+		} catch (err) {
+			setSemnasResubmitError(
+				err.response?.data?.message ||
+					err.response?.data?.error ||
+					err.message ||
+					"Terjadi kesalahan saat mengirim ulang bukti follow Instagram."
+			);
+		} finally {
+			setSemnasResubmitLoading(false);
+		}
+	};
+
 	if (checkingActive || isCheckingProfile || isCheckingRegistration) {
 		return <LoadingState />;
 	}
@@ -996,7 +1067,7 @@ const DaftarEvent = () => {
 
 				{submitted ? (
 					<div className="mt-7 flex flex-col gap-6 text-center font-semibold">
-						{registeredParticipantData?.payment_verification === "rejected" && !isSemnasTarget ? (
+						{registeredParticipantData?.payment_verification === "rejected" ? (
 							<div className="border-[3px] border-black bg-[#ffebee] p-6 shadow-[5px_5px_0_#191b1a]">
 								<div className="mx-auto flex h-14 w-14 items-center justify-center border-2 border-black bg-[#ff4d4f] text-white shadow-[3px_3px_0_#191b1a]">
 									<span className="text-2xl">🚫</span>
@@ -1007,7 +1078,7 @@ const DaftarEvent = () => {
 								<p className="mt-2 text-xs font-medium text-gray-800 sm:text-sm">
 									{registeredParticipantData?.verification_error
 										? `Alasan penolakan: ${registeredParticipantData.verification_error}`
-										: "Data pendaftaran atau berkas Anda telah ditolak oleh panitia."}
+										: "Data pendaftaran atau berkas Anda telah ditolak oleh panitia. Silakan periksa detail penolakan di bawah."}
 								</p>
 							</div>
 						) : isSemnasTarget && !isVerifiedStatus ? (
@@ -1037,6 +1108,8 @@ const DaftarEvent = () => {
 										? "Data pendaftaran Bootcamp Anda telah tercatat. Silakan selesaikan transaksi melalui portal Intelligo ID di bawah, kemudian lakukan konfirmasi ke panitia."
 										: target === "bootcamp"
 										? "Data pendaftaran Bootcamp Anda telah berhasil dicatat pada sistem IT Today 2026."
+										: isSemnasTarget
+										? `Pendaftaran Anda pada kegiatan ${currentEvent?.title || displayName} telah berhasil dicatat pada sistem IT Today 2026.`
 										: isEventFree
 										? `Pendaftaran Anda pada kegiatan ${currentEvent?.title || displayName} telah berhasil dicatat pada sistem IT Today 2026.`
 										: `Bukti pembayaran ${currentEvent?.title || displayName} Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today 2026.`}
@@ -1202,6 +1275,8 @@ const DaftarEvent = () => {
 									<p className="text-xs sm:text-sm text-gray-900 font-bold leading-relaxed">
 										{target === "bootcamp"
 											? "Terima kasih sudah mendaftar! Berkas identitas Anda telah terverifikasi oleh panitia."
+											: isSemnasTarget
+											? `Terima kasih sudah mendaftar! Pendaftaran ${currentEvent?.title || displayName} Anda telah diverifikasi oleh panitia.`
 											: isEventFree
 											? `Terima kasih sudah mendaftar! Pendaftaran Anda pada kegiatan ${currentEvent?.title || displayName} telah berhasil dikonfirmasi.`
 											: `Terima kasih sudah mendaftar! Bukti pembayaran ${currentEvent?.title || displayName} Anda telah diverifikasi dan disetujui oleh panitia.`}
@@ -1228,12 +1303,12 @@ const DaftarEvent = () => {
 									</div>
 								)}
 							</div>
-						) : registeredParticipantData?.payment_verification === "rejected" && !isSemnasTarget ? (
+						) : registeredParticipantData?.payment_verification === "rejected" ? (
 							<div className="space-y-4">
 								<div className="border-[3px] border-black bg-[#ff4d4f] p-5 text-left text-white shadow-[4px_4px_0_#191b1a] space-y-3">
 									<div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-white/40 pb-2">
 										<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-											<span>🚫</span> Pembayaran Ditolak Panitia
+											<span>🚫</span> {isSemnasTarget ? "Berkas Pendaftaran Ditolak" : "Pembayaran Ditolak Panitia"}
 										</p>
 										<span className="inline-flex items-center gap-1 border-2 border-black bg-black px-2.5 py-0.5 text-[11px] font-black uppercase text-white shadow-[2px_2px_0_#fff]">
 											Rejected
@@ -1250,11 +1325,116 @@ const DaftarEvent = () => {
 										</div>
 									)}
 									<p className="text-xs sm:text-sm text-white font-medium leading-relaxed">
-										⚠️ Silakan unggah kembali bukti pembayaran yang valid di bawah ini.
+										{isSemnasTarget
+											? "⚠️ Bukti follow Instagram narasumber dan/atau jawaban kuesioner Anda belum valid. Silakan hubungi panitia untuk melakukan perbaikan."
+											: "⚠️ Silakan unggah kembali bukti pembayaran yang valid di bawah ini."}
 									</p>
 								</div>
 
-								{/* Step 2 upload form to re-upload proof */}
+								{/* Khusus Semnas: kirim ulang bukti follow IG (tanpa pembayaran) */}
+								{isSemnasTarget && (
+									<div className="border-[3px] border-black bg-white p-5 shadow-[4px_4px_0_#191b1a] space-y-4">
+										<div className="flex items-center gap-2 border-b-2 border-black pb-2">
+											<FaFileUpload className="text-xl text-[#1E3A8A]" />
+											<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#1E3A8A]">
+												Kirim Ulang Bukti Follow Instagram
+											</p>
+										</div>
+										<p className="text-xs sm:text-sm text-gray-700 font-medium leading-relaxed">
+											Silakan unggah ulang bukti follow Instagram narasumber Anda. Pastikan bukti terlihat jelas dan sesuai ketentuan.
+										</p>
+
+										{semnasResubmitError && (
+											<div className="flex items-start gap-2 border-2 border-black bg-[#ffccd5] p-3 text-[#d90429]">
+												<MdErrorOutline className="text-lg shrink-0" />
+												<p className="text-xs sm:text-sm font-bold">{semnasResubmitError}</p>
+											</div>
+										)}
+
+										<div>
+											<label className="mb-2 block text-xs font-black uppercase tracking-wide">
+												Upload Bukti Follow IG Baru (PDF/Gambar, Maks 5MB) *
+											</label>
+											<div
+												className="flex cursor-pointer items-center border-[3px] border-dashed border-black bg-white px-4 py-4 transition-colors hover:bg-neutral-50"
+												onDragOver={(e) => e.preventDefault()}
+												onDrop={(e) => {
+													e.preventDefault();
+													handleSemnasResubmitFile(e.dataTransfer.files?.[0]);
+												}}
+												onClick={() => semnasResubmitInputRef.current?.click()}
+											>
+												<FaFileUpload className="mr-2 text-lg text-[#1E3A8A]" />
+												<div className="w-full overflow-hidden text-ellipsis">
+													<p className="truncate text-xs sm:text-sm">
+														{semnasResubmitFileName
+															? semnasResubmitFileName
+															: "Drop file di sini atau klik untuk pilih file"}
+													</p>
+												</div>
+												<input
+													type="file"
+													name="ig_follow_proof"
+													accept=".pdf,image/*"
+													ref={semnasResubmitInputRef}
+													onChange={(e) => handleSemnasResubmitFile(e.target.files?.[0])}
+													style={{ display: "none" }}
+												/>
+											</div>
+										</div>
+
+										<button
+											type="button"
+											onClick={handleResubmitSemnas}
+											disabled={semnasResubmitLoading}
+											className="w-full cursor-pointer border-[3px] border-black bg-[#ffd400] px-6 py-3 text-xs sm:text-sm font-black uppercase text-black shadow-[3px_3px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#ffe26b] active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50"
+										>
+											{semnasResubmitLoading ? "Mengirim Bukti..." : "Kirim Ulang Bukti Follow IG"}
+										</button>
+									</div>
+								)}
+
+								{/* Kontak panitia sebagai pendamping */}
+								{isSemnasTarget && (
+									<div className="border-[3px] border-black bg-white p-5 shadow-[4px_4px_0_#191b1a] space-y-4">
+										<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#1E3A8A]">
+											Hubungi Panitia:
+										</p>
+										<p className="text-xs sm:text-sm text-gray-700 font-medium leading-relaxed">
+											Jika ada pertanyaan mengenai penolakan berkas, silakan hubungi panitia Seminar Nasional berikut.
+										</p>
+										<div className="flex flex-col gap-2.5 sm:flex-row">
+											{currentEvent?.contact_person1 && (
+												<a
+													href={`${formatWaLink(currentEvent.contact_person1)}?text=Halo,%20saya%20ingin%20menanyakan%20penolakan%20berkas%20pendaftaran%20Seminar%20Nasional%20saya`}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+												>
+													<FaWhatsapp size={16} /> {cleanDisplayNumber(currentEvent.contact_person1)}
+												</a>
+											)}
+											{currentEvent?.contact_person2 && (
+												<a
+													href={`${formatWaLink(currentEvent.contact_person2)}?text=Halo,%20saya%20ingin%20menanyakan%20penolakan%20berkas%20pendaftaran%20Seminar%20Nasional%20saya`}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="flex items-center justify-center gap-2 border-2 border-black bg-white px-3 py-2.5 text-xs font-black uppercase text-[#087a3d] shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
+												>
+													<FaWhatsapp size={16} /> {cleanDisplayNumber(currentEvent.contact_person2)}
+												</a>
+											)}
+											{!currentEvent?.contact_person1 && !currentEvent?.contact_person2 && (
+												<p className="text-xs sm:text-sm text-gray-700 font-medium">
+													Silakan hubungi panitia melalui kanal resmi IT Today 2026.
+												</p>
+											)}
+										</div>
+									</div>
+								)}
+
+								{/* Step 2 upload form to re-upload proof (khusus event berbayar) */}
+								{!isSemnasTarget && (
 								<div className="border-[3px] border-black bg-white p-5 shadow-[4px_4px_0_#191b1a] space-y-4">
 									<div className="border-[3px] border-black bg-[#1E3A8A] p-4 text-white shadow-[3px_3px_0_#191b1a]">
 										<p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white/80 mb-2">
@@ -1328,11 +1508,11 @@ const DaftarEvent = () => {
 										{loading ? "Mengirim Bukti Pembayaran..." : "Kirim Ulang Bukti Pembayaran"}
 									</button>
 								</div>
+								)}
 							</div>
-						) : (
+						) : !isSemnasTarget ? (
 							<div className="border-[3px] border-black bg-[#ffd400] p-5 text-left text-black shadow-[4px_4px_0_#191b1a] space-y-3">
-								<div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
-									<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-black flex items-center gap-1.5">
+								<div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">									<p className="text-xs sm:text-sm font-black uppercase tracking-wider text-black flex items-center gap-1.5">
 										<span>⌛</span> {hasUploadedPaymentProof ? "Menunggu Verifikasi Pembayaran" : "Menunggu Verifikasi Panitia"}
 									</p>
 									{hasUploadedPaymentProof && (
@@ -1363,7 +1543,7 @@ const DaftarEvent = () => {
 									</div>
 								)}
 							</div>
-						)}
+						) : null}
 
 						<div className="flex flex-row justify-center pt-2">
 							<button
