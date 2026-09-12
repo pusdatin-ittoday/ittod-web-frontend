@@ -994,27 +994,53 @@ const DaftarEvent = () => {
 
 				{submitted ? (
 					<div className="mt-7 flex flex-col gap-6 text-center font-semibold">
-						<div className="border-[3px] border-black bg-[#e8fbef] p-6 shadow-[5px_5px_0_#191b1a]">
-							<div className="mx-auto flex h-14 w-14 items-center justify-center border-2 border-black bg-[#18c964] text-white shadow-[3px_3px_0_#191b1a]">
-								<FaCheckCircle size={32} />
+						{registeredParticipantData?.payment_verification === "rejected" ? (
+							<div className="border-[3px] border-black bg-[#ffebee] p-6 shadow-[5px_5px_0_#191b1a]">
+								<div className="mx-auto flex h-14 w-14 items-center justify-center border-2 border-black bg-[#ff4d4f] text-white shadow-[3px_3px_0_#191b1a]">
+									<span className="text-2xl">🚫</span>
+								</div>
+								<h2 className="mt-4 text-xl font-black uppercase tracking-tight text-black sm:text-2xl">
+									Pendaftaran Ditolak Panitia
+								</h2>
+								<p className="mt-2 text-xs font-medium text-gray-800 sm:text-sm">
+									{registeredParticipantData?.verification_error
+										? `Alasan penolakan: ${registeredParticipantData.verification_error}`
+										: "Data pendaftaran atau berkas Anda telah ditolak oleh panitia. Silakan periksa detail penolakan di bawah."}
+								</p>
 							</div>
-							<h2 className="mt-4 text-xl font-black uppercase tracking-tight text-black sm:text-2xl">
-								{alreadyRegistered ? "Anda Sudah Terdaftar!" : "Pendaftaran Berhasil!"}
-							</h2>
-							<p className="mt-2 text-xs font-medium text-gray-800 sm:text-sm">
-								{target === "bootcamp" && effectiveIsMineToday
-									? "Bukti pembayaran Bootcamp Anda telah berhasil dikirim dan sedang dalam proses verifikasi oleh panitia IT Today 2026."
-									: target === "bootcamp" && !effectiveIsIPB && !effectiveIsMineToday
-									? "Data pendaftaran Bootcamp Anda telah tercatat. Silakan selesaikan transaksi melalui portal Intelligo ID di bawah, kemudian lakukan konfirmasi ke panitia."
-									: target === "bootcamp"
-									? "Data pendaftaran Bootcamp Anda telah berhasil dicatat pada sistem IT Today 2026."
-									: isSemnasTarget
-									? `Pendaftaran Seminar Nasional Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today 2026.`
-									: isEventFree
-									? `Pendaftaran Anda pada kegiatan ${currentEvent?.title || displayName} telah berhasil dicatat pada sistem IT Today 2026.`
-									: `Bukti pembayaran ${currentEvent?.title || displayName} Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today 2026.`}
-							</p>
-						</div>
+						) : isSemnasTarget && !isVerifiedStatus ? (
+							<div className="border-[3px] border-black bg-[#FFF6BF] p-6 shadow-[5px_5px_0_#191b1a]">
+								<div className="mx-auto flex h-14 w-14 items-center justify-center border-2 border-black bg-[#ffd400] text-black shadow-[3px_3px_0_#191b1a]">
+									<span className="text-2xl">⌛</span>
+								</div>
+								<h2 className="mt-4 text-xl font-black uppercase tracking-tight text-black sm:text-2xl">
+									Menunggu Verifikasi Panitia
+								</h2>
+								<p className="mt-2 text-xs font-medium text-gray-800 sm:text-sm">
+									Pendaftaran Seminar Nasional Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today 2026.
+								</p>
+							</div>
+						) : (
+							<div className="border-[3px] border-black bg-[#e8fbef] p-6 shadow-[5px_5px_0_#191b1a]">
+								<div className="mx-auto flex h-14 w-14 items-center justify-center border-2 border-black bg-[#18c964] text-white shadow-[3px_3px_0_#191b1a]">
+									<FaCheckCircle size={32} />
+								</div>
+								<h2 className="mt-4 text-xl font-black uppercase tracking-tight text-black sm:text-2xl">
+									{alreadyRegistered ? "Anda Sudah Terdaftar!" : "Pendaftaran Berhasil!"}
+								</h2>
+								<p className="mt-2 text-xs font-medium text-gray-800 sm:text-sm">
+									{target === "bootcamp" && effectiveIsMineToday
+										? "Bukti pembayaran Bootcamp Anda telah berhasil dikirim dan sedang dalam proses verifikasi oleh panitia IT Today 2026."
+										: target === "bootcamp" && !effectiveIsIPB && !effectiveIsMineToday
+										? "Data pendaftaran Bootcamp Anda telah tercatat. Silakan selesaikan transaksi melalui portal Intelligo ID di bawah, kemudian lakukan konfirmasi ke panitia."
+										: target === "bootcamp"
+										? "Data pendaftaran Bootcamp Anda telah berhasil dicatat pada sistem IT Today 2026."
+										: isEventFree
+										? `Pendaftaran Anda pada kegiatan ${currentEvent?.title || displayName} telah berhasil dicatat pada sistem IT Today 2026.`
+										: `Bukti pembayaran ${currentEvent?.title || displayName} Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today 2026.`}
+								</p>
+							</div>
+						)}
 
 						{/* Khusus Bootcamp Peserta Umum: Tombol Intelligo & Konfirmasi WhatsApp Panitia */}
 						{target === "bootcamp" && !effectiveIsIPB && !effectiveIsMineToday && (
