@@ -123,7 +123,7 @@ const DaftarEvent = () => {
 		return localStorage.getItem("hasOpenedIntelligo") === "true";
 	});
 	const displayName = targetDisplayName[target] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : "Event");
-	const isSemnasTarget = ["seminar-nasional-it-today", "national-seminar", "seminar", "seminar-nasional"].includes(target?.toLowerCase());
+	const isSemnasTarget = ["seminar-nasional-it-today", "national-seminar", "seminar", "seminar-nasional"].includes(target?.toLowerCase()) || (target || "").toLowerCase().includes("seminar") || (currentEvent?.slug || "").toLowerCase().includes("seminar") || (currentEvent?.title || "").toLowerCase().includes("seminar");
 	const isEventFree = currentEvent ? Number(currentEvent.price || 0) === 0 : false;
 	const eventPriceDisplay =
 		currentEvent?.price !== undefined && currentEvent?.price !== null
@@ -1006,6 +1006,8 @@ const DaftarEvent = () => {
 									? "Data pendaftaran Bootcamp Anda telah tercatat. Silakan selesaikan transaksi melalui portal Intelligo ID di bawah, kemudian lakukan konfirmasi ke panitia."
 									: target === "bootcamp"
 									? "Data pendaftaran Bootcamp Anda telah berhasil dicatat pada sistem IT Today 2026."
+									: isSemnasTarget
+									? `Pendaftaran Seminar Nasional Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today 2026.`
 									: isEventFree
 									? `Pendaftaran Anda pada kegiatan ${currentEvent?.title || displayName} telah berhasil dicatat pada sistem IT Today 2026.`
 									: `Bukti pembayaran ${currentEvent?.title || displayName} Anda telah berhasil dikirim dan sedang dalam antrean verifikasi oleh panitia IT Today 2026.`}
