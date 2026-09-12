@@ -1007,15 +1007,7 @@ const DaftarEvent = () => {
 								<p className="mt-2 text-xs font-medium text-gray-800 sm:text-sm">
 									{registeredParticipantData?.verification_error
 										? `Alasan penolakan: ${registeredParticipantData.verification_error}`
-										: <p className="mt-2 text-xs font-medium text-gray-800 sm:text-sm">
-												Data pendaftaran atau berkas Anda telah ditolak oleh panitia.
-												{(registeredParticipantData?.verification_error || registeredParticipantData?.rejection_reason) && (
-													<span className="block mt-1 font-bold text-red-600">
-														Alasan penolakan: {registeredParticipantData.verification_error || registeredParticipantData.rejection_reason}
-													</span>
-												)}
-											</p>
-									}
+										: "Data pendaftaran atau berkas Anda telah ditolak oleh panitia."}
 								</p>
 							</div>
 						) : isSemnasTarget && !isVerifiedStatus ? (
