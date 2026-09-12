@@ -1,9 +1,17 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaFileUpload, FaCheckCircle } from "react-icons/fa";
+import { FaFileUpload, FaCheckCircle, FaInstagram, FaExternalLinkAlt } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { registerSemnas } from "../api/semnas";
 import { useAlert } from "../context/AlertContext";
+
+export const SEMNAS_INSTAGRAM_ACCOUNTS = [
+	{ username: "sentralkomputer_id", url: "https://www.instagram.com/sentralkomputer_id/", label: "Sentral Komputer" },
+	{ username: "sentralkomputer_bogor", url: "https://www.instagram.com/sentralkomputer_bogor/", label: "Sentral Komputer Bogor" },
+	{ username: "acerid", url: "https://www.instagram.com/acerid/", label: "Acer Indonesia" },
+	{ username: "predatorgamingindonesia", url: "https://www.instagram.com/predatorgamingindonesia/", label: "Predator Gaming Indonesia" },
+	{ username: "nvidiageforceid", url: "https://www.instagram.com/nvidiageforceid/", label: "NVIDIA GeForce Indonesia" },
+];
 
 const SemnasRegistrationForm = ({ eventId, onSuccess }) => {
 	const navigate = useNavigate();
@@ -277,7 +285,40 @@ const SemnasRegistrationForm = ({ eventId, onSuccess }) => {
 						<label className="block text-base font-black text-black">
 							5. Upload Bukti Follow IG Narasumber <span className="text-red-500">*</span>
 						</label>
-						<p className="text-xs font-medium text-gray-600">Format PDF / Gambar, maks 5MB.</p>
+						
+						{/* Daftar Akun Instagram untuk di-follow */}
+						<div className="border-2 border-black bg-[#fafafa] p-3 sm:p-4 shadow-[2px_2px_0_#191b1a] space-y-2.5">
+							<p className="flex items-center gap-1.5 text-xs sm:text-sm font-black uppercase tracking-wide text-black">
+								<FaInstagram className="text-base text-[#E1306C]" />
+								Silakan follow akun Instagram berikut:
+							</p>
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+								{SEMNAS_INSTAGRAM_ACCOUNTS.map((acc) => (
+									<a
+										key={acc.username}
+										href={acc.url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="group flex items-center justify-between border-2 border-black bg-white px-3 py-2 text-xs font-bold text-black shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#fff9db] hover:shadow-[3px_3px_0_#191b1a] active:translate-x-0.5 active:translate-y-0.5"
+									>
+										<div className="flex items-center gap-2 overflow-hidden">
+											<div className="flex h-7 w-7 shrink-0 items-center justify-center border border-black bg-[#fbe7ec] text-[#E1306C] shadow-[1px_1px_0_#000]">
+												<FaInstagram className="text-sm group-hover:scale-110 transition-transform" />
+											</div>
+											<div className="truncate">
+												<span className="block truncate font-extrabold text-black">@{acc.username}</span>
+												<span className="block truncate text-[10px] font-semibold text-gray-500">{acc.label}</span>
+											</div>
+										</div>
+										<span className="flex items-center gap-1 shrink-0 ml-1.5 text-[10px] font-black uppercase text-[#1E3A8A] group-hover:underline">
+											Follow <FaExternalLinkAlt className="text-[8px]" />
+										</span>
+									</a>
+								))}
+							</div>
+						</div>
+
+						<p className="text-xs font-medium text-gray-600">Upload bukti screenshot follow akun di atas (Format PDF / Gambar, maks 5MB):</p>
 						<div
 							className="group relative flex cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-400 bg-gray-50 p-6 transition-all hover:border-black hover:bg-gray-100"
 							onDragOver={(e) => e.preventDefault()}
