@@ -23,6 +23,7 @@ import { normalizeIndonesianPhoneNumber } from "../utils/phoneNumber";
 import LoadingState from "../components/ui/LoadingState";
 import { useAlert } from "../context/AlertContext";
 import { requireCompleteProfile } from "../utils/profileCompletion";
+import SemnasRegistrationForm from "./SemnasRegistrationForm";
 
 const formatWaLink = (num) => {
 	if (!num) return '#';
@@ -69,8 +70,8 @@ const bootcampBundlingMapping = {
 const EventRegistrationShell = ({ children }) => (
 	<div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
 		<DashboardNeoHeader />
-		<div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[650px] lg:flex-row">
-			<aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
+		<div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[650px] lg:flex-row items-start">
+			<aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
 				<Sidebar active="ikut-event" setActive={() => { }} variant="neobrutal" />
 			</aside>
 			<main className="flex min-w-0 flex-1 items-start justify-center px-4 py-8 sm:px-7 lg:px-10 lg:py-10">
@@ -122,6 +123,7 @@ const DaftarEvent = () => {
 		return localStorage.getItem("hasOpenedIntelligo") === "true";
 	});
 	const displayName = targetDisplayName[target] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : "Event");
+	const isSemnasTarget = ["seminar-nasional-it-today", "national-seminar", "seminar", "seminar-nasional"].includes(target?.toLowerCase());
 	const isEventFree = currentEvent ? Number(currentEvent.price || 0) === 0 : false;
 	const eventPriceDisplay =
 		currentEvent?.price !== undefined && currentEvent?.price !== null
@@ -1342,6 +1344,30 @@ const DaftarEvent = () => {
 					</div>
 				) : (
 					<div className="mt-7 space-y-6">
+						{/* Seminar Nasional Questionnaire Flow */}
+						{isSemnasTarget && (
+							<SemnasRegistrationForm 
+								eventId={currentEvent?.id || currentEvent?.slug || "seminar-nasional-it-today"} 
+								onSuccess={checkExistingRegistration} 
+							/>
+						)}
+
+						{/* Regular form for non-bootcamp events */}
+						{!isSemnasTarget && target !== "bootcamp" && (
+							<form onSubmit={handleSubmit} className="space-y-5">
+								<div>
+									<label className="mb-2 block text-xs font-black uppercase tracking-wide">Institusi</label>
+									<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
+										<FaSchool className="mr-3 shrink-0 text-[#4f5261]" size={21} />
+										<input
+											type="text"
+											inputMode="text"
+											autoComplete="organization"
+											value={institution}
+											onChange={(e) => setInstitution(e.target.value)}
+											className="min-w-0 flex-1 bg-transparent font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400"
+											placeholder="Nama Sekolah/Institusi"
+										/>
 						{/* Unified Non-Bootcamp Flow (Default for all events) */}
 						{target !== "bootcamp" && (
 							isEventFree ? (
