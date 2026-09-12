@@ -123,7 +123,7 @@ const DaftarEvent = () => {
 		return localStorage.getItem("hasOpenedIntelligo") === "true";
 	});
 	const displayName = targetDisplayName[target] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : "Event");
-	const isSemnasTarget = ["seminar-nasional-it-today", "national-seminar", "seminar", "seminar-nasional"].includes(target?.toLowerCase()) || (target || "").toLowerCase().includes("seminar") || (currentEvent?.slug || "").toLowerCase().includes("seminar") || (currentEvent?.title || "").toLowerCase().includes("seminar");
+	const isSemnasTarget = ["seminar-nasional-it-today", "national-seminar", "seminar", "seminar-nasional"].includes(target?.toLowerCase()) || (target || "").toLowerCase().includes("seminar") || (currentEvent?.slug || "").toLowerCase().includes("seminar") || (currentEvent?.title || "").toLowerCase().includes("seminar") || (registeredParticipantData?.event?.slug || "").toLowerCase().includes("seminar") || (registeredParticipantData?.event?.title || "").toLowerCase().includes("seminar") || (registeredParticipantData?.event_id || "").toLowerCase().includes("seminar");
 	const isEventFree = currentEvent ? Number(currentEvent.price || 0) === 0 : false;
 	const eventPriceDisplay =
 		currentEvent?.price !== undefined && currentEvent?.price !== null
@@ -327,8 +327,10 @@ const DaftarEvent = () => {
 				} else {
 					setIsMineTodayRegisteredStep(false);
 					setSubmitted(true);
+					const isMatchedSemnas = currentTarget.includes("seminar") || activeEventSlug.includes("seminar") || activeEventTitle.includes("seminar") || (matched.event?.slug || "").toLowerCase().includes("seminar") || (matched.event?.title || "").toLowerCase().includes("seminar") || (matched.event_id || "").toLowerCase().includes("seminar");
+					const isSemnas = isSemnasTarget || isMatchedSemnas;
 					const isEventActuallyVerified = Boolean(
-						(isEventFree && !isSemnasTarget) ||
+						(isEventFree && !isSemnas) ||
 						(target === "bootcamp" && effectiveIsIPB) ||
 						matched.payment_verification === "accepted"
 					);
