@@ -1352,24 +1352,8 @@ const DaftarEvent = () => {
 							/>
 						)}
 
-						{/* Regular form for non-bootcamp events */}
-						{!isSemnasTarget && target !== "bootcamp" && (
-							<form onSubmit={handleSubmit} className="space-y-5">
-								<div>
-									<label className="mb-2 block text-xs font-black uppercase tracking-wide">Institusi</label>
-									<div className="flex items-center border-[3px] border-black bg-white px-4 py-3 focus-within:bg-[#fff6bf]">
-										<FaSchool className="mr-3 shrink-0 text-[#4f5261]" size={21} />
-										<input
-											type="text"
-											inputMode="text"
-											autoComplete="organization"
-											value={institution}
-											onChange={(e) => setInstitution(e.target.value)}
-											className="min-w-0 flex-1 bg-transparent font-bold text-black outline-none placeholder:font-medium placeholder:text-gray-400"
-											placeholder="Nama Sekolah/Institusi"
-										/>
 						{/* Unified Non-Bootcamp Flow (Default for all events) */}
-						{target !== "bootcamp" && (
+						{!isSemnasTarget && target !== "bootcamp" && (
 							isEventFree ? (
 								<div className="space-y-6">
 									<div className="border-[3px] border-black bg-[#FFF6BF] p-6 shadow-[5px_5px_0_#191b1a] text-center sm:p-8">
