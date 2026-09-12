@@ -996,7 +996,7 @@ const DaftarEvent = () => {
 
 				{submitted ? (
 					<div className="mt-7 flex flex-col gap-6 text-center font-semibold">
-						{registeredParticipantData?.payment_verification === "rejected" ? (
+						{registeredParticipantData?.payment_verification === "rejected" && !isSemnasTarget ? (
 							<div className="border-[3px] border-black bg-[#ffebee] p-6 shadow-[5px_5px_0_#191b1a]">
 								<div className="mx-auto flex h-14 w-14 items-center justify-center border-2 border-black bg-[#ff4d4f] text-white shadow-[3px_3px_0_#191b1a]">
 									<span className="text-2xl">🚫</span>
@@ -1007,7 +1007,15 @@ const DaftarEvent = () => {
 								<p className="mt-2 text-xs font-medium text-gray-800 sm:text-sm">
 									{registeredParticipantData?.verification_error
 										? `Alasan penolakan: ${registeredParticipantData.verification_error}`
-										: "Data pendaftaran atau berkas Anda telah ditolak oleh panitia. Silakan periksa detail penolakan di bawah."}
+										: <p className="mt-2 text-xs font-medium text-gray-800 sm:text-sm">
+												Data pendaftaran atau berkas Anda telah ditolak oleh panitia.
+												{(registeredParticipantData?.verification_error || registeredParticipantData?.rejection_reason) && (
+													<span className="block mt-1 font-bold text-red-600">
+														Alasan penolakan: {registeredParticipantData.verification_error || registeredParticipantData.rejection_reason}
+													</span>
+												)}
+											</p>
+									}
 								</p>
 							</div>
 						) : isSemnasTarget && !isVerifiedStatus ? (
@@ -1228,7 +1236,7 @@ const DaftarEvent = () => {
 									</div>
 								)}
 							</div>
-						) : registeredParticipantData?.payment_verification === "rejected" ? (
+						) : registeredParticipantData?.payment_verification === "rejected" && !isSemnasTarget ? (
 							<div className="space-y-4">
 								<div className="border-[3px] border-black bg-[#ff4d4f] p-5 text-left text-white shadow-[4px_4px_0_#191b1a] space-y-3">
 									<div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-white/40 pb-2">
