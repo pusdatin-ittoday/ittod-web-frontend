@@ -1,6 +1,7 @@
 import React from "react";
 import { motion as Motion } from "motion/react";
 import {
+  hoverLift,
   popIn,
   revealUp,
   staggerContainer,
@@ -56,17 +57,25 @@ const PartnersSection = () => {
             <Motion.div
               key={sponsor.name}
               variants={popIn}
+              whileHover="hover"
               whileTap={tapPress}
               className="group h-28 md:h-36"
             >
-              <div className="flex h-full w-full items-center justify-center border-[3px] border-black bg-white p-4 shadow-[5px_5px_0_#111] transition-[transform,background-color,box-shadow] duration-300 ease-out will-change-transform group-hover:-translate-x-[3px] group-hover:-translate-y-2 group-hover:-rotate-[0.4deg] group-hover:bg-[#F5C518] group-hover:shadow-[7px_7px_0_#111]">
+              <Motion.div
+                variants={{
+                  hidden: {},
+                  visible: { x: 0, y: 0, rotate: 0 },
+                  hover: hoverLift,
+                }}
+                className="flex h-full w-full items-center justify-center border-[3px] border-black bg-white p-4 shadow-[5px_5px_0_#111] transition-[background-color,box-shadow] duration-300 ease-out group-hover:bg-[#F5C518] group-hover:shadow-[7px_7px_0_#111]"
+              >
                 <img
                   src={sponsor.logo}
                   alt={sponsor.name}
-                  className="h-full w-full object-contain transition-transform duration-500 ease-out will-change-transform group-hover:rotate-2 group-hover:scale-110"
+                  className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:rotate-2 group-hover:scale-110"
                   loading="lazy"
                 />
-              </div>
+              </Motion.div>
             </Motion.div>
           ))}
         </Motion.div>
