@@ -89,15 +89,19 @@ export default function FinalistAnnouncementPopup() {
             </h2>
 
             {/* Description */}
-            {!championRevealed ? <p className="font-inter text-gray-700 text-xs sm:text-sm leading-relaxed mb-6">
-              Selamat kepada seluruh tim yang berhasil melangkah ke babak selanjutnya! Daftar lengkap
-              finalis dan juara dari setiap cabang kompetisi <strong>IT Today 2026</strong> kini
-              dapat diakses pada halaman pengumuman <strong>Finalist</strong>.
-            </p> : <p className="font-inter text-gray-700 text-xs sm:text-sm leading-relaxed mb-6">
-              Selamat kepada seluruh tim yang berhasil menjuarai kompetisi! Daftar lengkap
-              finalis dan juara dari setiap cabang kompetisi <strong>IT Today 2026</strong> kini
-              dapat diakses pada halaman pengumuman <strong>Finalist</strong>.
-            </p>}
+            {championRevealed ?
+              <p className="font-inter text-gray-700 text-xs sm:text-sm leading-relaxed mb-6">
+                Selamat kepada seluruh tim yang berhasil menjuarai kompetisi! Daftar lengkap
+                finalis dan juara dari setiap cabang kompetisi <strong>IT Today 2026</strong> kini
+                dapat diakses pada halaman pengumuman <strong>Finalist</strong>.
+              </p>
+              :
+              <p className="font-inter text-gray-700 text-xs sm:text-sm leading-relaxed mb-6">
+                Selamat kepada seluruh tim yang berhasil melangkah ke babak selanjutnya! Daftar lengkap
+                finalis dan juara dari setiap cabang kompetisi <strong>IT Today 2026</strong> kini
+                dapat diakses pada halaman pengumuman <strong>Finalist</strong>.
+              </p>
+            }
             {/* Actions */}
             <div className="flex flex-col sm:flex-row items-stretch gap-3">
               <button
