@@ -327,8 +327,8 @@ const CompListNeo = () => {
             : lombaCompetitions;
 
     return (
-        <div className="flex flex-col xl:flex-row gap-6 justify-center items-start w-full">
-            <div className="flex-1 w-full flex flex-col gap-6">
+        		<div className="flex w-full flex-col items-stretch gap-6 xl:flex-row xl:items-start">
+            			<div className="flex w-full min-w-0 flex-1 flex-col gap-6">
                 <div className="border-[4px] border-[#1A1C1C] bg-white p-4 sm:p-5 shadow-[6px_6px_0_0_#1A1C1C] relative overflow-hidden flex flex-col gap-3">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <div className="space-y-0.5">
@@ -469,7 +469,7 @@ const CompListNeo = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-6 w-full xl:w-[360px] flex-shrink-0 self-stretch xl:self-auto">
+            			<div className="flex w-full min-w-0 flex-col gap-6 xl:w-[360px] xl:flex-shrink-0 xl:self-start">
                 <div className="w-full">
                     <CalendarWidget />
                 </div>
