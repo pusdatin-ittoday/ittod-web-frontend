@@ -84,52 +84,28 @@ export default function FinalistAnnouncementPopup() {
               style={{ textShadow: "-2px 2px 0 #FFD200" }}
             >
               {championRevealed
-                ? "PENGUMUMAN JUARA & FINALIS!"
-                : "PENGUMUMAN FINALIS RESMI!"}
+                ? "SIAPAKAH PARA JUARA?"
+                : "SIAPAKAH PARA FINALIS?"}
             </h2>
 
             {/* Description */}
-            <p className="font-inter text-gray-700 text-xs sm:text-sm leading-relaxed mb-6">
+            {!championRevealed ? <p className="font-inter text-gray-700 text-xs sm:text-sm leading-relaxed mb-6">
               Selamat kepada seluruh tim yang berhasil melangkah ke babak selanjutnya! Daftar lengkap
               finalis dan juara dari setiap cabang kompetisi <strong>IT Today 2026</strong> kini
-              dapat diakses pada halaman pengumuman khusus.
-            </p>
-
-            {/* Feature Mini-cards */}
-            <div className="bg-[#FAF9F5] border-[2px] border-black p-3.5 mb-6 flex items-center justify-around gap-2 text-center">
-              <div className="flex items-center gap-1.5 text-xs font-black uppercase text-[#313988]">
-                <FiCheckCircle className="text-emerald-600 flex-shrink-0" />
-                <span>Hack Today</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-xs font-black uppercase text-[#313988]">
-                <FiCheckCircle className="text-emerald-600 flex-shrink-0" />
-                <span>UX Today</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-xs font-black uppercase text-[#313988]">
-                <FiCheckCircle className="text-emerald-600 flex-shrink-0" />
-                <span>Mine Today</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-xs font-black uppercase text-[#313988]">
-                <FiCheckCircle className="text-emerald-600 flex-shrink-0" />
-                <span>IT-Brains</span>
-              </div>
-            </div>
-
+              dapat diakses pada halaman pengumuman <strong>Finalist</strong>.
+            </p> : <p className="font-inter text-gray-700 text-xs sm:text-sm leading-relaxed mb-6">
+              Selamat kepada seluruh tim yang berhasil menjuarai kompetisi! Daftar lengkap
+              finalis dan juara dari setiap cabang kompetisi <strong>IT Today 2026</strong> kini
+              dapat diakses pada halaman pengumuman <strong>Finalist</strong>.
+            </p>}
             {/* Actions */}
             <div className="flex flex-col sm:flex-row items-stretch gap-3">
               <button
                 onClick={handleNavigate}
                 className="flex-1 bg-[#ffd200] hover:bg-yellow-400 text-black font-inter font-black text-xs sm:text-sm py-3.5 px-5 border-[2.5px] border-black shadow-[4px_4px_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all uppercase flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Lihat Daftar Finalis & Juara</span>
+                <span>Lihat sekarang!</span>
                 <FiArrowRight className="text-base" />
-              </button>
-
-              <button
-                onClick={handleClose}
-                className="bg-white hover:bg-gray-100 text-gray-700 hover:text-black font-inter font-bold text-xs sm:text-sm py-3.5 px-4 border-[2px] border-black transition-colors uppercase cursor-pointer"
-              >
-                Nanti Saja
               </button>
             </div>
           </motion.div>

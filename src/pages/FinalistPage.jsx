@@ -237,22 +237,6 @@ export default function FinalistPage() {
                     </div>
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className="bg-[#313988] text-white font-inter font-black text-[10px] md:text-xs px-2.5 py-0.5 uppercase tracking-wider">
-                          CABANG KOMPETISI
-                        </span>
-                        {selectedComp.champion_revealed ? (
-                          <span className="bg-[#ffd200] text-black font-inter font-black text-[10px] md:text-xs px-2.5 py-0.5 border border-black uppercase tracking-wider">
-                            JUARA & FINALIS
-                          </span>
-                        ) : selectedComp.finalist_revealed ? (
-                          <span className="bg-blue-100 text-[#313988] font-inter font-black text-[10px] md:text-xs px-2.5 py-0.5 border border-black uppercase tracking-wider">
-                            FINALIS
-                          </span>
-                        ) : (
-                          <span className="bg-gray-200 text-gray-600 font-inter font-black text-[10px] md:text-xs px-2.5 py-0.5 border border-black uppercase tracking-wider">
-                            BELUM TAYANG
-                          </span>
-                        )}
                       </div>
                       <h2 className="font-bebas text-3xl md:text-5xl uppercase tracking-wide leading-none text-black">
                         {selectedComp.title}
@@ -404,9 +388,6 @@ export default function FinalistPage() {
                             >
                               <div>
                                 <div className="flex items-center justify-between gap-2 mb-3">
-                                  <span className="bg-[#313988] text-white font-inter font-black text-[9px] md:text-[10px] px-2 py-0.5 uppercase tracking-wider">
-                                    FINALIS #{idx + 1}
-                                  </span>
                                   {team.institution && (
                                     <span className="font-inter text-[10px] font-bold text-gray-500 uppercase truncate max-w-[150px]">
                                       {team.institution}
