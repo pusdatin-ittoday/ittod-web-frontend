@@ -20,9 +20,15 @@ export default function FinalistAnnouncementPopup() {
     getAllCompetitionResults().then((res) => {
       if (!isMounted) return;
       if (res.success && res.data) {
-        const hasRevealed = res.data.finalist_revealed || res.data.champion_revealed;
+        // Hanya anggap juara tayang jika flag champion_revealed aktif DAN ada tim juara di data kompetisi
+        const hasActualChampions = Boolean(
+          res.data.champion_revealed &&
+          res.data.competitions?.some((c) => c.champion_revealed && c.champions?.length > 0)
+        );
+
+        const hasRevealed = res.data.finalist_revealed || hasActualChampions;
         if (hasRevealed) {
-          setChampionRevealed(Boolean(res.data.champion_revealed));
+          setChampionRevealed(hasActualChampions);
           // Delay sedikit agar transisi halaman awal mulus
           setTimeout(() => {
             if (isMounted) setIsOpen(true);
