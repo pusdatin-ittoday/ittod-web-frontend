@@ -57,14 +57,16 @@ const PartnersSection = () => {
               key={sponsor.name}
               variants={popIn}
               whileTap={tapPress}
-              className="group flex h-28 items-center justify-center border-[3px] border-black bg-white p-4 shadow-[5px_5px_0_#111] transition-[background-color,box-shadow] duration-150 hover:bg-[#F5C518] hover:shadow-[7px_7px_0_#111] md:h-36"
+              className="group h-28 md:h-36"
             >
-              <img
-                src={sponsor.logo}
-                alt={sponsor.name}
-                className="h-full w-full object-contain transition-transform duration-150 will-change-transform group-hover:-translate-y-1 group-hover:scale-110"
-                loading="lazy"
-              />
+              <div className="flex h-full w-full items-center justify-center border-[3px] border-black bg-white p-4 shadow-[5px_5px_0_#111] transition-[transform,background-color,box-shadow] duration-300 ease-out will-change-transform group-hover:-translate-x-[3px] group-hover:-translate-y-2 group-hover:-rotate-[0.4deg] group-hover:bg-[#F5C518] group-hover:shadow-[7px_7px_0_#111]">
+                <img
+                  src={sponsor.logo}
+                  alt={sponsor.name}
+                  className="h-full w-full object-contain transition-transform duration-500 ease-out will-change-transform group-hover:rotate-2 group-hover:scale-110"
+                  loading="lazy"
+                />
+              </div>
             </Motion.div>
           ))}
         </Motion.div>
