@@ -327,8 +327,8 @@ const CompListNeo = () => {
             : lombaCompetitions;
 
     return (
-        		<div className="flex w-full flex-col items-stretch gap-6 xl:flex-row xl:items-start">
-            			<div className="flex w-full min-w-0 flex-1 flex-col gap-6">
+        <div className="flex w-full flex-col items-stretch gap-6 xl:flex-row xl:items-start">
+            <div className="flex w-full min-w-0 flex-1 flex-col gap-6">
                 <div className="border-[4px] border-[#1A1C1C] bg-white p-4 sm:p-5 shadow-[6px_6px_0_0_#1A1C1C] relative overflow-hidden flex flex-col gap-3">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <div className="space-y-0.5">
@@ -437,18 +437,18 @@ const CompListNeo = () => {
                                     </p>
                                 )}
 
-                                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                                <div className="flex w-full flex-col flex-wrap justify-center gap-3 sm:flex-row sm:gap-4">
                                     {activeTab === "lomba" && (
                                         <>
                                             <button
                                                 onClick={() => navigate("/dashboard/ikut-lomba")}
-                                                className="w-full sm:w-[240px] border-[2.4px] border-black bg-[#34399F] py-3 text-sm font-space-grotesk font-bold uppercase text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                                                className="w-full min-w-0 px-4 sm:w-auto sm:flex-1 sm:max-w-[240px] border-[2.4px] border-black bg-[#34399F] py-3 text-sm font-space-grotesk font-bold uppercase text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
                                             >
                                                 LIHAT DAFTAR LOMBA
                                             </button>
                                             <button
                                                 onClick={handleJoinTeam}
-                                                className="w-full sm:w-[257px] border-[2.4px] border-black bg-[#FCD400] py-3 text-sm font-space-grotesk font-bold uppercase text-[#6E5C00] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                                                className="w-full min-w-0 px-4 sm:w-auto sm:flex-1 sm:max-w-[257px] border-[2.4px] border-black bg-[#FCD400] py-3 text-sm font-space-grotesk font-bold uppercase text-[#6E5C00] shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
                                             >
                                                 BERGABUNG TIM
                                             </button>
@@ -457,7 +457,7 @@ const CompListNeo = () => {
                                     {activeTab === "event" && (
                                         <button
                                             onClick={() => navigate("/dashboard/ikut-event")}
-                                            className="w-full sm:w-[240px] border-[2.4px] border-black bg-[#34399F] py-3 text-sm font-space-grotesk font-bold uppercase text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                                            className="w-full min-w-0 px-4 sm:w-auto sm:flex-1 sm:max-w-[240px] border-[2.4px] border-black bg-[#34399F] py-3 text-sm font-space-grotesk font-bold uppercase text-white shadow-[6px_6px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
                                         >
                                             LIHAT DAFTAR EVENT
                                         </button>
@@ -469,7 +469,7 @@ const CompListNeo = () => {
                 </div>
             </div>
 
-            			<div className="flex w-full min-w-0 flex-col gap-6 xl:w-[360px] xl:flex-shrink-0 xl:self-start">
+            <div className="flex w-full min-w-0 flex-col gap-6 xl:w-[360px] xl:flex-shrink-0 xl:self-start">
                 <div className="w-full">
                     <CalendarWidget />
                 </div>
