@@ -1350,26 +1350,26 @@ const DaftarEvent = () => {
 												<FaInstagram className="text-base text-[#E1306C]" />
 												Silakan follow akun Instagram berikut:
 											</p>
-											<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+											<div className="flex flex-col gap-2">
 												{SEMNAS_INSTAGRAM_ACCOUNTS.map((acc) => (
 													<a
 														key={acc.username}
 														href={acc.url}
 														target="_blank"
 														rel="noopener noreferrer"
-														className="group flex items-center justify-between border-2 border-black bg-white px-3 py-2 text-xs font-bold text-black shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#fff9db] hover:shadow-[3px_3px_0_#191b1a] active:translate-x-0.5 active:translate-y-0.5"
+														className="group flex items-center justify-between border-2 border-black bg-white p-2.5 sm:px-3.5 sm:py-2.5 shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#fff9db] hover:shadow-[3px_3px_0_#191b1a] active:translate-x-0.5 active:translate-y-0.5"
 													>
-														<div className="flex items-center gap-2 overflow-hidden">
-															<div className="flex h-7 w-7 shrink-0 items-center justify-center border border-black bg-[#fbe7ec] text-[#E1306C] shadow-[1px_1px_0_#000]">
-																<FaInstagram className="text-sm group-hover:scale-110 transition-transform" />
+														<div className="flex items-center gap-3">
+															<div className="flex h-8 w-8 shrink-0 items-center justify-center border border-black bg-[#fbe7ec] text-[#E1306C] shadow-[1px_1px_0_#000]">
+																<FaInstagram className="text-base group-hover:scale-110 transition-transform" />
 															</div>
-															<div className="truncate">
-																<span className="block truncate font-extrabold text-black">@{acc.username}</span>
-																<span className="block truncate text-[10px] font-semibold text-gray-500">{acc.label}</span>
+															<div className="flex flex-col">
+																<span className="text-xs sm:text-sm font-black text-black">@{acc.username}</span>
+																<span className="text-[11px] sm:text-xs font-semibold text-gray-600">{acc.label}</span>
 															</div>
 														</div>
-														<span className="flex items-center gap-1 shrink-0 ml-1.5 text-[10px] font-black uppercase text-[#1E3A8A] group-hover:underline">
-															Follow <FaExternalLinkAlt className="text-[8px]" />
+														<span className="flex items-center gap-1.5 shrink-0 ml-3 rounded border border-black bg-[#f3f4f6] px-2.5 py-1 text-xs font-black uppercase text-[#1E3A8A] shadow-[1px_1px_0_#000] group-hover:bg-[#1E3A8A] group-hover:text-white transition-colors">
+															Follow <FaExternalLinkAlt className="text-[9px]" />
 														</span>
 													</a>
 												))}
