@@ -56,14 +56,13 @@ const PartnersSection = () => {
             <Motion.div
               key={sponsor.name}
               variants={popIn}
-              whileHover={{ y: -7, rotate: 1.2, backgroundColor: "#F5C518" }}
               whileTap={tapPress}
-              className="group flex h-28 items-center justify-center border-[3px] border-black bg-white p-4 shadow-[5px_5px_0_#111] transition-shadow duration-150 hover:shadow-[7px_7px_0_#111] md:h-36"
+              className="group flex h-28 items-center justify-center border-[3px] border-black bg-white p-4 shadow-[5px_5px_0_#111] transition-[background-color,box-shadow] duration-150 hover:bg-[#F5C518] hover:shadow-[7px_7px_0_#111] md:h-36"
             >
               <img
                 src={sponsor.logo}
                 alt={sponsor.name}
-                className="h-full w-full object-contain transition-transform duration-150 group-hover:scale-105"
+                className="h-full w-full object-contain transition-transform duration-150 will-change-transform group-hover:-translate-y-1 group-hover:scale-110"
                 loading="lazy"
               />
             </Motion.div>
