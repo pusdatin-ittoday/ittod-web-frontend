@@ -64,9 +64,7 @@ const PartnersSection = () => {
                 <img
                   src={sponsor.logo}
                   alt={sponsor.name}
-                  className={`h-full w-full object-contain transition-transform duration-500 ease-out group-hover:rotate-2 ${
-                    sponsor.className || "group-hover:scale-110"
-                  }`}
+                  className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:rotate-2 group-hover:scale-110"
                   loading="lazy"
                 />
               </Motion.div>
