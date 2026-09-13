@@ -23,6 +23,7 @@ const routeTitleMap = {
   "/dashboard/submit-lomba": "Pengumpulan Karya Lomba - IT TODAY 2026",
   "/dashboard/edit-profile": "Edit Profil - IT TODAY 2026",
   "/sponsors": "Sponsor Kami - IT TODAY 2026",
+  "/finalist": "Finalis & Juara Lomba - IT TODAY 2026",
 };
 
 const ScrollToTop = () => {
@@ -111,6 +112,7 @@ const FallbackNotFound = lazy(
   () => import("./pages/Fallback/FallbackNotFound.jsx"),
 );
 const Sponsors = lazy(() => import("./Sponsors"));
+const FinalistPage = lazy(() => import("./pages/FinalistPage"));
 
 const ProtectedDashboard = ({ children }) => (
   <ProtectedRoute>{children}</ProtectedRoute>
@@ -126,6 +128,7 @@ const AppRoutes = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/home" element={<LandingPage />} />
+          <Route path="/finalist" element={<FinalistPage />} />
           <Route path="/event/:slug" element={<EventDetailPage />} />
           <Route
             path="/competition/:slug"

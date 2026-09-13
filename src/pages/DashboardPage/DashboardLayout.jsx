@@ -79,8 +79,8 @@ class DashboardLayout extends Component {
         <div className="min-h-screen bg-[#f4f4f2] font-dm-sans text-[#191b1a]">
           <DashboardNeoHeader />
 
-          <div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[760px] lg:flex-row">
-            <aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4">
+          <div className="mx-auto flex w-full max-w-[1600px] flex-col lg:min-h-[760px] lg:flex-row items-start">
+            <aside className="shrink-0 border-b-4 border-black bg-white lg:w-[310px] lg:border-b-0 lg:border-r-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
               <Sidebar
                 active={this.state.active}
                 setActive={this.setActive}

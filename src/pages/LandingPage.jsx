@@ -3,6 +3,8 @@ import NavbarNeo from '../components/layout/Navbar';
 import FooterNeo from '../components/layout/Footer';
 import HeroSection from '../components/home/HeroSection';
 
+import FinalistAnnouncementPopup from '../components/home/FinalistAnnouncementPopup';
+
 const GallerySection = lazy(() => import('../components/home/GallerySection'));
 const MainEventSection = lazy(() => import('../components/home/MainEventSection'));
 const CompetitionSection = lazy(() => import('../components/home/CompetitionSection'));
@@ -35,6 +37,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white text-black">
       <NavbarNeo />
+      <FinalistAnnouncementPopup />
       <main className="pt-16 md:pt-20">
         <HeroSection />
         <Suspense fallback={<div className="min-h-[200px]" />}>
