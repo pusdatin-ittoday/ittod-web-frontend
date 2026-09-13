@@ -2,37 +2,10 @@ import React from "react";
 import NavbarNeo from './components/layout/Navbar';
 import FooterNeo from './components/layout/Footer';
 
+import sponsorsData from "./data/sponsors";
+
 const Sponsors = () => {
-	const sponsors = [
-		{
-			name: "Sentral Komputer",
-			logo: "/sponsors/Logo-Sentral-Komputer2.png",
-		},
-		{
-			name: "Sentral Service",
-			logo: "/sponsors/Logo-Sentral_Service.png",
-		},
-		{
-			name:"Acer",
-			logo: "/sponsors/Logo-Acer.png",
-		},
-		{
-			name: "Nvidia",
-			logo: "/sponsors/nvidia.webp",
-		},
-		{
-			name: "Bangunindo",
-			logo: "/sponsors/Logo-Bangunindo.png",
-		},
-		{
-			name:"Siloam Hospitals",
-			logo: "/sponsors/Logo-Siloam.png",
-		},
-		{
-			name: "Intelligo.id",
-			logo: "/sponsors/Logo-Intelligo.png",
-		},
-	];
+	const sponsors = sponsorsData;
 
 	return (
 		<div 
@@ -56,7 +29,7 @@ const Sponsors = () => {
 								<img
 									src={sponsor.logo}
 									alt={`${sponsor.name} logo`}
-									className="max-w-full max-h-full object-contain"
+									className={`max-w-full max-h-full object-contain ${sponsor.className || ''}`}
 								/>
 							</div>
 							<p className="text-[#191b1a] text-xs font-dm-sans font-black uppercase text-center truncate w-full">
