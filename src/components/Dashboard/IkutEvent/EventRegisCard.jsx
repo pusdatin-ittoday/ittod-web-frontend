@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
-import { FiUserPlus } from "react-icons/fi";
+import { FiUserPlus, FiUsers } from "react-icons/fi";
 import { FaWhatsapp, FaDiscord } from "react-icons/fa";
 
 import { getPublicEvents } from "../../../api/eventPublic";
@@ -49,6 +49,9 @@ const IkutEvent = ({
   waGroupLink,
   colorIndex = 0,
   isIPB = false,
+  maxParticipants,
+  currentParticipants,
+  remainingQuota,
 }) => {
   const logoSrc = getLogoFallback(title, image);
   const shortDesc = getShortDescription(description);
@@ -78,11 +81,33 @@ const IkutEvent = ({
         )}
         <div>
           <h3 className="text-xl font-black uppercase leading-tight">{title}</h3>
-          {isBootcamp && isIPB && (
-            <div className="mt-1.5 inline-flex items-center gap-1 border-2 border-black bg-[#18c964] px-2 py-0.5 text-[10px] sm:text-[11px] font-black uppercase text-white shadow-[2px_2px_0_#191b1a]">
-              <span>GRATIS UNTUK MAHASISWA IPB</span>
-            </div>
-          )}
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            {isBootcamp && isIPB && (
+              <div className="inline-flex items-center gap-1 border-2 border-black bg-[#18c964] px-2 py-0.5 text-[10px] sm:text-[11px] font-black uppercase text-white shadow-[2px_2px_0_#191b1a]">
+                <span>GRATIS UNTUK MAHASISWA IPB</span>
+              </div>
+            )}
+            {maxParticipants && maxParticipants > 0 && (
+              <div
+                className={`inline-flex items-center gap-1.5 border-2 border-black px-2 py-0.5 text-[10px] sm:text-[11px] font-black uppercase shadow-[2px_2px_0_#191b1a] ${
+                  (remainingQuota !== null && remainingQuota <= 0) || !isActive
+                    ? "bg-[#ff4d4f] text-white"
+                    : remainingQuota !== null && remainingQuota <= 20
+                    ? "bg-[#ffb020] text-black"
+                    : "bg-white text-black"
+                }`}
+              >
+                <FiUsers className="text-xs shrink-0" />
+                <span>
+                  {(remainingQuota !== null && remainingQuota <= 0) || !isActive
+                    ? `Kuota Penuh (${maxParticipants} Peserta)`
+                    : remainingQuota !== null
+                    ? `Sisa Kuota: ${remainingQuota} / ${maxParticipants}`
+                    : `Maks. ${maxParticipants} Peserta`}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <p className="mt-4 text-sm font-medium leading-relaxed opacity-80">
@@ -151,6 +176,8 @@ const IkutEvent = ({
                 <FiUserPlus size={20} />
                 Daftar Sekarang
               </>
+            ) : maxParticipants && remainingQuota !== null && remainingQuota <= 0 ? (
+              <>Pendaftaran Ditutup (Kuota Penuh)</>
             ) : (
               <>Pendaftaran Ditutup/Belum Dibuka</>
             )}
@@ -357,6 +384,9 @@ const EventRegisCard = () => {
                     waGroupLink={waGroupLink}
                     colorIndex={absoluteIndex}
                     isIPB={isIPB}
+                    maxParticipants={event.max_noncompetition_participant}
+                    currentParticipants={event.current_participants}
+                    remainingQuota={event.remaining_quota}
                   />
                 </div>
               );
