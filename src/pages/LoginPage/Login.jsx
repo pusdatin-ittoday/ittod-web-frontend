@@ -63,7 +63,9 @@ const Login = () => {
                 setSuccessMessage("Login berhasil! Sedang mengalihkan...");
                 setLoading(false);
                 setTimeout(() => {
-                    navigate("/dashboard/beranda");
+                    const params = new URLSearchParams(location.search);
+                    const redirectTo = params.get("redirectTo");
+                    navigate(redirectTo ? decodeURIComponent(redirectTo) : "/dashboard/beranda");
                 }, 1000);
             } else {
                 setErrorMessage(result.error || "Gagal masuk. Silakan coba lagi.");
