@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiUserPlus } from 'react-icons/fi';
+import { FiUserPlus, FiUsers } from 'react-icons/fi';
 import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
 import NavbarNeo from '../components/layout/Navbar';
 import FooterNeo from '../components/layout/Footer';
@@ -169,13 +169,60 @@ const EventDetailPage = () => {
               {/* Left: About card */}
               <div>
                 <div className="border-[3px] border-black bg-white p-6 shadow-[8px_8px_0_#111] transition-transform duration-300 hover:-translate-y-1 md:p-9">
-                  <h2 className="mb-5 w-fit border-b-[4px] border-yellow-neo pb-2 font-inter text-2xl font-black uppercase leading-tight text-[#171918] md:text-4xl">
-                    About The {event.title}
-                  </h2>
+                  <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b-[4px] border-yellow-neo pb-3">
+                    <h2 className="font-inter text-2xl font-black uppercase leading-tight text-[#171918] md:text-4xl">
+                      About The {event.title}
+                    </h2>
+                  </div>
 
                   <p className="mb-9 whitespace-pre-wrap font-inter text-sm leading-relaxed text-[#2e3238] md:text-base">
                     {event.description}
                   </p>
+
+                  {/* Quota Progress Banner if Quota is Limited */}
+                  {event.max_noncompetition_participant && event.max_noncompetition_participant > 0 && (
+                    <div className="mb-8 border-2 border-black bg-[#fbfbf9] p-4 shadow-[4px_4px_0_#191b1a]">
+                      <div className="mb-2 flex items-center justify-between text-xs font-black uppercase tracking-wider text-black">
+                        <span className="flex items-center gap-1.5">
+                          <FiUsers className="text-sm" /> Kuota Peserta Event
+                        </span>
+                        <span
+                          className={`border-2 border-black px-2 py-0.5 text-[11px] font-black uppercase shadow-[2px_2px_0_#191b1a] ${
+                            (event.remaining_quota !== null && event.remaining_quota <= 0) || !event.is_active
+                              ? 'bg-[#ff4d4f] text-white'
+                              : 'bg-yellow-neo text-black'
+                          }`}
+                        >
+                          {(event.remaining_quota !== null && event.remaining_quota <= 0) || !event.is_active
+                            ? 'Penuh'
+                            : `${event.remaining_quota ?? (event.max_noncompetition_participant - (event.current_participants ?? 0))} Slot Tersisa`}
+                        </span>
+                      </div>
+                      <div className="h-3 w-full border-2 border-black bg-white overflow-hidden">
+                        <div
+                          className={`h-full transition-all duration-500 ${
+                            (event.remaining_quota !== null && event.remaining_quota <= 0) || !event.is_active
+                              ? 'bg-[#ff4d4f]'
+                              : 'bg-[#18c964]'
+                          }`}
+                          style={{
+                            width: `${Math.min(
+                              100,
+                              Math.round(
+                                ((event.current_participants ?? (event.max_noncompetition_participant - (event.remaining_quota ?? 0))) /
+                                  event.max_noncompetition_participant) *
+                                  100
+                              )
+                            )}%`,
+                          }}
+                        />
+                      </div>
+                      <div className="mt-2 flex justify-between text-xs font-bold text-gray-600">
+                        <span>Terisi: <strong>{event.current_participants ?? 0} peserta</strong></span>
+                        <span>Maksimal: <strong>{event.max_noncompetition_participant} peserta</strong></span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* CTA: WhatsApp Link if Registered / Pending State if Pending / Daftar Sekarang if Not */}
                   {isRegistered ? (
@@ -241,6 +288,8 @@ const EventDetailPage = () => {
                           <FiUserPlus size={20} />
                           Daftar Sekarang
                         </>
+                      ) : event.max_noncompetition_participant && event.remaining_quota !== null && event.remaining_quota <= 0 ? (
+                        <>Pendaftaran Ditutup (Kuota Penuh)</>
                       ) : (
                         <>Pendaftaran Ditutup/Belum Dibuka</>
                       )}
