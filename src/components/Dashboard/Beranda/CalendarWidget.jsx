@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MdChevronLeft, MdChevronRight, MdEvent } from "react-icons/md";
 import { getCompetitionTimelines, getEventTimelines } from "../../../api/eventPublic";
 import { getUserCompetitions, getUserEvents } from "../../../api/user";
+import { parseWIB } from "../../../utils/dateFormatter";
 
 const CalendarWidget = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -33,8 +34,8 @@ const CalendarWidget = () => {
                     allEvents.push(...compRes.data.map(e => ({
                         ...e,
                         type: "Competition",
-                        dateObj: new Date(e.start_date || e.date),
-                        endDateObj: e.end_date ? new Date(e.end_date) : null
+                        dateObj: parseWIB(e.start_date || e.date),
+                        endDateObj: e.end_date ? parseWIB(e.end_date) : null
                     })));
                 }
 
@@ -42,8 +43,8 @@ const CalendarWidget = () => {
                     allEvents.push(...eventRes.data.filter(e => joinedEventIds.has(e.event_id)).map(e => ({
                         ...e,
                         type: "Event",
-                        dateObj: new Date(e.start_date || e.date),
-                        endDateObj: e.end_date ? new Date(e.end_date) : null
+                        dateObj: parseWIB(e.start_date || e.date),
+                        endDateObj: e.end_date ? parseWIB(e.end_date) : null
                     })));
                 }
                 
