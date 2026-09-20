@@ -4,19 +4,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { tapPress } from "../../lib/motion";
 import NavbarNotificationBell from "../NavbarNotificationBell";
+import { useAnnouncementNav } from "../../hooks/useAnnouncementNav";
 
 /**
  * Navbar Neo-Brutalisme — background indigo, auth-aware.
  * Menampilkan LOGIN (kuning) saat belum login, badge PROFILE (hijau) saat sudah login.
  */
-const navLinks = [
-  { label: "Home", to: "/" },
-  { label: "Event", to: "/#event" },
-  { label: "Competition", to: "/#competition" },
-  { label: "Finalist", to: "/finalist" },
-  { label: "Contact Us", to: "/#contact" },
-];
-
 const MotionLink = Motion.create(Link);
 
 const NavbarNeo = () => {
@@ -25,6 +18,15 @@ const NavbarNeo = () => {
   const { isAuthenticated, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const announcementNav = useAnnouncementNav();
+
+  const navLinks = [
+    { label: "Home", to: "/" },
+    { label: "Event", to: "/#event" },
+    { label: "Competition", to: "/#competition" },
+    { label: announcementNav.navLabel, to: announcementNav.path },
+    { label: "Contact Us", to: "/#contact" },
+  ];
 
   const isHomePage = location.pathname === "/" || location.pathname === "/home";
 

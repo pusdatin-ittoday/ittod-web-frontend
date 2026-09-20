@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { AlertProvider } from "./context/AlertContext";
 import MotionProvider from "./components/motion/MotionProvider";
@@ -24,6 +24,7 @@ const routeTitleMap = {
   "/dashboard/edit-profile": "Edit Profil - IT TODAY 2026",
   "/sponsors": "Sponsor Kami - IT TODAY 2026",
   "/finalist": "Finalis & Juara Lomba - IT TODAY 2026",
+  "/champions": "Juara & Finalis Lomba - IT TODAY 2026",
 };
 
 const ScrollToTop = () => {
@@ -129,6 +130,7 @@ const AppRoutes = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="/home" element={<LandingPage />} />
           <Route path="/finalist" element={<FinalistPage />} />
+          <Route path="/champions" element={<FinalistPage />} />
           <Route path="/event/:slug" element={<EventDetailPage />} />
           <Route
             path="/competition/:slug"

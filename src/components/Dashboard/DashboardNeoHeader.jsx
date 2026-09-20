@@ -2,13 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logoutUser, getAnnouncements, getCurrentUser, markAnnouncementsAsRead } from "../../api/user";
 import { FaBell } from "react-icons/fa";
-
-const navLinks = [
-  { label: "Home", to: "/" },
-  { label: "Event", to: "/#event" },
-  { label: "Competition", to: "/#competition" },
-  { label: "Contact Us", to: "/#contact" },
-];
+import { useAnnouncementNav } from "../../hooks/useAnnouncementNav";
 
 const DashboardNeoHeader = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -18,6 +12,15 @@ const DashboardNeoHeader = () => {
   const dropdownRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const announcementNav = useAnnouncementNav();
+
+  const navLinks = [
+    { label: "Home", to: "/" },
+    { label: "Event", to: "/#event" },
+    { label: "Competition", to: "/#competition" },
+    { label: announcementNav.navLabel, to: announcementNav.path },
+    { label: "Contact Us", to: "/#contact" },
+  ];
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -114,18 +117,16 @@ const DashboardNeoHeader = () => {
           </Link>
 
           <nav className="hidden items-center gap-9 lg:flex xl:gap-12">
-            <Link to="/" className="border-b-[3px] border-transparent py-2 font-inter text-sm font-extrabold tracking-wide text-white transition-colors duration-200 hover:border-yellow-neo hover:text-yellow-neo xl:text-base">
-              Home
-            </Link>
-            <Link to="/#event" className="border-b-[3px] border-transparent py-2 font-inter text-sm font-extrabold tracking-wide text-white transition-colors duration-200 hover:border-yellow-neo hover:text-yellow-neo xl:text-base">
-              Event
-            </Link>
-            <Link to="/#competition" className="border-b-[3px] border-transparent py-2 font-inter text-sm font-extrabold tracking-wide text-white transition-colors duration-200 hover:border-yellow-neo hover:text-yellow-neo xl:text-base">
-              Competition
-            </Link>
-            <Link to="/#contact" className="border-b-[3px] border-transparent py-2 font-inter text-sm font-extrabold tracking-wide text-white transition-colors duration-200 hover:border-yellow-neo hover:text-yellow-neo xl:text-base">
-              Contact Us
-            </Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                to={link.to}
+                onClick={(e) => handleNavClick(e, link)}
+                className="border-b-[3px] border-transparent py-2 font-inter text-sm font-extrabold tracking-wide text-white transition-colors duration-200 hover:border-yellow-neo hover:text-yellow-neo xl:text-base"
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">

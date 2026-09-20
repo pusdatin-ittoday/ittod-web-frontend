@@ -1,19 +1,21 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { 
-  FiChevronLeft, 
-  FiChevronRight, 
-  FiAward, 
-  FiUsers, 
-  FiLoader, 
-  FiAlertCircle, 
-  FiCheckCircle, 
-  FiExternalLink 
+import {
+  FiChevronLeft,
+  FiChevronRight,
+  FiAward,
+  FiUsers,
+  FiLoader,
+  FiAlertCircle,
+  FiCheckCircle,
+  FiExternalLink
 } from "react-icons/fi";
 import NavbarNeo from "../components/layout/Navbar";
 import FooterNeo from "../components/layout/Footer";
 import { getAllCompetitionResults } from "../services/eventService";
+import { useAuth } from "../context/AuthContext";
+import { getUserCompetitions } from "../api/user";
 
 const getFallbackLogo = (comp) => {
   const name = (comp?.slug || comp?.title || "").toLowerCase();
@@ -30,6 +32,22 @@ export default function FinalistPage() {
   const [selectedCompId, setSelectedCompId] = useState(null);
   const [error, setError] = useState(null);
   const sliderRef = useRef(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
+  const [userTeams, setUserTeams] = useState([]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    getUserCompetitions()
+      .then((res) => {
+        if (res?.success && res.data) {
+          const teams = Array.isArray(res.data) ? res.data : Object.values(res.data);
+          setUserTeams(teams);
+        }
+      })
+      .catch(() => { });
+  }, [isAuthenticated]);
 
   useEffect(() => {
     let isMounted = true;
@@ -41,6 +59,18 @@ export default function FinalistPage() {
 
         if (res.success && res.data?.competitions) {
           setCompetitions(res.data.competitions);
+
+          const hasActualChampions = Boolean(
+            res.data.champion_revealed ||
+            res.data.competitions?.some((c) => c.champion_revealed && c.champions?.length > 0)
+          );
+
+          if (hasActualChampions && location.pathname === "/finalist") {
+            navigate("/champions", { replace: true });
+          } else if (!hasActualChampions && location.pathname === "/champions") {
+            navigate("/finalist", { replace: true });
+          }
+
           // Prioritaskan kompetisi yang sudah revealed, atau pilih yang pertama
           const firstRevealed = res.data.competitions.find((c) => c.finalist_revealed);
           const defaultComp = firstRevealed || res.data.competitions[0];
@@ -74,20 +104,86 @@ export default function FinalistPage() {
 
   const selectedComp = competitions.find((c) => c.id === selectedCompId) || competitions[0];
 
+  const isIndividual = Boolean(
+    selectedComp?.is_individual ||
+    selectedComp?.participation_type === "individual" ||
+    selectedComp?.participation_type === "individu"
+  );
+
   const getLeaderName = (team) => {
     if (!team || !team.members) return "";
     const leader = team.members.find((m) => m.role === "leader" || m.role === "Ketua");
     return leader ? leader.name : team.members[0]?.name || "";
   };
 
-  const getDisplayName = (team, isIndividual) => {
-    if (isIndividual) return getLeaderName(team);
-    return team.team_name;
+  const getDisplayName = (team, isIndiv) => {
+    if (isIndiv) {
+      const leaderName = getLeaderName(team);
+      if (leaderName) return leaderName;
+      if (team?.team_name) {
+        return team.team_name.split(" - ")[0];
+      }
+      return "–";
+    }
+    return team?.team_name || "–";
   };
 
-  const getSubTitle = (team, isIndividual) => {
-    if (isIndividual) return team.institution || "IT TODAY 2026";
+  const getSubTitle = (team, isIndiv) => {
+    if (isIndiv) return team?.institution || "IT TODAY 2026";
     return getLeaderName(team);
+  };
+
+  const isUserTeam = (team) => {
+    if (!team) return false;
+    if (!isAuthenticated && !user) return false;
+
+    // 1. By team ID
+    if (team.id && userTeams.some((ut) => ut.id === team.id)) return true;
+
+    // 2. By team name (case-insensitive)
+    const tName = (team.team_name || "").toLowerCase().trim();
+    if (tName && userTeams.some((ut) => (ut.team_name || "").toLowerCase().trim() === tName)) return true;
+
+    // 3. By user ID in members
+    const uId = user?.id;
+    if (uId && team.members?.some((m) => m.user_id === uId || m.id === uId)) return true;
+
+    // 4. By full_name or name in members
+    const currentFullName = (user?.full_name || "").toLowerCase().trim();
+    const currentName = (user?.name || "").toLowerCase().trim();
+    if (currentFullName && team.members?.some((m) => (m.name || "").toLowerCase().trim() === currentFullName)) {
+      return true;
+    }
+    if (currentName && team.members?.some((m) => (m.name || "").toLowerCase().trim() === currentName)) {
+      return true;
+    }
+
+    // 5. Individual competition fallback
+    if (isIndividual && currentFullName && tName) {
+      if (tName === currentFullName || tName.startsWith(currentFullName)) return true;
+    }
+    if (isIndividual && currentName && tName) {
+      if (tName === currentName || tName.startsWith(currentName)) return true;
+    }
+
+    return false;
+  };
+
+  const isUserMember = (member, team) => {
+    if (!member) return false;
+    if (!isAuthenticated && !user) return false;
+
+    const uId = user?.id;
+    if (uId && (member.user_id === uId || member.id === uId)) return true;
+
+    const mName = (member.name || "").toLowerCase().trim();
+    const currentFullName = (user?.full_name || "").toLowerCase().trim();
+    const currentName = (user?.name || "").toLowerCase().trim();
+
+    if (currentFullName && mName === currentFullName) return true;
+    if (currentName && mName === currentName) return true;
+
+    return false;
   };
 
   const hasChampions = selectedComp?.champion_revealed && selectedComp?.champions?.length > 0;
@@ -113,7 +209,7 @@ export default function FinalistPage() {
             className="font-bebas text-5xl sm:text-6xl md:text-8xl leading-none uppercase tracking-wide text-[#111] transition-transform duration-300 cursor-default"
             style={{ textShadow: "-3px 3px 0 #FFD200, 3px -2px 0 #313988" }}
           >
-            FINALISTS & CHAMPIONS
+            {hasChampions ? "CHAMPIONS" : "FINALISTS"}
           </h1>
 
           <p className="font-inter text-gray-700 font-medium text-sm md:text-base max-w-2xl mx-auto mt-3">
@@ -179,17 +275,17 @@ export default function FinalistPage() {
                 {competitions.map((comp) => {
                   const isSelected = comp.id === selectedComp?.id;
                   const logoSrc = comp.logo_url || getFallbackLogo(comp);
+                  const compHasMyTeam = (comp.champions || []).some(isUserTeam) || (comp.finalists || []).some(isUserTeam);
 
                   return (
                     <button
                       key={comp.id}
                       onClick={() => setSelectedCompId(comp.id)}
                       style={{ scrollSnapAlign: "start" }}
-                      className={`flex-shrink-0 w-64 md:w-72 p-4 text-left border-[3px] border-black transition-all duration-200 cursor-pointer flex flex-col justify-between ${
-                        isSelected
+                      className={`flex-shrink-0 w-64 md:w-72 p-4 text-left border-[3px] border-black transition-all duration-200 cursor-pointer flex flex-col justify-between relative ${isSelected
                           ? "bg-[#ffd200] shadow-[6px_6px_0_#000] -translate-y-1.5 ring-2 ring-black"
                           : "bg-white shadow-[4px_4px_0_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] hover:bg-yellow-50/50"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-12 h-12 md:w-14 md:h-14 bg-white border-[2px] border-black p-1 flex-shrink-0 shadow-[2px_2px_0_#000] flex items-center justify-center overflow-hidden">
@@ -288,76 +384,103 @@ export default function FinalistPage() {
                         {/* Podium Board */}
                         <div className="flex items-end justify-center w-full max-w-4xl mx-auto mb-6 px-2">
                           {/* Rank 2 (Kiri) */}
-                          {t2 && (
-                            <div className="w-[31%] flex flex-col border-[3px] border-black border-r-0 relative z-0 transition-transform duration-300 hover:-translate-y-3 hover:z-30 cursor-pointer group">
-                              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-white border-[2px] border-black px-2 md:px-4 py-0.5 md:py-1 z-10 shadow-[3px_3px_0_#000] group-hover:-translate-y-0.5 transition-transform">
-                                <span className="font-inter font-black text-[9px] md:text-xs whitespace-nowrap text-black">
-                                  2ND PLACE
-                                </span>
+                          {t2 && (() => {
+                            const isMyT2 = isUserTeam(t2);
+                            return (
+                              <div
+                                className={`w-[31%] flex flex-col border-[3px] border-black border-r-0 relative z-0 transition-transform duration-300 hover:-translate-y-3 hover:z-30 cursor-pointer group ${isMyT2 ? "ring-4 ring-[#ffd200] ring-offset-2 z-20 shadow-[6px_6px_0_#000]" : ""
+                                  }`}
+                              >
+                                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 flex items-center gap-1 z-10">
+                                  <div className="bg-white border-[2px] border-black px-2 md:px-4 py-0.5 md:py-1 shadow-[3px_3px_0_#000] group-hover:-translate-y-0.5 transition-transform">
+                                    <span className="font-inter font-black text-[9px] md:text-xs whitespace-nowrap text-black">
+                                      2ND PLACE
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="bg-[#313988] pt-10 md:pt-12 pb-5 md:pb-6 px-2 text-center border-b-[3px] border-black flex flex-col justify-center min-h-[130px] md:min-h-[150px]">
+                                  <h4 className={`font-inter font-black text-xs md:text-lg mb-1 uppercase break-words leading-tight ${isMyT2 ? "text-[#ffd200] underline decoration-2 underline-offset-4" : "text-white"
+                                    }`}>
+                                    {getDisplayName(t2, isIndividual)}
+                                  </h4>
+                                  <p className="font-inter text-[#999FFF] font-bold text-[8px] md:text-[10px] uppercase line-clamp-2 leading-tight break-words">
+                                    {getSubTitle(t2, isIndividual)}
+                                  </p>
+                                </div>
+                                <div className="bg-[#dcdde5] h-24 md:h-36 flex items-center justify-center relative overflow-hidden">
+                                  <span className="text-[5rem] md:text-[8rem] font-black text-black/10 absolute leading-none">
+                                    2
+                                  </span>
+                                </div>
                               </div>
-                              <div className="bg-[#313988] pt-10 md:pt-12 pb-5 md:pb-6 px-2 text-center border-b-[3px] border-black flex flex-col justify-center min-h-[130px] md:min-h-[150px]">
-                                <h4 className="font-inter text-white font-black text-xs md:text-lg mb-1 uppercase break-words leading-tight">
-                                  {getDisplayName(t2, selectedComp.is_individual)}
-                                </h4>
-                                <p className="font-inter text-[#999FFF] font-bold text-[8px] md:text-[10px] uppercase truncate">
-                                  {getSubTitle(t2, selectedComp.is_individual)}
-                                </p>
-                              </div>
-                              <div className="bg-[#dcdde5] h-24 md:h-36 flex items-center justify-center relative overflow-hidden">
-                                <span className="text-[5rem] md:text-[8rem] font-black text-black/10 absolute leading-none">
-                                  2
-                                </span>
-                              </div>
-                            </div>
-                          )}
+                            );
+                          })()}
 
                           {/* Rank 1 (Tengah) */}
-                          {t1 && (
-                            <div className="w-[38%] flex flex-col border-[3px] border-black relative z-10 -mb-1 shadow-[5px_5px_0_#000] transition-transform duration-300 hover:-translate-y-4 hover:shadow-[8px_8px_0_#000] cursor-pointer group">
-                              <div className="absolute -top-4 md:-top-5 left-1/2 -translate-x-1/2 bg-black border-[2px] border-white px-2.5 md:px-5 py-1 z-20 shadow-[3px_3px_0_#000] group-hover:-translate-y-1 transition-transform">
-                                <span className="font-inter font-black text-[#FFD200] text-[10px] md:text-sm whitespace-nowrap tracking-wider">
-                                  CHAMPION
-                                </span>
+                          {t1 && (() => {
+                            const isMyT1 = isUserTeam(t1);
+                            return (
+                              <div
+                                className={`w-[38%] flex flex-col border-[3px] border-black relative z-10 -mb-1 shadow-[5px_5px_0_#000] transition-transform duration-300 hover:-translate-y-4 hover:shadow-[8px_8px_0_#000] cursor-pointer group ${isMyT1 ? "ring-4 ring-black ring-offset-2" : ""
+                                  }`}
+                              >
+                                <div className="absolute -top-4 md:-top-5 left-1/2 -translate-x-1/2 flex items-center gap-1 z-20">
+                                  <div className="bg-black border-[2px] border-white px-2.5 md:px-5 py-1 shadow-[3px_3px_0_#000] group-hover:-translate-y-1 transition-transform">
+                                    <span className="font-inter font-black text-[#FFD200] text-[10px] md:text-sm whitespace-nowrap tracking-wider">
+                                      CHAMPION
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="bg-[#ffd200] pt-12 md:pt-16 pb-6 md:pb-8 px-2 text-center border-b-[3px] border-black flex flex-col justify-center min-h-[160px] md:min-h-[190px]">
+                                  <h4 className={`font-inter font-black text-sm md:text-2xl mb-1 uppercase break-words leading-tight ${isMyT1 ? "bg-black text-[#ffd200] px-2 py-0.5 inline-block border border-black shadow-[2px_2px_0_#000]" : "text-black"
+                                    }`}>
+                                    {getDisplayName(t1, isIndividual)}
+                                  </h4>
+                                  <p className="font-inter text-black font-bold text-[9px] md:text-xs uppercase line-clamp-2 leading-tight break-words">
+                                    {getSubTitle(t1, isIndividual)}
+                                  </p>
+                                </div>
+                                <div className="bg-[#ebe4c9] h-36 md:h-52 flex items-center justify-center relative overflow-hidden">
+                                  <span className="text-[7rem] md:text-[10rem] font-black text-black/10 absolute leading-none">
+                                    1
+                                  </span>
+                                </div>
                               </div>
-                              <div className="bg-[#ffd200] pt-12 md:pt-16 pb-6 md:pb-8 px-2 text-center border-b-[3px] border-black flex flex-col justify-center min-h-[160px] md:min-h-[190px]">
-                                <h4 className="font-inter text-black font-black text-sm md:text-2xl mb-1 uppercase break-words leading-tight">
-                                  {getDisplayName(t1, selectedComp.is_individual)}
-                                </h4>
-                                <p className="font-inter text-black font-bold text-[9px] md:text-xs uppercase truncate">
-                                  {getSubTitle(t1, selectedComp.is_individual)}
-                                </p>
-                              </div>
-                              <div className="bg-[#ebe4c9] h-36 md:h-52 flex items-center justify-center relative overflow-hidden">
-                                <span className="text-[7rem] md:text-[10rem] font-black text-black/10 absolute leading-none">
-                                  1
-                                </span>
-                              </div>
-                            </div>
-                          )}
+                            );
+                          })()}
 
                           {/* Rank 3 (Kanan) */}
-                          {t3 && (
-                            <div className="w-[31%] flex flex-col border-[3px] border-black border-l-0 relative z-0 transition-transform duration-300 hover:-translate-y-3 hover:z-30 cursor-pointer group">
-                              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-black border-[2px] border-white px-2 md:px-4 py-0.5 md:py-1 z-10 shadow-[3px_3px_0_#000] group-hover:-translate-y-0.5 transition-transform">
-                                <span className="font-inter font-black text-white text-[9px] md:text-xs whitespace-nowrap">
-                                  3RD PLACE
-                                </span>
+                          {t3 && (() => {
+                            const isMyT3 = isUserTeam(t3);
+                            return (
+                              <div
+                                className={`w-[31%] flex flex-col border-[3px] border-black border-l-0 relative z-0 transition-transform duration-300 hover:-translate-y-3 hover:z-30 cursor-pointer group ${isMyT3 ? "ring-4 ring-[#ffd200] ring-offset-2 z-20 shadow-[6px_6px_0_#000]" : ""
+                                  }`}
+                              >
+                                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 flex items-center gap-1 z-10">
+                                  <div className="bg-black border-[2px] border-white px-2 md:px-4 py-0.5 md:py-1 shadow-[3px_3px_0_#000] group-hover:-translate-y-0.5 transition-transform">
+                                    <span className="font-inter font-black text-white text-[9px] md:text-xs whitespace-nowrap">
+                                      3RD PLACE
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="bg-[#444444] pt-9 md:pt-11 pb-5 md:pb-6 px-2 text-center border-b-[3px] border-black flex flex-col justify-center min-h-[120px] md:min-h-[135px]">
+                                  <h4 className={`font-inter font-black text-xs md:text-base mb-1 uppercase break-words leading-tight ${isMyT3 ? "text-[#ffd200] underline decoration-2 underline-offset-4" : "text-white"
+                                    }`}>
+                                    {getDisplayName(t3, isIndividual)}
+                                  </h4>
+                                  <p className="font-inter text-gray-300 font-bold text-[8px] md:text-[10px] uppercase line-clamp-2 leading-tight break-words">
+                                    {getSubTitle(t3, isIndividual)}
+                                  </p>
+                                </div>
+                                <div className="bg-[#dbdbdb] h-20 md:h-30 flex items-center justify-center relative overflow-hidden">
+                                  <span className="text-[4.5rem] md:text-[7rem] font-black text-black/10 absolute leading-none">
+                                    3
+                                  </span>
+                                </div>
                               </div>
-                              <div className="bg-[#444444] pt-9 md:pt-11 pb-5 md:pb-6 px-2 text-center border-b-[3px] border-black flex flex-col justify-center min-h-[120px] md:min-h-[135px]">
-                                <h4 className="font-inter text-white font-black text-xs md:text-base mb-1 uppercase break-words leading-tight">
-                                  {getDisplayName(t3, selectedComp.is_individual)}
-                                </h4>
-                                <p className="font-inter text-gray-300 font-bold text-[8px] md:text-[10px] uppercase truncate">
-                                  {getSubTitle(t3, selectedComp.is_individual)}
-                                </p>
-                              </div>
-                              <div className="bg-[#dbdbdb] h-20 md:h-30 flex items-center justify-center relative overflow-hidden">
-                                <span className="text-[4.5rem] md:text-[7rem] font-black text-black/10 absolute leading-none">
-                                  3
-                                </span>
-                              </div>
-                            </div>
-                          )}
+                            );
+                          })()}
                         </div>
                       </div>
                     )}
@@ -375,59 +498,88 @@ export default function FinalistPage() {
                         </div>
 
                         <div className="bg-[#ffd200] border-[2px] border-black px-4 py-1.5 shadow-[2px_2px_0_#000] self-start sm:self-auto font-inter font-black text-xs md:text-sm uppercase">
-                          TOTAL: {selectedComp.finalists?.length || 0} TIM
+                          TOTAL: {selectedComp.finalists?.length || 0} {isIndividual ? "PESERTA" : "TIM"}
                         </div>
                       </div>
 
                       {selectedComp.finalists && selectedComp.finalists.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                          {selectedComp.finalists.map((team, idx) => (
-                            <div
-                              key={team.id || idx}
-                              className="border-[2.5px] border-black p-5 bg-[#FAF9F5] shadow-[4px_4px_0_#000] hover:-translate-y-1.5 hover:shadow-[7px_7px_0_#000] hover:bg-[#FFFDF0] transition-all flex flex-col justify-between"
-                            >
-                              <div>
-                                <div className="flex items-center justify-between gap-2 mb-3">
-                                  {team.institution && (
-                                    <span className="font-inter text-[10px] font-bold text-gray-500 uppercase truncate max-w-[150px]">
-                                      {team.institution}
-                                    </span>
-                                  )}
-                                </div>
-
-                                <h4 className="font-inter font-black text-black text-base md:text-lg uppercase leading-tight mb-3 break-words">
-                                  {getDisplayName(team, selectedComp.is_individual)}
-                                </h4>
-                              </div>
-
-                              {/* Anggota / Ketua */}
-                              {team.members && team.members.length > 0 && (
-                                <div className="border-t-[1.5px] border-black/20 pt-3 mt-3">
-                                  <div className="flex items-center gap-1.5 text-gray-700 mb-1.5">
-                                    <FiUsers className="text-xs flex-shrink-0" />
-                                    <span className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                                      Anggota Tim:
-                                    </span>
+                          {selectedComp.finalists.map((team, idx) => {
+                            const isMyTeam = isUserTeam(team);
+                            return (
+                              <div
+                                key={team.id || idx}
+                                className={`border-[2.5px] border-black p-5 shadow-[4px_4px_0_#000] transition-all flex flex-col justify-between relative ${isMyTeam
+                                    ? "bg-[#FFFDE6] border-[3.5px] ring-4 ring-[#ffd200] ring-offset-2 shadow-[7px_7px_0_#000] -translate-y-1"
+                                    : "bg-[#FAF9F5] hover:-translate-y-1.5 hover:shadow-[7px_7px_0_#000] hover:bg-[#FFFDF0]"
+                                  }`}
+                              >
+                                <div>
+                                  <div className="flex items-center justify-between gap-2 mb-2">
+                                    {team.institution ? (
+                                      <span className="font-inter text-[11px] font-bold text-gray-500 uppercase leading-snug break-words block">
+                                        {team.institution}
+                                      </span>
+                                    ) : <div />}
                                   </div>
-                                  <ul className="space-y-1">
-                                    {team.members.map((m, mIdx) => (
-                                      <li
-                                        key={mIdx}
-                                        className="font-inter text-xs font-semibold text-gray-800 flex items-center justify-between gap-2"
-                                      >
-                                        <span className="truncate">{m.name}</span>
-                                        {m.role && (
-                                          <span className="text-[9px] bg-gray-200 border border-black/40 px-1.5 py-0.2 rounded font-bold uppercase flex-shrink-0">
-                                            {m.role}
-                                          </span>
-                                        )}
-                                      </li>
-                                    ))}
-                                  </ul>
+
+                                  <h4 className={`font-inter font-black text-base md:text-lg uppercase leading-tight mb-3 break-words ${isMyTeam ? "text-[#191b1a] bg-[#ffd200]/70 px-1.5 py-0.5 -mx-1.5 inline-block border-b-2 border-black" : "text-black"
+                                    }`}>
+                                    {getDisplayName(team, isIndividual)}
+                                  </h4>
                                 </div>
-                              )}
-                            </div>
-                          ))}
+
+                                {/* Anggota / Ketua — Hanya tampilkan jika lomba tim */}
+                                {!isIndividual && team.members && team.members.length > 0 && (
+                                  <div className="border-t-[1.5px] border-black/20 pt-3 mt-3">
+                                    <div className="flex items-center gap-1.5 text-gray-700 mb-1.5">
+                                      <FiUsers className="text-xs flex-shrink-0" />
+                                      <span className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                                        Anggota Tim:
+                                      </span>
+                                    </div>
+                                    <ul className="space-y-1.5">
+                                      {[...team.members]
+                                        .sort((a, b) => {
+                                          const isALeader = (a.role || "").toLowerCase().includes("lead") || (a.role || "").toLowerCase().includes("ketua");
+                                          const isBLeader = (b.role || "").toLowerCase().includes("lead") || (b.role || "").toLowerCase().includes("ketua");
+                                          if (isALeader && !isBLeader) return -1;
+                                          if (!isALeader && isBLeader) return 1;
+                                          return 0;
+                                        })
+                                        .map((m, mIdx) => {
+                                          const isLeader = (m.role || "").toLowerCase().includes("lead") || (m.role || "").toLowerCase().includes("ketua");
+                                          const isMe = isUserMember(m, team);
+                                          return (
+                                            <li
+                                              key={mIdx}
+                                              className={`font-inter text-xs flex items-center justify-between gap-2 p-1 rounded transition-colors ${isMe
+                                                  ? "bg-[#ffd200]/40 font-black border border-black/40 text-black shadow-[1px_1px_0_#000]"
+                                                  : "font-semibold text-gray-800"
+                                                }`}
+                                            >
+                                              <span className="truncate flex items-center gap-1.5">
+                                                <span>{m.name}</span>
+                                              </span>
+                                              {m.role && (
+                                                <span
+                                                  className={`text-[9px] border border-black px-1.5 py-0.5 rounded font-black uppercase flex-shrink-0 ${isLeader
+                                                      ? "bg-[#ffd200] text-black shadow-[1.5px_1.5px_0_#000]"
+                                                      : "bg-gray-200 text-gray-700 border-black/40"
+                                                    }`}
+                                                >
+                                                  {m.role}
+                                                </span>
+                                              )}
+                                            </li>
+                                          );
+                                        })}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       ) : (
                         <div className="py-12 text-center text-gray-500 font-inter">

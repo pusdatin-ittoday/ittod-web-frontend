@@ -50,7 +50,7 @@ export default function FinalistAnnouncementPopup() {
   const handleNavigate = () => {
     sessionStorage.setItem(POPUP_DISMISS_KEY, "true");
     setIsOpen(false);
-    navigate("/finalist");
+    navigate(championRevealed ? "/champions" : "/finalist");
   };
 
   return (

@@ -4,7 +4,9 @@ import { MdHomeFilled, MdFeedback } from "react-icons/md";
 import { GiTrophy } from "react-icons/gi";
 import { MdEvent } from "react-icons/md";
 import { FaFileUpload, FaBell, FaDiscord } from "react-icons/fa";
+import { FiAward } from "react-icons/fi";
 import { getAnnouncements, getCurrentUser } from "../../api/user";
+import { useAnnouncementNav } from "../../hooks/useAnnouncementNav";
 
 const participantQuotes = [
     "Jangan lupa tidur.",
@@ -41,6 +43,7 @@ const participantQuotes = [
 
 const Sidebar = ({ active, setActive, variant = "default" }) => {
     const navigate = useNavigate();
+    const announcementNav = useAnnouncementNav();
     const randomQuote = useMemo(
         () => participantQuotes[Math.floor(Math.random() * participantQuotes.length)],
         []
@@ -91,7 +94,8 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
         },
         { id: "ikut-lomba", label: "Ikut Lomba", icon: <GiTrophy className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
         { id: "ikut-event", label: "Ikut Event", icon: <MdEvent className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
-        { id: "submit-lomba", label: "Submit Lomba", icon: <FaFileUpload className="text-sm sm:text-base lg:text-lg xl:text-xl" /> }
+        { id: "submit-lomba", label: "Submit Lomba", icon: <FaFileUpload className="text-sm sm:text-base lg:text-lg xl:text-xl" /> },
+        { id: "finalist", label: announcementNav.sidebarLabel, icon: <FiAward className="text-sm sm:text-base lg:text-lg xl:text-xl" /> }
     ];
 
     if (variant === "neobrutal") {
@@ -101,6 +105,7 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
             { ...menuItems[3], label: "Daftar Event" },
             { ...menuItems[2], label: "Daftar Lomba" },
             menuItems[4],
+            menuItems[5],
         ];
 
         return (
@@ -117,8 +122,12 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                             key={item.id}
                             type="button"
                             onClick={() => {
-                                if (setActive) setActive(item.id);
-                                navigate(`/dashboard/${item.id}`);
+                                if (item.id === "finalist") {
+                                    navigate(announcementNav.path);
+                                } else {
+                                    if (setActive) setActive(item.id);
+                                    navigate(`/dashboard/${item.id}`);
+                                }
                             }}
                             className={`relative flex flex-col lg:flex-row justify-center lg:justify-start min-h-14 items-center gap-1 lg:gap-3 border-[3px] border-black px-1 lg:px-3 py-2 lg:py-3 text-center lg:text-left text-[11px] lg:text-xs font-black shadow-[4px_4px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#191b1a] active:translate-x-1 active:translate-y-1 active:shadow-none sm:text-sm ${
                                 active === item.id
@@ -180,8 +189,12 @@ const Sidebar = ({ active, setActive, variant = "default" }) => {
                     <button
                         key={item.id}
                         onClick={() => {
-                            if (setActive) setActive(item.id);
-                            navigate(`/dashboard/${item.id}`);
+                            if (item.id === "finalist") {
+                                navigate(announcementNav.path);
+                            } else {
+                                if (setActive) setActive(item.id);
+                                navigate(`/dashboard/${item.id}`);
+                            }
                         }}
                         className={`relative px-4 sm:px-6 md:px-8 py-1 sm:py-2.5 md:py-3 lg:px-8 lg:text-start lg:py-2 xl:py-3 xl:px-10
                             text-xs sm:text-sm md:text-base lg:text-sm xl:text-base
