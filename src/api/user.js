@@ -139,16 +139,26 @@ export const getCurrentUser = async () => {
 	} catch (error) {
 		console.error("Error fetching user data:", error);
 
-		// If unauthorized, clear token
-		if (error.response && error.response.status === 401) {
+		const isUnauthorized = Boolean(
+			(error.response && error.response.status === 401) ||
+			error.response?.data?.message === "Unauthorized"
+		);
+
+		// If unauthorized, clear token and notify auth listeners
+		if (isUnauthorized) {
 			localStorage.removeItem("authToken");
 			localStorage.removeItem("isLoggedIn");
 			localStorage.removeItem("userId");
 			sessionStorage.removeItem("userData");
+			if (typeof window !== "undefined") {
+				window.dispatchEvent(new Event("auth-changed"));
+			}
 		}
 
 		return {
 			success: false,
+			status: error.response?.status,
+			isUnauthorized,
 			error:
 				error.response?.data?.message ||
 				error.response?.data?.error ||

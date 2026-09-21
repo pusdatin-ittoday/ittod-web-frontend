@@ -111,8 +111,19 @@ class EditProfile extends Component {
             });
         } catch (error) {
             console.error("Error loading data:", error);
+            if (error.response && error.response.status === 401) {
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("isLoggedIn");
+                localStorage.removeItem("userId");
+                sessionStorage.removeItem("userData");
+                if (typeof window !== "undefined") {
+                    window.dispatchEvent(new Event("auth-changed"));
+                    window.location.href = `/login?redirectTo=${encodeURIComponent("/edit-profile")}`;
+                }
+                return;
+            }
             this.setState({
-                error: "Failed to load user data",
+                error: "Gagal memuat data profil. Silakan muat ulang atau coba lagi.",
                 isLoading: false
             });
         }
@@ -402,9 +413,28 @@ class EditProfile extends Component {
         if (error) {
             return (
                 <div className="flex justify-center items-center min-h-screen bg-[#F9F9F9]">
-                    <div className="border-2 border-[#1A1C1C] bg-[#fef2f2] p-4 text-xs font-bold text-red-700 shadow-[3px_3px_0_#1A1C1C] max-w-md">
-                        <strong className="font-extrabold uppercase text-red-800 mr-2">Error!</strong>
-                        {error}
+                    <div className="border-2 border-[#1A1C1C] bg-[#fef2f2] p-6 text-xs font-bold text-red-700 shadow-[3px_3px_0_#1A1C1C] max-w-md flex flex-col gap-4">
+                        <div>
+                            <strong className="font-extrabold uppercase text-red-800 mr-2">Error!</strong>
+                            {error}
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    this.setState({ error: null, isLoading: true }, () => this.loadUserData());
+                                }}
+                                className="px-3 py-1.5 bg-[#34399F] text-white font-bold uppercase tracking-wider text-[11px] shadow-[2px_2px_0_#1A1C1C] border border-[#1A1C1C] hover:bg-[#282d82]"
+                            >
+                                Coba Lagi
+                            </button>
+                            <a
+                                href="/login"
+                                className="px-3 py-1.5 bg-white text-[#1A1C1C] font-bold uppercase tracking-wider text-[11px] shadow-[2px_2px_0_#1A1C1C] border border-[#1A1C1C] hover:bg-gray-100 text-center"
+                            >
+                                Masuk / Login
+                            </a>
+                        </div>
                     </div>
                 </div>
             );

@@ -19,23 +19,46 @@ export const getMissingProfileFields = (user = {}) =>
     return value === null || value === undefined || String(value).trim() === "";
   }).map(([, label]) => label);
 
-export const requireCompleteProfile = async (navigate, showAlert) => {
+export const requireCompleteProfile = async (navigate, showAlert, redirectTo) => {
   const response = await getCurrentUser();
 
   if (!response.success || !response.data) {
-    if (showAlert) {
-      await showAlert({ message: "Data profil belum dapat diperiksa. Silakan coba lagi beberapa saat." });
-    } else {
-      window.alert("Data profil belum dapat diperiksa. Silakan coba lagi beberapa saat.");
+    const isUnauthorized = Boolean(
+      response.isUnauthorized ||
+      response.status === 401 ||
+      response.error?.toLowerCase().includes("unauthorized")
+    );
+
+    if (isUnauthorized) {
+      const msg = "Sesi Anda telah berakhir atau belum masuk. Silakan login terlebih dahulu.";
+      if (showAlert) {
+        await showAlert({ message: msg });
+      } else {
+        window.alert(msg);
+      }
+      const target =
+        redirectTo ||
+        (typeof window !== "undefined"
+          ? window.location.pathname + window.location.search
+          : "/");
+      navigate(`/login?redirectTo=${encodeURIComponent(target)}`);
+      return false;
     }
-    navigate("/edit-profile");
+
+    const errorMsg =
+      "Data profil tidak dapat dimuat saat ini karena kendala jaringan atau server. Silakan coba beberapa saat lagi.";
+    if (showAlert) {
+      await showAlert({ message: errorMsg });
+    } else {
+      window.alert(errorMsg);
+    }
     return false;
   }
 
   const missingFields = getMissingProfileFields(response.data);
 
   if (missingFields.length > 0) {
-    const alertMsg = `Lengkapi Data Diri dan Data Institusi sebelum mendaftar lomba atau bergabung dengan tim.\n\nData yang belum lengkap:\n- ${missingFields.join("\n- ")}`;
+    const alertMsg = `Lengkapi Data Diri dan Data Institusi sebelum mendaftar lomba atau kegiatan.\n\nData yang belum lengkap:\n- ${missingFields.join("\n- ")}`;
     if (showAlert) {
       await showAlert({ message: alertMsg });
     } else {

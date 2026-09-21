@@ -13,6 +13,7 @@ import { getJoinEvent } from '../utils/api/event';
 import { checkIpbOrMinetoday } from '../api/user';
 import { requireCompleteProfile } from '../utils/profileCompletion';
 import { useAlert } from '../context/AlertContext';
+import { useAuth } from '../context/AuthContext';
 import LoadingState from '../components/ui/LoadingState';
 import EventGallery from '../components/event/EventGallery';
 import { getEventGalleryImages, getEventGalleryLabel } from '../data/eventGalleryData';
@@ -41,6 +42,7 @@ const EventDetailPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { showAlert } = useAlert();
+  const { isAuthenticated } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -274,7 +276,11 @@ const EventDetailPage = () => {
                       onClick={async (e) => {
                         if (event.is_active) {
                           e.preventDefault();
-                          const isComplete = await requireCompleteProfile(navigate, showAlert);
+                          if (!isAuthenticated) {
+                            navigate(`/login?redirectTo=${encodeURIComponent(`/event/${slug}`)}`);
+                            return;
+                          }
+                          const isComplete = await requireCompleteProfile(navigate, showAlert, `/event/${slug}`);
                           if (isComplete) {
                             navigate(`/daftar-event/${slug}`);
                           }

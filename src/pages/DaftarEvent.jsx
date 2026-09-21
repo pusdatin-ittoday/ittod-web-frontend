@@ -168,7 +168,7 @@ const DaftarEvent = () => {
 	// Guard profile completion on mount
 	useEffect(() => {
 		const guardRegistration = async () => {
-			const isComplete = await requireCompleteProfile(navigate, showGlobalAlert);
+			const isComplete = await requireCompleteProfile(navigate, showGlobalAlert, window.location.pathname);
 			if (isComplete) {
 				setIsCheckingProfile(false);
 			}
