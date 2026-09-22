@@ -1345,10 +1345,10 @@ const DaftarEvent = () => {
 										</p>
 
 										{/* Daftar Akun Instagram untuk di-follow */}
-										<div className="border-2 border-black bg-[#fafafa] p-3 sm:p-4 shadow-[2px_2px_0_#191b1a] space-y-2.5">
+										<div className="border-2 border-black bg-[#fafafa] p-2.5 sm:p-4 shadow-[2px_2px_0_#191b1a] space-y-2.5">
 											<p className="flex items-center gap-1.5 text-xs sm:text-sm font-black uppercase tracking-wide text-black">
-												<FaInstagram className="text-base text-[#E1306C]" />
-												Silakan follow akun Instagram berikut:
+												<FaInstagram className="text-base sm:text-lg text-[#E1306C] shrink-0" />
+												<span>Silakan follow akun Instagram berikut:</span>
 											</p>
 											<div className="flex flex-col gap-2">
 												{SEMNAS_INSTAGRAM_ACCOUNTS.map((acc) => (
@@ -1357,19 +1357,25 @@ const DaftarEvent = () => {
 														href={acc.url}
 														target="_blank"
 														rel="noopener noreferrer"
-														className="group flex items-center justify-between border-2 border-black bg-white p-2.5 sm:px-3.5 sm:py-2.5 shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#fff9db] hover:shadow-[3px_3px_0_#191b1a] active:translate-x-0.5 active:translate-y-0.5"
+														title={`@${acc.username} - ${acc.label}`}
+														className="group flex items-center justify-between gap-2.5 sm:gap-3 border-2 border-black bg-white p-2 sm:p-2.5 sm:px-3.5 shadow-[2px_2px_0_#191b1a] transition-all hover:-translate-y-0.5 hover:bg-[#fff9db] hover:shadow-[3px_3px_0_#191b1a] active:translate-x-0.5 active:translate-y-0.5"
 													>
-														<div className="flex items-center gap-3">
-															<div className="flex h-8 w-8 shrink-0 items-center justify-center border border-black bg-[#fbe7ec] text-[#E1306C] shadow-[1px_1px_0_#000]">
-																<FaInstagram className="text-base group-hover:scale-110 transition-transform" />
+														<div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+															<div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center border border-black bg-[#fbe7ec] text-[#E1306C] shadow-[1px_1px_0_#000]">
+																<FaInstagram className="text-sm sm:text-base group-hover:scale-110 transition-transform" />
 															</div>
-															<div className="flex flex-col">
-																<span className="text-xs sm:text-sm font-black text-black">@{acc.username}</span>
-																<span className="text-[11px] sm:text-xs font-semibold text-gray-600">{acc.label}</span>
+															<div className="flex flex-col min-w-0 flex-1 justify-center">
+																<span className="text-xs sm:text-sm font-black text-black truncate leading-tight">
+																	@{acc.username}
+																</span>
+																<span className="text-[10px] sm:text-xs font-semibold text-gray-500 truncate leading-tight mt-0.5">
+																	{acc.label}
+																</span>
 															</div>
 														</div>
-														<span className="flex items-center gap-1.5 shrink-0 ml-3 rounded border border-black bg-[#f3f4f6] px-2.5 py-1 text-xs font-black uppercase text-[#1E3A8A] shadow-[1px_1px_0_#000] group-hover:bg-[#1E3A8A] group-hover:text-white transition-colors">
-															Follow <FaExternalLinkAlt className="text-[9px]" />
+														<span className="flex items-center gap-1.5 shrink-0 rounded border border-black bg-[#f3f4f6] px-2.5 py-1 text-[11px] sm:text-xs font-black uppercase text-[#1E3A8A] shadow-[1px_1px_0_#000] group-hover:bg-[#1E3A8A] group-hover:text-white transition-colors">
+															<span>Follow</span>
+															<FaExternalLinkAlt className="text-[8px] sm:text-[9px]" />
 														</span>
 													</a>
 												))}
