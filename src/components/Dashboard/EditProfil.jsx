@@ -280,10 +280,6 @@ class EditProfile extends Component {
             fieldsToValidate.KTM = "";
         }
 
-        if (uploadStatus.twibbonMissing) {
-            fieldsToValidate.twibbon = "";
-        }
-
         for (const key in fieldsToValidate) {
             if (fieldsToValidate[key] === "" || fieldsToValidate[key] === null) {
                 emptyFieldsList.push(this.fieldLabels[key]);
@@ -798,12 +794,12 @@ class EditProfile extends Component {
 
                                 <div className="flex flex-col gap-1.5 md:col-span-2 mt-2">
                                     <div className="flex justify-between items-center">
-                                        <div className="flex justify-between items-end">
+                                        <div className="flex justify-between items-end gap-1.5">
                                         <label className="text-[10.5px] font-bold uppercase tracking-wider text-[#1A1C1C]">
                                             Bukti Upload Twibbon (JPG/PNG, MAX 2MB)
                                         </label>
-                                        <span className="text-[10.5px] font-bold text-[#ba1a1a] uppercase tracking-wider">
-                                            *Wajib
+                                        <span className="text-[10.5px] font-bold text-gray-500 uppercase tracking-wider">
+                                            (Opsional)
                                         </span>
                                     </div>
                                         <button

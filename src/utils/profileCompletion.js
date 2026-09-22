@@ -10,7 +10,6 @@ const REQUIRED_PROFILE_FIELDS = [
   ["pendidikan", "Status Pendidikan"],
   ["nama_sekolah", "Nama Sekolah/Institusi"],
   ["ktm_key", "Kartu Institusi"],
-  ["twibbon_key", "Bukti Upload Twibbon"],
 ];
 
 export const getMissingProfileFields = (user = {}) =>
