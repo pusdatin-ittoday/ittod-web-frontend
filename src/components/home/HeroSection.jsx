@@ -1,8 +1,9 @@
 import React from "react";
-import { motion as Motion } from "motion/react";
+import { motion as Motion, useReducedMotion } from "motion/react";
 import { popIn, revealUp, staggerContainer } from "../../lib/motion";
 
 const HeroSection = () => {
+  const reduceMotion = useReducedMotion();
 
   return (
     <Motion.section
