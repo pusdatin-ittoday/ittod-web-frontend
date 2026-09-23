@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "motion/react";
-import { FiAward, FiX, FiArrowRight, FiCheckCircle } from "react-icons/fi";
+import { motion as Motion, AnimatePresence } from "motion/react";
+import { FiAward, FiX, FiArrowRight } from "react-icons/fi";
 import { getAllCompetitionResults } from "../../services/eventService";
 
 const POPUP_DISMISS_KEY = "ittod_finalist_popup_dismissed";
@@ -61,7 +61,7 @@ export default function FinalistAnnouncementPopup() {
           <div className="absolute inset-0" onClick={handleClose} />
 
           {/* Modal Box Neo-Brutalist */}
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, scale: 0.85, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.85, y: 20 }}
@@ -118,7 +118,7 @@ export default function FinalistAnnouncementPopup() {
                 <FiArrowRight className="text-base" />
               </button>
             </div>
-          </motion.div>
+          </Motion.div>
         </div>
       )}
     </AnimatePresence>

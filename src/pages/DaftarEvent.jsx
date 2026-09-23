@@ -62,7 +62,7 @@ const eventIdMapping = {
 	workshop: "Workshop",
 };
 
-const bootcampBundlingMapping = {
+const _bootcampBundlingMapping = {
 	"Day 1": "day1",
 	"Day 2": "day2",
 	"Day 1 + Day 2": "day1_day2",
@@ -83,14 +83,14 @@ const EventRegistrationShell = ({ children }) => (
 	</div>
 );
 
-const isRekening = true;
+const _isRekening = true;
 
 const DaftarEvent = () => {
 	const { target } = useParams();
 	const navigate = useNavigate();
 	const { showAlert: showGlobalAlert } = useAlert();
 
-	const [needsToPay, setNeedsToPay] = useState(false);
+	const [_needsToPay, setNeedsToPay] = useState(false);
 	const [isIPB, setIsIPB] = useState(false);
 	const [isRegisteredToMinetoday, setIsRegisteredToMinetoday] = useState(false);
 	const [isMineTodayPending, setIsMineTodayPending] = useState(false);
@@ -119,7 +119,7 @@ const DaftarEvent = () => {
 	const [isMineTodayRegisteredStep, setIsMineTodayRegisteredStep] = useState(false);
 	const [registeredParticipantData, setRegisteredParticipantData] = useState(null);
 	const [showPreviewModal, setShowPreviewModal] = useState(false);
-	const [isUserAlreadyVerified, setIsUserAlreadyVerified] = useState(false);
+	const [_isUserAlreadyVerified, setIsUserAlreadyVerified] = useState(false);
 	const [semnasResubmitFile, setSemnasResubmitFile] = useState(null);
 	const [semnasResubmitFileName, setSemnasResubmitFileName] = useState("");
 	const [semnasResubmitLoading, setSemnasResubmitLoading] = useState(false);
@@ -134,7 +134,7 @@ const DaftarEvent = () => {
 		currentEvent?.price !== undefined && currentEvent?.price !== null
 			? `Rp ${Number(currentEvent.price).toLocaleString("id-ID")}`
 			: "Rp 0";
-	const workshopPriceDisplay = eventPriceDisplay;
+	const _workshopPriceDisplay = eventPriceDisplay;
 
 	const paymentFileInputRef = useRef(null);
 	const semnasResubmitInputRef = useRef(null);
@@ -738,7 +738,7 @@ const DaftarEvent = () => {
 		}
 	};
 
-	const handleSubmit = (e) => {
+	const _handleSubmit = (e) => {
 		e.preventDefault();
 		setError("");
 		setShowAlert(false);
@@ -797,7 +797,7 @@ const DaftarEvent = () => {
 				eventId: eventId,
 				institutionName: institution,
 				phoneNumber: normalizedWhatsapp,
-				bundling: bootcampBundling || "",
+				bundling: "",
 			})
 				.then(() => {
 					return uploadBootcampPayment(paymentFile);
@@ -829,7 +829,7 @@ const DaftarEvent = () => {
 				eventId: eventId,
 				institutionName: institution,
 				phoneNumber: normalizedWhatsapp,
-				bundling: bootcampBundling || "",
+				bundling: "",
 			})
 				.then(async () => {
 					setSubmitted(true);
@@ -840,7 +840,7 @@ const DaftarEvent = () => {
 						variant: "success",
 					});
 				})
-				.catch((error) => {
+				.catch(() => {
 					// Fallback to registerEvent
 					return registerEvent({
 						eventId: eventId,

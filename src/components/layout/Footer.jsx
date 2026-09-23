@@ -58,33 +58,48 @@ const FooterNeo = () => {
           </div>
 
           {/* Events Column */}
-          <div>
+          <div className="min-h-[140px]">
             <h3 className="mb-6 font-bebas text-xl tracking-wider text-yellow-neo">EVENTS</h3>
-            <ul className="space-y-4">
-              {footerEvents.map((item) => (
-                <li key={item.id}>
-                  <Link to={`/event/${item.slug || item.id}`} className="font-inter text-[13px] font-medium text-gray-300 transition-colors duration-200 hover:text-yellow-neo">
-                    {item.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {footerEvents.length > 0 ? (
+              <ul className="space-y-4">
+                {footerEvents.map((item) => (
+                  <li key={item.id}>
+                    <Link to={`/event/${item.slug || item.id}`} className="font-inter text-[13px] font-medium text-gray-300 transition-colors duration-200 hover:text-yellow-neo">
+                      {item.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="space-y-3 opacity-20 animate-pulse">
+                <div className="h-4 w-28 rounded bg-gray-600" />
+                <div className="h-4 w-24 rounded bg-gray-600" />
+              </div>
+            )}
           </div>
 
           {/* Competitions Column */}
-          <div>
+          <div className="min-h-[140px]">
             <h3 className="mb-6 font-bebas text-xl tracking-wider text-yellow-neo">COMPETITIONS</h3>
-            <div className="flex flex-col gap-4 md:grid md:grid-cols-3 md:gap-2">
-              {footerCompetitions.map((item) => (
-                <Link 
-                  key={item.id} 
-                  to={`/competition/${item.slug || item.id}`} 
-                  className="font-inter text-[13px] font-medium text-gray-300 transition-colors duration-200 hover:text-yellow-neo"
-                >
-                  {item.title}
-                </Link>
-              ))}
-            </div>
+            {footerCompetitions.length > 0 ? (
+              <div className="flex flex-col gap-4 md:grid md:grid-cols-3 md:gap-2">
+                {footerCompetitions.map((item) => (
+                  <Link 
+                    key={item.id} 
+                    to={`/competition/${item.slug || item.id}`} 
+                    className="font-inter text-[13px] font-medium text-gray-300 transition-colors duration-200 hover:text-yellow-neo"
+                  >
+                    {item.title}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 opacity-20 animate-pulse md:grid md:grid-cols-3 md:gap-2">
+                <div className="h-4 w-24 rounded bg-gray-600" />
+                <div className="h-4 w-20 rounded bg-gray-600" />
+                <div className="h-4 w-28 rounded bg-gray-600" />
+              </div>
+            )}
           </div>
 
           {/* Social Media Column */}
@@ -103,7 +118,11 @@ const FooterNeo = () => {
                   <img
                     src={item.icon}
                     alt={item.label}
-                    className="h-full w-full object-contain"
+                    width="20"
+                    height="20"
+                    loading="lazy"
+                    decoding="async"
+                    className="h-5 w-5 object-contain"
                   />
                 </a>
               ))}

@@ -50,7 +50,6 @@ const IkutEvent = ({
   colorIndex = 0,
   isIPB = false,
   maxParticipants,
-  currentParticipants,
   remainingQuota,
 }) => {
   const logoSrc = getLogoFallback(title, image);

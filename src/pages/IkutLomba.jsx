@@ -74,7 +74,7 @@ const IkutLomba = () => {
   }}
 >
 <span
-  className="text-white text-[67.01px] font-roboto font-normal text-center leading-none"
+  className="text-white text-[67.01px] font-inter font-normal text-center leading-none"
   style={{
     // Glow-WhiteText Effect
     textShadow: '0px 5px 10px rgba(172, 104, 113, 0.70)',

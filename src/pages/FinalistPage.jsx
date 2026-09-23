@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "motion/react";
 import {
   FiChevronLeft,
   FiChevronRight,
@@ -80,7 +79,7 @@ export default function FinalistPage() {
         } else {
           setError(res.error || "Gagal memuat data kompetisi");
         }
-      } catch (err) {
+      } catch {
         if (isMounted) setError("Terjadi kesalahan saat memuat data finalis.");
       } finally {
         if (isMounted) setLoading(false);
@@ -169,7 +168,7 @@ export default function FinalistPage() {
     return false;
   };
 
-  const isUserMember = (member, team) => {
+  const isUserMember = (member) => {
     if (!member) return false;
     if (!isAuthenticated && !user) return false;
 
@@ -275,7 +274,7 @@ export default function FinalistPage() {
                 {competitions.map((comp) => {
                   const isSelected = comp.id === selectedComp?.id;
                   const logoSrc = comp.logo_url || getFallbackLogo(comp);
-                  const compHasMyTeam = (comp.champions || []).some(isUserTeam) || (comp.finalists || []).some(isUserTeam);
+                  const _compHasMyTeam = (comp.champions || []).some(isUserTeam) || (comp.finalists || []).some(isUserTeam);
 
                   return (
                     <button
@@ -549,7 +548,7 @@ export default function FinalistPage() {
                                         })
                                         .map((m, mIdx) => {
                                           const isLeader = (m.role || "").toLowerCase().includes("lead") || (m.role || "").toLowerCase().includes("ketua");
-                                          const isMe = isUserMember(m, team);
+                                          const isMe = isUserMember(m);
                                           return (
                                             <li
                                               key={mIdx}

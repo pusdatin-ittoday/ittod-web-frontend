@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { FaFileUpload, FaCheckCircle, FaInstagram, FaExternalLinkAlt } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { registerSemnas } from "../api/semnas";
@@ -14,7 +13,6 @@ export const SEMNAS_INSTAGRAM_ACCOUNTS = [
 ];
 
 const SemnasRegistrationForm = ({ eventId, onSuccess }) => {
-	const navigate = useNavigate();
 	const { showAlert } = useAlert();
 
 	const [kenalSentralKomputer, setKenalSentralKomputer] = useState("");

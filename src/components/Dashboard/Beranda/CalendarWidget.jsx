@@ -14,7 +14,7 @@ const CalendarWidget = () => {
         const fetchTimelines = async () => {
             setLoading(true);
             try {
-                const [compRes, eventRes, userCompRes, userEventRes] = await Promise.all([
+                const [compRes, eventRes, _userCompRes, userEventRes] = await Promise.all([
                     getCompetitionTimelines(),
                     getEventTimelines(),
                     getUserCompetitions(),

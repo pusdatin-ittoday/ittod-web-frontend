@@ -73,9 +73,9 @@ const EventDetailPage = () => {
             checkIpbOrMinetoday(),
           ]);
 
-          let isIPB = false;
+          let _isIPB = false;
           if (ipbRes.status === "fulfilled" && ipbRes.value?.data) {
-            isIPB = Boolean(ipbRes.value.data.isIPB);
+            _isIPB = Boolean(ipbRes.value.data.isIPB);
           }
 
           if (userRes.status === "fulfilled") {
@@ -150,7 +150,7 @@ const EventDetailPage = () => {
     );
   }
 
-  const effectiveWaLink = userWaLink || event.whatsapp_group_link;
+  const _effectiveWaLink = userWaLink || event.whatsapp_group_link;
 
   return (
     <div className="min-h-screen bg-[#f7f7f4] text-black">

@@ -40,10 +40,12 @@ export async function fetchAnnouncementNavState() {
 
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(result));
-    } catch (e) {}
+    } catch {
+      // Ignore storage errors
+    }
 
     return result;
-  } catch (error) {
+  } catch {
     return {
       isChampion: false,
       path: "/finalist",
@@ -69,7 +71,9 @@ export function useAnnouncementNav() {
       if (stored) {
         return JSON.parse(stored);
       }
-    } catch (e) {}
+    } catch {
+      // Ignore storage errors
+    }
 
     return {
       isChampion: false,
