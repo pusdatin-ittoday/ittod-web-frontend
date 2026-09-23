@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { attachDedupeInterceptor } from '../utils/apiDedupe';
 
 const instance = axios.create({
     withCredentials: true, // if using cookies for auth
@@ -13,4 +14,7 @@ instance.interceptors.request.use((config) => {
     return config;
 });
 
-export default instance; 
+attachDedupeInterceptor(instance);
+
+export default instance;
+ 

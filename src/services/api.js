@@ -1,4 +1,5 @@
 import axios from "axios";
+import { attachDedupeInterceptor } from "../utils/apiDedupe";
 
 /**
  * Axios instance terpusat — base URL dari environment variable.
@@ -39,4 +40,7 @@ api.interceptors.response.use(
   }
 );
 
+attachDedupeInterceptor(api);
+
 export default api;
+

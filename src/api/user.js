@@ -129,6 +129,15 @@ export const isAuthenticated = async () => {
  * @returns {Promise<Object>} User data or error
  */
 export const getCurrentUser = async () => {
+	const token = typeof localStorage !== "undefined" ? localStorage.getItem("authToken") : null;
+	if (!token) {
+		return {
+			success: false,
+			data: null,
+			isUnauthorized: true,
+			error: "No authentication token",
+		};
+	}
 	try {
 		const response = await instance.get("/api/user");
 		// console.log("User data fetched:", response.data);
