@@ -79,6 +79,10 @@ const NavbarNeo = () => {
             <img
               src="/logo-ittod.webp"
               alt="IT Today Logo"
+              width="80"
+              height="80"
+              fetchpriority="high"
+              decoding="async"
               className="h-14 w-14 object-contain transition-transform duration-200 group-hover:-rotate-3 group-hover:scale-105 md:h-20 md:w-20"
               onError={(e) => {
                 e.target.onerror = null;

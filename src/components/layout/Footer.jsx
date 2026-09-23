@@ -145,7 +145,7 @@ const FooterNeo = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col items-center justify-between gap-4 border-t-2 border-[#343735] pt-6 font-inter text-[10px] font-bold uppercase tracking-widest text-gray-500 md:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 border-t-2 border-[#343735] pt-6 font-inter text-[10px] font-bold uppercase tracking-widest text-gray-300 md:flex-row">
           <p>© 2026 IT TODAY</p>
         </div>
       </div>

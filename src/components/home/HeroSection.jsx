@@ -1,32 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { motion as Motion, useReducedMotion } from "motion/react";
+import React from "react";
+import { motion as Motion } from "motion/react";
 import { popIn, revealUp, staggerContainer } from "../../lib/motion";
 
 const HeroSection = () => {
-  const heroRef = useRef(null);
-  const reduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (reduceMotion) return undefined;
-
-    const ctx = gsap.context(() => {
-      gsap.to(".hero-float", {
-        y: -10,
-        rotate: 1.25,
-        duration: 2.8,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-    }, heroRef);
-
-    return () => ctx.revert();
-  }, [reduceMotion]);
 
   return (
     <Motion.section
-      ref={heroRef}
       id="hero"
       className="relative flex min-h-[540px] w-full items-center justify-center overflow-hidden border-b-[8px] border-yellow-neo sm:min-h-[600px] md:min-h-[660px]"
       initial="hidden"
@@ -93,9 +72,8 @@ const HeroSection = () => {
         variants={staggerContainer}
       >
         <Motion.div
-          className="hero-float mb-8 inline-block border-[3px] border-black bg-white px-5 py-1.5 font-inter text-[10px] font-black uppercase tracking-[0.08em] text-[#293f9e] shadow-[5px_5px_0_#111] sm:text-xs md:mb-10 md:px-7"
+          className="mb-8 inline-block animate-hero-float border-[3px] border-black bg-white px-5 py-1.5 font-inter text-[10px] font-black uppercase tracking-[0.08em] text-[#293f9e] shadow-[5px_5px_0_#111] sm:text-xs md:mb-10 md:px-7"
           variants={popIn}
-          style={{ rotate: 2 }}
           whileHover={{ rotate: -2, scale: 1.05 }}
           whileTap={{ scale: 0.97 }}
         >

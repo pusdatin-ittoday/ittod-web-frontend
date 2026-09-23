@@ -199,6 +199,20 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@keyframes heroFloatAnim {
+  0%, 100% {
+    transform: translateY(0px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0.5deg);
+  }
+}
+
+.animate-hero-float {
+  animation: heroFloatAnim 3.2s ease-in-out infinite;
+  will-change: transform;
+}
+
 body {
   margin: 0;
   padding: 0;
