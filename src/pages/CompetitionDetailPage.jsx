@@ -87,9 +87,9 @@ const CompetitionDetailPage = () => {
 
   const isIndividualCompetition = isIndividualParticipation(
     competition?.participation_type ||
-      competition?.participationType ||
-      competition?.participant_type ||
-      competition?.participantType,
+    competition?.participationType ||
+    competition?.participant_type ||
+    competition?.participantType,
   );
 
   const handleRegisterClick = async () => {
@@ -167,7 +167,7 @@ const CompetitionDetailPage = () => {
         <PageBanner
           icon={competition.icon}
           title={competition.title}
-          subtitle={competition.tagline}
+          subtitle={competition.subtitle}
           variant="event"
         />
 
@@ -250,19 +250,6 @@ const CompetitionDetailPage = () => {
                   )}
                 </div>
 
-                {/* Gallery */}
-                {(() => {
-                  const galleryImages = getEventGalleryImages(slug);
-                  const galleryLabel = getEventGalleryLabel(slug);
-                  return galleryImages ? (
-                    <div className="mt-8 overflow-hidden">
-                      <EventGallery
-                        images={galleryImages}
-                        title={`Dokumentasi ${galleryLabel}`}
-                      />
-                    </div>
-                  ) : null;
-                })()}
 
                 {/* Finalis & Juara Board */}
               </div>
@@ -272,6 +259,19 @@ const CompetitionDetailPage = () => {
                 <AgendaSidebar timelines={competition.timelines} type="competition" />
               </div>
             </div>
+            {/* Gallery */}
+            {(() => {
+              const galleryImages = getEventGalleryImages(slug);
+              const galleryLabel = getEventGalleryLabel(slug);
+              return galleryImages ? (
+                <div className="mt-8 overflow-hidden">
+                  <EventGallery
+                    images={galleryImages}
+                    title={`Dokumentasi ${galleryLabel}`}
+                  />
+                </div>
+              ) : null
+            })()}
             <CompetitionResultsBoard eventId={competition?.id || slug} />
           </div>
         </section>

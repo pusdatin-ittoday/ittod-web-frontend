@@ -24,12 +24,6 @@ const PageBanner = ({ icon, title, subtitle, variant = 'default' }) => {
               </h1>
             </div>
           </div>
-
-          {subtitle && (
-            <p className="mx-auto mt-5 w-fit max-w-full bg-[#191b1a] px-5 py-2 text-center font-inter text-[10px] font-bold uppercase tracking-widest text-white md:text-xs">
-              {subtitle}
-            </p>
-          )}
         </div>
       </section>
     );
