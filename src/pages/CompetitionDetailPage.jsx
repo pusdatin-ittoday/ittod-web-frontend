@@ -18,6 +18,7 @@ import { requireCompleteProfile } from '../utils/profileCompletion';
 import { useAlert } from '../context/AlertContext';
 import { useAuth } from '../context/AuthContext';
 import CompetitionResultsBoard from '../components/competition/CompetitionResultsBoard';
+import { motion } from 'motion/react';
 
 const formatWaLink = (num) => {
   if (!num) return '#';
@@ -264,7 +265,6 @@ const CompetitionDetailPage = () => {
                 })()}
 
                 {/* Finalis & Juara Board */}
-                <CompetitionResultsBoard eventId={competition?.id || slug} />
               </div>
 
               {/* Right: Sidebar */}
@@ -272,6 +272,7 @@ const CompetitionDetailPage = () => {
                 <AgendaSidebar timelines={competition.timelines} type="competition" />
               </div>
             </div>
+            <CompetitionResultsBoard eventId={competition?.id || slug} />
           </div>
         </section>
 
